@@ -25,12 +25,12 @@ Project identity and UI preferences. Always present in the project root.
 
 **Fields:**
 
-| Field | Type | Description |
-|---|---|---|
-| `name` | string | Project display name, shown in the app header |
-| `description` | string | Short description, shown on the project home screen |
-| `version` | string | Project schema version for future migration support |
-| `theme.accent` | hex color | Primary accent color used throughout the UI (default `#9a7a2c`) |
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `name` | string | ✓ | Project display name, shown in the app header |
+| `description` | string | | Short description, shown on the project home screen |
+| `version` | string | | Project schema version for future migration support |
+| `theme.accent` | hex color | | Primary accent color used throughout the UI (default `#9a7a2c`) |
 
 The app ships a single visual theme (the parchment palette shown in the mockups). There is no light/dark toggle.
 
@@ -57,9 +57,9 @@ Defines all folio types, their sections, fields, and field types. The app reads 
 
 ```json
 "Character": {
-  "icon": "person",
+  "icon": "user",
   "folder": "Characters",
-  "color": "#4A90D9",
+  "inactiveWhen": ["Deceased"],
   "sections": {
     "Basic Information": {
       "role": "meta",
@@ -82,12 +82,12 @@ Defines all folio types, their sections, fields, and field types. The app reads 
 
 **Type properties:**
 
-| Property | Description |
-|---|---|
-| `icon` | Icon identifier for the sidebar and folio header |
-| `folder` | Subfolder name where this type's `.md` files are stored |
-| `color` | Accent color used for this type in the UI |
-| `sections` | Ordered map of section names to their field definitions |
+| Property | Required | Description |
+|---|---|---|
+| `icon` | ✓ | Lucide icon name (kebab-case) for the sidebar and folio header |
+| `folder` | ✓ | Subfolder name where this type's `.md` files are stored |
+| `inactiveWhen` | | Array of Status values that mark a folio as inactive |
+| `sections` | ✓ | Ordered map of section names to their field definitions |
 
 The full reference schema for *Burden of the Guardian* lives in [`02_Reference_Schema.md`](02_Reference_Schema.md).
 

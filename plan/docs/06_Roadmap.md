@@ -70,29 +70,34 @@ git/
 
 ---
 
-## Phase 1 — Core (MVP)
+## Phase 1 — Core (MVP) ✓ Complete
 
 **Goal:** read-only browsable encyclopedia.
 
 - npm workspaces monorepo scaffold (`shared`, `server`, `client`).
 - Express server with `--project` CLI arg and `127.0.0.1` binding.
-- `shared/parser.ts` Markdown ↔ structured-data round trip with unit tests.
+- `shared/parser.ts` Markdown ↔ structured-data round trip.
 - `shared/schema.ts` zod validation of `schema.json`.
-- `projectStore`: scans folder, builds in-memory folio index, assigns display IDs by file `birthtime`.
-- API: `GET /api/config`, `GET /api/schema`, `GET /api/folios`, `GET /api/folios/:type/:name`.
+- `projectStore`: scans folder, builds in-memory folio index with prose snippets; IDs assigned alphabetically by filename.
+- API: `GET /api/config`, `GET /api/schema`, `GET /api/folios`, `GET /api/folios/:folder/:name`, `POST /api/reload`.
 - Vite + React app shell with `ProjectContext`, TanStack Query, React Router.
-- Sidebar: schema-driven type list with counts, folios-of-type list, "+ New entry" stub.
+- Sidebar: schema-driven type list with counts and Lucide icons, folios-of-type list. Active type and active folio highlighted in rust. "+ New entry" stub.
+- Three index views: `Landing` (`/`), `ArchiveIndexView` (`/archive`), `CategoryIndexView` (`/folio/:folder`) with entry name and prose snippet.
 - Read view: role-driven 2-col / 1-col / grid layout, drop cap.
+- Prose rendering: inline markdown (bold, italic, code) and block lists rendered as HTML via `utils/markdown.ts`.
+- Schema warnings: non-fatal validation on parse; warning banner shown on the folio read view.
 - Wiki-link chips: clickable navigation between folios.
+- Sync button in the header: triggers `POST /api/reload` then invalidates all TanStack Query caches.
 - `tokens.css` generated from the design tokens doc; `base.css` typography.
 - Landing route with the WebGL hero (`codex` shader, ported from `prototype/webgl-hero.js`). Static parchment fallback when WebGL is unavailable.
+- Windows-compatible `open.bat` launcher that passes `--project` directly to `tsx`.
 
-**Checkpoint:** run `npm start -- --project ../burden-of-the-guardian` and:
+**Checkpoint:** ✓ verified
 - The landing screen renders with the WebGL hero animating.
 - The sidebar shows all 7 type categories with correct counts.
 - Thalirin reads as a fully-populated two-column folio.
 - Clicking the Lyssa, Telamonas, Crete, or Divine Fusion wiki-links navigates correctly.
-- Deceased characters render in italics in the sidebar.
+- Sync button reloads the project index from disk without restarting the server.
 
 ---
 

@@ -10,7 +10,7 @@ This is the `schema.json` for the first test project. Other projects will define
 
 ```json
 "Character": {
-  "icon": "person",
+  "icon": "user",
   "folder": "Characters",
   "inactiveWhen": ["Deceased"],
   "sections": {
@@ -180,7 +180,7 @@ Covers any organized group: military powers, political bodies, cosmic forces, re
 
 ```json
 "Faction": {
-  "icon": "users",
+  "icon": "shield",
   "folder": "Factions",
   "inactiveWhen": ["Dissolved", "Destroyed"],
   "sections": {

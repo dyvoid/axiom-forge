@@ -8,8 +8,8 @@ This document pins down decisions that the higher-level docs leave underspecifie
 
 Folio IDs are not persisted. They are generated in-memory at project load and have no presence in `config.json` or in the `.md` files.
 
-- On startup, the server scans the project folder, collects every folio, and assigns IDs by sorting on **file `birthtime` (creation time), ascending**, with filename as a stable tie-breaker. The first-created folio is `1`, the next `2`, and so on.
-- IDs are globally unique within a project but are **not stable across machines** if file creation timestamps differ (e.g. after a fresh `git clone`). This is acceptable because IDs are display-only — wiki-links use folder + name, never IDs.
+- On startup, the server scans the project folder, collects every folio, and assigns IDs by sorting **alphabetically by filename**. The first filename alphabetically is `1`, the next `2`, and so on.
+- IDs are stable across machines (alphabetical order is deterministic) but will shift when folios are added or deleted. This is acceptable because IDs are display-only — wiki-links use folder + name, never IDs.
 - On folio creation: the file is written, then the in-memory index appends the new folio with `id = currentMax + 1`. No counter file to sync.
 - On folio deletion: the slot becomes a gap for the rest of the session; on next reload, IDs are recomputed and the gap closes.
 - The Roman numeral form (`FOLIO XVII`) is a display-only transform computed in the UI from the integer ID.
@@ -54,19 +54,41 @@ The MVP does **not** watch the filesystem.
 
 ## Status Semantics & "Inactive" Styling
 
-The italics-in-sidebar / muted-in-chips behavior is driven by the folio's Meta Status value, checked against a type-level whitelist in the schema.
+The `inactiveWhen` array on a type definition allows flagging certain Status values as inactive. The parser reads the Meta Status block and the `projectStore` stores the status in each index record, making it available to the UI.
 
 - Each folio type may declare an `inactiveWhen` array at the type level:
   ```json
   "Character": {
-    "icon": "person",
+    "icon": "user",
     "folder": "Characters",
     "inactiveWhen": ["Deceased"],
     ...
   }
   ```
-- The UI checks the folio's Meta Status value; if it appears in the type's `inactiveWhen` array, the sidebar entry is italicized and link chips pointing to it are rendered muted.
-- Generalizes to any folio type: Faction uses `inactiveWhen: ["Dissolved", "Destroyed"]`, and the parser reads the Meta Status block to determine the treatment.
+- Phase 3 will use this to drive visual treatment: muted wiki-link chips for inactive targets. The sidebar no longer applies italic/muted styling to inactive entries — all sidebar entries are rendered uniformly.
+
+---
+
+## Prose Rendering
+
+`textarea` and `prose`-role sections are rendered as HTML, not raw text. `utils/markdown.ts` implements a lightweight block + inline renderer:
+
+- **Inline:** `**bold**`, `__bold__` → `<strong>`; `*italic*`, `_italic_` → `<em>`; `` `code` `` → `<code>`.
+- **Block:** paragraphs split on `\n\n`; lines within a block prefixed with `- `/`* ` become `<ul><li>`; lines prefixed with `\d+. ` become `<ol><li>`. Mixed blocks (e.g. a heading line followed by list items) are handled by a line-by-line accumulator.
+- HTML entities are escaped before applying patterns, so user content cannot inject tags.
+
+---
+
+## Schema Warnings
+
+`parseMarkdown` collects a `warnings?: string[]` on the returned `ParsedFolio`. Warnings are non-fatal: the folio is still rendered. Current checks:
+
+- Unknown type (Meta.Type not in schema).
+- Unknown section (section heading not declared in the type's schema).
+- Unknown field (bullet field not declared in the section's `fields` map).
+- Invalid `select`/`multiselect` value (value not in the field's `options` list).
+
+The read view displays a warning banner below the folio header when `warnings` is non-empty.
 
 ---
 

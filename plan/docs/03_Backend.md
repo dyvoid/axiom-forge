@@ -12,16 +12,16 @@ The backend is a TypeScript Express server. It loads the project folder pointed 
 
 ```
 index.ts            ← Express bootstrap, CLI arg parsing, static client serving
-projectStore.ts     ← scans folder, builds folio index, owns mtime cache and IDs
+projectStore.ts     ← scans folder, builds folio index, owns snippet cache and IDs
 fileIO.ts           ← read/write .md, mtime checks, rename + project-wide link rewrite
-validation.ts       ← per-save schema validation (zod)
 routes/
+  index.ts          ← mounts all routers + POST /api/reload
   config.ts
   schema.ts
-  folios.ts         ← GET, POST, PUT, DELETE
-  search.ts
-  backlinks.ts
+  folios.ts         ← GET (read-only in Phase 1; POST, PUT, DELETE added in Phase 2)
 ```
+
+Phase 2 adds `validation.ts`, `routes/search.ts`, and `routes/backlinks.ts`.
 
 The `shared` package supplies the parser, types, and zod schema — used identically on the server and in the client.
 
@@ -32,35 +32,47 @@ The `shared` package supplies the parser, types, and zod schema — used identic
 Single source of truth for server state. Owns:
 
 - The loaded `config.json` and `schema.json` (validated with zod at load).
-- The folio index: an array of records with id, type, folder, name, filePath, mtime, status, tags.
+- The folio index: an array of records with id, type, folder, name, filePath, mtime, status, tags, and a cached `snippet` (first ~120 chars of the prose section, extracted at index build time).
 - The in-memory ID counter (see `05_Implementation_Details.md` § Folio IDs).
-- A simple mtime cache used by the 409 Conflict check.
 
 All routes go through `projectStore`. No route reads or writes files directly except via `fileIO`, which is itself called only by `projectStore`.
 
 **Lifecycle:**
 
-1. On boot: scan the project folder, parse every `.md` file's `## Meta` block to learn type/status/tags, sort by `birthtime` ASC (filename tiebreaker), assign IDs 1..N.
-2. On `POST /api/folios/:type`: write the new file via `fileIO`, append to the index with `id = currentMax + 1`.
-3. On `PUT /api/folios/:type/:name`: validate, optionally rename (delegated to `fileIO`), write, update the index entry.
-4. On `DELETE`: remove file, drop the index entry. The ID slot becomes a gap until next reload.
+1. On boot: scan the project folder, parse every `.md` file fully to extract type/status/tags and the prose snippet, sort alphabetically by filename, assign IDs 1..N.
+2. On `POST /api/reload`: re-run the full scan and rebuild the index from disk (used by the client sync button).
+3. *(Phase 2)* On `POST /api/folios/:type`: write the new file via `fileIO`, append to the index with `id = currentMax + 1`.
+4. *(Phase 2)* On `PUT /api/folios/:type/:name`: validate, optionally rename (delegated to `fileIO`), write, update the index entry.
+5. *(Phase 2)* On `DELETE`: remove file, drop the index entry. The ID slot becomes a gap until next reload.
 
 ---
 
 ## API Endpoints
 
+**Phase 1 (implemented):**
+
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/config` | Returns `config.json`. |
 | `GET` | `/api/schema` | Returns the validated `schema.json`. |
-| `GET` | `/api/folios` | Returns all folios as index records (id, type, name, status, tags). Used to populate the sidebar. |
-| `GET` | `/api/folios/:type` | Returns all folios of a given type. |
-| `GET` | `/api/folios/:type/:name` | Returns a single parsed folio as structured JSON. Includes `mtime` for the conflict check. |
-| `PUT` | `/api/folios/:type/:name` | Saves a folio. Body includes the structured data and the `mtime` from the prior GET. Returns the new `mtime` and any `brokenLinks`. Returns `409` if the file's current `mtime` differs from the supplied one. |
-| `POST` | `/api/folios/:type` | Creates a new folio with body `{ "name": "..." }`. Writes the file with only the synthesized `## Meta` block. Returns `201` with the parsed folio JSON, including the assigned `id`. |
-| `DELETE` | `/api/folios/:type/:name` | Deletes a folio. |
-| `GET` | `/api/search?q=` | Case-insensitive substring search across folio H1 names, all `textarea` / `prose` content, and all scalar field values plus `## Meta` tags. Wiki-link paths and aliases are excluded. Results: list of `{ type, name, snippet, matchedIn }`, name matches ranked above body matches. |
-| `GET` | `/api/backlinks/:type/:name` | Returns all folios that contain a wiki-link to this folio. |
+| `GET` | `/api/folios` | Returns all folios as index records (id, type, folder, name, status, tags, snippet). Used to populate the sidebar and index views. |
+| `GET` | `/api/folios/:folder/:name` | Returns a single parsed folio as structured JSON, including `mtime` and `warnings`. |
+| `POST` | `/api/reload` | Re-scans the project folder and rebuilds the folio index from disk. Used by the client sync button. |
+
+**Phase 2 (planned):**
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `PUT` | `/api/folios/:folder/:name` | Saves a folio. Body includes the structured data and the `mtime` from the prior GET. Returns the new `mtime` and any `brokenLinks`. Returns `409` if the file's current `mtime` differs from the supplied one. |
+| `POST` | `/api/folios/:folder` | Creates a new folio with body `{ "name": "..." }`. Returns `201` with the parsed folio JSON. |
+| `DELETE` | `/api/folios/:folder/:name` | Deletes a folio. |
+
+**Phase 3 (planned):**
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/search?q=` | Case-insensitive substring search across folio names, prose content, and scalar field values. Results: list of `{ type, name, snippet, matchedIn }`, name matches ranked above body matches. |
+| `GET` | `/api/backlinks/:folder/:name` | Returns all folios that contain a wiki-link to this folio. |
 
 ---
 

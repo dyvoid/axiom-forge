@@ -29,15 +29,16 @@ The client is a Vite + React + TypeScript app. It is schema-driven end-to-end: n
 main.tsx
 App.tsx                              ← <BrowserRouter>, <QueryClientProvider>, <ProjectProvider>
 api/
-  client.ts                          ← typed fetch wrapper, throws on non-2xx
-  queries.ts                         ← useFolios, useFolio, useSearch, useBacklinks
-  mutations.ts                       ← useSaveFolio, useCreateFolio, useDeleteFolio
+  client.ts                          ← typed fetch wrapper; fetchConfig, fetchSchema, fetchFolios,
+                                        fetchFolio, reloadProject
+  queries.ts                         ← useFolios, useFolio
+  mutations.ts                       ← (Phase 2) useSaveFolio, useCreateFolio, useDeleteFolio
 context/
   ProjectContext.tsx                 ← config + schema, loaded once at boot, exposed via useProject()
 routes/
   Landing.tsx                        ← project home: title, description, type counts, "Enter the Archive"
-  FolioRead.tsx                      ← /folio/:type/:name
-  FolioEdit.tsx                      ← /folio/:type/:name/edit
+  FolioRead.tsx                      ← /folio/:folder/:name
+  FolioEdit.tsx                      ← (Phase 2) /folio/:folder/:name/edit
   NotFound.tsx
 hero/
   WebGLHero.tsx                      ← <canvas> + GLSL fragment shader; ported from prototype/webgl-hero.js
@@ -48,42 +49,27 @@ hero/
 components/
   layout/
     AppShell.tsx                     ← header + sidebar + main slot
-    Header.tsx
-    Sidebar.tsx                      ← type list (counts), folios-of-type list, "+ New entry"
-    SearchBar.tsx                    ← debounced /api/search, jumps to result on enter
+    TopHeader.tsx                    ← logo, project title, sync button, search input (stub)
+    Sidebar.tsx                      ← type list (counts + icons), folios-of-type list, "+ New entry"
   folio/
-    FolioHeader.tsx                  ← eyebrow (type · folio XVII), title H1, italic subtitle, status pill, tags
-    FolioReadView.tsx                ← role-driven 2-col / 1-col / grid layout dispatch
-    FolioEditView.tsx                ← form built from schema sections + fields
-    ProseSection.tsx                 ← drop-cap reader / textarea editor
+    FolioHeader.tsx                  ← eyebrow (type · folio XVII), title H1, status pill, tags
+    FolioReadView.tsx                ← role-driven 2-col / 1-col / grid layout; schema warning banner
+    FolioEditView.tsx                ← (Phase 2) form built from schema sections + fields
+    ProseSection.tsx                 ← drop-cap prose; renders inline markdown (bold, italic, lists)
     MetaSection.tsx                  ← right-column field grid (read mode)
-    FieldSection.tsx                 ← generic full-width section (read or edit)
-    BacklinksPanel.tsx               ← collapsible "▼ Backlinks (N)" at the bottom
-  fields/                            ← one component per field type, mode-aware
-    TextField.tsx
-    TextAreaField.tsx
-    DateField.tsx
-    SelectField.tsx
-    MultiSelectField.tsx
-    TextListField.tsx
-    WikiLinkField.tsx                ← search-and-pick by folder + name
-    WikiLinkListField.tsx
-    FieldRenderer.tsx                ← dispatches by field type, accepts mode="read"|"edit"
-  chips/
-    WikiLinkChip.tsx                 ← [ ◐ Lyssa ] read-mode chip
-    TagChip.tsx
+    FieldSection.tsx                 ← generic full-width section (read mode)
+    ArchiveIndexView.tsx             ← /archive: all types with counts, entry point from landing
+    CategoryIndexView.tsx            ← /folio/:folder: all entries for a type with snippets
+    BacklinksPanel.tsx               ← (Phase 3) collapsible "▼ Backlinks (N)"
   ui/
-    Button.tsx
-    Input.tsx
-    Pill.tsx
-    Icon.tsx                         ← Lucide wrapper
+    WikiLinkChip.tsx                 ← [ ◐ Lyssa ] read-mode chip, navigates on click
+    Icon.tsx                         ← Lucide wrapper (kebab-case name → PascalCase lookup)
 styles/
-  tokens.css                         ← generated from Axiom_Forge_Design_Tokens.md
+  tokens.css                         ← generated from 07_Design_Tokens.md
   base.css                           ← resets, typography, body bg
   *.module.css                       ← per-component
 utils/
-  roman.ts                           ← integer ↔ Roman numerals (re-export from shared)
-  format.ts
+  markdown.ts                        ← renderMarkdown(): inline + block markdown → HTML string
 ```
 
 ---
@@ -92,9 +78,11 @@ utils/
 
 | Path | Component | Notes |
 |---|---|---|
-| `/` | `Landing` | Project home with type counts and "Enter the Archive" CTA. |
-| `/folio/:type/:name` | `FolioRead` | Read mode. `:type` is the **folder name** (matching wiki-link form). |
-| `/folio/:type/:name/edit` | `FolioEdit` | Edit mode. Save returns to read mode; Discard prompts if dirty. |
+| `/` | `Landing` | Project home with WebGL hero, type counts, and "Enter the Archive" CTA. |
+| `/archive` | `ArchiveIndexView` | All types with entry counts; entry point from the landing CTA. |
+| `/folio/:folder` | `CategoryIndexView` | All entries for a given type, with name and prose snippet. |
+| `/folio/:folder/:name` | `FolioRead` | Read mode. `:folder` is the folder name (matching wiki-link form). |
+| `/folio/:folder/:name/edit` | `FolioEdit` | *(Phase 2)* Edit mode. Save returns to read mode; Discard prompts if dirty. |
 | `*` | `NotFound` | |
 
 Wiki-link clicks call `navigate('/folio/' + folder + '/' + name)` — no full reload. The shell stays mounted across navigations.
