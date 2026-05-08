@@ -67,7 +67,7 @@ export function Sidebar(): JSX.Element {
 								return (
 									<NavLink
 										key={f.id}
-										to={`/folio/${f.type}/${f.name}`}
+										to={`/folio/${activeSchema.folder}/${f.name}`}
 										className={({ isActive }) => 
 											`${styles.folioLink} ${isActive ? styles.active : ''} ${isInactive ? styles.inactive : ''}`
 										}

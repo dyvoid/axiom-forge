@@ -4,10 +4,7 @@
    ═══════════════════════════════════════════════════════════ */
 
 :root {
-	/* ── Typography ───────────────────────────────────── */
-	--ff-display: 'Cinzel', serif;
-	--ff-body: 'Cormorant Garamond', serif;
-
+	/* ── Typography Size ───────────────────────────────────── */
 	--fs-hero: 88px;
 	--fs-h1: 64px;
 	--fs-h2: 22px;
@@ -29,26 +26,36 @@
 	--ls-sidebar-group: 0.22em;
 	--ls-button: 0.2em;
 
-	/* ── Palette ──────────────────────────────────────── */
+	/* ── Surfaces ────────────────────────────────────────────── */
+
 	--bg-page: #f3ead8;
 	--bg-panel: #ebe0c8;
-	--border-soft: #d9c8a4;
 	--border: #cdb98e;
-	--accent-gold: #9a7a2c;
-	--accent-rust: #8a3522;
-	--text-muted: #6c5e46;
-	--text-secondary: #4a3f2e;
-	--text-primary: #221b13;
-	--shadow: rgba(0, 0, 0, 0.18);
+	--border-soft: #d9c8a4;
 
-	/* ── Semantic Aliases ─────────────────────────────── */
-	--color-bg: var(--bg-page);
-	--color-surface: var(--bg-panel);
+	/* ── Accents ─────────────────────────────────────────────── */
+
+	--accent-rust: #8a3522;
+	--accent-gold: #9a7a2c;
+
+	/* ── Typography Colors ───────────────────────────────────── */
+
+	--text-primary: #221b13;
+	--text-secondary: #4a3f2e;
+	--text-muted: #6c5e46;
+
+	/* ── Typography Roles ────────────────────────────────────── */
+
+	--ff-display: "Spectral", "EB Garamond", Georgia, serif;
+	--ff-body: "Spectral", "EB Garamond", Georgia, serif;
+	--ff-serif: "Cormorant Garamond", "EB Garamond", Georgia, serif;
 	--color-fg: var(--text-primary);
 	--color-fg-secondary: var(--text-secondary);
 	--color-fg-muted: var(--text-muted);
 	--color-accent: var(--accent-gold);
 	--color-danger: var(--accent-rust);
+	--color-bg: var(--bg-page);
+	--color-surface: var(--bg-panel);
 	--color-border: var(--border);
 	--color-border-subtle: var(--border-soft);
 

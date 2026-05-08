@@ -7,8 +7,8 @@ import { useFolio } from '../api/queries.js';
 import { FolioReadView } from '../components/folio/FolioReadView.js';
 
 export function FolioRead(): JSX.Element {
-	const { type, name } = useParams<{ type: string; name: string }>();
-	const { data: folio, isLoading, error } = useFolio(type ?? '', name ?? '');
+	const { folder, name } = useParams<{ folder: string; name: string }>();
+	const { data: folio, isLoading, error } = useFolio(folder ?? '', name ?? '');
 
 	if (isLoading) {
 		return (

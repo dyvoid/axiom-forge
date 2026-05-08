@@ -1,7 +1,7 @@
 .header {
-	height: 64px;
-	border-bottom: 1px solid var(--border-soft);
-	background: var(--bg-page);
+	height: 48px;
+	border-bottom: 1px solid var(--border);
+	background: var(--bg-panel);
 	display: flex;
 	align-items: center;
 	justify-content: space-between;

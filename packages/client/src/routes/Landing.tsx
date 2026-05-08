@@ -44,7 +44,9 @@ export function Landing(): JSX.Element {
 			<WebGLHero variant="codex" />
 			<div className={styles.topCorners}>
 				<div className={styles.topLeft}>AXIOM · FORGE</div>
-				<div className={styles.topRight}>VOL. I &nbsp; MMXXVI &nbsp; PRIVATE ARCHIVE</div>
+				<div className={styles.topRight}>
+					{config.version ? `VOL. ${config.version.toUpperCase()} ` : ''}
+				</div>
 			</div>
 			<div className={styles.hero}>
 				<div className={styles.titleBlock}>
@@ -52,8 +54,7 @@ export function Landing(): JSX.Element {
 					<div className={styles.subtitleRow}>
 						<div className={styles.line} />
 						<p className={styles.subtitle}>
-							{/* In a real app we might parse this from config tags, but for Phase 1 hardcode or use a simplified generic string */}
-							BRONZE AGE · MINOAN / MYCENAEAN · {totalEntries} ENTRIES
+							{config.description ? `${config.description.toUpperCase()} · ` : ''}{totalEntries} ENTRIES
 						</p>
 						<div className={styles.line} />
 					</div>
@@ -64,16 +65,26 @@ export function Landing(): JSX.Element {
 			</div>
 
 			<footer className={styles.footer}>
-				<span className={styles.footerLabel}>CONTENTS</span>
 				<div className={styles.typeCounts}>
-					{Object.entries(schema.types).map(([typeKey, typeDef]) => (
-						<span key={typeKey} className={styles.typeEntry}>
-							<Icon name={typeDef.icon} className={styles.typeIcon} size={12} />
-							{typeKey} {typeCounts[typeKey] ?? 0}
-						</span>
-					))}
+					{Object.entries(schema.types).map(([typeKey, typeDef]) => {
+						const count = typeCounts[typeKey] ?? 0;
+						const firstFolio = folios?.find(f => f.type === typeKey);
+						
+						return (
+							<button 
+								key={typeKey} 
+								className={styles.typeEntry}
+								onClick={() => {
+									if (firstFolio) navigate(`/folio/${typeDef.folder}/${firstFolio.name}`);
+								}}
+								disabled={!firstFolio}
+							>
+								<Icon name={typeDef.icon} className={styles.typeIcon} size={12} />
+								{typeKey} <span className={styles.count}>{count}</span>
+							</button>
+						);
+					})}
 				</div>
-				<span className={styles.pageNum}>I</span>
 			</footer>
 		</div>
 	);

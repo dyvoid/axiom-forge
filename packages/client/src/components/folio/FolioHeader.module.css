@@ -45,7 +45,7 @@
 }
 
 .title {
-	font-family: var(--ff-body);
+	font-family: var(--ff-serif);
 	font-weight: 400;
 	font-size: var(--fs-hero);
 	line-height: var(--lh-h1);

@@ -13,9 +13,6 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 	const dod = basicInfo?.['Date of Death'];
 	const hasDates = dob || dod;
 
-	// The subtitle isn't formalized in schema, but design uses it. We'll extract a hint from prose or use a placeholder if needed.
-	const subtitle = folio.type === 'Character' ? 'of Kea, the mortal vessel of Ylverian' : null;
-
 	return (
 		<header className={styles.header}>
 			<div className={styles.topRow}>
@@ -36,7 +33,6 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 			</div>
 			
 			<h1 className={styles.title}>{folio.name.replace(/_/g, ' ')}</h1>
-			{subtitle && <p className={styles.subtitle}>{subtitle}</p>}
 
 			<div className={styles.metaRow}>
 				{folio.status && (

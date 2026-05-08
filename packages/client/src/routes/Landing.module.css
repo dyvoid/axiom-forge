@@ -91,20 +91,11 @@
 .footer {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: center;
 	height: 64px;
 	padding: 0 var(--sp-7);
 	border-top: 1px solid var(--border-soft);
 	background: rgba(235, 224, 200, 0.5); /* semi-transparent to show WebGL */
-}
-
-.footerLabel {
-	font-family: var(--ff-display);
-	font-weight: 500;
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-sidebar-group);
-	text-transform: uppercase;
-	color: var(--text-muted);
 }
 
 .typeCounts {
@@ -121,15 +112,26 @@
 	display: flex;
 	align-items: center;
 	gap: var(--sp-2);
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	transition: color 0.2s;
+}
+
+.typeEntry:hover:not(:disabled) {
+	color: var(--text-primary);
+}
+
+.typeEntry:disabled {
+	opacity: 0.5;
+	cursor: default;
 }
 
 .typeIcon {
 	color: var(--accent-gold);
 }
 
-.pageNum {
-	font-family: var(--ff-display);
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-eyebrow);
+.count {
 	color: var(--text-muted);
 }

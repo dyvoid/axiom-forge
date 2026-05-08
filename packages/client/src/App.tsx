@@ -23,7 +23,7 @@ export function App(): JSX.Element {
 					<Routes>
 						<Route path="/" element={<Landing />} />
 						<Route element={<AppShell />}>
-							<Route path="/folio/:type/:name" element={<FolioRead />} />
+							<Route path="/folio/:folder/:name" element={<FolioRead />} />
 						</Route>
 						<Route path="*" element={<NotFound />} />
 					</Routes>

@@ -12,15 +12,15 @@ Two typefaces, both Google Fonts, free, OFL.
 
 | Role | Family | Weights used | Notes |
 |---|---|---|---|
-| **Display / labels** | `Cinzel` | 400, 500, 600, 700 | Roman-inscription serif. Used for ALL CAPS section labels, folio-type pills, sidebar group headers, the "EDITING FOLIO XVII" banner. |
-| **Body / titles** | `Cormorant Garamond` | 400, 500 (regular + italic) | Humanist serif. Used for folio H1, body prose, italic subtitles, and field values. |
+| **Display / titles** | `Cormorant Garamond` | 400, 500 (regular + italic) | Humanist serif. Used for folio H1, italic subtitles, and large drop caps. |
+| **Body / labels** | `Spectral` | 400, 500 (regular + italic) | Clean serif. Used for default body text, smallcaps labels (eyebrows), and field values. |
 
 **Loading.** In production, link from Google Fonts:
 
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 ```
 
 For an offline-first local app, self-host the four `.woff2` files under `/public/fonts/`.
@@ -43,13 +43,13 @@ For an offline-first local app, self-host the four `.woff2` files under `/public
 
 ### Letter Spacing
 
-Cinzel ALL CAPS labels use generous tracking. Approximate values:
+Spectral smallcaps labels use generous tracking. Approximate values:
 
 - Eyebrow / section labels: `letter-spacing: 0.18em`
 - Sidebar group headers: `letter-spacing: 0.22em`
 - Buttons (`SAVE FOLIO`, `ENTER THE ARCHIVE`): `letter-spacing: 0.2em`
 
-Cormorant body text: default tracking (no override).
+Spectral body text: default tracking (no override).
 
 ### Line Heights
 
@@ -69,7 +69,7 @@ All colors extracted from the prototype's computed styles. Counts indicate usage
 | Token | Hex | RGB | Role |
 |---|---|---|---|
 | `--bg-page` | `#f3ead8` | 243, 234, 216 | Main canvas background |
-| `--bg-panel` | `#ebe0c8` | 235, 224, 200 | Sidebar / muted panels |
+| `--bg-panel` | `#ebe0c8` | 235, 224, 200 | Sidebar / top header background |
 | `--border-soft` | `#d9c8a4` | 217, 200, 164 | Sidebar dividers, subtle separators |
 | `--border` | `#cdb98e` | 205, 185, 142 | Card borders, input borders, button outlines |
 | `--accent-gold` | `#9a7a2c` | 154, 122, 44 | Folio-type chip color, count numbers, gold rule between columns, link chip text |
@@ -170,13 +170,13 @@ box-shadow: 0 1px 2px rgba(0,0,0,0.18);
 
 ### Folio-Type Eyebrow (e.g. `◐ CHARACTER · FOLIO XVII`)
 
-- Font: Cinzel 500, `--fs-eyebrow`, `letter-spacing: 0.18em`.
+- Font: Spectral 500, `--fs-eyebrow`, `letter-spacing: 0.18em`.
 - Color: `var(--accent-gold)`.
 - Icon glyph at left, separated by a thin space then `·` between segments.
 
 ### Tag Chips (in `## Meta`)
 
-- Cormorant italic, `--fs-meta`, `var(--text-muted)`.
+- Spectral italic, `--fs-meta`, `var(--text-muted)`.
 - Separated by `·` (middle dot) with a thin space on each side.
 
 ### Wiki-Link Chip (read mode)
@@ -201,7 +201,7 @@ box-shadow: 0 1px 2px rgba(0,0,0,0.18);
 | Primary (`SAVE FOLIO`) | `var(--text-primary)` | none | `var(--bg-page)` |
 | Secondary (`DISCARD`, `ENTER THE ARCHIVE`) | transparent | `1px solid var(--border)` | `var(--text-primary)` |
 
-All buttons: Cinzel 500, `--fs-eyebrow`, `letter-spacing: 0.2em`, padding `12px 24px`.
+All buttons: Spectral 500, `--fs-eyebrow`, `letter-spacing: 0.2em`, padding `12px 24px`.
 
 ### Inputs (edit mode)
 
@@ -209,13 +209,13 @@ All buttons: Cinzel 500, `--fs-eyebrow`, `letter-spacing: 0.2em`, padding `12px 
 - Border: `1px solid var(--border)`.
 - Focus: border becomes `var(--accent-gold)`, no extra outline.
 - Padding: `8px 12px`.
-- Font: Cormorant 400, `--fs-body`.
+- Font: Spectral 400, `--fs-body`.
 
 ### Sidebar Index
 
-- Group header (`INDEX`, `CHARACTERS`): Cinzel 500, `--fs-eyebrow`, `var(--text-muted)`, `letter-spacing: 0.22em`, margin-bottom 12px.
+- Group header (`INDEX`, `CHARACTERS`): Spectral 500, `--fs-eyebrow`, `var(--text-muted)`, `letter-spacing: 0.22em`, margin-bottom 12px.
 - Folio-type rows: glyph + label on the left, count number on the right in `var(--accent-gold)`.
-- Folio entries below the type list: Cormorant 400, `--fs-body-sm`.
+- Folio entries below the type list: Spectral 400, `--fs-body-sm`.
 - Active entry: `var(--accent-rust)`, 2px solid left border in `var(--accent-rust)`, 8px left padding offset.
 - Inactive entry (deceased): italic, `var(--text-muted)`.
 
