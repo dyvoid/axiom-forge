@@ -1,14 +1,21 @@
 .shell {
 	display: flex;
+	flex-direction: column;
 	height: 100vh;
 	width: 100%;
 	background: var(--bg-page);
 	overflow: hidden;
 }
 
+.body {
+	display: flex;
+	flex: 1;
+	overflow: hidden;
+}
+
 .sidebar {
 	flex: 0 0 var(--sidebar-width);
-	background: var(--bg-panel);
+	background: var(--bg-page); /* Changed from bg-panel based on mockup */
 	border-right: 1px solid var(--border-soft);
 	display: flex;
 	flex-direction: column;

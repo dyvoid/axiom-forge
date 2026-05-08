@@ -1,18 +1,25 @@
 import { Link } from 'react-router-dom';
 import type { WikiLink } from '@axiom-forge/shared';
 import { useFolios } from '../../api/queries.js';
+import { useProject } from '../../context/ProjectContext.js';
+import { Icon } from '../ui/Icon.js';
 import styles from './WikiLinkChip.module.css';
 
 export function WikiLinkChip({ link }: { link: WikiLink }): JSX.Element {
+	const { schema } = useProject();
 	const { data: folios } = useFolios();
 	
 	const target = folios?.find(f => f.folder === link.folder && f.name === link.name);
 	const isDead = !target;
 	const isDeceased = target?.status === 'Deceased' || target?.status === 'Destroyed';
 	const display = link.alias || link.name.replace(/_/g, ' ');
+	
+	// Determine icon based on the folder->type mapping
+	const targetType = Object.entries(schema.types).find(([, def]) => def.folder === link.folder)?.[1];
+	const iconName = targetType?.icon || 'circle';
 
 	if (isDead) {
-		return <span className={`${styles.chip} ${styles.dead}`}>{display}</span>;
+		return <span className={`${styles.chip} ${styles.dead}`}>[ <Icon name={iconName} size={10} className={styles.icon} /> {display} ]</span>;
 	}
 
 	return (
@@ -20,7 +27,7 @@ export function WikiLinkChip({ link }: { link: WikiLink }): JSX.Element {
 			to={`/folio/${link.folder}/${link.name}`} 
 			className={`${styles.chip} ${isDeceased ? styles.deceased : ''}`}
 		>
-			{display}
+			[ <Icon name={iconName} size={10} className={styles.icon} /> {display} ]
 		</Link>
 	);
 }

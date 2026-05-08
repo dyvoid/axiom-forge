@@ -7,6 +7,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useProject } from '../context/ProjectContext.js';
 import { useFolios } from '../api/queries.js';
+import { Icon } from '../components/ui/Icon.js';
 import styles from './Landing.module.css';
 
 import { WebGLHero } from '../hero/WebGLHero.js';
@@ -41,30 +42,38 @@ export function Landing(): JSX.Element {
 	return (
 		<div className={styles.landing}>
 			<WebGLHero variant="codex" />
+			<div className={styles.topCorners}>
+				<div className={styles.topLeft}>AXIOM · FORGE</div>
+				<div className={styles.topRight}>VOL. I &nbsp; MMXXVI &nbsp; PRIVATE ARCHIVE</div>
+			</div>
 			<div className={styles.hero}>
 				<div className={styles.titleBlock}>
 					<h1 className={styles.title}>{config.name}</h1>
-					<div className={styles.rule} />
-					<p className={styles.subtitle}>
-						{config.description}
-						{totalEntries > 0 && <> · {totalEntries} entries</>}
-					</p>
+					<div className={styles.subtitleRow}>
+						<div className={styles.line} />
+						<p className={styles.subtitle}>
+							{/* In a real app we might parse this from config tags, but for Phase 1 hardcode or use a simplified generic string */}
+							BRONZE AGE · MINOAN / MYCENAEAN · {totalEntries} ENTRIES
+						</p>
+						<div className={styles.line} />
+					</div>
 					<button className={styles.cta} onClick={handleEnter}>
-						Enter the Archive →
+						ENTER THE ARCHIVE &nbsp; →
 					</button>
 				</div>
 			</div>
 
 			<footer className={styles.footer}>
-				<span className={styles.footerLabel}>Contents</span>
+				<span className={styles.footerLabel}>CONTENTS</span>
 				<div className={styles.typeCounts}>
 					{Object.entries(schema.types).map(([typeKey, typeDef]) => (
 						<span key={typeKey} className={styles.typeEntry}>
+							<Icon name={typeDef.icon} className={styles.typeIcon} size={12} />
 							{typeKey} {typeCounts[typeKey] ?? 0}
 						</span>
 					))}
 				</div>
-				<span className={styles.pageNum}>1</span>
+				<span className={styles.pageNum}>I</span>
 			</footer>
 		</div>
 	);

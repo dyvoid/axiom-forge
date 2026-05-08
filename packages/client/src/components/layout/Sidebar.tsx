@@ -1,13 +1,24 @@
-import { Link, NavLink } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, useParams } from 'react-router-dom';
 import { useProject } from '../../context/ProjectContext.js';
 import { useFolios } from '../../api/queries.js';
 import styles from './Sidebar.module.css';
 import { Icon } from '../ui/Icon.js';
-import { toRoman } from '@axiom-forge/shared';
 
 export function Sidebar(): JSX.Element {
-	const { config, schema } = useProject();
+	const { schema } = useProject();
 	const { data: folios } = useFolios();
+	const { type: routeType } = useParams<{ type?: string }>();
+
+	// Default active type to the route's type, or the first schema type
+	const firstType = Object.keys(schema.types)[0] || '';
+	const [activeType, setActiveType] = useState<string>(firstType);
+
+	useEffect(() => {
+		if (routeType && schema.types[routeType]) {
+			setActiveType(routeType);
+		}
+	}, [routeType, schema.types]);
 
 	// Group folios by type
 	const byType: Record<string, typeof folios> = {};
@@ -18,63 +29,61 @@ export function Sidebar(): JSX.Element {
 		}
 	}
 
+	const activeList = activeType ? byType[activeType] || [] : [];
+	const activeSchema = activeType ? schema.types[activeType] : null;
+
 	return (
 		<div className={styles.container}>
-			<header className={styles.header}>
-				<Link to="/" className={styles.projectLink}>
-					<span className={styles.projectTitle}>{config.name}</span>
-				</Link>
-			</header>
-
 			<nav className={styles.nav}>
 				<div className={styles.group}>
-					<h2 className={styles.groupTitle}>Index</h2>
+					<h2 className={styles.groupTitle}>INDEX</h2>
 					{Object.entries(schema.types).map(([typeKey, typeDef]) => {
 						const count = byType[typeKey]?.length ?? 0;
+						const isActive = typeKey === activeType;
 						return (
-							<div key={typeKey} className={styles.typeRow}>
+							<button 
+								key={typeKey} 
+								className={`${styles.typeRow} ${isActive ? styles.activeTypeRow : ''}`}
+								onClick={() => setActiveType(typeKey)}
+							>
 								<div className={styles.typeLabel}>
-									<Icon name={typeDef.icon} />
+									<Icon name={typeDef.icon} size={14} />
 									<span>{typeKey}</span>
 								</div>
 								<span className={styles.typeCount}>{count}</span>
-							</div>
+							</button>
 						);
 					})}
 				</div>
 
-				{Object.entries(schema.types).map(([typeKey, typeDef]) => {
-					const list = byType[typeKey] ?? [];
-					if (list.length === 0) return null;
+				<div className={styles.divider} />
 
-					return (
-						<div key={typeKey} className={styles.group}>
-							<h2 className={styles.groupTitle}>{typeDef.folder}</h2>
-							<div className={styles.folioList}>
-								{list.map((f) => {
-									const isInactive = typeDef.inactiveWhen?.includes(f.status ?? '');
-									return (
-										<NavLink
-											key={f.id}
-											to={`/folio/${f.folder}/${f.name}`}
-											className={({ isActive }) => 
-												`${styles.folioLink} ${isActive ? styles.active : ''} ${isInactive ? styles.inactive : ''}`
-											}
-										>
-											{f.name.replace(/_/g, ' ')}
-										</NavLink>
-									);
-								})}
-							</div>
+				{activeSchema && (
+					<div className={styles.group}>
+						<h2 className={styles.groupTitle}>{activeSchema.folder}</h2>
+						<div className={styles.folioList}>
+							{activeList.map((f) => {
+								const isInactive = activeSchema.inactiveWhen?.includes(f.status ?? '');
+								return (
+									<NavLink
+										key={f.id}
+										to={`/folio/${f.type}/${f.name}`}
+										className={({ isActive }) => 
+											`${styles.folioLink} ${isActive ? styles.active : ''} ${isInactive ? styles.inactive : ''}`
+										}
+									>
+										{f.name.replace(/_/g, ' ')}
+									</NavLink>
+								);
+							})}
 						</div>
-					);
-				})}
+					</div>
+				)}
 			</nav>
 
 			<div className={styles.footer}>
 				<button className={styles.newBtn}>
-					<Icon name="plus" />
-					<span>New entry</span>
+					+ New entry
 				</button>
 			</div>
 		</div>

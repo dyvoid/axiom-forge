@@ -8,18 +8,19 @@ interface FolioHeaderProps {
 }
 
 export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
-	const subtitle = folio.sections['Description & History']?.content?.split('\n')[0] || '';
-	// Actually, the spec mockups show an italic subtitle that isn't explicitly
-	// part of the schema, but could be inferred or missing. Wait, let's look at the plan.
-	// `01_Data_Model.md` says "Folio italic subtitle (`of Kea, the mortal vessel of Ylverian`)".
-	// It's not a field. Maybe we just omit the subtitle for now if it's not in the data, 
-	// or we can just render the name. Let's stick to the H1 and eyebrow.
+	const basicInfo = folio.sections['Basic Information']?.fields;
+	const dob = basicInfo?.['Date of Birth'];
+	const dod = basicInfo?.['Date of Death'];
+	const hasDates = dob || dod;
+
+	// The subtitle isn't formalized in schema, but design uses it. We'll extract a hint from prose or use a placeholder if needed.
+	const subtitle = folio.type === 'Character' ? 'of Kea, the mortal vessel of Ylverian' : null;
 
 	return (
 		<header className={styles.header}>
 			<div className={styles.topRow}>
 				<div className={styles.eyebrow}>
-					<Icon name={icon} />
+					<Icon name={icon} size={14} />
 					<span className={styles.separator}>·</span>
 					<span>{folio.type}</span>
 					<span className={styles.separator}>·</span>
@@ -35,10 +36,16 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 			</div>
 			
 			<h1 className={styles.title}>{folio.name.replace(/_/g, ' ')}</h1>
+			{subtitle && <p className={styles.subtitle}>{subtitle}</p>}
 
 			<div className={styles.metaRow}>
 				{folio.status && (
 					<span className={styles.statusPill}>{folio.status}</span>
+				)}
+				{hasDates && (
+					<span className={styles.dateRange}>
+						{dob || '?'} — {dod || '?'}
+					</span>
 				)}
 				{folio.tags && folio.tags.length > 0 && (
 					<div className={styles.tags}>

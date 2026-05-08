@@ -41,29 +41,31 @@ export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
 
 			{/* Top Block Layout */}
 			{(hasProseData || hasMetaData) && (
-				<div className={styles.topBlock}>
-					{hasProseData && (
-						<div className={styles.proseCol}>
-							<ProseSection 
-								name={proseSectionName!} 
-								data={folio.sections[proseSectionName!]!} 
-								isDropCap 
-							/>
-						</div>
-					)}
-					{hasMetaData && (
-						<div className={styles.metaCol}>
-							<MetaSection 
-								name={metaSectionName!} 
-								data={folio.sections[metaSectionName!]!} 
-								schema={typeDef.sections[metaSectionName!]!} 
-							/>
-						</div>
-					)}
-				</div>
+				<>
+					<div className={styles.divider} />
+					<div className={styles.topBlock}>
+						{hasProseData && (
+							<div className={styles.proseCol}>
+								<ProseSection 
+									name={proseSectionName!} 
+									data={folio.sections[proseSectionName!]!} 
+									isDropCap 
+								/>
+							</div>
+						)}
+						{hasMetaData && (
+							<div className={styles.metaCol}>
+								<MetaSection 
+									name={metaSectionName!} 
+									data={folio.sections[metaSectionName!]!} 
+									schema={typeDef.sections[metaSectionName!]!} 
+								/>
+							</div>
+						)}
+					</div>
+					<div className={styles.divider} />
+				</>
 			)}
-
-			<div className={styles.divider} />
 
 			{/* Remaining Sections (Full Width) */}
 			<div className={styles.remaining}>

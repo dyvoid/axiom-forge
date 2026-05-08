@@ -47,9 +47,17 @@
 .title {
 	font-family: var(--ff-body);
 	font-weight: 400;
-	font-size: var(--fs-h1);
+	font-size: var(--fs-hero);
 	line-height: var(--lh-h1);
 	color: var(--text-primary);
+	margin-bottom: var(--sp-2);
+}
+
+.subtitle {
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: 24px;
+	color: var(--text-secondary);
 	margin-bottom: var(--sp-4);
 }
 
@@ -62,30 +70,39 @@
 .statusPill {
 	display: inline-block;
 	padding: 2px var(--sp-3);
-	border: 1px solid var(--border);
+	border: 1px solid var(--text-primary);
 	border-radius: 2px;
 	font-family: var(--ff-display);
+	font-weight: 500;
 	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-eyebrow);
 	text-transform: uppercase;
-	color: var(--text-muted);
+	color: var(--text-primary);
+}
+
+.dateRange {
+	font-family: var(--ff-display);
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	color: var(--text-secondary);
+	margin-right: var(--sp-3);
 }
 
 .tags {
 	display: flex;
 	align-items: center;
-	gap: var(--sp-2);
+	gap: var(--sp-3);
 }
 
 .tag {
 	font-family: var(--ff-body);
 	font-style: italic;
-	font-size: var(--fs-meta);
-	color: var(--text-muted);
+	font-size: var(--fs-body);
+	color: var(--text-secondary);
 }
 
 .tag + .tag::before {
 	content: '·';
-	margin-right: var(--sp-2);
+	margin-right: var(--sp-3);
 	color: var(--border-soft);
 }

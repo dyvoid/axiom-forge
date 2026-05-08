@@ -80,5 +80,5 @@ input, textarea, select {
 	line-height: 0.85;
 	float: left;
 	padding: 0.05em 0.12em 0 0;
-	color: var(--text-primary);
+	color: var(--accent-rust);
 }

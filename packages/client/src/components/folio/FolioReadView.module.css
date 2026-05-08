@@ -6,7 +6,7 @@
 
 .topBlock {
 	display: flex;
-	gap: var(--two-col-gap);
+	gap: var(--sp-6);
 	align-items: flex-start;
 	margin-top: var(--sp-6);
 }
@@ -14,6 +14,8 @@
 .proseCol {
 	flex: 1;
 	max-width: var(--prose-max-width);
+	border-right: 1px solid var(--border-soft);
+	padding-right: var(--sp-6);
 }
 
 .metaCol {
@@ -21,8 +23,9 @@
 }
 
 .divider {
-	height: 1px;
-	background: var(--border-soft);
+	border-top: 1px solid var(--border-soft);
+	border-bottom: 1px solid var(--border-soft);
+	height: 3px;
 	margin: var(--sp-7) 0;
 	width: 100%;
 }
