@@ -1,0 +1,120 @@
+.container {
+	max-width: var(--page-max-width);
+	margin: 0 auto;
+	padding: var(--sp-7);
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.header {
+	text-align: center;
+	margin-bottom: var(--sp-8);
+}
+
+.title {
+	font-family: var(--ff-serif);
+	font-weight: 400;
+	font-style: italic;
+	font-size: var(--fs-h1);
+	color: var(--text-primary);
+	margin: 0 0 var(--sp-2);
+}
+
+.meta {
+	font-family: var(--ff-body);
+	font-size: var(--fs-tiny);
+	letter-spacing: 0.18em;
+	color: var(--text-muted);
+	margin-bottom: var(--sp-6);
+}
+
+.searchBar {
+	max-width: 480px;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	border-bottom: 1px solid var(--border);
+	padding: var(--sp-2) 0;
+}
+
+.searchIcon {
+	color: var(--text-muted);
+	font-size: 20px;
+	margin-right: var(--sp-2);
+}
+
+.searchInput {
+	flex: 1;
+	background: transparent;
+	border: none;
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: var(--fs-body-lg);
+	color: var(--text-primary);
+	outline: none;
+}
+
+.searchInput::placeholder {
+	color: var(--text-muted);
+}
+
+.indexColumns {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--sp-8);
+	justify-content: center;
+}
+
+.letterGroup {
+	min-width: 240px;
+	margin-bottom: var(--sp-6);
+}
+
+.letterHeader {
+	font-family: var(--ff-serif);
+	font-weight: 400;
+	font-size: var(--fs-h2);
+	color: var(--accent-rust);
+	border-bottom: 1px solid var(--border-soft);
+	padding-bottom: var(--sp-2);
+	margin: 0 0 var(--sp-4);
+}
+
+.letterList {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-2);
+}
+
+.entryLink {
+	display: inline-flex;
+	align-items: center;
+	font-family: var(--ff-body);
+	font-size: var(--fs-body);
+	color: var(--text-primary);
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.entryLink:hover {
+	color: var(--accent-rust);
+}
+
+.iconWrapper {
+	color: var(--accent-gold);
+	margin-right: 6px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 14px;
+}
+
+.entryLink.deceased {
+	font-style: italic;
+	color: var(--text-muted);
+}
+
+.entryLink.deceased:hover {
+	color: var(--text-secondary);
+}

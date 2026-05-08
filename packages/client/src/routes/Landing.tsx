@@ -32,11 +32,7 @@ export function Landing(): JSX.Element {
 	const firstFolder = firstType ? schema.types[firstType]!.folder : '';
 
 	function handleEnter() {
-		// Navigate to the first folio of the first type, or just the archive root
-		if (folios && folios.length > 0) {
-			const first = folios[0]!;
-			navigate(`/folio/${first.folder}/${first.name}`);
-		}
+		navigate('/archive');
 	}
 
 	return (
@@ -74,10 +70,7 @@ export function Landing(): JSX.Element {
 							<button 
 								key={typeKey} 
 								className={styles.typeEntry}
-								onClick={() => {
-									if (firstFolio) navigate(`/folio/${typeDef.folder}/${firstFolio.name}`);
-								}}
-								disabled={!firstFolio}
+								onClick={() => navigate(`/folio/${typeDef.folder}`)}
 							>
 								<Icon name={typeDef.icon} className={styles.typeIcon} size={12} />
 								{typeKey} <span className={styles.count}>{count}</span>

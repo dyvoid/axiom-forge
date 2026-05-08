@@ -15,6 +15,9 @@ const queryClient = new QueryClient({
 	},
 });
 
+import { ArchiveIndexView } from './components/folio/ArchiveIndexView.js';
+import { CategoryIndexView } from './components/folio/CategoryIndexView.js';
+
 export function App(): JSX.Element {
 	return (
 		<QueryClientProvider client={queryClient}>
@@ -23,6 +26,8 @@ export function App(): JSX.Element {
 					<Routes>
 						<Route path="/" element={<Landing />} />
 						<Route element={<AppShell />}>
+							<Route path="/archive" element={<ArchiveIndexView />} />
+							<Route path="/folio/:folder" element={<CategoryIndexView />} />
 							<Route path="/folio/:folder/:name" element={<FolioRead />} />
 						</Route>
 						<Route path="*" element={<NotFound />} />

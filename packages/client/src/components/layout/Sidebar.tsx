@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useParams, useNavigate } from 'react-router-dom';
 import { useProject } from '../../context/ProjectContext.js';
 import { useFolios } from '../../api/queries.js';
 import styles from './Sidebar.module.css';
@@ -8,17 +8,19 @@ import { Icon } from '../ui/Icon.js';
 export function Sidebar(): JSX.Element {
 	const { schema } = useProject();
 	const { data: folios } = useFolios();
-	const { type: routeType } = useParams<{ type?: string }>();
+	const { folder: routeFolder } = useParams<{ folder?: string }>();
+	const navigate = useNavigate();
 
-	// Default active type to the route's type, or the first schema type
+	// Default active type to the route's folder, or the first schema type
 	const firstType = Object.keys(schema.types)[0] || '';
 	const [activeType, setActiveType] = useState<string>(firstType);
 
 	useEffect(() => {
-		if (routeType && schema.types[routeType]) {
-			setActiveType(routeType);
+		if (routeFolder) {
+			const typeKey = Object.entries(schema.types).find(([, def]) => def.folder === routeFolder)?.[0];
+			if (typeKey) setActiveType(typeKey);
 		}
-	}, [routeType, schema.types]);
+	}, [routeFolder, schema.types]);
 
 	// Group folios by type
 	const byType: Record<string, typeof folios> = {};
@@ -41,10 +43,12 @@ export function Sidebar(): JSX.Element {
 						const count = byType[typeKey]?.length ?? 0;
 						const isActive = typeKey === activeType;
 						return (
-							<button 
-								key={typeKey} 
+							<button
+								key={typeKey}
 								className={`${styles.typeRow} ${isActive ? styles.activeTypeRow : ''}`}
-								onClick={() => setActiveType(typeKey)}
+								onClick={() => {
+									navigate(`/folio/${typeDef.folder}`);
+								}}
 							>
 								<div className={styles.typeLabel}>
 									<Icon name={typeDef.icon} size={14} />
