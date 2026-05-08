@@ -1,5 +1,5 @@
 .container {
-	max-width: var(--page-max-width);
+	max-width: var(--content-max-width);
 	margin: 0 auto;
 	padding: var(--sp-7);
 	height: 100%;

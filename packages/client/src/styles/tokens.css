@@ -71,6 +71,7 @@
 
 	/* ── Layout ───────────────────────────────────────── */
 	--page-max-width: 1280px;
+	--content-max-width: 968px;
 	--sidebar-width: 240px;
 	--prose-max-width: 640px;
 	--meta-col-width: 280px;

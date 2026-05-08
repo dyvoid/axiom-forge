@@ -1,6 +1,6 @@
 .container {
 	padding: var(--sp-6) var(--sp-8);
-	max-width: var(--page-max-width);
+	max-width: var(--content-max-width);
 	margin: 0 auto;
 }
 

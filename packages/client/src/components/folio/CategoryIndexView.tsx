@@ -46,7 +46,6 @@ export function CategoryIndexView(): JSX.Element {
 							</span>
 							
 							<div className={styles.entryMeta}>
-								{f.status && <span className={styles.statusPill}>{f.status}</span>}
 								{f.tags && f.tags.length > 0 && (
 									<span className={styles.tags}>{f.tags.join(' · ')}</span>
 								)}
