@@ -12,8 +12,7 @@ export function Sidebar(): JSX.Element {
 	const navigate = useNavigate();
 	const createFolio = useCreateFolio();
 
-	const firstType = Object.keys(schema.types)[0] || '';
-	const [activeType, setActiveType] = useState<string>(firstType);
+	const [activeType, setActiveType] = useState<string>('');
 	const [creating, setCreating] = useState(false);
 	const [newName, setNewName] = useState('');
 	const nameInputRef = useRef<HTMLInputElement>(null);
@@ -22,6 +21,8 @@ export function Sidebar(): JSX.Element {
 		if (routeFolder) {
 			const typeKey = Object.entries(schema.types).find(([, def]) => def.folder === routeFolder)?.[0];
 			if (typeKey) setActiveType(typeKey);
+		} else {
+			setActiveType('');
 		}
 	}, [routeFolder, schema.types]);
 

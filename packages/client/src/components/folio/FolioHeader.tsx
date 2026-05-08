@@ -36,9 +36,6 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 			<h1 className={styles.title}>{folio.title}</h1>
 
 			<div className={styles.metaRow}>
-				{folio.status && (
-					<span className={styles.statusPill}>{folio.status}</span>
-				)}
 				{folio.tags && folio.tags.length > 0 && (
 					<div className={styles.tags}>
 						{folio.tags.map((tag) => (
