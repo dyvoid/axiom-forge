@@ -12,7 +12,6 @@ This is the `schema.json` for the first test project. Other projects will define
 "Character": {
   "icon": "user",
   "folder": "Characters",
-  "inactiveWhen": ["Deceased"],
   "sections": {
     "Basic Information": {
       "role": "meta",
@@ -182,7 +181,6 @@ Covers any organized group: military powers, political bodies, cosmic forces, re
 "Faction": {
   "icon": "shield",
   "folder": "Factions",
-  "inactiveWhen": ["Dissolved", "Destroyed"],
   "sections": {
     "Basic Information": {
       "role": "meta",

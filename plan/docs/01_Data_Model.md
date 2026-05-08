@@ -59,7 +59,6 @@ Defines all folio types, their sections, fields, and field types. The app reads 
 "Character": {
   "icon": "user",
   "folder": "Characters",
-  "inactiveWhen": ["Deceased"],
   "sections": {
     "Basic Information": {
       "role": "meta",
@@ -86,7 +85,6 @@ Defines all folio types, their sections, fields, and field types. The app reads 
 |---|---|---|
 | `icon` | ✓ | Lucide icon name (kebab-case) for the sidebar and folio header |
 | `folder` | ✓ | Subfolder name where this type's `.md` files are stored |
-| `inactiveWhen` | | Array of Status values that mark a folio as inactive |
 | `sections` | ✓ | Ordered map of section names to their field definitions |
 
 The full reference schema for *Burden of the Guardian* lives in [`02_Reference_Schema.md`](02_Reference_Schema.md).

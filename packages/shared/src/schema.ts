@@ -66,7 +66,6 @@ const SectionDefSchema = z.object({
 const TypeDefSchema = z.object({
 	icon: z.string(),
 	folder: z.string(),
-	inactiveWhen: z.array(z.string()).optional(),
 	sections: z.record(z.string(), SectionDefSchema),
 });
 

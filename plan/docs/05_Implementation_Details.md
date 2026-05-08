@@ -52,23 +52,6 @@ The MVP does **not** watch the filesystem.
 
 ---
 
-## Status Semantics & "Inactive" Styling
-
-The `inactiveWhen` array on a type definition allows flagging certain Status values as inactive. The parser reads the Meta Status block and the `projectStore` stores the status in each index record, making it available to the UI.
-
-- Each folio type may declare an `inactiveWhen` array at the type level:
-  ```json
-  "Character": {
-    "icon": "user",
-    "folder": "Characters",
-    "inactiveWhen": ["Deceased"],
-    ...
-  }
-  ```
-- Phase 3 will use this to drive visual treatment: muted wiki-link chips for inactive targets. The sidebar no longer applies italic/muted styling to inactive entries — all sidebar entries are rendered uniformly.
-
----
-
 ## Prose Rendering
 
 `textarea` and `prose`-role sections are rendered as HTML, not raw text. `utils/markdown.ts` implements a lightweight block + inline renderer:
