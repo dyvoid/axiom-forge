@@ -33,7 +33,7 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 				</div>
 			</div>
 			
-			<h1 className={styles.title}>{folio.name.replace(/_/g, ' ')}</h1>
+			<h1 className={styles.title}>{folio.title}</h1>
 
 			<div className={styles.metaRow}>
 				{folio.status && (

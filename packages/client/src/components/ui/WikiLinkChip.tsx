@@ -11,7 +11,7 @@ export function WikiLinkChip({ link }: { link: WikiLink }): JSX.Element {
 	
 	const target = folios?.find(f => f.folder === link.folder && f.name === link.name);
 	const isDead = !target;
-	const display = link.alias || link.name.replace(/_/g, ' ');
+	const display = link.alias || target?.title || link.name.replace(/_/g, ' ');
 
 	// Determine icon based on the folder->type mapping
 	const targetType = Object.entries(schema.types).find(([, def]) => def.folder === link.folder)?.[1];

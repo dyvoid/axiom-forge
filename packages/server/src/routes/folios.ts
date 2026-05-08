@@ -66,6 +66,7 @@ export function foliosRouter(store: ProjectStore): Router {
 			const snippet = store.deriveSnippet(reparsed);
 			store.updateFolioRecord(folder!, name!, {
 				mtime,
+				title: reparsed.title,
 				status: reparsed.status,
 				tags: reparsed.tags,
 				snippet,
@@ -99,17 +100,24 @@ export function foliosRouter(store: ProjectStore): Router {
 		}
 		const [typeKey] = typeEntry;
 
-		const filename = displayNameToFilename(body.folio.name);
+		const filename = displayNameToFilename(body.folio.title || body.folio.name);
+		if (!filename) {
+			res.status(400).json({ error: 'Title produces empty filename' });
+			return;
+		}
 		if (store.getRecord(folder!, filename)) {
 			res.status(409).json({ error: 'exists' });
 			return;
 		}
 
+		// The folio body has the user-supplied title; the filename is derived.
+		const folioToWrite: ParsedFolio = { ...body.folio, name: filename };
+
 		const folderPath = resolve(store.projectPath, folder!);
 		const filePath = join(folderPath, `${filename}.md`);
 
 		try {
-			const markdown = serializeToMarkdown(body.folio, schema);
+			const markdown = serializeToMarkdown(folioToWrite, schema);
 			const { mtime } = await writeFolioFile(filePath, markdown);
 			const reparsed = parseMarkdown(markdown, schema);
 			const snippet = store.deriveSnippet(reparsed);
@@ -117,6 +125,7 @@ export function foliosRouter(store: ProjectStore): Router {
 				type: typeKey,
 				folder: folder!,
 				name: filename,
+				title: reparsed.title || filename,
 				filePath,
 				mtime,
 				status: reparsed.status,

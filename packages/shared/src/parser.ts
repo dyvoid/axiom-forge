@@ -207,7 +207,10 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 	}
 
 	return {
-		name: h1,
+		// `name` is the filename stem (the folio's ID). The parser only sees file
+		// content, not the filename, so callers (server `getFolio`, etc.) overlay it.
+		name: '',
+		title: h1,
 		type: meta.type,
 		folder,
 		status: meta.status,
@@ -256,8 +259,8 @@ function isFieldValueEmpty(value: FieldValue | undefined): boolean {
 export function serializeToMarkdown(folio: ParsedFolio, schema: ProjectSchema): string {
 	const lines: string[] = [];
 
-	// H1 title
-	lines.push(`# ${folio.name}`);
+	// H1 title (display name — separate from filename)
+	lines.push(`# ${folio.title}`);
 	lines.push('');
 
 	// Meta block (always present, always first)

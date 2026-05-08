@@ -3,6 +3,7 @@ import { resolve, join } from 'node:path';
 import {
 	ConfigSchema,
 	ProjectSchemaSchema,
+	filenameToDisplayName,
 	parseMarkdown,
 	type Config,
 	type ProjectSchema,
@@ -103,11 +104,12 @@ export class ProjectStore {
 	updateFolioRecord(
 		folder: string,
 		name: string,
-		patch: { mtime: number; status?: string; tags: string[]; snippet?: string },
+		patch: { mtime: number; title?: string; status?: string; tags: string[]; snippet?: string },
 	): void {
 		const record = this.folios.find((f) => f.folder === folder && f.name === name);
 		if (!record) return;
 		record.mtime = patch.mtime;
+		if (patch.title !== undefined) record.title = patch.title;
 		record.status = patch.status;
 		record.tags = patch.tags;
 		record.snippet = patch.snippet;
@@ -152,6 +154,9 @@ export class ProjectStore {
 			...parsed,
 			id: record.id,
 			mtime,
+			name: record.name,     // authoritative filename stem (ID)
+			title: parsed.title || filenameToDisplayName(record.name),
+			folder: record.folder, // authoritative folder from index
 		};
 	}
 
@@ -189,12 +194,14 @@ export class ProjectStore {
 			let tags: string[] = [];
 			let snippet: string | undefined;
 			let warnings: string[] = [];
+			let title = filenameToDisplayName(file.name);
 			try {
 				const { content } = await readFolioFile(file.filePath);
 				const parsed = parseMarkdown(content, schema);
 				status = parsed.status;
 				tags = parsed.tags;
 				warnings = parsed.warnings ?? [];
+				if (parsed.title) title = parsed.title;
 
 				const typeDef = schema.types[typeKey];
 				if (typeDef) {
@@ -227,6 +234,7 @@ export class ProjectStore {
 				type: typeKey,
 				folder,
 				name: file.name,
+				title,
 				filePath: file.filePath,
 				mtime: file.mtime,
 				status,

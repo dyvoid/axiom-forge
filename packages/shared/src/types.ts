@@ -38,7 +38,10 @@ export interface ParsedSection {
 }
 
 export interface ParsedFolio {
+	/** Filename stem — the folio's stable ID. URL-safe, no spaces. e.g. "Lystarra" */
 	name: string;
+	/** Display title from the H1 — free-form, may contain any characters. e.g. "Lys'tarra" */
+	title: string;
 	type: string;
 	folder: string;
 	status?: string;
@@ -64,7 +67,10 @@ export interface FolioIndexRecord {
 	id: number;
 	type: string;
 	folder: string;
+	/** Filename stem — the folio's stable ID. */
 	name: string;
+	/** Display title from the H1. */
+	title: string;
 	status?: FolioStatus;
 	tags: string[];
 	snippet?: string;

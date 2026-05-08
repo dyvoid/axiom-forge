@@ -53,7 +53,8 @@ export function Sidebar(): JSX.Element {
 		const folio = {
 			type: activeType,
 			folder: activeSchema.folder,
-			name: trimmed.replace(/ /g, '_'),
+			name: '',
+			title: trimmed,
 			status: undefined,
 			tags: [],
 			sections: {},
@@ -107,7 +108,7 @@ export function Sidebar(): JSX.Element {
 										`${styles.folioLink} ${isActive ? styles.active : ''}`
 									}
 								>
-									{f.name.replace(/_/g, ' ')}
+									{f.title}
 								</NavLink>
 							))}
 						</div>

@@ -33,7 +33,8 @@ export function CategoryIndexView(): JSX.Element {
 		const folio = {
 			type: typeName ?? '',
 			folder: folder,
-			name: trimmed.replace(/ /g, '_'),
+			name: '',
+			title: trimmed,
 			status: undefined,
 			tags: [],
 			sections: {},
@@ -101,7 +102,7 @@ export function CategoryIndexView(): JSX.Element {
 						return (
 						<Link key={f.id} to={`/folio/${f.folder}/${f.name}`} className={styles.entry}>
 							<span className={styles.name}>
-								{f.name.replace(/_/g, ' ')}
+								{f.title}
 							</span>
 							<div className={styles.entryMeta}>
 								{f.snippet ? (

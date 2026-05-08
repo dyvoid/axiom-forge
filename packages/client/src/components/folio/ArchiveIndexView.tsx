@@ -15,13 +15,11 @@ export function ArchiveIndexView(): JSX.Element {
 	// Group folios by starting letter
 	const grouped: Record<string, typeof allFolios> = {};
 	
-	// Sort all folios alphabetically
-	const sortedFolios = [...allFolios].sort((a, b) => a.name.localeCompare(b.name));
-	
+	// Sort all folios alphabetically by display title
+	const sortedFolios = [...allFolios].sort((a, b) => a.title.localeCompare(b.title));
+
 	for (const folio of sortedFolios) {
-		// Clean up the name for display and grouping
-		const displayName = folio.name.replace(/_/g, ' ');
-		const firstLetter = displayName.charAt(0).toUpperCase();
+		const firstLetter = folio.title.charAt(0).toUpperCase();
 		
 		// If it's not a letter, put it in '#'
 		const groupKey = /[A-Z]/.test(firstLetter) ? firstLetter : '#';
@@ -58,7 +56,6 @@ export function ArchiveIndexView(): JSX.Element {
 							{grouped[letter]!.map(f => {
 								const typeDef = Object.values(schema.types).find(t => t.folder === f.folder);
 								const icon = typeDef?.icon || 'circle';
-								const displayName = f.name.replace(/_/g, ' ');
 								return (
 									<Link
 										key={f.id}
@@ -68,7 +65,7 @@ export function ArchiveIndexView(): JSX.Element {
 										<span className={styles.iconWrapper}>
 											<Icon name={icon} size={10} />
 										</span>
-										{displayName}
+										{f.title}
 									</Link>
 								);
 							})}

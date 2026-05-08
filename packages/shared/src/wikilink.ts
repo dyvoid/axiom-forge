@@ -60,12 +60,22 @@ export function wikiLinkDisplayName(link: WikiLink): string {
 	return link.alias || link.name.replace(/_/g, ' ');
 }
 
-/** Convert a display name to the filename stem (spaces → underscores). */
-export function displayNameToFilename(name: string): string {
-	return name.replace(/ /g, '_');
+/**
+ * Convert a display title to a URL-safe filename stem.
+ * Strips quotes/apostrophes, replaces non-letter/digit chars with underscores,
+ * collapses repeats, trims leading/trailing underscores.
+ */
+export function displayNameToFilename(title: string): string {
+	return title
+		.normalize('NFC')
+		.replace(/[''""`]/g, '')
+		.replace(/[^\p{L}\p{N}\s_-]/gu, '_')
+		.replace(/\s+/g, '_')
+		.replace(/_+/g, '_')
+		.replace(/^_+|_+$/g, '');
 }
 
-/** Convert a filename stem to a display name (underscores → spaces). */
+/** Convert a filename stem to a fallback display name (underscores → spaces). */
 export function filenameToDisplayName(filename: string): string {
 	return filename.replace(/_/g, ' ');
 }

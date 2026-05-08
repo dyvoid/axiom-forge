@@ -146,8 +146,9 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 
 			<input
 				className={styles.titleInput}
-				value={draft.name.replace(/_/g, ' ')}
-				onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value.replace(/ /g, '_') }))}
+				value={draft.title}
+				onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
+				placeholder="Untitled"
 			/>
 
 			<div className={styles.metaRow}>
@@ -185,7 +186,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 			<div className={styles.footer}>
 				<span className={`${styles.footerStatus} ${dirty ? styles.dirty : ''}`}>
 					{dirty
-						? `· unsaved changes will write to ${folio.folder}/${draft.name}.md`
+						? `· unsaved changes will write to ${folio.folder}/${folio.name}.md`
 						: '· file in sync with disk'}
 				</span>
 				<button type="button" className={styles.btnGhost} onClick={handleDiscard} disabled={saving}>
@@ -204,7 +205,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 			<ConfirmDialog
 				open={showDeleteDialog}
 				title="Delete folio"
-				message={`Permanently delete "${folio.name.replace(/_/g, ' ')}"? This cannot be undone.`}
+				message={`Permanently delete "${folio.title}"? This cannot be undone.`}
 				confirmLabel="Delete"
 				danger
 				onConfirm={() => { setShowDeleteDialog(false); onDelete(); }}
