@@ -6,7 +6,7 @@
 
 ## Basic Information
 - **Domains:** Sun, Prophecy, War
-- **Affiliation:** Pro-Trojan
+- **Affiliation:** [[Factions/Trojans]]
 - **Epithets:** Far-Shooter, Silver-Bowed, Lord of Light, Lord of Mice
 
 ## Description

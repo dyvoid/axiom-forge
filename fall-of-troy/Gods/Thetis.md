@@ -6,7 +6,7 @@
 
 ## Basic Information
 - **Domains:** Sea, Fate
-- **Affiliation:** Pro-Greek
+- **Affiliation:** [[Factions/Greeks]]
 - **Epithets:** Silver-Footed, Daughter of the Old Man of the Sea
 
 ## Description

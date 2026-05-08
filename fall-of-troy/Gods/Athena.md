@@ -6,7 +6,7 @@
 
 ## Basic Information
 - **Domains:** Wisdom, War, Crafts
-- **Affiliation:** Pro-Greek
+- **Affiliation:** [[Factions/Greeks]]
 - **Epithets:** Grey-eyed, Pallas, Daughter of Zeus, Goddess of the City
 
 ## Description

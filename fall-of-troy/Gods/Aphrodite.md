@@ -6,7 +6,7 @@
 
 ## Basic Information
 - **Domains:** Love, Trickery
-- **Affiliation:** Pro-Trojan
+- **Affiliation:** [[Factions/Trojans]]
 - **Epithets:** Golden, Born of Sea-Foam, Laughter-Loving
 
 ## Description

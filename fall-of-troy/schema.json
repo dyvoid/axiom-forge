@@ -40,7 +40,7 @@
 					"role": "meta",
 					"fields": {
 						"Domains": { "type": "multiselect", "options": ["War", "Wisdom", "Love", "Sun", "Sea", "Fate", "Crafts", "Hunt", "Prophecy", "Trickery", "Death"] },
-						"Affiliation": { "type": "select", "options": ["Pro-Greek", "Pro-Trojan", "Neutral"] },
+						"Affiliation": { "type": "wikilink", "target": "Factions" },
 						"Epithets": { "type": "text-list" }
 					}
 				},
