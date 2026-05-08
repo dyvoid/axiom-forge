@@ -36,13 +36,23 @@
 	color: var(--text-muted);
 }
 
-.actionBtn {
+.editBtn {
 	cursor: pointer;
-	transition: color 0.2s;
+	font-family: var(--ff-display);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--text-muted);
+	border: 1px solid var(--border-soft);
+	padding: 3px 10px;
+	border-radius: 2px;
+	transition: color 0.2s, border-color 0.2s;
 }
 
-.actionBtn:hover {
+.editBtn:hover {
 	color: var(--text-primary);
+	border-color: var(--text-muted);
 }
 
 .title {

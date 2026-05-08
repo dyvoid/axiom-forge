@@ -1,17 +1,18 @@
 .container {
-	max-width: 760px;
+	width: 100%;
+	max-width: var(--content-max-width);
 	margin: 0 auto;
-	padding: 36px 72px 60px;
+	padding: var(--sp-6) var(--sp-8);
 }
 
 /* ── Sticky toolbar ───────────────────────────────── */
 
 .toolbar {
 	position: sticky;
-	top: -36px;
+	top: calc(-1 * var(--sp-6));
 	z-index: 5;
-	margin: -36px -72px 28px;
-	padding: 14px 72px;
+	margin: calc(-1 * var(--sp-6)) calc(-1 * var(--sp-8)) 28px;
+	padding: 14px var(--sp-8);
 	background: rgba(243, 234, 216, 0.94);
 	backdrop-filter: blur(6px);
 	-webkit-backdrop-filter: blur(6px);
@@ -19,26 +20,6 @@
 	display: flex;
 	align-items: center;
 	gap: 18px;
-}
-
-.toolbarLabel {
-	font-family: var(--ff-body);
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-eyebrow);
-	text-transform: uppercase;
-	color: var(--accent-rust);
-	font-weight: 500;
-}
-
-.toolbarStatus {
-	font-family: var(--ff-body);
-	font-size: 12px;
-	font-style: italic;
-	color: var(--text-muted);
-}
-
-.toolbarStatus.dirty {
-	color: var(--accent-rust);
 }
 
 .toolbarSpacer {
@@ -99,18 +80,6 @@
 	gap: 8px;
 }
 
-.backLink {
-	font-family: var(--ff-body);
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-eyebrow);
-	text-transform: uppercase;
-	color: var(--text-muted);
-	text-decoration: none;
-}
-
-.backLink:hover {
-	color: var(--accent-rust);
-}
 
 .titleInput {
 	font-family: var(--ff-serif);

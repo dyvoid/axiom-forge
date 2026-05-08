@@ -21,15 +21,11 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 				</div>
 				<div className={styles.actions}>
 					<Link
-						className={styles.actionBtn}
+						className={styles.editBtn}
 						to={`/folio/${encodeURIComponent(folio.folder)}/${encodeURIComponent(folio.name)}/edit`}
 					>
 						Edit
 					</Link>
-					<span className={styles.separator}>·</span>
-					<button className={styles.actionBtn}>Backlinks</button>
-					<span className={styles.separator}>·</span>
-					<button className={styles.actionBtn}>···</button>
 				</div>
 			</div>
 			

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
 	toRoman,
 	type FieldDef,
@@ -25,6 +25,7 @@ interface Props {
 }
 
 export function FolioEditView({ folio, typeDef, saving, saveError, onSave }: Props): JSX.Element {
+	const navigate = useNavigate();
 	// Local draft — initialised from server state, mutated on every keystroke.
 	const [draft, setDraft] = useState<ParsedFolio>(() => structuredClone(folio));
 	const [savedSnapshot, setSavedSnapshot] = useState<string>(() => JSON.stringify(folio));
@@ -64,8 +65,7 @@ export function FolioEditView({ folio, typeDef, saving, saveError, onSave }: Pro
 
 	function handleDiscard(): void {
 		if (dirty && !window.confirm('Discard your changes?')) return;
-		setDraft(structuredClone(folio));
-		setSavedSnapshot(JSON.stringify(folio));
+		navigate(backTo);
 	}
 
 	const backTo = `/folio/${encodeURIComponent(folio.folder)}/${encodeURIComponent(folio.name)}`;
@@ -77,10 +77,6 @@ export function FolioEditView({ folio, typeDef, saving, saveError, onSave }: Pro
 		<div className={styles.container}>
 			{/* Sticky toolbar */}
 			<div className={styles.toolbar}>
-				<div className={styles.toolbarLabel}>✎ Editing folio {toRoman(folio.id).toLowerCase()}</div>
-				<div className={`${styles.toolbarStatus} ${dirty ? styles.dirty : ''}`}>
-					{saving ? '· saving…' : dirty ? '· unsaved changes' : '· all saved'}
-				</div>
 				<div className={styles.toolbarSpacer} />
 				<button type="button" className={styles.btnGhost} onClick={handleDiscard} disabled={saving}>
 					Discard
@@ -102,7 +98,7 @@ export function FolioEditView({ folio, typeDef, saving, saveError, onSave }: Pro
 				</div>
 			)}
 
-			{/* Folio eyebrow + back link */}
+			{/* Folio eyebrow */}
 			<div className={styles.eyebrowRow}>
 				<div className={styles.eyebrow}>
 					<Icon name={typeDef.icon} size={14} />
@@ -111,16 +107,13 @@ export function FolioEditView({ folio, typeDef, saving, saveError, onSave }: Pro
 					<span>·</span>
 					<span>Folio {toRoman(folio.id)}</span>
 				</div>
-				<Link className={styles.backLink} to={backTo}>
-					↩ Back to read mode
-				</Link>
 			</div>
 
 			{/* Editable title */}
 			<input
 				className={styles.titleInput}
-				value={draft.name}
-				onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
+				value={draft.title}
+				onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
 			/>
 
 			{/* Tags row */}
@@ -154,7 +147,7 @@ export function FolioEditView({ folio, typeDef, saving, saveError, onSave }: Pro
 			<div className={styles.footer}>
 				<span className={`${styles.footerStatus} ${dirty ? styles.dirty : ''}`}>
 					{dirty
-						? `· unsaved changes will write to ${folio.folder}/${draft.name.replace(/\s+/g, '_')}.md`
+						? `· unsaved changes will write to ${folio.folder}/${folio.name}.md`
 						: '· file in sync with disk'}
 				</span>
 				<button type="button" className={styles.btnGhost} onClick={handleDiscard} disabled={saving}>
