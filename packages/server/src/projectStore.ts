@@ -104,13 +104,12 @@ export class ProjectStore {
 	updateFolioRecord(
 		folder: string,
 		name: string,
-		patch: { mtime: number; title?: string; status?: string; tags: string[]; snippet?: string },
+		patch: { mtime: number; title?: string; tags: string[]; snippet?: string },
 	): void {
 		const record = this.folios.find((f) => f.folder === folder && f.name === name);
 		if (!record) return;
 		record.mtime = patch.mtime;
 		if (patch.title !== undefined) record.title = patch.title;
-		record.status = patch.status;
 		record.tags = patch.tags;
 		record.snippet = patch.snippet;
 	}
@@ -186,11 +185,10 @@ export class ProjectStore {
 		// Sort alphabetically by name.
 		allFiles.sort((a, b) => a.file.name.localeCompare(b.file.name));
 
-		// Assign IDs and parse Meta blocks for status/tags.
+		// Assign IDs and parse Meta blocks for tags/snippet.
 		this.folios = [];
 		let id = 1;
 		for (const { typeKey, folder, file } of allFiles) {
-			let status: string | undefined;
 			let tags: string[] = [];
 			let snippet: string | undefined;
 			let warnings: string[] = [];
@@ -198,7 +196,6 @@ export class ProjectStore {
 			try {
 				const { content } = await readFolioFile(file.filePath);
 				const parsed = parseMarkdown(content, schema);
-				status = parsed.status;
 				tags = parsed.tags;
 				warnings = parsed.warnings ?? [];
 				if (parsed.title) title = parsed.title;
@@ -227,7 +224,7 @@ export class ProjectStore {
 					}
 				}
 			} catch {
-				// If parsing fails, still index the folio with no status/tags
+				// If parsing fails, still index the folio with no tags
 			}
 			this.folios.push({
 				id: id++,
@@ -237,7 +234,6 @@ export class ProjectStore {
 				title,
 				filePath: file.filePath,
 				mtime: file.mtime,
-				status,
 				tags,
 				snippet,
 				warnings,

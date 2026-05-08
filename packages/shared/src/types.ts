@@ -44,7 +44,6 @@ export interface ParsedFolio {
 	title: string;
 	type: string;
 	folder: string;
-	status?: string;
 	tags: string[];
 	sections: Record<string, ParsedSection>;
 	warnings?: string[];
@@ -52,16 +51,6 @@ export interface ParsedFolio {
 }
 
 // ── Folio Index (sidebar / list) ────────────────────────────
-
-export type FolioStatus =
-	| 'Active'
-	| 'Living'
-	| 'Deceased'
-	| 'Dissolved'
-	| 'Destroyed'
-	| 'Unknown'
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	| (string & {}); // open enum: schemas may declare more
 
 export interface FolioIndexRecord {
 	id: number;
@@ -71,7 +60,6 @@ export interface FolioIndexRecord {
 	name: string;
 	/** Display title from the H1. */
 	title: string;
-	status?: FolioStatus;
 	tags: string[];
 	snippet?: string;
 }

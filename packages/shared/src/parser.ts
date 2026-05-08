@@ -134,9 +134,8 @@ function parseFieldSection(body: string, sectionDef: SectionDef, sectionName: st
 
 // ── Meta Block Parsing ──────────────────────────────────────
 
-function parseMeta(body: string): { type: string; status?: string; tags: string[] } {
+function parseMeta(body: string): { type: string; tags: string[] } {
 	let type = '';
-	let status: string | undefined;
 	let tags: string[] = [];
 
 	for (const line of body.split(/\r?\n/)) {
@@ -147,9 +146,6 @@ function parseMeta(body: string): { type: string; status?: string; tags: string[
 			case 'Type':
 				type = rawValue;
 				break;
-			case 'Status':
-				status = rawValue || undefined;
-				break;
 			case 'Tags':
 				tags = rawValue
 					? rawValue.split(',').map((t) => t.trim()).filter(Boolean)
@@ -157,7 +153,7 @@ function parseMeta(body: string): { type: string; status?: string; tags: string[
 				break;
 		}
 	}
-	return { type, status, tags };
+	return { type, tags };
 }
 
 // ── Main Parse Function ─────────────────────────────────────
@@ -174,7 +170,7 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 
 	// The first section must be Meta.
 	const metaEntry = rawSections.find(([name]) => name === 'Meta');
-	const meta = metaEntry ? parseMeta(metaEntry[1]) : { type: '', status: undefined, tags: [] };
+	const meta = metaEntry ? parseMeta(metaEntry[1]) : { type: '', tags: [] };
 
 	const typeDef = schema.types[meta.type];
 	const folder = typeDef?.folder ?? '';
@@ -213,7 +209,6 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 		title: h1,
 		type: meta.type,
 		folder,
-		status: meta.status,
 		tags: meta.tags,
 		sections,
 		warnings,
@@ -266,7 +261,6 @@ export function serializeToMarkdown(folio: ParsedFolio, schema: ProjectSchema): 
 	// Meta block (always present, always first)
 	lines.push('## Meta');
 	lines.push(`- **Type:** ${folio.type}`);
-	lines.push(`- **Status:** ${folio.status ?? ''}`);
 	lines.push(`- **Tags:** ${folio.tags.join(', ')}`);
 
 	const typeDef = schema.types[folio.type];

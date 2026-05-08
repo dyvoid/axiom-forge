@@ -1,5 +1,6 @@
 import express from 'express';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ProjectStore } from './projectStore.js';
 import { mountRoutes } from './routes/index.js';
 
@@ -9,8 +10,8 @@ const HOST = '127.0.0.1';
 function parseProjectArg(argv: readonly string[]): string {
 	const idx = argv.indexOf('--project');
 	if (idx === -1 || idx === argv.length - 1) {
-		// Default to ./burden-of-the-guardian if not specified
-		return resolve(process.cwd(), './burden-of-the-guardian');
+		// Default to fall-of-troy at the repo root (two levels up from packages/server/src)
+		return resolve(fileURLToPath(import.meta.url), '../../../..', 'fall-of-troy');
 	}
 	const raw = argv[idx + 1]!;
 	return resolve(process.cwd(), raw);

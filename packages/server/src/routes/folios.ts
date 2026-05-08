@@ -67,7 +67,6 @@ export function foliosRouter(store: ProjectStore): Router {
 			store.updateFolioRecord(folder!, name!, {
 				mtime,
 				title: reparsed.title,
-				status: reparsed.status,
 				tags: reparsed.tags,
 				snippet,
 			});
@@ -128,7 +127,6 @@ export function foliosRouter(store: ProjectStore): Router {
 				title: reparsed.title || filename,
 				filePath,
 				mtime,
-				status: reparsed.status,
 				tags: reparsed.tags,
 				snippet,
 				warnings: reparsed.warnings ?? [],
