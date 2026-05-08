@@ -18,7 +18,7 @@ The city endured ten years of siege without falling by force. Its walls were nev
 What remained was not quite nothing. Aeneas escaped with his father and the sacred Palladium, and the tradition he carried westward would eventually seed the city of Rome. But Troy itself — the towers, the temple, the Scaean Gate where Hector had kissed his wife and son for the last time — was ash.
 
 ## Notable Residents
-- **Characters:** [[Characters/Priam]], [[Characters/Hector]], [[Characters/Paris]], [[Characters/Helen]], [[Characters/Andromache]]
+- **Characters:** [[Humans/Priam]], [[Humans/Hector]], [[Humans/Paris]], [[Humans/Helen]], [[Humans/Andromache]]
 
 ## Connected Events
 - [[Events/Abduction_of_Helen]], [[Events/Defense_of_the_Ships]], [[Events/Death_of_Hector]], [[Events/The_Trojan_Horse]], [[Events/Fall_of_Troy]]

@@ -6,7 +6,7 @@
 
 ## Basic Information
 - **Domains:** Sun, Prophecy, War
-- **Affiliation:** [[Factions/Trojans]]
+- **Allegiance:** [[Factions/Trojans]]
 - **Epithets:** Far-Shooter, Silver-Bowed, Lord of Light, Lord of Mice
 
 ## Description
@@ -17,7 +17,7 @@ It was Apollo who sent the plague that opened the Iliad, punishing Agamemnon for
 Unlike Athena, whose interventions were strategic, Apollo's involvement often felt like the hand of fate rather than calculation. He saw the war's outcome in his capacity as god of prophecy and still could not — or would not — change what was written.
 
 ## Mortal Champions
-- [[Characters/Hector]], [[Characters/Paris]]
+- [[Humans/Hector]], [[Humans/Paris]]
 
 ## Connected Events
 - [[Events/Death_of_Patroclus]], [[Events/Death_of_Hector]], [[Events/Fall_of_Troy]]

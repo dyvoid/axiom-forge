@@ -6,7 +6,7 @@
 
 ## Basic Information
 - **Type:** Armor
-- **Current Owner:** [[Characters/Achilles]]
+- **Current Owner:** [[Humans/Achilles]]
 - **Forged By:** Hephaestus, god of the forge, at Thetis's request
 - **Abilities:** Divine protection, Recognition on the battlefield, Representation of the world's totality
 

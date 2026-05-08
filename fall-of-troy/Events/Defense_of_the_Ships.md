@@ -19,7 +19,7 @@ It was also the moment that broke Patroclus. Watching from beside Achilles' tent
 The ships did not burn. But the cost of saving them would be measured in the events that followed.
 
 ## Participants
-- **Key Characters:** [[Characters/Hector]], [[Characters/Patroclus]], [[Characters/Achilles]], [[Characters/Ajax]]
+- **Key Characters:** [[Humans/Hector]], [[Humans/Patroclus]], [[Humans/Achilles]], [[Humans/Ajax]]
 - **Gods Involved:** [[Gods/Apollo]], [[Gods/Thetis]]
 - **Factions:** [[Factions/Greeks]], [[Factions/Trojans]]
 

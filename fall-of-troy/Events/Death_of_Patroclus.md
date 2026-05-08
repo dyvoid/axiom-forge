@@ -19,7 +19,7 @@ The news came to Achilles at his tent. He collapsed to the ground and poured ash
 This moment — this exchange between a mother and her son who is choosing to die — is the emotional centre of the Iliad. Achilles' grief was absolute. His rage had been about honour; this was something older and less forgiving.
 
 ## Participants
-- **Key Characters:** [[Characters/Patroclus]], [[Characters/Hector]], [[Characters/Achilles]]
+- **Key Characters:** [[Humans/Patroclus]], [[Humans/Hector]], [[Humans/Achilles]]
 - **Gods Involved:** [[Gods/Apollo]], [[Gods/Thetis]]
 - **Factions:** [[Factions/Greeks]], [[Factions/Trojans]]
 

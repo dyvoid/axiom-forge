@@ -19,7 +19,7 @@ A few escaped. Aeneas carried his father Anchises on his shoulders out of the bu
 The Greeks sailed home. Most of them had terrible voyages. Agamemnon was murdered in his bath by his wife. Odysseus spent ten more years at sea before seeing Ithaca. The victors of the Trojan War did not have good endings.
 
 ## Participants
-- **Key Characters:** [[Characters/Odysseus]], [[Characters/Priam]], [[Characters/Helen]], [[Characters/Paris]]
+- **Key Characters:** [[Humans/Odysseus]], [[Humans/Priam]], [[Humans/Helen]], [[Humans/Paris]]
 - **Gods Involved:** [[Gods/Athena]], [[Gods/Apollo]]
 - **Factions:** [[Factions/Greeks]], [[Factions/Trojans]]
 

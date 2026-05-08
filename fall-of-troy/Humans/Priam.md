@@ -1,7 +1,7 @@
 # Priam
 
 ## Meta
-- **Type:** Character
+- **Type:** Human
 - **Tags:** trojan, king, elder
 
 ## Basic Information
@@ -17,8 +17,8 @@ His most affecting moment in the Iliad comes after Hector's death, when he does 
 Priam did not survive the fall of Troy. He was killed at the altar of Zeus by Neoptolemus, son of Achilles — the old king cut down in the place that should have offered sanctuary.
 
 ## Relationships
-- **Allies:** [[Characters/Hector]], [[Characters/Aeneas]]
-- **Children:** [[Characters/Hector]], [[Characters/Paris]], [[Characters/Cassandra]]
+- **Allies:** [[Humans/Hector]], [[Humans/Aeneas]]
+- **Children:** [[Humans/Hector]], [[Humans/Paris]], [[Humans/Cassandra]]
 
 ## Connected Events
 - [[Events/Death_of_Hector]], [[Events/Fall_of_Troy]]

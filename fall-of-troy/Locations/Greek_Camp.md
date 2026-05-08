@@ -18,7 +18,7 @@ Life in the camp was defined by the rhythms of siege: raids on surrounding towns
 The camp became a stage for the most consequential internal conflict of the war: Achilles' withdrawal after Agamemnon took Briseis from him. For weeks, Greeks died on the beach without their greatest fighter, the Trojans pressed to the ships themselves, and the tide of war turned against the besiegers. The damage done in those weeks — in lives and in the fractured trust between commanders — never fully healed.
 
 ## Notable Residents
-- **Characters:** [[Characters/Achilles]], [[Characters/Odysseus]], [[Characters/Patroclus]], [[Characters/Ajax]]
+- **Characters:** [[Humans/Achilles]], [[Humans/Odysseus]], [[Humans/Patroclus]], [[Humans/Ajax]]
 
 ## Connected Events
 - [[Events/Judgment_of_Achilles]], [[Events/Defense_of_the_Ships]], [[Events/Death_of_Patroclus]]

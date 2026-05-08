@@ -7,7 +7,7 @@
 ## Basic Information
 - **Type:** Military, Political, Royal
 - **Outcome:** Defeated
-- **Leader:** [[Characters/Hector]]
+- **Leader:** [[Humans/Hector]]
 - **Headquarters:** [[Locations/Troy]]
 
 ## Description & History
@@ -18,7 +18,7 @@ They held out for ten years. Against a coalition that outnumbered them, that had
 Their defeat came not from failure of courage but from a failure of judgment: they brought the horse inside. The priests and Cassandra warned against it. Cassandra had always warned against everything, and had never been believed — that was her curse, given by Apollo when she refused him. The Trojans opened their gates.
 
 ## Members
-- **Key Members:** [[Characters/Hector]], [[Characters/Paris]], [[Characters/Priam]], [[Characters/Aeneas]]
+- **Key Members:** [[Humans/Hector]], [[Humans/Paris]], [[Humans/Priam]], [[Humans/Aeneas]]
 - **Divine Supporters:** [[Gods/Apollo]], [[Gods/Aphrodite]]
 
 ## Connected Events

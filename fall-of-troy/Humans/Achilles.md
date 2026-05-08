@@ -1,7 +1,7 @@
 # Achilles
 
 ## Meta
-- **Type:** Character
+- **Type:** Human
 - **Tags:** greek, hero, demigod, warrior
 
 ## Basic Information
@@ -20,8 +20,8 @@ When Agamemnon called the Greek kings to war against Troy, Achilles came with hi
 He returned to battle only when Patroclus was killed wearing his armour. The grief transformed him. He pursued Hector across the plain of Troy, slew him beneath the walls of the city, and dragged his body behind his chariot. In the end, it was not a warrior who killed him, but an arrow guided by Apollo — striking the one place on his body the river had not touched.
 
 ## Relationships
-- **Allies:** [[Characters/Patroclus]], [[Characters/Odysseus]], [[Characters/Ajax]]
-- **Enemies:** [[Characters/Hector]], [[Characters/Paris]]
+- **Allies:** [[Humans/Patroclus]], [[Humans/Odysseus]], [[Humans/Ajax]]
+- **Enemies:** [[Humans/Hector]], [[Humans/Paris]]
 
 ## Connected Events
 - [[Events/Judgment_of_Achilles]], [[Events/Death_of_Patroclus]], [[Events/Death_of_Hector]], [[Events/Fall_of_Troy]]

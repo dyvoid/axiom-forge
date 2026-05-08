@@ -1,7 +1,7 @@
 # Patroclus
 
 ## Meta
-- **Type:** Character
+- **Type:** Human
 - **Tags:** greek, hero, companion
 
 ## Basic Information
@@ -19,8 +19,8 @@ When Achilles refused to fight after his quarrel with Agamemnon, it was Patroclu
 His death is the pivot point of the Iliad. Everything before it leads up to it; everything after flows from it.
 
 ## Relationships
-- **Allies:** [[Characters/Achilles]], [[Characters/Odysseus]], [[Characters/Ajax]]
-- **Enemies:** [[Characters/Hector]]
+- **Allies:** [[Humans/Achilles]], [[Humans/Odysseus]], [[Humans/Ajax]]
+- **Enemies:** [[Humans/Hector]]
 
 ## Connected Events
 - [[Events/Judgment_of_Achilles]], [[Events/Death_of_Patroclus]]

@@ -17,7 +17,7 @@ Whether Helen left willingly or was taken by force remains the defining ambiguit
 What is unambiguous is the result. Menelaus returned to find his guest gone and his wife gone with him. He called on the oath that every former suitor of Helen had sworn — to defend her marriage by force if needed — and Agamemnon, his brother, turned that oath into an army. A thousand ships. Ten years.
 
 ## Participants
-- **Key Characters:** [[Characters/Paris]], [[Characters/Helen]], [[Characters/Menelaus]]
+- **Key Characters:** [[Humans/Paris]], [[Humans/Helen]], [[Humans/Menelaus]]
 - **Gods Involved:** [[Gods/Aphrodite]]
 - **Factions:** [[Factions/Greeks]], [[Factions/Trojans]]
 

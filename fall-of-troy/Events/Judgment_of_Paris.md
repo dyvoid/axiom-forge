@@ -17,7 +17,7 @@ Each goddess offered Paris a bribe. Hera offered dominion over kingdoms. Athena 
 The goddesses who lost — Hera and Athena — became implacable enemies of Troy. Aphrodite, who won, protected Paris and later Helen as a matter of divine honour. The divine factions in the war were not chosen arbitrarily; they were chosen at a shepherd's campfire on a mountainside, before the war existed, by a young man who wanted a beautiful woman and did not think it through.
 
 ## Participants
-- **Key Characters:** [[Characters/Paris]], [[Characters/Helen]]
+- **Key Characters:** [[Humans/Paris]], [[Humans/Helen]]
 - **Gods Involved:** [[Gods/Aphrodite]], [[Gods/Athena]]
 - **Factions:** [[Factions/Trojans]]
 

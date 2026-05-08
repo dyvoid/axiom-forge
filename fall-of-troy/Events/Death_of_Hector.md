@@ -19,7 +19,7 @@ He asked Achilles for a pledge: that the loser's body would be returned to his f
 He dragged Hector's body behind his chariot around the walls of Troy while Priam and Hecuba and Andromache watched from above. He did it every day for twelve days. The gods eventually intervened — even Achilles had to stop somewhere — and Zeus sent Priam to the Greek camp to beg. The body was returned. Troy held a funeral for eleven days.
 
 ## Participants
-- **Key Characters:** [[Characters/Achilles]], [[Characters/Hector]], [[Characters/Priam]]
+- **Key Characters:** [[Humans/Achilles]], [[Humans/Hector]], [[Humans/Priam]]
 - **Gods Involved:** [[Gods/Athena]], [[Gods/Apollo]]
 - **Factions:** [[Factions/Greeks]], [[Factions/Trojans]]
 

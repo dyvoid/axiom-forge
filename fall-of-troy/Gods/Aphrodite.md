@@ -6,7 +6,7 @@
 
 ## Basic Information
 - **Domains:** Love, Trickery
-- **Affiliation:** [[Factions/Trojans]]
+- **Allegiance:** [[Factions/Trojans]]
 - **Epithets:** Golden, Born of Sea-Foam, Laughter-Loving
 
 ## Description
@@ -17,7 +17,7 @@ Her involvement in the war was direct, personal, and occasionally embarrassing â
 She was the patron of Paris and Aeneas, and her interest was less in Troy's survival than in the lives of those she favoured. When Troy fell, she ensured Aeneas escaped â€” through whom Rome would eventually claim Trojan descent.
 
 ## Mortal Champions
-- [[Characters/Paris]], [[Characters/Helen]]
+- [[Humans/Paris]], [[Humans/Helen]]
 
 ## Connected Events
 - [[Events/Judgment_of_Paris]], [[Events/Abduction_of_Helen]]

@@ -1,9 +1,9 @@
 {
 	"version": "1.0.0",
 	"types": {
-		"Character": {
+		"Human": {
 			"icon": "person",
-			"folder": "Characters",
+			"folder": "Humans",
 			"sections": {
 				"Basic Information": {
 					"role": "meta",
@@ -14,15 +14,15 @@
 						"Died": { "type": "date" },
 						"Allegiance": { "type": "wikilink", "target": "Factions" },
 						"Divine Patron": { "type": "wikilink", "target": "Gods" },
-						"Spouse": { "type": "wikilink", "target": "Characters" }
+						"Spouse": { "type": "wikilink", "target": "Humans" }
 					}
 				},
 				"Description & History": { "role": "prose", "type": "textarea" },
 				"Relationships": {
 					"fields": {
-						"Allies": { "type": "wikilink-list", "target": "Characters" },
-						"Enemies": { "type": "wikilink-list", "target": "Characters" },
-						"Children": { "type": "wikilink-list", "target": "Characters" }
+						"Allies": { "type": "wikilink-list", "target": "Humans" },
+						"Enemies": { "type": "wikilink-list", "target": "Humans" },
+						"Children": { "type": "wikilink-list", "target": "Humans" }
 					}
 				},
 				"Connected Events": {
@@ -40,14 +40,14 @@
 					"role": "meta",
 					"fields": {
 						"Domains": { "type": "multiselect", "options": ["War", "Wisdom", "Love", "Sun", "Sea", "Fate", "Crafts", "Hunt", "Prophecy", "Trickery", "Death"] },
-						"Affiliation": { "type": "wikilink", "target": "Factions" },
+						"Allegiance": { "type": "wikilink", "target": "Factions" },
 						"Epithets": { "type": "text-list" }
 					}
 				},
 				"Description": { "role": "prose", "type": "textarea" },
 				"Mortal Champions": {
 					"type": "wikilink-list",
-					"target": "Characters"
+					"target": "Humans"
 				},
 				"Connected Events": {
 					"type": "wikilink-list",
@@ -71,7 +71,7 @@
 				"Description & History": { "role": "prose", "type": "textarea" },
 				"Notable Residents": {
 					"fields": {
-						"Characters": { "type": "wikilink-list", "target": "Characters" }
+						"Characters": { "type": "wikilink-list", "target": "Humans" }
 					}
 				},
 				"Connected Events": {
@@ -95,7 +95,7 @@
 				"Description & History": { "role": "prose", "type": "textarea" },
 				"Participants": {
 					"fields": {
-						"Key Characters": { "type": "wikilink-list", "target": "Characters" },
+						"Key Characters": { "type": "wikilink-list", "target": "Humans" },
 						"Gods Involved": { "type": "wikilink-list", "target": "Gods" },
 						"Factions": { "type": "wikilink-list", "target": "Factions" }
 					}
@@ -117,14 +117,14 @@
 					"fields": {
 						"Type": { "type": "multiselect", "options": ["Military", "Political", "Royal", "Divine"] },
 						"Outcome": { "type": "select", "options": ["Victorious", "Defeated", "Dissolved", "Active"] },
-						"Leader": { "type": "wikilink", "target": "Characters" },
+						"Leader": { "type": "wikilink", "target": "Humans" },
 						"Headquarters": { "type": "wikilink", "target": "Locations" }
 					}
 				},
 				"Description & History": { "role": "prose", "type": "textarea" },
 				"Members": {
 					"fields": {
-						"Key Members": { "type": "wikilink-list", "target": "Characters" },
+						"Key Members": { "type": "wikilink-list", "target": "Humans" },
 						"Divine Supporters": { "type": "wikilink-list", "target": "Gods" }
 					}
 				},
@@ -142,7 +142,7 @@
 					"role": "meta",
 					"fields": {
 						"Type": { "type": "select", "options": ["Weapon", "Armor", "Structure", "Divine Gift", "Vessel", "Other"] },
-						"Current Owner": { "type": "wikilink", "target": "Characters" },
+						"Current Owner": { "type": "wikilink", "target": "Humans" },
 						"Forged By": { "type": "text" },
 						"Abilities": { "type": "text-list" }
 					}

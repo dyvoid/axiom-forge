@@ -17,7 +17,7 @@ This was not a quarrel over a woman. It was a public act of humiliation between 
 Achilles withdrew from the fighting entirely. He asked his mother Thetis to petition Zeus to punish the Greeks for the insult by letting them lose until Agamemnon begged forgiveness. Zeus agreed. Greeks died in numbers for weeks. The Trojans pushed to the very ships. And Achilles stayed in his tent and played his lyre and waited.
 
 ## Participants
-- **Key Characters:** [[Characters/Achilles]], [[Characters/Patroclus]], [[Characters/Odysseus]]
+- **Key Characters:** [[Humans/Achilles]], [[Humans/Patroclus]], [[Humans/Odysseus]]
 - **Gods Involved:** [[Gods/Thetis]], [[Gods/Apollo]]
 - **Factions:** [[Factions/Greeks]]
 

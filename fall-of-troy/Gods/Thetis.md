@@ -6,7 +6,7 @@
 
 ## Basic Information
 - **Domains:** Sea, Fate
-- **Affiliation:** [[Factions/Greeks]]
+- **Allegiance:** [[Factions/Greeks]]
 - **Epithets:** Silver-Footed, Daughter of the Old Man of the Sea
 
 ## Description
@@ -17,7 +17,7 @@ She was fully aware that Achilles faced a choice between a long, unremarkable li
 Her grief runs beneath the entire poem — a mother who knows how the story ends, who cannot change it, and who loves her son anyway.
 
 ## Mortal Champions
-- [[Characters/Achilles]]
+- [[Humans/Achilles]]
 
 ## Connected Events
 - [[Events/Judgment_of_Achilles]], [[Events/Death_of_Patroclus]]

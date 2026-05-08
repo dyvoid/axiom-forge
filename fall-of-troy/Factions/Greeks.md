@@ -7,7 +7,7 @@
 ## Basic Information
 - **Type:** Military, Political
 - **Outcome:** Victorious
-- **Leader:** [[Characters/Agamemnon]]
+- **Leader:** [[Humans/Agamemnon]]
 - **Headquarters:** [[Locations/Greek_Camp]]
 
 ## Description & History
@@ -18,7 +18,7 @@ The coalition included some of the greatest warriors of the age: Achilles with h
 The Greeks' ultimate victory owed as much to Odysseus's cunning as to any military achievement. Troy was never taken by force. It was taken by a story — the story of a horse.
 
 ## Members
-- **Key Members:** [[Characters/Achilles]], [[Characters/Odysseus]], [[Characters/Patroclus]], [[Characters/Ajax]]
+- **Key Members:** [[Humans/Achilles]], [[Humans/Odysseus]], [[Humans/Patroclus]], [[Humans/Ajax]]
 - **Divine Supporters:** [[Gods/Athena]], [[Gods/Thetis]]
 
 ## Connected Events

@@ -17,7 +17,7 @@ The accounts differ: in some versions Odysseus disguised himself as a beggar and
 The theft was both a practical military action and a statement: Troy's divine protection could be removed by human ingenuity. Athena, whose statue it was, had already chosen her side. The Palladium was later said to have been carried by Aeneas to Italy, where it became one of the sacred objects of Rome.
 
 ## Participants
-- **Key Characters:** [[Characters/Odysseus]]
+- **Key Characters:** [[Humans/Odysseus]]
 - **Gods Involved:** [[Gods/Athena]]
 - **Factions:** [[Factions/Greeks]]
 

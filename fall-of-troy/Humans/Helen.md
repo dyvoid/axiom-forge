@@ -1,14 +1,14 @@
 # Helen
 
 ## Meta
-- **Type:** Character
+- **Type:** Human
 - **Tags:** spartan, cause-of-war, divine-born
 
 ## Basic Information
 - **Epithets:** Helen of Troy, Helen of Sparta, Face That Launched a Thousand Ships
 - **Sex:** Female
 - **Allegiance:** [[Factions/Trojans]]
-- **Spouse:** [[Characters/Paris]]
+- **Spouse:** [[Humans/Paris]]
 - **Divine Patron:** [[Gods/Aphrodite]]
 
 ## Description & History
@@ -19,8 +19,8 @@ Whether Helen left Sparta willingly with Paris, or was taken against her will, w
 After the fall of Troy she returned to Sparta with Menelaus. The gods had made her immortal in her beauty; whether they gave her peace in anything else is not recorded.
 
 ## Relationships
-- **Allies:** [[Characters/Paris]], [[Characters/Priam]]
-- **Enemies:** [[Characters/Menelaus]]
+- **Allies:** [[Humans/Paris]], [[Humans/Priam]]
+- **Enemies:** [[Humans/Menelaus]]
 
 ## Connected Events
 - [[Events/Judgment_of_Paris]], [[Events/Abduction_of_Helen]], [[Events/Fall_of_Troy]]

@@ -19,7 +19,7 @@ Cassandra warned them. The priest Laocoon warned them and was killed by serpents
 The Greeks came out of the horse at midnight. They opened the gates. The fleet had returned. By dawn, Troy was burning.
 
 ## Participants
-- **Key Characters:** [[Characters/Odysseus]], [[Characters/Achilles]], [[Characters/Priam]]
+- **Key Characters:** [[Humans/Odysseus]], [[Humans/Achilles]], [[Humans/Priam]]
 - **Gods Involved:** [[Gods/Athena]]
 - **Factions:** [[Factions/Greeks]], [[Factions/Trojans]]
 
