@@ -1,0 +1,41 @@
+.section {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-4);
+}
+
+.title {
+	font-family: var(--ff-display);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-sidebar-group);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: var(--sp-5);
+}
+
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-1);
+}
+
+.label {
+	font-family: var(--ff-display);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--text-secondary);
+}
+
+.value {
+	font-family: var(--ff-body);
+	font-size: var(--fs-body);
+	color: var(--text-primary);
+}

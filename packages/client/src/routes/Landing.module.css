@@ -1,0 +1,117 @@
+.landing {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	background: var(--bg-page);
+	isolation: isolate;
+}
+
+.hero {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--sp-6);
+}
+
+.titleBlock {
+	text-align: center;
+	max-width: 800px;
+}
+
+.title {
+	font-family: var(--ff-body);
+	font-weight: 400;
+	font-style: italic;
+	font-size: var(--fs-hero);
+	line-height: var(--lh-h1);
+	color: var(--text-primary);
+	margin-bottom: var(--sp-5);
+}
+
+.rule {
+	width: 100%;
+	max-width: 600px;
+	height: 1px;
+	background: var(--accent-gold);
+	opacity: 0.6;
+	margin: 0 auto var(--sp-4);
+}
+
+.subtitle {
+	font-family: var(--ff-display);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--text-muted);
+	margin-bottom: var(--sp-7);
+}
+
+.cta {
+	font-family: var(--ff-display);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-button);
+	text-transform: uppercase;
+	color: var(--text-primary);
+	background: transparent;
+	border: 1px solid var(--border);
+	padding: var(--sp-3) var(--sp-5);
+	cursor: pointer;
+	transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.cta:hover {
+	border-color: var(--accent-gold);
+	box-shadow: 0 1px 2px var(--shadow);
+}
+
+/* ── Footer ──────────────────────────────────────── */
+
+.footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: var(--sp-7);
+	padding: 0 var(--sp-6);
+	border-top: 1px solid var(--border-soft);
+	background: var(--bg-panel);
+}
+
+.footerLabel {
+	font-family: var(--ff-display);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-sidebar-group);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.typeCounts {
+	display: flex;
+	gap: var(--sp-4);
+	align-items: center;
+}
+
+.typeEntry {
+	font-family: var(--ff-display);
+	font-weight: 400;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--text-secondary);
+}
+
+.typeEntry + .typeEntry::before {
+	content: '·';
+	margin-right: var(--sp-4);
+	color: var(--text-muted);
+}
+
+.pageNum {
+	font-family: var(--ff-body);
+	font-size: var(--fs-tiny);
+	color: var(--text-muted);
+}

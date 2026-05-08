@@ -1,0 +1,75 @@
+/* ═══════════════════════════════════════════════════════════
+   Axiom Forge — Design Tokens
+   Generated 1:1 from docs/07_Design_Tokens.md
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+	/* ── Typography ───────────────────────────────────── */
+	--ff-display: 'Cinzel', serif;
+	--ff-body: 'Cormorant Garamond', serif;
+
+	--fs-hero: 88px;
+	--fs-h1: 64px;
+	--fs-h2: 22px;
+	--fs-subtitle: 18px;
+	--fs-body-lg: 17px;
+	--fs-body: 16px;
+	--fs-body-sm: 15px;
+	--fs-meta: 13.5px;
+	--fs-label: 13px;
+	--fs-eyebrow: 11px;
+	--fs-tiny: 10px;
+
+	--lh-body: 1.65;
+	--lh-h1: 1.05;
+	--lh-subtitle: 1.4;
+	--lh-eyebrow: 1.0;
+
+	--ls-eyebrow: 0.18em;
+	--ls-sidebar-group: 0.22em;
+	--ls-button: 0.2em;
+
+	/* ── Palette ──────────────────────────────────────── */
+	--bg-page: #f3ead8;
+	--bg-panel: #ebe0c8;
+	--border-soft: #d9c8a4;
+	--border: #cdb98e;
+	--accent-gold: #9a7a2c;
+	--accent-rust: #8a3522;
+	--text-muted: #6c5e46;
+	--text-secondary: #4a3f2e;
+	--text-primary: #221b13;
+	--shadow: rgba(0, 0, 0, 0.18);
+
+	/* ── Semantic Aliases ─────────────────────────────── */
+	--color-bg: var(--bg-page);
+	--color-surface: var(--bg-panel);
+	--color-fg: var(--text-primary);
+	--color-fg-secondary: var(--text-secondary);
+	--color-fg-muted: var(--text-muted);
+	--color-accent: var(--accent-gold);
+	--color-danger: var(--accent-rust);
+	--color-border: var(--border);
+	--color-border-subtle: var(--border-soft);
+
+	/* ── Spacing (4px base) ───────────────────────────── */
+	--sp-1: 4px;
+	--sp-2: 8px;
+	--sp-3: 12px;
+	--sp-4: 16px;
+	--sp-5: 24px;
+	--sp-6: 32px;
+	--sp-7: 48px;
+	--sp-8: 64px;
+
+	/* ── Layout ───────────────────────────────────────── */
+	--page-max-width: 1280px;
+	--sidebar-width: 240px;
+	--prose-max-width: 640px;
+	--meta-col-width: 280px;
+	--two-col-gap: 48px;
+
+	/* ── Icons ────────────────────────────────────────── */
+	--icon-size: 14px;
+	--icon-stroke: 1.25;
+}

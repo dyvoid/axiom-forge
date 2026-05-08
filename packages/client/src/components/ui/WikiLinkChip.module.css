@@ -1,0 +1,33 @@
+.chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px var(--sp-2);
+	border-radius: 4px;
+	background: var(--bg-panel);
+	border: 1px solid var(--border-soft);
+	font-family: var(--ff-body);
+	font-size: var(--fs-body-sm);
+	color: var(--accent-rust);
+	transition: all 0.2s;
+	white-space: nowrap;
+}
+
+.chip:hover {
+	background: rgba(138, 53, 34, 0.08); /* accent-rust with opacity */
+	border-color: var(--accent-rust);
+}
+
+.chip.dead {
+	color: var(--text-muted);
+	border-style: dashed;
+	pointer-events: none;
+}
+
+.chip.deceased {
+	font-style: italic;
+	color: var(--text-secondary);
+}
+
+.chip.deceased:hover {
+	color: var(--accent-rust);
+}

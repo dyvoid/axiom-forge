@@ -1,0 +1,24 @@
+.shell {
+	display: flex;
+	height: 100vh;
+	width: 100%;
+	background: var(--bg-page);
+	overflow: hidden;
+}
+
+.sidebar {
+	flex: 0 0 var(--sidebar-width);
+	background: var(--bg-panel);
+	border-right: 1px solid var(--border-soft);
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+}
+
+.main {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+	position: relative;
+}

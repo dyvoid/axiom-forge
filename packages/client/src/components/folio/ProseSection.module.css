@@ -1,0 +1,27 @@
+.section {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-4);
+}
+
+.title {
+	font-family: var(--ff-display);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-sidebar-group);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-4);
+}
+
+.content p {
+	font-family: var(--ff-body);
+	font-size: var(--fs-body-lg);
+	line-height: var(--lh-body);
+	color: var(--text-primary);
+}
