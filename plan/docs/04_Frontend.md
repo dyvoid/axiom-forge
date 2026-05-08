@@ -1,6 +1,6 @@
 # 04 — Frontend
 
-> **Reads:** [`01_Data_Model.md`](01_Data_Model.md), [`03_Backend.md`](03_Backend.md), [`../Axiom_Forge_Design_Tokens.md`](../Axiom_Forge_Design_Tokens.md), [`05_Implementation_Details.md`](05_Implementation_Details.md).
+> **Reads:** [`01_Data_Model.md`](01_Data_Model.md), [`03_Backend.md`](03_Backend.md), [`07_Design_Tokens.md`](07_Design_Tokens.md), [`05_Implementation_Details.md`](05_Implementation_Details.md). **Reference prototype:** [`../prototype/`](../prototype/).
 
 The client is a Vite + React + TypeScript app. It is schema-driven end-to-end: nothing in the codebase mentions `Character`, `Location`, etc. by name. Every type, section, and field is rendered by querying the schema fetched from `/api/schema`.
 
@@ -39,6 +39,12 @@ routes/
   FolioRead.tsx                      ← /folio/:type/:name
   FolioEdit.tsx                      ← /folio/:type/:name/edit
   NotFound.tsx
+hero/
+  WebGLHero.tsx                      ← <canvas> + GLSL fragment shader; ported from prototype/webgl-hero.js
+  shaders/
+    common.glsl.ts                   ← hash + value-noise + fbm helpers
+    codex.frag.glsl.ts               ← parchment + drifting smoke (the chosen variant)
+    hero.vert.glsl.ts                ← fullscreen-triangle vertex shader
 components/
   layout/
     AppShell.tsx                     ← header + sidebar + main slot
@@ -144,10 +150,49 @@ Field type hints (`date · freeform`, `wikilink → Locations`, etc.) are render
 
 ## Styling
 
-- `tokens.css` is the only file with raw color/font/spacing values. Generated 1:1 from `Axiom_Forge_Design_Tokens.md`.
+- `tokens.css` is the only file with raw color/font/spacing values. Generated 1:1 from `docs/07_Design_Tokens.md`.
 - `base.css` sets the body background, default typography, and resets.
 - Every component owns a co-located `Component.module.css`. No global class names except the body and a handful of typographic primitives.
 - **No Tailwind, no CSS-in-JS.** The design is print-aesthetic; utility classes would dilute the typography system, and runtime style injection is unnecessary for a localhost tool.
+
+---
+
+## Landing-Page WebGL Hero
+
+The landing screen has an animated background: drifting warm-gray smoke over the parchment palette. It is implemented as a single fullscreen-triangle WebGL pass with a fragment shader. There are no external WebGL libraries (no Three.js, no Regl) — raw `gl` calls only, ~50 LOC of TypeScript glue plus the shader.
+
+**Source.** `prototype/webgl-hero.js` is the canonical reference and contains three shader variants: `codex` (chosen), `lapidary`, `penumbra`. Only `codex` is ported into the rewrite. The other two are kept in the prototype folder as alternative directions and can be revived later.
+
+**Component contract.**
+
+```ts
+type WebGLHeroProps = {
+  variant?: 'codex';                   // future: 'lapidary' | 'penumbra'
+  className?: string;
+};
+```
+
+`WebGLHero` mounts a `<canvas>` covering its parent (absolute, `inset: 0`), attaches a `mousemove` listener that drives the `u_mouse` uniform, runs `requestAnimationFrame`, and tears down cleanly on unmount.
+
+**Shader anatomy** (the `codex` variant):
+
+- A **common preamble** declares `u_res`, `u_time`, `u_mouse`, plus `hash`, `vnoise` (value noise), and 5-octave `fbm` (rotated domain).
+- A **domain-warped fbm** function `smoke(p, t)` produces fluid plumes.
+- The frame mixes a vertical parchment gradient (light → slightly darker) with two smoke layers at different scales/speeds.
+- A `vmask` smoothstep keeps smoke at the bottom and fades it before mid-height.
+- Smoke is composited as alpha-over (`mix(base, smokeCol, plume)`), not additive — so it darkens parchment instead of glowing.
+- A subtle radial vignette finishes.
+
+**Performance notes:**
+
+- DPR is capped at 2 to avoid melting laptop GPUs at 4K (`Math.min(window.devicePixelRatio, 2)`).
+- The animation loop is **prewarmed by 60 simulated seconds** at mount, so the first painted frame is mid-flow rather than a near-blank parchment.
+- WebGL absence is graceful: if `getContext('webgl')` returns null, the component renders a static parchment background and logs a warning.
+- The shader is heavy enough that on battery-power laptops we **pause `rAF` when the tab is hidden** (`document.visibilitychange`) and when the user navigates away from `/`.
+
+**Where it appears.** Only on the landing route (`/`). The folio-read and folio-edit screens use the static parchment palette — adding the shader anywhere else would compete with the type for attention.
+
+**Future toggle.** A `theme.heroVariant` field in `config.json` could later switch between `codex`, `lapidary`, and `penumbra`. Out of scope for Phases 1–4; tracked in `05_Implementation_Details.md` § Out of Scope only if explicitly requested.
 
 ---
 

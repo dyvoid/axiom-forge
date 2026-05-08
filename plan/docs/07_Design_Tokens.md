@@ -1,6 +1,8 @@
-# Axiom Forge — Design Tokens
+# 07 — Design Tokens
 
-Extracted from the Figma prototype HTML exports (`design/prototype html/`) and cross-referenced with the PNG mockups. Use these as the canonical values for the rewrite. The prototype HTML itself is **not** intended for code reuse — it is a Figma dump with embedded base64 fonts and absolutely-positioned div soup.
+> **Reads:** [`04_Frontend.md`](04_Frontend.md). **Source material:** [`../design/`](../design/) (PNG mockups, Figma HTML), [`../prototype/`](../prototype/) (React + WebGL prototype).
+
+Extracted from the Figma prototype HTML exports and cross-referenced with the PNG mockups. Use these as the canonical values for the rewrite. The prototype HTML itself is **not** intended for code reuse — it is a Figma dump with embedded base64 fonts and absolutely-positioned div soup.
 
 ---
 
@@ -60,7 +62,7 @@ Cormorant body text: default tracking (no override).
 
 ## Color Palette
 
-All colors extracted from the Figma export's computed styles. Counts indicate usage frequency in the read-mode page (the dominant role of each color in parentheses).
+All colors extracted from the Figma export's computed styles. Counts indicate usage frequency in the read-mode page.
 
 ### Palette
 
@@ -179,7 +181,7 @@ box-shadow: 0 1px 2px rgba(0,0,0,0.18);
 
 ### Wiki-Link Chip (read mode)
 
-```
+```text
 [ ◐ Lyssa ]
 ```
 
@@ -233,20 +235,20 @@ The mockups use a small, consistent set of monoline glyphs (one per folio type),
 | Lore | 𝕴 (fraktur I) — actually a book symbol | `book-open` |
 | Timeline | ◷ (clock-quadrant) | `clock` |
 
-Final implementation can use Lucide as suggested in the build plan, sized to 14×14 with `stroke-width: 1.25` to keep the etched feel.
+Final implementation can use Lucide, sized to 14×14 with `stroke-width: 1.25` to keep the etched feel.
 
 ---
 
 ## Page Backgrounds
 
-The landing page uses a faint photographic backdrop (the `Burden of the Guardian` PNG shows a misty, blurred figure). Treat this as **per-project optional asset:**
+The landing page is rendered live by a WebGL fragment shader (drifting warm-gray smoke over parchment). Source: `prototype/webgl-hero.js`, variant `codex`. See [`04_Frontend.md`](04_Frontend.md) § Landing-Page WebGL Hero for the integration contract.
 
-- Stored as `cover.jpg` / `cover.webp` in the project folder root.
-- Read mode does not display it. Only the landing screen does.
-- Apply with `opacity: 0.35` and a `--bg-page` color overlay underneath, so text contrast is preserved.
+A per-project optional `cover.jpg` / `cover.webp` may sit in the project folder root and be composited as a faint photographic layer **on top of the shader** with `opacity: 0.35` and `mix-blend-mode: multiply` to keep text contrast. If WebGL is unavailable, this image (or the static parchment color) is the fallback.
+
+Read mode does not display either the shader or the cover image. Only the landing route does.
 
 ---
 
 ## Tokens File (CSS)
 
-For convenience, the rewrite should ship `/public/styles/tokens.css` containing all of the above as CSS custom properties. Generated from this document, not authored separately.
+For convenience, the rewrite should ship `packages/client/src/styles/tokens.css` containing all of the above as CSS custom properties. Generated from this document, not authored separately.

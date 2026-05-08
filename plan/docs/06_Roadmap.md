@@ -21,8 +21,14 @@ The build is staged so each phase yields a usable app. Each phase ends with a ha
 - Read view: role-driven 2-col / 1-col / grid layout, drop cap.
 - Wiki-link chips: clickable navigation between folios.
 - `tokens.css` generated from the design tokens doc; `base.css` typography.
+- Landing route with the WebGL hero (`codex` shader, ported from `prototype/webgl-hero.js`). Static parchment fallback when WebGL is unavailable.
 
-**Checkpoint:** open the *Burden of the Guardian* project, browse all folios, click wiki-links to navigate.
+**Checkpoint:** run `npm start -- --project ../burden-of-the-guardian` and:
+- The landing screen renders with the WebGL hero animating.
+- The sidebar shows all 7 type categories with correct counts.
+- Thalirin reads as a fully-populated two-column folio.
+- Clicking the Lyssa, Telamonas, Crete, or Divine Fusion wiki-links navigates correctly.
+- Deceased characters render in italics in the sidebar.
 
 ---
 
