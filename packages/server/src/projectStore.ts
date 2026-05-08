@@ -83,6 +83,15 @@ export class ProjectStore {
 		};
 	}
 
+	async reload(): Promise<void> {
+		this.config = await this.loadJson('config.json', ConfigSchema.parse);
+		this.schema = await this.loadJson('schema.json', ProjectSchemaSchema.parse);
+		this.folios = [];
+		this.nextId = 1;
+		await this.buildFolioIndex();
+		console.log('  • project reloaded from disk');
+	}
+
 	// ── Private ─────────────────────────────────────────────
 
 	private async buildFolioIndex(): Promise<void> {

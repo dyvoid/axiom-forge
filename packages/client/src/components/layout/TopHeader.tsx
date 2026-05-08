@@ -1,10 +1,26 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useProject } from '../../context/ProjectContext.js';
 import { Icon } from '../ui/Icon.js';
+import { reloadProject } from '../../api/client.js';
 import styles from './TopHeader.module.css';
 
 export function TopHeader(): JSX.Element {
 	const { config } = useProject();
+	const queryClient = useQueryClient();
+	const [syncing, setSyncing] = useState(false);
+
+	async function handleSync() {
+		if (syncing) return;
+		setSyncing(true);
+		try {
+			await reloadProject();
+			await queryClient.invalidateQueries();
+		} finally {
+			setSyncing(false);
+		}
+	}
 
 	return (
 		<header className={styles.header}>
@@ -14,11 +30,19 @@ export function TopHeader(): JSX.Element {
 				<span className={styles.projectTitle}>{config.name}</span>
 			</Link>
 			<div className={styles.right}>
+				<button
+					className={styles.syncButton}
+					onClick={handleSync}
+					disabled={syncing}
+					title="Reload project from disk"
+				>
+					<Icon name="refresh-cw" size={14} className={syncing ? styles.spinning : undefined} />
+				</button>
 				<div className={styles.searchBox}>
 					<Icon name="search" size={14} className={styles.searchIcon} />
-					<input 
-						type="text" 
-						placeholder="Search the archive..." 
+					<input
+						type="text"
+						placeholder="Search the archive..."
 						className={styles.searchInput}
 					/>
 					<span className={styles.shortcut}>/</span>

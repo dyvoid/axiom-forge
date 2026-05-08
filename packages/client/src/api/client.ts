@@ -40,3 +40,11 @@ export function fetchFolios(): Promise<FolioIndexRecord[]> {
 export function fetchFolio(folder: string, name: string): Promise<ParsedFolio & { id: number; mtime: number }> {
 	return request(`/folios/${encodeURIComponent(folder)}/${encodeURIComponent(name)}`);
 }
+
+export async function reloadProject(): Promise<void> {
+	const res = await fetch(`${BASE}/reload`, { method: 'POST' });
+	if (!res.ok) {
+		const body = await res.text().catch(() => '');
+		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
+	}
+}

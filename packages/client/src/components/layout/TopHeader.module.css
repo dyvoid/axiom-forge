@@ -46,6 +46,37 @@
 .right {
 	display: flex;
 	align-items: center;
+	gap: var(--sp-3);
+}
+
+.syncButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	color: var(--text-muted);
+	padding: var(--sp-2);
+	border-radius: 2px;
+	transition: color 0.15s, background 0.15s;
+}
+
+.syncButton:hover:not(:disabled) {
+	color: var(--text-primary);
+	background: var(--bg-hover);
+}
+
+.syncButton:disabled {
+	cursor: default;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+
+.spinning {
+	animation: spin 0.7s linear infinite;
 }
 
 .searchBox {
