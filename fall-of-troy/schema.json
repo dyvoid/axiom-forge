@@ -1,0 +1,158 @@
+{
+	"version": "1.0.0",
+	"types": {
+		"Character": {
+			"icon": "person",
+			"folder": "Characters",
+			"sections": {
+				"Basic Information": {
+					"role": "meta",
+					"fields": {
+						"Epithets": { "type": "text-list" },
+						"Sex": { "type": "select", "options": ["Male", "Female"] },
+						"Born": { "type": "date" },
+						"Died": { "type": "date" },
+						"Allegiance": { "type": "wikilink", "target": "Factions" },
+						"Divine Patron": { "type": "wikilink", "target": "Gods" },
+						"Spouse": { "type": "wikilink", "target": "Characters" }
+					}
+				},
+				"Description & History": { "role": "prose", "type": "textarea" },
+				"Relationships": {
+					"fields": {
+						"Allies": { "type": "wikilink-list", "target": "Characters" },
+						"Enemies": { "type": "wikilink-list", "target": "Characters" },
+						"Children": { "type": "wikilink-list", "target": "Characters" }
+					}
+				},
+				"Connected Events": {
+					"type": "wikilink-list",
+					"target": "Events"
+				},
+				"Notes": { "type": "textarea" }
+			}
+		},
+		"God": {
+			"icon": "sparkles",
+			"folder": "Gods",
+			"sections": {
+				"Basic Information": {
+					"role": "meta",
+					"fields": {
+						"Domains": { "type": "multiselect", "options": ["War", "Wisdom", "Love", "Sun", "Sea", "Fate", "Crafts", "Hunt", "Prophecy", "Trickery", "Death"] },
+						"Affiliation": { "type": "select", "options": ["Pro-Greek", "Pro-Trojan", "Neutral"] },
+						"Epithets": { "type": "text-list" }
+					}
+				},
+				"Description": { "role": "prose", "type": "textarea" },
+				"Mortal Champions": {
+					"type": "wikilink-list",
+					"target": "Characters"
+				},
+				"Connected Events": {
+					"type": "wikilink-list",
+					"target": "Events"
+				}
+			}
+		},
+		"Location": {
+			"icon": "map-pin",
+			"folder": "Locations",
+			"sections": {
+				"Basic Information": {
+					"role": "meta",
+					"fields": {
+						"Type": { "type": "select", "options": ["City", "Kingdom", "Camp", "Island", "Mountain", "Plain", "Other"] },
+						"Status": { "type": "select", "options": ["Standing", "Besieged", "Ruined", "Unknown"] },
+						"Controlled By": { "type": "wikilink", "target": "Factions" },
+						"Notable Features": { "type": "text-list" }
+					}
+				},
+				"Description & History": { "role": "prose", "type": "textarea" },
+				"Notable Residents": {
+					"fields": {
+						"Characters": { "type": "wikilink-list", "target": "Characters" }
+					}
+				},
+				"Connected Events": {
+					"type": "wikilink-list",
+					"target": "Events"
+				}
+			}
+		},
+		"Event": {
+			"icon": "zap",
+			"folder": "Events",
+			"sections": {
+				"Basic Information": {
+					"role": "meta",
+					"fields": {
+						"Type": { "type": "multiselect", "options": ["Battle", "Political", "Divine", "Personal", "Deception", "Cosmic"] },
+						"Date": { "type": "date" },
+						"Location": { "type": "wikilink", "target": "Locations" }
+					}
+				},
+				"Description & History": { "role": "prose", "type": "textarea" },
+				"Participants": {
+					"fields": {
+						"Key Characters": { "type": "wikilink-list", "target": "Characters" },
+						"Gods Involved": { "type": "wikilink-list", "target": "Gods" },
+						"Factions": { "type": "wikilink-list", "target": "Factions" }
+					}
+				},
+				"Connected Events": {
+					"fields": {
+						"Preceding Events": { "type": "wikilink-list", "target": "Events" },
+						"Succeeding Events": { "type": "wikilink-list", "target": "Events" }
+					}
+				}
+			}
+		},
+		"Faction": {
+			"icon": "users",
+			"folder": "Factions",
+			"sections": {
+				"Basic Information": {
+					"role": "meta",
+					"fields": {
+						"Type": { "type": "multiselect", "options": ["Military", "Political", "Royal", "Divine"] },
+						"Outcome": { "type": "select", "options": ["Victorious", "Defeated", "Dissolved", "Active"] },
+						"Leader": { "type": "wikilink", "target": "Characters" },
+						"Headquarters": { "type": "wikilink", "target": "Locations" }
+					}
+				},
+				"Description & History": { "role": "prose", "type": "textarea" },
+				"Members": {
+					"fields": {
+						"Key Members": { "type": "wikilink-list", "target": "Characters" },
+						"Divine Supporters": { "type": "wikilink-list", "target": "Gods" }
+					}
+				},
+				"Connected Events": {
+					"type": "wikilink-list",
+					"target": "Events"
+				}
+			}
+		},
+		"Artifact": {
+			"icon": "box",
+			"folder": "Artifacts",
+			"sections": {
+				"Basic Information": {
+					"role": "meta",
+					"fields": {
+						"Type": { "type": "select", "options": ["Weapon", "Armor", "Structure", "Divine Gift", "Vessel", "Other"] },
+						"Current Owner": { "type": "wikilink", "target": "Characters" },
+						"Forged By": { "type": "text" },
+						"Abilities": { "type": "text-list" }
+					}
+				},
+				"Description & History": { "role": "prose", "type": "textarea" },
+				"Connected Events": {
+					"type": "wikilink-list",
+					"target": "Events"
+				}
+			}
+		}
+	}
+}
