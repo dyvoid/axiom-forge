@@ -12,6 +12,7 @@ This is the `schema.json` for the first test project. Other projects will define
 "Character": {
   "icon": "person",
   "folder": "Characters",
+  "inactiveWhen": ["Deceased"],
   "sections": {
     "Basic Information": {
       "role": "meta",
@@ -43,14 +44,12 @@ This is the `schema.json` for the first test project. Other projects will define
       }
     },
     "Connected Events": {
-      "fields": {
-        "Events": { "type": "wikilink-list", "target": "Events" }
-      }
+      "type": "wikilink-list",
+      "target": "Events"
     },
     "Connected Factions": {
-      "fields": {
-        "Factions": { "type": "wikilink-list", "target": "Factions" }
-      }
+      "type": "wikilink-list",
+      "target": "Factions"
     },
     "Notes": { "type": "textarea" }
   }
@@ -87,9 +86,8 @@ Used for broad categories of being — e.g. Human, Ancient Being. Individual fol
       }
     },
     "Known Members": {
-      "fields": {
-        "Characters": { "type": "wikilink-list", "target": "Characters" }
-      }
+      "type": "wikilink-list",
+      "target": "Characters"
     },
     "Notes": { "type": "textarea" }
   }
@@ -125,14 +123,12 @@ Used for broad categories of being — e.g. Human, Ancient Being. Individual fol
       }
     },
     "Connected Events": {
-      "fields": {
-        "Events": { "type": "wikilink-list", "target": "Events" }
-      }
+      "type": "wikilink-list",
+      "target": "Events"
     },
     "Connected Factions": {
-      "fields": {
-        "Factions": { "type": "wikilink-list", "target": "Factions" }
-      }
+      "type": "wikilink-list",
+      "target": "Factions"
     },
     "Notes": { "type": "textarea" }
   }
@@ -186,6 +182,7 @@ Covers any organized group: military powers, political bodies, cosmic forces, re
 "Faction": {
   "icon": "users",
   "folder": "Factions",
+  "inactiveWhen": ["Dissolved", "Destroyed"],
   "sections": {
     "Basic Information": {
       "role": "meta",
@@ -194,12 +191,7 @@ Covers any organized group: military powers, political bodies, cosmic forces, re
         "Type": { "type": "multiselect", "options": ["Military","Political","Cosmic","Religious","Cultural","Criminal","Other"] },
         "Status": {
           "type": "select",
-          "options": [
-            { "value": "Active" },
-            { "value": "Dissolved", "inactive": true },
-            { "value": "Destroyed", "inactive": true },
-            { "value": "Unknown" }
-          ]
+          "options": ["Active", "Dissolved", "Destroyed", "Unknown"]
         },
         "Date of Formation": { "type": "date" },
         "Date of Dissolution": { "type": "date" },
@@ -221,19 +213,15 @@ Covers any organized group: military powers, political bodies, cosmic forces, re
       }
     },
     "Connected Events": {
-      "fields": {
-        "Events": { "type": "wikilink-list", "target": "Events" }
-      }
+      "type": "wikilink-list",
+      "target": "Events"
     },
     "Notes": { "type": "textarea" }
   }
 }
 ```
 
-> The `Status` field above demonstrates the `inactive: true` flag on individual options. See `05_Implementation_Details.md` § Status Semantics. The same flag is used on Character `Status` (`Deceased` → `inactive: true`) — omitted from this doc only to avoid repetition.
-
 ---
-
 ## Lore
 
 For concepts, mechanics, myths, and world rules that don't fit a character, location, or event — e.g. how magic works, the nature of a cosmic realm, an in-world religion's beliefs.
@@ -252,19 +240,16 @@ For concepts, mechanics, myths, and world rules that don't fit a character, loca
     },
     "Description & History": { "role": "prose", "type": "textarea" },
     "Connected Characters": {
-      "fields": {
-        "Characters": { "type": "wikilink-list", "target": "Characters" }
-      }
+      "type": "wikilink-list",
+      "target": "Characters"
     },
     "Connected Events": {
-      "fields": {
-        "Events": { "type": "wikilink-list", "target": "Events" }
-      }
+      "type": "wikilink-list",
+      "target": "Events"
     },
     "Connected Lore": {
-      "fields": {
-        "Related Lore": { "type": "wikilink-list", "target": "Lore" }
-      }
+      "type": "wikilink-list",
+      "target": "Lore"
     },
     "Notes": { "type": "textarea" }
   }
@@ -293,9 +278,8 @@ For high-level chronological overviews of a period, arc, or storyline. Links to 
     },
     "Overview": { "type": "textarea" },
     "Connected Events": {
-      "fields": {
-        "Events": { "type": "wikilink-list", "target": "Events" }
-      }
+      "type": "wikilink-list",
+      "target": "Events"
     },
     "Notes": { "type": "textarea" }
   }

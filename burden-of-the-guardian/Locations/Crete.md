@@ -18,7 +18,9 @@ Thalirin's life.
 - **Characters Deceased Here:** [[Characters/Thalirin]]
 
 ## Connected Events
-- **Events:** [[Events/Defense_of_the_Minoan_City]], [[Events/Divine_Fusion]], [[Events/Fall_of_Crete]]
+- [[Events/Defense_of_the_Minoan_City]]
+- [[Events/Divine_Fusion]]
+- [[Events/Fall_of_Crete]]
 
 ## Connected Factions
-- **Factions:** [[Factions/Minoans]]
+- [[Factions/Minoans]]

@@ -16,4 +16,10 @@ The dominant mortal species of the Aegean Bronze Age. Both Minoans and Mycenaean
 are humans; their conflict is cultural and political, not biological.
 
 ## Known Members
-- **Characters:** [[Characters/Thalirin]], [[Characters/Lyssa]], [[Characters/Telamonas]], [[Characters/Mira]], [[Characters/Arion]], [[Characters/Leandros]], [[Characters/Melina]]
+- [[Characters/Thalirin]]
+- [[Characters/Lyssa]]
+- [[Characters/Telamonas]]
+- [[Characters/Mira]]
+- [[Characters/Arion]]
+- [[Characters/Leandros]]
+- [[Characters/Melina]]

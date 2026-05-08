@@ -54,22 +54,19 @@ The MVP does **not** watch the filesystem.
 
 ## Status Semantics & "Inactive" Styling
 
-The italics-in-sidebar / muted-in-chips behavior is driven by schema metadata, not a hardcoded string list.
+The italics-in-sidebar / muted-in-chips behavior is driven by the folio's Meta Status value, checked against a type-level whitelist in the schema.
 
-- Each `select` option may declare `inactive: true`:
+- Each folio type may declare an `inactiveWhen` array at the type level:
   ```json
-  "Status": {
-    "type": "select",
-    "options": [
-      { "value": "Living" },
-      { "value": "Deceased", "inactive": true },
-      { "value": "Unknown" }
-    ]
+  "Character": {
+    "icon": "person",
+    "folder": "Characters",
+    "inactiveWhen": ["Deceased"],
+    ...
   }
   ```
-- For backward compatibility, plain string options (`"options": ["A","B"]`) are accepted and treated as `inactive: false`.
-- The UI checks the active folio's `Status` field; if its option is `inactive: true`, the sidebar entry is italicized and link chips pointing to it are rendered muted.
-- Generalizes to any folio type that has a status-like field, not just Character.
+- The UI checks the folio's Meta Status value; if it appears in the type's `inactiveWhen` array, the sidebar entry is italicized and link chips pointing to it are rendered muted.
+- Generalizes to any folio type: Faction uses `inactiveWhen: ["Dissolved", "Destroyed"]`, and the parser reads the Meta Status block to determine the treatment.
 
 ---
 

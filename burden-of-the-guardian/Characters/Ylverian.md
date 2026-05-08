@@ -23,4 +23,5 @@ guardianship, and guardianship a form of violence.
 - **Complicated:** [[Characters/Thalirin]]
 
 ## Connected Events
-- **Events:** [[Events/Divine_Fusion]], [[Events/Fall_of_Crete]]
+- [[Events/Divine_Fusion]]
+- [[Events/Fall_of_Crete]]

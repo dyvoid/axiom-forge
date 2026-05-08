@@ -56,6 +56,7 @@ const SectionRoleSchema = z.enum(['meta', 'prose']);
 const SectionDefSchema = z.object({
 	role: SectionRoleSchema.optional(),
 	type: FieldTypeSchema.optional(),
+	target: z.string().optional(),
 	fields: z.record(z.string(), FieldDefSchema).optional(),
 }).refine(
 	(s) => Boolean(s.fields) !== Boolean(s.type),
@@ -65,6 +66,7 @@ const SectionDefSchema = z.object({
 const TypeDefSchema = z.object({
 	icon: z.string(),
 	folder: z.string(),
+	inactiveWhen: z.array(z.string()).optional(),
 	sections: z.record(z.string(), SectionDefSchema),
 });
 

@@ -4,6 +4,7 @@
 		"Character": {
 			"icon": "person",
 			"folder": "Characters",
+			"inactiveWhen": ["Deceased"],
 			"sections": {
 				"Basic Information": {
 					"role": "meta",
@@ -35,14 +36,12 @@
 					}
 				},
 				"Connected Events": {
-					"fields": {
-						"Events": { "type": "wikilink-list", "target": "Events" }
-					}
+					"type": "wikilink-list",
+					"target": "Events"
 				},
 				"Connected Factions": {
-					"fields": {
-						"Factions": { "type": "wikilink-list", "target": "Factions" }
-					}
+					"type": "wikilink-list",
+					"target": "Factions"
 				},
 				"Notes": { "type": "textarea" }
 			}
@@ -70,9 +69,8 @@
 					}
 				},
 				"Known Members": {
-					"fields": {
-						"Characters": { "type": "wikilink-list", "target": "Characters" }
-					}
+					"type": "wikilink-list",
+					"target": "Characters"
 				},
 				"Notes": { "type": "textarea" }
 			}
@@ -101,14 +99,12 @@
 					}
 				},
 				"Connected Events": {
-					"fields": {
-						"Events": { "type": "wikilink-list", "target": "Events" }
-					}
+					"type": "wikilink-list",
+					"target": "Events"
 				},
 				"Connected Factions": {
-					"fields": {
-						"Factions": { "type": "wikilink-list", "target": "Factions" }
-					}
+					"type": "wikilink-list",
+					"target": "Factions"
 				},
 				"Notes": { "type": "textarea" }
 			}
@@ -146,6 +142,7 @@
 		"Faction": {
 			"icon": "users",
 			"folder": "Factions",
+			"inactiveWhen": ["Dissolved", "Destroyed"],
 			"sections": {
 				"Basic Information": {
 					"role": "meta",
@@ -154,12 +151,7 @@
 						"Type": { "type": "multiselect", "options": ["Military", "Political", "Cosmic", "Religious", "Cultural", "Criminal", "Other"] },
 						"Status": {
 							"type": "select",
-							"options": [
-								{ "value": "Active" },
-								{ "value": "Dissolved", "inactive": true },
-								{ "value": "Destroyed", "inactive": true },
-								{ "value": "Unknown" }
-							]
+							"options": ["Active", "Dissolved", "Destroyed", "Unknown"]
 						},
 						"Date of Formation": { "type": "date" },
 						"Date of Dissolution": { "type": "date" },
@@ -181,9 +173,8 @@
 					}
 				},
 				"Connected Events": {
-					"fields": {
-						"Events": { "type": "wikilink-list", "target": "Events" }
-					}
+					"type": "wikilink-list",
+					"target": "Events"
 				},
 				"Notes": { "type": "textarea" }
 			}
@@ -201,19 +192,16 @@
 				},
 				"Description & History": { "role": "prose", "type": "textarea" },
 				"Connected Characters": {
-					"fields": {
-						"Characters": { "type": "wikilink-list", "target": "Characters" }
-					}
+					"type": "wikilink-list",
+					"target": "Characters"
 				},
 				"Connected Events": {
-					"fields": {
-						"Events": { "type": "wikilink-list", "target": "Events" }
-					}
+					"type": "wikilink-list",
+					"target": "Events"
 				},
 				"Connected Lore": {
-					"fields": {
-						"Related Lore": { "type": "wikilink-list", "target": "Lore" }
-					}
+					"type": "wikilink-list",
+					"target": "Lore"
 				},
 				"Notes": { "type": "textarea" }
 			}
@@ -233,9 +221,8 @@
 				},
 				"Overview": { "type": "textarea" },
 				"Connected Events": {
-					"fields": {
-						"Events": { "type": "wikilink-list", "target": "Events" }
-					}
+					"type": "wikilink-list",
+					"target": "Events"
 				},
 				"Notes": { "type": "textarea" }
 			}

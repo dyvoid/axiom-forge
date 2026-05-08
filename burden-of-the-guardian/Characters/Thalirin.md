@@ -40,10 +40,14 @@ Ylverian's own fatal flaw.
 - **Complicated:** [[Characters/Ylverian]]
 
 ## Connected Events
-- **Events:** [[Events/Mycenaean_Invasion_of_Kea]], [[Events/Defense_of_the_Minoan_City]], [[Events/Divine_Fusion]], [[Events/Fall_of_Crete]]
+- [[Events/Mycenaean_Invasion_of_Kea]]
+- [[Events/Defense_of_the_Minoan_City]]
+- [[Events/Divine_Fusion]]
+- [[Events/Fall_of_Crete]]
 
 ## Connected Factions
-- **Factions:** [[Factions/Minoans]], [[Factions/Mycenaeans]]
+- [[Factions/Minoans]]
+- [[Factions/Mycenaeans]]
 
 ## Notes
 His arc is the mortal mirror of Ylverian's cosmic one. Both are guardians who destroy

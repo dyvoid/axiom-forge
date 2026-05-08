@@ -18,4 +18,4 @@ Sacked by Mycenaean forces in 1497 BCE; survivors fled south to Crete.
 - **Characters Deceased Here:** [[Characters/Telamonas]]
 
 ## Connected Events
-- **Events:** [[Events/Mycenaean_Invasion_of_Kea]]
+- [[Events/Mycenaean_Invasion_of_Kea]]

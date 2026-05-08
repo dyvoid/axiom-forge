@@ -15,4 +15,4 @@ Cosmic intelligences predating mortal civilization. They occasionally bond with 
 with consequences neither party fully anticipates.
 
 ## Known Members
-- **Characters:** [[Characters/Ylverian]]
+- [[Characters/Ylverian]]
