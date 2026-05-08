@@ -82,7 +82,7 @@ utils/
 | `/archive` | `ArchiveIndexView` | All types with entry counts; entry point from the landing CTA. |
 | `/folio/:folder` | `CategoryIndexView` | All entries for a given type, with name and prose snippet. |
 | `/folio/:folder/:name` | `FolioRead` | Read mode. `:folder` is the folder name (matching wiki-link form). |
-| `/folio/:folder/:name/edit` | `FolioEdit` | *(Phase 2)* Edit mode. Save returns to read mode; Discard prompts if dirty. |
+| `/folio/:folder/:name/edit` | `FolioEdit` | Edit mode (Phase 2). Separate route — not a stateful host inside `FolioRead`. "↩ Back to read mode" link navigates back. |
 | `*` | `NotFound` | |
 
 Wiki-link clicks call `navigate('/folio/' + folder + '/' + name)` — no full reload. The shell stays mounted across navigations.
@@ -130,9 +130,115 @@ The layout has no per-type knowledge. A new folio type with the same `role` conv
 
 ## Edit Mode
 
-`FolioEditView` is a single form built from the schema. Each field renders its `mode="edit"` variant. The form holds an in-memory copy of the parsed folio JSON; on Save, it is sent to `PUT /api/folios/:type/:name` along with the original `mtime`. On Discard, if the form is dirty, a confirm dialog blocks navigation.
+Edit mode lives on a **separate route** (`/folio/:folder/:name/edit`). `FolioEdit.tsx` is a standalone route component — it is not a stateful mode toggled inside `FolioRead`. The reason: the prototype mockup shows "↩ Back to read mode" as a smallcap navigation link (not a cancel button), and the two views have sufficiently different layouts that sharing state in a host adds complexity without benefit. React Router's URL is the state.
 
-Field type hints (`date · freeform`, `wikilink → Locations`, etc.) are rendered by `FieldRenderer` automatically from the schema, below each label.
+### Layout
+
+Single-column, `max-width: 760px`, padded `36px 72px 60px`. No two-column prose/meta split — edit mode trades the print-layout columns for a vertical form flow that puts every field at the same reading width.
+
+### Sticky toolbar
+
+```
+position: sticky; top: -36px; z-index: 5;
+margin: -36px -72px 28px;           /* bleeds to the container edge */
+padding: 14px 72px;
+background: rgba(243, 234, 216, 0.94);
+backdrop-filter: blur(6px);
+border-bottom: 1px solid var(--border);
+```
+
+Contains: `✎ Editing folio XVII` smallcap in `var(--accent-rust)` · unsaved-changes indicator (rust when dirty, muted when clean) · spacer · **Discard** ghost button · **Save folio** filled button.
+
+Save button: `background: var(--text)` (near-black ink), `color: var(--bg-page)`, uppercase small-caps label.  
+Discard button: transparent background, `border: 1px solid var(--border)`, muted color.
+
+### Folio header (below toolbar)
+
+Eyebrow row: type glyph + `Character · Folio XVII` on the left; `↩ Back to read mode` smallcap on the right (a `<Link>` to `/folio/:folder/:name`).
+
+**Editable title** — a full-width `<input>` in Cormorant 88px. No visible border/background; `border-bottom: 1px dashed var(--border)`. On focus the dashed line turns rust (`var(--accent-rust)`). The title sits at the same visual weight as the H1 in read mode.
+
+**Status / tags row** — immediately below the title:
+
+- A `CxSelect` (custom dropdown, not native `<select>`) at `width: 160px` for the Meta Status field. Options come from the `Meta.Status` schema definition.
+- `tags ·` label then a `CxFreeTagInput` (tag-chip input, Enter to commit) filling remaining width.
+
+### Section layout
+
+Each schema section is preceded by a `SectionHeader` — the existing `.smallcap` eyebrow from read mode (`I. Basic Information`, etc.) — followed by its content:
+
+- **Field sections** (`role: "meta"` or plain field sections): a vertical list of `FieldRow` grids.
+- **Prose sections** (`role: "prose"` or plain `textarea`): a full-width `<textarea>` with word-count / hint below-right.
+
+### `FieldRow` grid
+
+```
+display: grid;
+grid-template-columns: 170px 1fr;
+gap: 16px;
+padding: 8px 0;
+border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
+```
+
+Left cell: uppercase eyebrow label (`font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted)`) with an italic hint line below (`font-size: 10px; font-style: italic`).  
+Right cell: the field control.
+
+### Input styling (shared base)
+
+```css
+background: rgba(255, 250, 235, 0.55);
+border: 1px solid var(--border);
+padding: 7px 10px;
+border-radius: 0;
+font-family: var(--font-body);
+font-size: 15px;
+color: var(--text);
+outline: none;
+transition: border-color 120ms, background 120ms;
+```
+
+On focus: `border-color: var(--accent-rust)`, `background: rgba(255,250,235,0.9)`.  
+Textareas: `min-height: 120px; resize: vertical; line-height: 1.7; font-size: 16px`.
+
+### `CxSelect` (custom dropdown)
+
+Not a native `<select>`. A `<button>` triggers an absolutely-positioned dropdown panel (`background: var(--bg-page); border: 1px solid var(--text-muted); box-shadow: 0 8px 28px rgba(40,30,20,0.18)`). Each option row is `padding: 8px 12px`. The selected option gets `background: rgba(138,53,34,0.08)`. Click outside closes via `mousedown` listener. This keeps the parchment aesthetic — native selects inherit OS chrome.
+
+### Tag lists (`CxFreeTagInput`, `CxMultiSelect`)
+
+Both render chips inside a bordered container (`border: 1px solid var(--border); background: rgba(255,250,235,0.4)`).
+
+Chip style: `background: rgba(154,122,44,0.12); border: 1px solid rgba(154,122,44,0.4)` — gold-tinted, matching the decorative system.  
+`CxFreeTagInput`: inline `<input>` at the end of the chip list, italic placeholder, Enter or comma to commit, Backspace to remove last.  
+`CxMultiSelect`: same chip container but add-affordance is a `+ add` dashed-border button that opens a dropdown of remaining options.
+
+### Wikilink chips (in picker)
+
+Each selected wikilink chip shows: type glyph in `var(--accent-gold)` + display name in `var(--accent-rust)`. If the linked folio has an inactive status, the name renders in `var(--text-muted)` italic.
+
+### Footer save row
+
+A repeat of the toolbar actions at the bottom of the form — Discard + Save folio buttons, plus unsaved-changes text on the left showing the target filename (e.g. `· unsaved changes will write to Characters/Thalirin.md`).
+
+### Token mapping from prototype
+
+The prototype uses legacy variable names. Canonical equivalents:
+
+| Prototype | App token |
+|---|---|
+| `--oxblood` | `--accent-rust` |
+| `--rule` | `--border` |
+| `--rule-2` | `--border-soft` |
+| `--ink` | `--text` |
+| `--ink-2` | `--text-secondary` |
+| `--ink-3` | `--text-muted` |
+| `--paper` | `--bg-page` |
+| `--paper-2` | `--bg-panel` |
+| `--gold` | `--accent-gold` |
+| `--serif` | `--font-serif` |
+| `--body` | `--font-body` |
+
+Field type hints (`date · freeform`, `wikilink → Locations`, etc.) are derived automatically from the field schema by `FieldTypeHint.tsx`.
 
 ---
 
