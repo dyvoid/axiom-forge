@@ -18,15 +18,6 @@
 	pointer-events: none;
 }
 
-.chip.deceased {
-	font-style: italic;
-	color: var(--text-secondary);
-}
-
-.chip.deceased:hover {
-	color: var(--accent-rust);
-}
-
 .icon {
 	color: var(--accent-gold);
 }

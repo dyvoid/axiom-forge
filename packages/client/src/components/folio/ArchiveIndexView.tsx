@@ -59,13 +59,11 @@ export function ArchiveIndexView(): JSX.Element {
 								const typeDef = Object.values(schema.types).find(t => t.folder === f.folder);
 								const icon = typeDef?.icon || 'circle';
 								const displayName = f.name.replace(/_/g, ' ');
-								const isInactive = typeDef?.inactiveWhen?.includes(f.status ?? '');
-								
 								return (
-									<Link 
-										key={f.id} 
+									<Link
+										key={f.id}
 										to={`/folio/${f.folder}/${f.name}`}
-										className={`${styles.entryLink} ${isInactive ? styles.deceased : ''}`}
+										className={styles.entryLink}
 									>
 										<span className={styles.iconWrapper}>
 											<Icon name={icon} size={10} />

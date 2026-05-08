@@ -106,11 +106,6 @@
 	min-width: 140px;
 }
 
-.name.deceased {
-	font-style: italic;
-	color: var(--text-muted);
-}
-
 .entryMeta {
 	display: flex;
 	align-items: center;

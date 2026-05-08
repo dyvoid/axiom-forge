@@ -110,12 +110,3 @@
 	justify-content: center;
 	width: 14px;
 }
-
-.entryLink.deceased {
-	font-style: italic;
-	color: var(--text-muted);
-}
-
-.entryLink.deceased:hover {
-	color: var(--text-secondary);
-}
