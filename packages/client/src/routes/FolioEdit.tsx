@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { ParsedFolio } from '@axiom-forge/shared';
-import { useFolio, useSaveFolio } from '../api/queries.js';
+import { useFolio, useSaveFolio, useDeleteFolio } from '../api/queries.js';
 import { ConflictError } from '../api/client.js';
 import { useProject } from '../context/ProjectContext.js';
 import { FolioEditView } from '../components/folio/FolioEditView.js';
@@ -12,6 +12,7 @@ export function FolioEdit(): JSX.Element {
 	const { schema } = useProject();
 	const { data: folio, isLoading, error } = useFolio(folder ?? '', name ?? '');
 	const saveMutation = useSaveFolio(folder ?? '', name ?? '');
+	const deleteMutation = useDeleteFolio();
 	const [saveError, setSaveError] = useState<string | null>(null);
 
 	if (isLoading) {
@@ -60,13 +61,29 @@ export function FolioEdit(): JSX.Element {
 		);
 	}
 
+	function handleDelete(): void {
+		deleteMutation.mutate(
+			{ folder: folio!.folder, name: folio!.name },
+			{
+				onSuccess: () => {
+					navigate(`/folio/${encodeURIComponent(folio!.folder)}`);
+				},
+				onError: (err) => {
+					setSaveError(err instanceof Error ? err.message : String(err));
+				},
+			},
+		);
+	}
+
 	return (
 		<FolioEditView
 			folio={folio}
 			typeDef={typeDef}
 			saving={saveMutation.isPending}
+			deleting={deleteMutation.isPending}
 			saveError={saveError}
 			onSave={handleSave}
+			onDelete={handleDelete}
 		/>
 	);
 }

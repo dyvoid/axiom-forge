@@ -3,8 +3,9 @@
  */
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import type { ParsedFolio } from '@axiom-forge/shared';
-import { fetchFolios, fetchFolio, putFolio } from './client.js';
+import { fetchFolios, fetchFolio, putFolio, postFolio, deleteFolio } from './client.js';
 
 /** All folio index records — drives the sidebar. */
 export function useFolios() {
@@ -21,6 +22,33 @@ export function useFolio(folder: string, name: string) {
 		queryKey: ['folio', folder, name],
 		queryFn: () => fetchFolio(folder, name),
 		enabled: Boolean(folder && name),
+	});
+}
+
+/** Create a new folio and navigate to its edit URL on success. */
+export function useCreateFolio() {
+	const qc = useQueryClient();
+	const navigate = useNavigate();
+	return useMutation({
+		mutationFn: ({ folder, folio }: { folder: string; folio: ParsedFolio }) =>
+			postFolio(folder, folio),
+		onSuccess: ({ name }, { folder }) => {
+			qc.invalidateQueries({ queryKey: ['folios'] });
+			navigate(`/folio/${encodeURIComponent(folder)}/${encodeURIComponent(name)}/edit`);
+		},
+	});
+}
+
+/** Delete a folio. Caller is responsible for navigating away. */
+export function useDeleteFolio() {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: ({ folder, name }: { folder: string; name: string }) =>
+			deleteFolio(folder, name),
+		onSuccess: (_, { folder, name }) => {
+			qc.removeQueries({ queryKey: ['folio', folder, name] });
+			qc.invalidateQueries({ queryKey: ['folios'] });
+		},
 	});
 }
 

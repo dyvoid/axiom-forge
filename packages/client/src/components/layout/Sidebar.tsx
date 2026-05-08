@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { NavLink, useParams, useNavigate } from 'react-router-dom';
 import { useProject } from '../../context/ProjectContext.js';
-import { useFolios } from '../../api/queries.js';
+import { useFolios, useCreateFolio } from '../../api/queries.js';
 import styles from './Sidebar.module.css';
 import { Icon } from '../ui/Icon.js';
 
@@ -10,10 +10,13 @@ export function Sidebar(): JSX.Element {
 	const { data: folios } = useFolios();
 	const { folder: routeFolder } = useParams<{ folder?: string }>();
 	const navigate = useNavigate();
+	const createFolio = useCreateFolio();
 
-	// Default active type to the route's folder, or the first schema type
 	const firstType = Object.keys(schema.types)[0] || '';
 	const [activeType, setActiveType] = useState<string>(firstType);
+	const [creating, setCreating] = useState(false);
+	const [newName, setNewName] = useState('');
+	const nameInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		if (routeFolder) {
@@ -22,7 +25,10 @@ export function Sidebar(): JSX.Element {
 		}
 	}, [routeFolder, schema.types]);
 
-	// Group folios by type
+	useEffect(() => {
+		if (creating) nameInputRef.current?.focus();
+	}, [creating]);
+
 	const byType: Record<string, typeof folios> = {};
 	if (folios) {
 		for (const f of folios) {
@@ -33,6 +39,33 @@ export function Sidebar(): JSX.Element {
 
 	const activeList = activeType ? byType[activeType] || [] : [];
 	const activeSchema = activeType ? schema.types[activeType] : null;
+
+	function handleNewEntry(): void {
+		setNewName('');
+		setCreating(true);
+	}
+
+	function handleCreateSubmit(): void {
+		const trimmed = newName.trim();
+		if (!trimmed || !activeSchema) return;
+		setCreating(false);
+
+		const folio = {
+			type: activeType,
+			folder: activeSchema.folder,
+			name: trimmed.replace(/ /g, '_'),
+			status: undefined,
+			tags: [],
+			sections: {},
+			warnings: [],
+		};
+		createFolio.mutate({ folder: activeSchema.folder, folio });
+	}
+
+	function handleCreateKeyDown(e: React.KeyboardEvent): void {
+		if (e.key === 'Enter') handleCreateSubmit();
+		if (e.key === 'Escape') { setCreating(false); setNewName(''); }
+	}
 
 	return (
 		<div className={styles.container}>
@@ -66,29 +99,48 @@ export function Sidebar(): JSX.Element {
 					<div className={styles.group}>
 						<h2 className={styles.groupTitle}>{activeSchema.folder}</h2>
 						<div className={styles.folioList}>
-							{activeList.map((f) => {
-								const isInactive = activeSchema.inactiveWhen?.includes(f.status ?? '');
-								return (
-									<NavLink
-										key={f.id}
-										to={`/folio/${activeSchema.folder}/${f.name}`}
-										className={({ isActive }) =>
-											`${styles.folioLink} ${isActive ? styles.active : ''}`
-										}
-									>
-										{f.name.replace(/_/g, ' ')}
-									</NavLink>
-								);
-							})}
+							{activeList.map((f) => (
+								<NavLink
+									key={f.id}
+									to={`/folio/${activeSchema.folder}/${f.name}`}
+									className={({ isActive }) =>
+										`${styles.folioLink} ${isActive ? styles.active : ''}`
+									}
+								>
+									{f.name.replace(/_/g, ' ')}
+								</NavLink>
+							))}
 						</div>
 					</div>
 				)}
 			</nav>
 
 			<div className={styles.footer}>
-				<button className={styles.newBtn}>
-					+ New entry
-				</button>
+				{creating ? (
+					<div className={styles.newEntryForm}>
+						<input
+							ref={nameInputRef}
+							className={styles.newEntryInput}
+							value={newName}
+							onChange={(e) => setNewName(e.target.value)}
+							onKeyDown={handleCreateKeyDown}
+							placeholder={`New ${activeType || 'entry'}…`}
+							disabled={createFolio.isPending}
+						/>
+						<button
+							type="button"
+							className={styles.newEntryConfirm}
+							onClick={handleCreateSubmit}
+							disabled={!newName.trim() || createFolio.isPending}
+						>
+							↵
+						</button>
+					</div>
+				) : (
+					<button className={styles.newBtn} onClick={handleNewEntry}>
+						+ New entry
+					</button>
+				)}
 			</div>
 		</div>
 	);

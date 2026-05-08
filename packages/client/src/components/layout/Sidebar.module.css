@@ -125,3 +125,49 @@
 .newBtn:hover {
 	color: var(--text-primary);
 }
+
+.newEntryForm {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.newEntryInput {
+	flex: 1;
+	background: transparent;
+	border: 0;
+	border-bottom: 1px solid var(--border);
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: 16px;
+	color: var(--text-primary);
+	padding: 2px 0;
+	outline: none;
+}
+
+.newEntryInput::placeholder {
+	color: var(--text-muted);
+}
+
+.newEntryInput:focus {
+	border-bottom-color: var(--accent-rust);
+}
+
+.newEntryConfirm {
+	background: transparent;
+	font-family: var(--ff-body);
+	font-size: 16px;
+	color: var(--text-muted);
+	cursor: pointer;
+	padding: 2px 4px;
+	transition: color 0.15s;
+}
+
+.newEntryConfirm:hover:not(:disabled) {
+	color: var(--accent-rust);
+}
+
+.newEntryConfirm:disabled {
+	opacity: 0.3;
+	cursor: default;
+}

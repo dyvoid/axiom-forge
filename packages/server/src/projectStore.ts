@@ -74,6 +74,20 @@ export class ProjectStore {
 		return this.folios.map((f) => f.filePath);
 	}
 
+	/** Add a new folio record, assign the next ID, and re-sort alphabetically. */
+	addFolioRecord(record: Omit<InternalFolioRecord, 'id'>): InternalFolioRecord {
+		const full: InternalFolioRecord = { ...record, id: this.nextId++ };
+		this.folios.push(full);
+		this.folios.sort((a, b) => a.name.localeCompare(b.name));
+		return full;
+	}
+
+	/** Remove a folio record from the in-memory index. */
+	removeFolioRecord(folder: string, name: string): void {
+		const idx = this.folios.findIndex((f) => f.folder === folder && f.name === name);
+		if (idx !== -1) this.folios.splice(idx, 1);
+	}
+
 	/**
 	 * Update an existing folio's index record in place, after a save.
 	 * Re-derives the snippet from the new prose content.

@@ -1,5 +1,7 @@
+import { unlink } from 'node:fs/promises';
+import { resolve, join } from 'node:path';
 import { Router } from 'express';
-import { parseMarkdown, serializeToMarkdown, type ParsedFolio } from '@axiom-forge/shared';
+import { displayNameToFilename, parseMarkdown, serializeToMarkdown, type ParsedFolio } from '@axiom-forge/shared';
 import type { ProjectStore } from '../projectStore.js';
 import { readFolioFile, writeFolioFile, statFile } from '../fileIO.js';
 
@@ -76,6 +78,73 @@ export function foliosRouter(store: ProjectStore): Router {
 		} catch (err) {
 			console.error(`Error saving folio ${folder}/${name}:`, err);
 			res.status(500).json({ error: 'Failed to save folio' });
+		}
+	});
+
+	// POST /api/folios/:folder — create a new folio
+	r.post('/:folder', async (req, res) => {
+		const { folder } = req.params;
+		const body = req.body as { folio?: ParsedFolio };
+
+		if (!body?.folio) {
+			res.status(400).json({ error: 'Body must be { folio }' });
+			return;
+		}
+
+		const schema = store.getSchema();
+		const typeEntry = Object.entries(schema.types).find(([, t]) => t.folder === folder);
+		if (!typeEntry) {
+			res.status(400).json({ error: `Unknown folder: ${folder}` });
+			return;
+		}
+		const [typeKey] = typeEntry;
+
+		const filename = displayNameToFilename(body.folio.name);
+		if (store.getRecord(folder!, filename)) {
+			res.status(409).json({ error: 'exists' });
+			return;
+		}
+
+		const folderPath = resolve(store.projectPath, folder!);
+		const filePath = join(folderPath, `${filename}.md`);
+
+		try {
+			const markdown = serializeToMarkdown(body.folio, schema);
+			const { mtime } = await writeFolioFile(filePath, markdown);
+			const reparsed = parseMarkdown(markdown, schema);
+			const snippet = store.deriveSnippet(reparsed);
+			store.addFolioRecord({
+				type: typeKey,
+				folder: folder!,
+				name: filename,
+				filePath,
+				mtime,
+				status: reparsed.status,
+				tags: reparsed.tags,
+				snippet,
+			});
+			res.status(201).json({ name: filename, mtime, warnings: reparsed.warnings ?? [] });
+		} catch (err) {
+			console.error(`Error creating folio ${folder}/${filename}:`, err);
+			res.status(500).json({ error: 'Failed to create folio' });
+		}
+	});
+
+	// DELETE /api/folios/:folder/:name — delete a folio
+	r.delete('/:folder/:name', async (req, res) => {
+		const { folder, name } = req.params;
+		const record = store.getRecord(folder!, name!);
+		if (!record) {
+			res.status(404).json({ error: 'Folio not found' });
+			return;
+		}
+		try {
+			await unlink(record.filePath);
+			store.removeFolioRecord(folder!, name!);
+			res.json({ ok: true });
+		} catch (err) {
+			console.error(`Error deleting folio ${folder}/${name}:`, err);
+			res.status(500).json({ error: 'Failed to delete folio' });
 		}
 	});
 

@@ -53,6 +53,52 @@
 	background: rgba(138, 53, 34, 0.08);
 }
 
+.addForm {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.addInput {
+	background: transparent;
+	border: 0;
+	border-bottom: 1px solid var(--border);
+	font-family: var(--ff-body);
+	font-size: var(--fs-body);
+	color: var(--text-primary);
+	padding: 2px 0;
+	outline: none;
+	min-width: 200px;
+}
+
+.addInput:focus {
+	border-bottom-color: var(--accent-rust);
+}
+
+.addConfirm,
+.addCancel {
+	background: transparent;
+	font-family: var(--ff-body);
+	font-size: 16px;
+	color: var(--text-muted);
+	cursor: pointer;
+	padding: 2px 4px;
+	transition: color 0.15s;
+}
+
+.addConfirm:hover:not(:disabled) {
+	color: var(--accent-rust);
+}
+
+.addCancel:hover {
+	color: var(--text-primary);
+}
+
+.addConfirm:disabled {
+	opacity: 0.3;
+	cursor: default;
+}
+
 .title {
 	font-family: var(--ff-serif);
 	font-weight: 400;

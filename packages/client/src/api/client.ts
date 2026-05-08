@@ -73,6 +73,36 @@ export async function putFolio(
 	return res.json() as Promise<{ mtime: number; warnings: string[] }>;
 }
 
+export async function postFolio(
+	folder: string,
+	folio: ParsedFolio,
+): Promise<{ name: string; mtime: number; warnings: string[] }> {
+	const res = await fetch(`${BASE}/folios/${encodeURIComponent(folder)}`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ folio }),
+	});
+	if (res.status === 409) {
+		throw new ApiError(409, 'A folio with that name already exists');
+	}
+	if (!res.ok) {
+		const body = await res.text().catch(() => '');
+		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
+	}
+	return res.json() as Promise<{ name: string; mtime: number; warnings: string[] }>;
+}
+
+export async function deleteFolio(folder: string, name: string): Promise<void> {
+	const res = await fetch(
+		`${BASE}/folios/${encodeURIComponent(folder)}/${encodeURIComponent(name)}`,
+		{ method: 'DELETE' },
+	);
+	if (!res.ok) {
+		const body = await res.text().catch(() => '');
+		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
+	}
+}
+
 export async function reloadProject(): Promise<void> {
 	const res = await fetch(`${BASE}/reload`, { method: 'POST' });
 	if (!res.ok) {
