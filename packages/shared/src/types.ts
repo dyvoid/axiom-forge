@@ -9,6 +9,7 @@ export type FolioStatus =
 	| 'Dissolved'
 	| 'Destroyed'
 	| 'Unknown'
+	// eslint-disable-next-line @typescript-eslint/ban-types
 	| (string & {}); // open enum: schemas may declare more
 
 export interface FolioIndexRecord {
