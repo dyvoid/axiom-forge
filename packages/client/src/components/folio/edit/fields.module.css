@@ -1,0 +1,148 @@
+/* Shared styles for edit-mode field components.
+   Tokens map from the prototype's --oxblood/--rule/--ink-3 → app tokens. */
+
+.input {
+	font-family: var(--ff-body);
+	font-size: var(--fs-body-sm);
+	color: var(--text-primary);
+	background: rgba(255, 250, 235, 0.55);
+	border: 1px solid var(--border);
+	padding: 7px 10px;
+	outline: none;
+	width: 100%;
+	border-radius: 0;
+	transition: border-color 120ms, background 120ms;
+	box-sizing: border-box;
+}
+
+.input:focus {
+	border-color: var(--accent-rust);
+	background: rgba(255, 250, 235, 0.9);
+}
+
+.textarea {
+	composes: input;
+	min-height: 120px;
+	resize: vertical;
+	line-height: 1.7;
+	font-size: var(--fs-body);
+}
+
+/* ── Custom select (CxSelect) ─────────────────────── */
+
+.selectWrap {
+	position: relative;
+}
+
+.selectButton {
+	composes: input;
+	text-align: left;
+	cursor: pointer;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.selectButton.open {
+	border-color: var(--accent-rust);
+	background: rgba(255, 250, 235, 0.9);
+}
+
+.selectPlaceholder {
+	color: var(--text-muted);
+	font-style: italic;
+}
+
+.selectArrow {
+	color: var(--text-muted);
+	font-size: 11px;
+}
+
+.menu {
+	position: absolute;
+	top: calc(100% + 4px);
+	left: 0;
+	right: 0;
+	background: var(--bg-page);
+	border: 1px solid var(--text-muted);
+	box-shadow: 0 8px 28px rgba(40, 30, 20, 0.18);
+	z-index: 10;
+	max-height: 240px;
+	overflow-y: auto;
+}
+
+.menuItem {
+	padding: 8px 12px;
+	cursor: pointer;
+	font-family: var(--ff-body);
+	font-size: 14px;
+	color: var(--text-primary);
+	border-bottom: 1px solid var(--border-soft);
+}
+
+.menuItem:hover {
+	background: rgba(0, 0, 0, 0.04);
+}
+
+.menuItem.selected {
+	background: rgba(138, 53, 34, 0.08);
+}
+
+/* ── Tag list (chips + input) ─────────────────────── */
+
+.tagBox {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 8px;
+	align-items: center;
+	padding: 6px 8px;
+	border: 1px solid var(--border);
+	background: rgba(255, 250, 235, 0.4);
+	min-height: 38px;
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-family: var(--ff-body);
+	font-size: 14px;
+	color: var(--text-primary);
+	background: rgba(154, 122, 44, 0.12);
+	border: 1px solid rgba(154, 122, 44, 0.4);
+	padding: 3px 4px 3px 8px;
+}
+
+.chipRemove {
+	background: transparent;
+	border: 0;
+	color: var(--text-muted);
+	cursor: pointer;
+	font-size: 13px;
+	line-height: 1;
+	padding: 0 4px;
+}
+
+.tagInput {
+	border: 0;
+	background: transparent;
+	outline: none;
+	font-family: var(--ff-body);
+	font-size: 14px;
+	color: var(--text-primary);
+	padding: 4px 0;
+	min-width: 100px;
+	flex: 1;
+	font-style: italic;
+}
+
+.addBtn {
+	background: transparent;
+	border: 1px dashed var(--text-muted);
+	color: var(--text-muted);
+	cursor: pointer;
+	font-family: var(--ff-body);
+	font-size: 13px;
+	font-style: italic;
+	padding: 3px 10px;
+}

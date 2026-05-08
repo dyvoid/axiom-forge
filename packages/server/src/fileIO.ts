@@ -3,7 +3,7 @@
  * All disk access goes through this module — no route or store reads files directly.
  */
 
-import { readFile, readdir, stat } from 'node:fs/promises';
+import { readFile, readdir, stat, writeFile, rename } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 
 export interface FileInfo {
@@ -48,4 +48,34 @@ export async function readFolioFile(filePath: string): Promise<{ content: string
 		stat(filePath),
 	]);
 	return { content, mtime: stats.mtimeMs };
+}
+
+/**
+ * Write a .md file and return the new mtime.
+ */
+export async function writeFolioFile(filePath: string, content: string): Promise<{ mtime: number }> {
+	await writeFile(filePath, content, 'utf-8');
+	const stats = await stat(filePath);
+	return { mtime: stats.mtimeMs };
+}
+
+/**
+ * Rename a folio file and return the new mtime.
+ */
+export async function renameFolioFile(oldPath: string, newPath: string): Promise<{ mtime: number }> {
+	await rename(oldPath, newPath);
+	const stats = await stat(newPath);
+	return { mtime: stats.mtimeMs };
+}
+
+/**
+ * Stat a single file. Returns null if it doesn't exist.
+ */
+export async function statFile(filePath: string): Promise<{ mtime: number } | null> {
+	try {
+		const stats = await stat(filePath);
+		return { mtime: stats.mtimeMs };
+	} catch {
+		return null;
+	}
 }

@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProjectProvider } from './context/ProjectContext.js';
 import { Landing } from './routes/Landing.js';
 import { FolioRead } from './routes/FolioRead.js';
+import { FolioEdit } from './routes/FolioEdit.js';
 import { NotFound } from './routes/NotFound.js';
 import { AppShell } from './components/layout/AppShell.js';
 
@@ -29,6 +30,7 @@ export function App(): JSX.Element {
 							<Route path="/archive" element={<ArchiveIndexView />} />
 							<Route path="/folio/:folder" element={<CategoryIndexView />} />
 							<Route path="/folio/:folder/:name" element={<FolioRead />} />
+							<Route path="/folio/:folder/:name/edit" element={<FolioEdit />} />
 						</Route>
 						<Route path="*" element={<NotFound />} />
 					</Routes>

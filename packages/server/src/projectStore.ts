@@ -64,6 +64,56 @@ export class ProjectStore {
 		return this.getFolios().filter((f) => f.type === typeKey);
 	}
 
+	/** Look up the internal record (incl. filePath, mtime). */
+	getRecord(folder: string, name: string): InternalFolioRecord | undefined {
+		return this.folios.find((f) => f.folder === folder && f.name === name);
+	}
+
+	/** Return every folio's filePath — used by the wikilink rewriter (M4). */
+	getAllFilePaths(): string[] {
+		return this.folios.map((f) => f.filePath);
+	}
+
+	/**
+	 * Update an existing folio's index record in place, after a save.
+	 * Re-derives the snippet from the new prose content.
+	 */
+	updateFolioRecord(
+		folder: string,
+		name: string,
+		patch: { mtime: number; status?: string; tags: string[]; snippet?: string },
+	): void {
+		const record = this.folios.find((f) => f.folder === folder && f.name === name);
+		if (!record) return;
+		record.mtime = patch.mtime;
+		record.status = patch.status;
+		record.tags = patch.tags;
+		record.snippet = patch.snippet;
+	}
+
+	/** Compute a snippet from a parsed folio (first paragraph of prose, ≤120 chars). */
+	deriveSnippet(parsed: ParsedFolio): string | undefined {
+		const typeDef = this.getSchema().types[parsed.type];
+		if (!typeDef) return undefined;
+		const proseSectionName = Object.entries(typeDef.sections).find(([, def]) => def.role === 'prose')?.[0];
+		if (!proseSectionName) return undefined;
+		const proseContent = parsed.sections[proseSectionName]?.content;
+		if (!proseContent) return undefined;
+		const firstParagraph = proseContent
+			.split(/\n\s*\n/)
+			.map((s) => s.trim().replace(/\n/g, ' '))
+			.filter(Boolean)[0];
+		if (!firstParagraph) return undefined;
+		let text = firstParagraph.replace(/^[#*>-]+\s*/, '');
+		if (text.length > 120) {
+			text = text.substring(0, 120);
+			text = text.substring(0, Math.min(text.length, text.lastIndexOf(' ')));
+			text = text.replace(/[\s,;:\-.]+$/, '');
+			return text + '...';
+		}
+		return text;
+	}
+
 	/**
 	 * Return a single parsed folio with full structured data.
 	 * Reads the file fresh from disk each time (no content cache).

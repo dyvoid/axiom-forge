@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { toRoman, type ParsedFolio } from '@axiom-forge/shared';
 import { Icon } from '../ui/Icon.js';
 import styles from './FolioHeader.module.css';
@@ -19,7 +20,12 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 					<span>Folio {toRoman(folio.id)}</span>
 				</div>
 				<div className={styles.actions}>
-					<button className={styles.actionBtn}>Edit</button>
+					<Link
+						className={styles.actionBtn}
+						to={`/folio/${encodeURIComponent(folio.folder)}/${encodeURIComponent(folio.name)}/edit`}
+					>
+						Edit
+					</Link>
 					<span className={styles.separator}>·</span>
 					<button className={styles.actionBtn}>Backlinks</button>
 					<span className={styles.separator}>·</span>

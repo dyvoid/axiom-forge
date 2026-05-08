@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//g/Projects/Axiom Forge/git/**)",
+      "Bash(git stash *)",
+      "Bash(git pull *)",
+      "Bash(npm run *)",
+      "Bash(npx tsc *)"
+    ]
+  }
+}
