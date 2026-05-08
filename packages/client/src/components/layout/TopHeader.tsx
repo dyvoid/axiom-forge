@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useProject } from '../../context/ProjectContext.js';
 import { Icon } from '../ui/Icon.js';
 import styles from './TopHeader.module.css';
@@ -7,11 +8,11 @@ export function TopHeader(): JSX.Element {
 
 	return (
 		<header className={styles.header}>
-			<div className={styles.left}>
+			<Link to="/archive" className={styles.left}>
 				<span className={styles.logo}>AXIOM · FORGE</span>
 				<div className={styles.separator} />
 				<span className={styles.projectTitle}>{config.name}</span>
-			</div>
+			</Link>
 			<div className={styles.right}>
 				<div className={styles.searchBox}>
 					<Icon name="search" size={14} className={styles.searchIcon} />
