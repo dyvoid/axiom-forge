@@ -1,8 +1,8 @@
 # 07 — Design Tokens
 
-> **Reads:** [`04_Frontend.md`](04_Frontend.md). **Source material:** [`../design/`](../design/) (PNG mockups, Figma HTML), [`../prototype/`](../prototype/) (React + WebGL prototype).
+> **Reads:** [`04_Frontend.md`](04_Frontend.md). **Source material:** [`../design/`](../design/) (PNG mockups), [`../prototype/`](../prototype/) (React + WebGL prototype).
 
-Extracted from the Figma prototype HTML exports and cross-referenced with the PNG mockups. Use these as the canonical values for the rewrite. The prototype HTML itself is **not** intended for code reuse — it is a Figma dump with embedded base64 fonts and absolutely-positioned div soup.
+Extracted from the PNG mockups and cross-referenced with the React prototype's computed styles. Use these as the canonical values for the rewrite.
 
 ---
 
@@ -62,7 +62,7 @@ Cormorant body text: default tracking (no override).
 
 ## Color Palette
 
-All colors extracted from the Figma export's computed styles. Counts indicate usage frequency in the read-mode page.
+All colors extracted from the prototype's computed styles. Counts indicate usage frequency in the read-mode page.
 
 ### Palette
 

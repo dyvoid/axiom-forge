@@ -24,3 +24,12 @@ $RECYCLE.BIN/
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+### Node / Build
+node_modules/
+dist/
+.vite/
+*.log
+.env
+.env.local
+.DS_Store

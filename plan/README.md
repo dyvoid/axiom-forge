@@ -114,7 +114,7 @@ This plan is split across focused documents. Read them in this order if you're n
 | 5 | [`docs/05_Implementation_Details.md`](docs/05_Implementation_Details.md) | Cross-cutting decisions: folio IDs, filenames, wiki-link resolution, status semantics, file watching, deferred items |
 | 6 | [`docs/06_Roadmap.md`](docs/06_Roadmap.md) | Development phases |
 | 7 | [`docs/07_Design_Tokens.md`](docs/07_Design_Tokens.md) | Typography, palette, spacing, component recipes |
-| — | [`design/`](design/) | PNG mockups and Figma HTML exports |
+| — | [`design/`](design/) | PNG mockups |
 | — | [`prototype/`](prototype/) | The original Claude Design React prototype: shader code (`webgl-hero.js`), `codex.jsx` (landing + read), `codex-edit.jsx`, `shared.jsx` (sample data, type glyphs, link parser). Reference-only; the rewrite re-implements these in TypeScript, but the shader and the sample data are direct ports. |
 | — | [`../burden-of-the-guardian/`](../burden-of-the-guardian/) | The seed test project — `config.json`, `schema.json`, and 16 folios across all 7 types. Point the app at this folder on day one to verify Phase 1 end-to-end. |
 

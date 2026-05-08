@@ -157,6 +157,23 @@ Field type hints (`date · freeform`, `wikilink → Locations`, etc.) are render
 
 ---
 
+## Landing Page
+
+The landing route (`/`) is its own layout — no app sidebar. It has three layers, top to bottom:
+
+- **Top chrome (optional, deferred):** small horizontal rule of metadata text. Out of scope for Phase 1; revisit only if the landing feels empty.
+- **Centred title block:** project name from `config.name` (`Cormorant` italic, `--fs-hero`), thin gold rule above and below a single subtitle line composed from `config.description`, the `ENTER THE ARCHIVE →` button below.
+- **WebGL hero canvas** behind everything (see next section).
+- **Footer bar** pinned to the bottom of the viewport: a `1px` top border in `--border-soft`, height `--sp-7`, padded `--sp-6` horizontally, `--bg-panel` background. Three slots:
+
+  - **Left:** the `CONTENTS` eyebrow label (Cinzel 500, `--fs-eyebrow`, `--text-muted`, `letter-spacing: 0.22em`).
+  - **Centre:** the type list with counts, rendered horizontally — each entry is `<glyph> <Type> <count>` separated by `·` middle-dots. Counts come from the same source the sidebar uses (`projectStore` folio index). Each entry is a link that takes the user into the archive and pre-selects that type.
+  - **Right:** a page-number numeral (`1`) in `--text-muted`, `--fs-tiny`. Decorative — anchors the print-page metaphor.
+
+The footer is **landing-only**. It does not appear on read or edit views — there, the sidebar takes over the role of type counts.
+
+---
+
 ## Landing-Page WebGL Hero
 
 The landing screen has an animated background: drifting warm-gray smoke over the parchment palette. It is implemented as a single fullscreen-triangle WebGL pass with a fragment shader. There are no external WebGL libraries (no Three.js, no Regl) — raw `gl` calls only, ~50 LOC of TypeScript glue plus the shader.

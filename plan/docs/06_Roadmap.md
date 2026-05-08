@@ -6,6 +6,72 @@ The build is staged so each phase yields a usable app. Each phase ends with a ha
 
 ---
 
+## Phase 0 — Repo Scaffold
+
+**Goal:** an empty but correctly wired monorepo that boots, lints, type-checks, and runs an empty Express + Vite shell.
+
+### Workspace layout
+
+```text
+git/
+  .editorconfig
+  .gitignore
+  .markdownlint.json
+  LICENSE
+  package.json                    # root, "private": true, npm workspaces
+  tsconfig.base.json              # shared compiler options
+  packages/
+    shared/                       # parser, schema (zod), shared types
+      package.json
+      tsconfig.json
+      src/
+    server/                       # Express + projectStore
+      package.json
+      tsconfig.json
+      src/index.ts                # entry, parses --project, binds 127.0.0.1
+    client/                       # Vite + React + TS
+      package.json
+      tsconfig.json
+      vite.config.ts              # /api proxy → http://127.0.0.1:<server-port>
+      index.html
+      src/main.tsx
+  burden-of-the-guardian/         # the seed test project (not part of the build)
+  plan/
+  prototype/
+```
+
+### Toolchain
+
+- **Node:** `>=18.17` (pinned in root `package.json` `engines`). Required for stable `birthtime` cross-platform and modern ESM behaviour. Windows users on Node 18 should be fine; Linux/macOS users on Node ≤16 will be rejected.
+- **Package manager:** npm 9+. No pnpm/yarn — npm workspaces are sufficient and zero-install on a fresh Node.
+- **TypeScript:** 5.x, `strict: true`, `moduleResolution: "bundler"` for client/shared, `"node"` for server.
+- **Lint:** ESLint with `@typescript-eslint`, plus Prettier — but Prettier honours `.editorconfig` (tabs, LF). Markdown is linted by `.markdownlint.json` at the repo root.
+- **Test:** Vitest, co-located `*.test.ts` files. Phase 1 tests target `shared/parser.ts` round-trip.
+
+### Root scripts
+
+```json
+{
+	"scripts": {
+		"dev":   "concurrently -n server,client -c yellow,cyan \"npm -w server run dev\" \"npm -w client run dev\"",
+		"build": "npm -w shared run build && npm -w server run build && npm -w client run build",
+		"start": "node packages/server/dist/index.js",
+		"test":  "vitest run",
+		"lint":  "eslint . && markdownlint-cli2 \"**/*.md\""
+	}
+}
+```
+
+`npm run dev` and `npm start` both accept the project flag: `-- --project <abs-path-to-project-folder>`. The flag is consumed by the server entry; the client receives nothing but the `/api` proxy.
+
+### Phase 0 checkpoint
+
+- `npm install` at the repo root succeeds with zero workspace warnings.
+- `npm run lint` passes with no errors on the empty codebase.
+- `npm run dev -- --project ../burden-of-the-guardian` boots two processes; `http://127.0.0.1:5173/` responds with the empty Vite shell, and `http://127.0.0.1:8787/api/config` (or whichever port the server picks) returns the parsed `config.json`.
+
+---
+
 ## Phase 1 — Core (MVP)
 
 **Goal:** read-only browsable encyclopedia.
