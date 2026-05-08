@@ -14,6 +14,7 @@ import { scanFolder, readFolioFile } from './fileIO.js';
 interface InternalFolioRecord extends FolioIndexRecord {
 	filePath: string;
 	mtime: number;
+	warnings: string[];
 }
 
 export class ProjectStore {
@@ -72,6 +73,13 @@ export class ProjectStore {
 	/** Return every folio's filePath — used by the wikilink rewriter (M4). */
 	getAllFilePaths(): string[] {
 		return this.folios.map((f) => f.filePath);
+	}
+
+	/** Return all parse warnings across the project, grouped by folio. */
+	getWarnings(): { folder: string; name: string; warnings: string[] }[] {
+		return this.folios
+			.filter((f) => f.warnings.length > 0)
+			.map(({ folder, name, warnings }) => ({ folder, name, warnings }));
 	}
 
 	/** Add a new folio record, assign the next ID, and re-sort alphabetically. */
@@ -180,11 +188,13 @@ export class ProjectStore {
 			let status: string | undefined;
 			let tags: string[] = [];
 			let snippet: string | undefined;
+			let warnings: string[] = [];
 			try {
 				const { content } = await readFolioFile(file.filePath);
 				const parsed = parseMarkdown(content, schema);
 				status = parsed.status;
 				tags = parsed.tags;
+				warnings = parsed.warnings ?? [];
 
 				const typeDef = schema.types[typeKey];
 				if (typeDef) {
@@ -222,6 +232,7 @@ export class ProjectStore {
 				status,
 				tags,
 				snippet,
+				warnings,
 			});
 		}
 		this.nextId = id;

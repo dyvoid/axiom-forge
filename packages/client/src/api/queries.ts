@@ -5,7 +5,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { ParsedFolio } from '@axiom-forge/shared';
-import { fetchFolios, fetchFolio, putFolio, postFolio, deleteFolio } from './client.js';
+import { fetchFolios, fetchFolio, putFolio, postFolio, deleteFolio, fetchWarnings } from './client.js';
+
+/** Schema parse warnings across all project files — fetched once at startup. */
+export function useWarnings() {
+	return useQuery({
+		queryKey: ['warnings'],
+		queryFn: fetchWarnings,
+		staleTime: Infinity,
+	});
+}
 
 /** All folio index records — drives the sidebar. */
 export function useFolios() {

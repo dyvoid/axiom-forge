@@ -122,6 +122,7 @@ export function foliosRouter(store: ProjectStore): Router {
 				status: reparsed.status,
 				tags: reparsed.tags,
 				snippet,
+				warnings: reparsed.warnings ?? [],
 			});
 			res.status(201).json({ name: filename, mtime, warnings: reparsed.warnings ?? [] });
 		} catch (err) {

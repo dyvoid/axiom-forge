@@ -103,6 +103,10 @@ export async function deleteFolio(folder: string, name: string): Promise<void> {
 	}
 }
 
+export function fetchWarnings(): Promise<{ folder: string; name: string; warnings: string[] }[]> {
+	return request('/warnings');
+}
+
 export async function reloadProject(): Promise<void> {
 	const res = await fetch(`${BASE}/reload`, { method: 'POST' });
 	if (!res.ok) {

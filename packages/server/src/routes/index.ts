@@ -9,6 +9,10 @@ export function mountRoutes(app: Express, store: ProjectStore): void {
 	app.use('/api/schema', schemaRouter(store));
 	app.use('/api/folios', foliosRouter(store));
 
+	app.get('/api/warnings', (_req, res) => {
+		res.json(store.getWarnings());
+	});
+
 	app.post('/api/reload', (_req, res) => {
 		store.reload()
 			.then(() => res.json({ ok: true }))
