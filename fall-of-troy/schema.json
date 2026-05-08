@@ -2,7 +2,7 @@
 	"version": "1.0.0",
 	"types": {
 		"Human": {
-			"icon": "person",
+			"icon": "user",
 			"folder": "Humans",
 			"sections": {
 				"Basic Information": {
