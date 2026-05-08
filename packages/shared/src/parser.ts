@@ -226,7 +226,7 @@ function serializeFieldValue(value: FieldValue, fieldDef: FieldDef): string {
 	}
 }
 
-function isFieldValueEmpty(value: FieldValue): boolean {
+function isFieldValueEmpty(value: FieldValue | undefined): boolean {
 	if (value === null || value === undefined || value === '') return true;
 	if (Array.isArray(value) && value.length === 0) return true;
 	return false;

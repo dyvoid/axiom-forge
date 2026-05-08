@@ -9,9 +9,8 @@ const HOST = '127.0.0.1';
 function parseProjectArg(argv: readonly string[]): string {
 	const idx = argv.indexOf('--project');
 	if (idx === -1 || idx === argv.length - 1) {
-		console.error('Error: --project <path> is required.');
-		console.error('Usage: axiom-forge --project <path-to-project-folder>');
-		process.exit(1);
+		// Default to ./burden-of-the-guardian if not specified
+		return resolve(process.cwd(), './burden-of-the-guardian');
 	}
 	const raw = argv[idx + 1]!;
 	return resolve(process.cwd(), raw);
