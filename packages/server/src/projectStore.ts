@@ -1,5 +1,5 @@
 import { readFile, stat } from 'node:fs/promises';
-import { resolve, join } from 'node:path';
+import { resolve } from 'node:path';
 import {
 	ConfigSchema,
 	ProjectSchemaSchema,
@@ -58,7 +58,7 @@ export class ProjectStore {
 
 	/** Return all folio index records (for the sidebar). */
 	getFolios(): FolioIndexRecord[] {
-		return this.folios.map(({ filePath, mtime, ...rest }) => rest);
+		return this.folios.map(({ filePath: _f, mtime: _m, ...rest }) => rest);
 	}
 
 	/** Return folios filtered by type key (e.g. "Character"). */

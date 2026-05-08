@@ -27,10 +27,6 @@ export function Landing(): JSX.Element {
 
 	const totalEntries = folios?.length ?? 0;
 
-	// Pick the first type with folios for "Enter the Archive"
-	const firstType = Object.keys(schema.types)[0];
-	const firstFolder = firstType ? schema.types[firstType]!.folder : '';
-
 	function handleEnter() {
 		navigate('/archive');
 	}
@@ -64,8 +60,6 @@ export function Landing(): JSX.Element {
 				<div className={styles.typeCounts}>
 					{Object.entries(schema.types).map(([typeKey, typeDef]) => {
 						const count = typeCounts[typeKey] ?? 0;
-						const firstFolio = folios?.find(f => f.type === typeKey);
-						
 						return (
 							<button 
 								key={typeKey} 

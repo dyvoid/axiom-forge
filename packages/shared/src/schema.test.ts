@@ -5,19 +5,19 @@ import { dirname, resolve } from 'node:path';
 import { ConfigSchema, ProjectSchemaSchema } from './schema.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const projectRoot = resolve(here, '../../../burden-of-the-guardian');
+const projectRoot = resolve(here, '../../../fall-of-troy');
 
 function readJson(relPath: string): unknown {
 	return JSON.parse(readFileSync(resolve(projectRoot, relPath), 'utf-8'));
 }
 
 describe('seed project validates against the shared zod schemas', () => {
-	it('accepts burden-of-the-guardian/config.json', () => {
+	it('accepts fall-of-troy/config.json', () => {
 		const result = ConfigSchema.safeParse(readJson('config.json'));
 		expect(result.success, JSON.stringify(result, null, 2)).toBe(true);
 	});
 
-	it('accepts burden-of-the-guardian/schema.json', () => {
+	it('accepts fall-of-troy/schema.json', () => {
 		const result = ProjectSchemaSchema.safeParse(readJson('schema.json'));
 		expect(result.success, JSON.stringify(result, null, 2)).toBe(true);
 	});

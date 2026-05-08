@@ -1,4 +1,4 @@
-import type { SectionDef, ParsedSection, FieldDef, WikiLink } from '@axiom-forge/shared';
+import type { SectionDef, ParsedSection, WikiLink } from '@axiom-forge/shared';
 import { WikiLinkChip } from '../ui/WikiLinkChip.js';
 import styles from './MetaSection.module.css';
 
@@ -34,7 +34,7 @@ export function MetaSection({ name, schema, data }: MetaSectionProps): JSX.Eleme
 	);
 }
 
-export function FieldValueRenderer({ value, type }: { value: any; type: string }): JSX.Element {
+export function FieldValueRenderer({ value, type }: { value: unknown; type: string }): JSX.Element {
 	if (type === 'wikilink') {
 		return <WikiLinkChip link={value as WikiLink} />;
 	}

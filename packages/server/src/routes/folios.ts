@@ -3,7 +3,7 @@ import { resolve, join } from 'node:path';
 import { Router } from 'express';
 import { displayNameToFilename, parseMarkdown, serializeToMarkdown, type ParsedFolio } from '@axiom-forge/shared';
 import type { ProjectStore } from '../projectStore.js';
-import { readFolioFile, writeFolioFile, statFile } from '../fileIO.js';
+import { writeFolioFile, statFile } from '../fileIO.js';
 
 export function foliosRouter(store: ProjectStore): Router {
 	const r = Router();

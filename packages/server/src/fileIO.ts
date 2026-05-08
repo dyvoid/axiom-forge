@@ -4,7 +4,7 @@
  */
 
 import { readFile, readdir, stat, writeFile, rename } from 'node:fs/promises';
-import { resolve, join } from 'node:path';
+import { join } from 'node:path';
 
 export interface FileInfo {
 	name: string;
