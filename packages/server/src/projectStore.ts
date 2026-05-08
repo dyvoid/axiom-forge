@@ -97,12 +97,8 @@ export class ProjectStore {
 			}
 		}
 
-		// Sort by birthtime ascending, filename as tiebreaker.
-		allFiles.sort((a, b) => {
-			const timeDiff = a.file.birthtime - b.file.birthtime;
-			if (timeDiff !== 0) return timeDiff;
-			return a.file.name.localeCompare(b.file.name);
-		});
+		// Sort alphabetically by name.
+		allFiles.sort((a, b) => a.file.name.localeCompare(b.file.name));
 
 		// Assign IDs and parse Meta blocks for status/tags.
 		this.folios = [];
@@ -110,11 +106,36 @@ export class ProjectStore {
 		for (const { typeKey, folder, file } of allFiles) {
 			let status: string | undefined;
 			let tags: string[] = [];
+			let snippet: string | undefined;
 			try {
 				const { content } = await readFolioFile(file.filePath);
 				const parsed = parseMarkdown(content, schema);
 				status = parsed.status;
 				tags = parsed.tags;
+
+				const typeDef = schema.types[typeKey];
+				if (typeDef) {
+					const proseSectionName = Object.entries(typeDef.sections).find(([, def]) => def.role === 'prose')?.[0];
+					if (proseSectionName) {
+						const proseContent = parsed.sections[proseSectionName]?.content;
+						if (proseContent) {
+							// Split by double newline to get the true first paragraph, then flatten any hard-wrapped lines
+							const firstParagraph = proseContent.split(/\n\s*\n/).map(s => s.trim().replace(/\n/g, ' ')).filter(Boolean)[0];
+							if (firstParagraph) {
+								let text = firstParagraph.replace(/^[#*>-]+\s*/, '');
+								if (text.length > 120) {
+									// Truncate cleanly without splitting words or leaving trailing punctuation
+									text = text.substring(0, 120);
+									text = text.substring(0, Math.min(text.length, text.lastIndexOf(' ')));
+									text = text.replace(/[\s,;:\-.]+$/, '');
+									snippet = text + '...';
+								} else {
+									snippet = text;
+								}
+							}
+						}
+					}
+				}
 			} catch {
 				// If parsing fails, still index the folio with no status/tags
 			}
@@ -127,6 +148,7 @@ export class ProjectStore {
 				mtime: file.mtime,
 				status,
 				tags,
+				snippet,
 			});
 		}
 		this.nextId = id;

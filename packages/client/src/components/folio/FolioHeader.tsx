@@ -8,11 +8,6 @@ interface FolioHeaderProps {
 }
 
 export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
-	const basicInfo = folio.sections['Basic Information']?.fields;
-	const dob = basicInfo?.['Date of Birth'];
-	const dod = basicInfo?.['Date of Death'];
-	const hasDates = dob || dod;
-
 	return (
 		<header className={styles.header}>
 			<div className={styles.topRow}>
@@ -37,11 +32,6 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 			<div className={styles.metaRow}>
 				{folio.status && (
 					<span className={styles.statusPill}>{folio.status}</span>
-				)}
-				{hasDates && (
-					<span className={styles.dateRange}>
-						{dob || '?'} — {dod || '?'}
-					</span>
 				)}
 				{folio.tags && folio.tags.length > 0 && (
 					<div className={styles.tags}>

@@ -66,4 +66,5 @@ export interface FolioIndexRecord {
 	name: string;
 	status?: FolioStatus;
 	tags: string[];
+	snippet?: string;
 }

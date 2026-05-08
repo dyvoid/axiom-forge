@@ -39,19 +39,26 @@ export function CategoryIndexView(): JSX.Element {
 				{categoryFolios.length === 0 ? (
 					<div className={styles.empty}>No entries yet.</div>
 				) : (
-					categoryFolios.map(f => (
-						<Link key={f.id} to={`/folio/${f.folder}/${f.name}`} className={styles.entry}>
-							<span className={`${styles.name} ${f.status === 'Deceased' || f.status === 'Destroyed' ? styles.deceased : ''}`}>
-								{f.name.replace(/_/g, ' ')}
-							</span>
-							
-							<div className={styles.entryMeta}>
-								{f.tags && f.tags.length > 0 && (
-									<span className={styles.tags}>{f.tags.join(' · ')}</span>
-								)}
-							</div>
+					categoryFolios.map(f => {
+						const isInactive = typeDef?.inactiveWhen?.includes(f.status ?? '');
+						return (
+							<Link key={f.id} to={`/folio/${f.folder}/${f.name}`} className={styles.entry}>
+								<span className={`${styles.name} ${isInactive ? styles.deceased : ''}`}>
+									{f.name.replace(/_/g, ' ')}
+								</span>
+								
+								<div className={styles.entryMeta}>
+									{f.snippet ? (
+										<span className={styles.snippet}>{f.snippet}</span>
+									) : (
+										f.tags && f.tags.length > 0 && (
+											<span className={styles.tags}>{f.tags.join(' · ')}</span>
+										)
+									)}
+								</div>
 						</Link>
-					))
+						);
+					})
 				)}
 			</div>
 		</div>

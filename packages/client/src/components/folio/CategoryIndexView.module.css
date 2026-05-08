@@ -1,4 +1,5 @@
 .container {
+	width: 100%;
 	max-width: var(--content-max-width);
 	margin: 0 auto;
 	padding: var(--sp-7);
@@ -85,6 +86,7 @@
 .entry {
 	display: flex;
 	align-items: baseline;
+	flex-wrap: wrap;
 	gap: var(--sp-5);
 	padding: var(--sp-4) 0;
 	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
@@ -116,10 +118,24 @@
 	font-size: var(--fs-tiny);
 	letter-spacing: 0.18em;
 	text-transform: uppercase;
+	flex: 1;
+	min-width: 0;
 }
 
 .tags {
 	color: var(--text-muted);
 	font-style: italic;
 	text-transform: lowercase;
+}
+
+.snippet {
+	font-family: var(--ff-body);
+	font-size: var(--fs-body);
+	color: var(--text-muted);
+	letter-spacing: 0;
+	text-transform: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 100%;
 }
