@@ -39,6 +39,15 @@ export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
 		<div className={styles.container}>
 			<FolioHeader folio={folio} icon={typeDef.icon} />
 
+			{(folio.warnings?.length ?? 0) > 0 && (
+				<div className={styles.warnings}>
+					<span className={styles.warningsLabel}>Schema warnings</span>
+					<ul>
+						{folio.warnings!.map((w, i) => <li key={i}>{w}</li>)}
+					</ul>
+				</div>
+			)}
+
 			{/* Top Block Layout */}
 			{(hasProseData || hasMetaData) && (
 				<>

@@ -101,6 +101,7 @@
 .name {
 	font-family: var(--ff-serif);
 	font-size: var(--fs-subtitle);
+	font-weight: 700;
 	color: var(--text-primary);
 	min-width: 140px;
 }

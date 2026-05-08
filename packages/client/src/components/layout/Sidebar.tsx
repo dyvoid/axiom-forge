@@ -72,8 +72,8 @@ export function Sidebar(): JSX.Element {
 									<NavLink
 										key={f.id}
 										to={`/folio/${activeSchema.folder}/${f.name}`}
-										className={({ isActive }) => 
-											`${styles.folioLink} ${isActive ? styles.active : ''} ${isInactive ? styles.inactive : ''}`
+										className={({ isActive }) =>
+											`${styles.folioLink} ${isActive ? styles.active : ''}`
 										}
 									>
 										{f.name.replace(/_/g, ' ')}

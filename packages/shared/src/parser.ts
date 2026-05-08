@@ -102,7 +102,7 @@ function parseSectionLevelValue(body: string, sectionDef: SectionDef): ParsedSec
 
 // ── Field Section Parsing ───────────────────────────────────
 
-function parseFieldSection(body: string, sectionDef: SectionDef): ParsedSection {
+function parseFieldSection(body: string, sectionDef: SectionDef, sectionName: string, warnings: string[]): ParsedSection {
 	const fields: Record<string, FieldValue> = {};
 	const fieldDefs = sectionDef.fields ?? {};
 
@@ -113,8 +113,19 @@ function parseFieldSection(body: string, sectionDef: SectionDef): ParsedSection 
 		const fieldDef = fieldDefs[fieldName];
 		if (fieldDef) {
 			fields[fieldName] = parseFieldValue(rawValue, fieldDef);
+			if (rawValue && fieldDef.options) {
+				const optionValues = fieldDef.options.map(o => typeof o === 'string' ? o : o.value);
+				const values = (fieldDef.type === 'multiselect')
+					? rawValue.split(',').map(s => s.trim()).filter(Boolean)
+					: [rawValue];
+				for (const v of values) {
+					if (!optionValues.includes(v)) {
+						warnings.push(`Invalid value "${v}" for ${fieldDef.type} field "${fieldName}" in section "${sectionName}" (options: ${optionValues.join(', ')})`);
+					}
+				}
+			}
 		} else {
-			// Unknown field — keep as raw string
+			warnings.push(`Unknown field "${fieldName}" in section "${sectionName}"`);
 			fields[fieldName] = rawValue || null;
 		}
 	}
@@ -167,28 +178,30 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 
 	const typeDef = schema.types[meta.type];
 	const folder = typeDef?.folder ?? '';
+	const warnings: string[] = [];
+
+	if (meta.type && !typeDef) {
+		warnings.push(`Unknown type "${meta.type}" — no schema definition found`);
+	}
 
 	const sections: Record<string, ParsedSection> = {};
 
 	for (const [sectionName, body] of rawSections) {
 		if (sectionName === 'Meta') continue;
 		if (!typeDef) {
-			// No schema for this type — store everything as content
 			sections[sectionName] = { content: body || undefined };
 			continue;
 		}
 		const sectionDef = typeDef.sections[sectionName];
 		if (!sectionDef) {
-			// Section not in schema — keep as raw content
+			warnings.push(`Unknown section "${sectionName}"`);
 			sections[sectionName] = { content: body || undefined };
 			continue;
 		}
 
 		if (sectionDef.fields) {
-			// Structured field section
-			sections[sectionName] = parseFieldSection(body, sectionDef);
+			sections[sectionName] = parseFieldSection(body, sectionDef, sectionName, warnings);
 		} else {
-			// Section-level typed value (textarea, wikilink-list, etc.)
 			sections[sectionName] = parseSectionLevelValue(body, sectionDef);
 		}
 	}
@@ -200,6 +213,7 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 		status: meta.status,
 		tags: meta.tags,
 		sections,
+		warnings,
 	};
 }
 

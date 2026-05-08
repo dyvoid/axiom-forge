@@ -36,3 +36,36 @@
 	flex-direction: column;
 	gap: var(--sp-7);
 }
+
+.warnings {
+	margin-top: var(--sp-4);
+	padding: var(--sp-3) var(--sp-4);
+	border-left: 2px solid var(--accent-rust);
+	background: color-mix(in srgb, var(--accent-rust) 6%, var(--bg-page));
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-2);
+}
+
+.warningsLabel {
+	font-family: var(--ff-display);
+	font-size: var(--fs-eyebrow);
+	font-weight: 500;
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--accent-rust);
+}
+
+.warnings ul {
+	list-style: disc;
+	padding-left: 1.2em;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.warnings li {
+	font-size: var(--fs-meta);
+	color: var(--text-secondary);
+	font-family: var(--ff-body);
+}

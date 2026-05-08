@@ -46,7 +46,15 @@
 }
 
 .typeRow.activeTypeRow {
-	border-bottom-color: var(--text-primary);
+	border-bottom-color: var(--accent-rust);
+}
+
+.typeRow.activeTypeRow .typeLabel {
+	color: var(--accent-rust);
+}
+
+.typeRow.activeTypeRow .typeLabel svg {
+	color: var(--accent-rust);
 }
 
 .typeLabel {
@@ -98,16 +106,8 @@
 .folioLink.active {
 	color: var(--accent-rust);
 	border-left-color: var(--accent-rust);
-}
-
-.folioLink.inactive {
-	font-style: italic;
-	color: var(--text-muted);
-	opacity: 0.8;
-}
-
-.folioLink.active.inactive {
-	color: var(--accent-rust);
+	background: rgba(138, 53, 34, 0.07);
+	font-weight: 600;
 }
 
 .footer {

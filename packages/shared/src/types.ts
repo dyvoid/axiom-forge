@@ -44,6 +44,7 @@ export interface ParsedFolio {
 	status?: string;
 	tags: string[];
 	sections: Record<string, ParsedSection>;
+	warnings?: string[];
 	mtime?: number;
 }
 
