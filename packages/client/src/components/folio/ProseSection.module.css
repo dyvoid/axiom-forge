@@ -19,9 +19,23 @@
 	gap: var(--sp-4);
 }
 
-.content p {
+.content p,
+.content li {
 	font-family: var(--ff-body);
 	font-size: var(--fs-body-lg);
 	line-height: var(--lh-body);
 	color: var(--text-primary);
+}
+
+.content ul,
+.content ol {
+	padding-left: 1.5em;
+}
+
+.content ul {
+	list-style: disc;
+}
+
+.content ol {
+	list-style: decimal;
 }
