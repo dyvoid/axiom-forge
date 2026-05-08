@@ -28,7 +28,7 @@ export function Landing(): JSX.Element {
 	const totalEntries = folios?.length ?? 0;
 
 	function handleEnter() {
-		navigate('/archive');
+		navigate('/index');
 	}
 
 	return (

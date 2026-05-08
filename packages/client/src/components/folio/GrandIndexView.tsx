@@ -1,29 +1,23 @@
 import { Link } from 'react-router-dom';
 import { useFolios } from '../../api/queries.js';
 import { Icon } from '../ui/Icon.js';
-import styles from './ArchiveIndexView.module.css';
+import styles from './GrandIndexView.module.css';
 import { useProject } from '../../context/ProjectContext.js';
 
-export function ArchiveIndexView(): JSX.Element {
+export function GrandIndexView(): JSX.Element {
 	const { data: folios, isLoading } = useFolios();
 	const { schema } = useProject();
 
-	if (isLoading) return <div className={styles.container}>Loading archive...</div>;
+	if (isLoading) return <div className={styles.container}>Loading...</div>;
 
 	const allFolios = folios ?? [];
-	
-	// Group folios by starting letter
+
 	const grouped: Record<string, typeof allFolios> = {};
-	
-	// Sort all folios alphabetically by display title
 	const sortedFolios = [...allFolios].sort((a, b) => a.title.localeCompare(b.title));
 
 	for (const folio of sortedFolios) {
 		const firstLetter = folio.title.charAt(0).toUpperCase();
-		
-		// If it's not a letter, put it in '#'
 		const groupKey = /[A-Z]/.test(firstLetter) ? firstLetter : '#';
-		
 		if (!grouped[groupKey]) grouped[groupKey] = [];
 		grouped[groupKey]!.push(folio);
 	}
@@ -37,12 +31,12 @@ export function ArchiveIndexView(): JSX.Element {
 				<div className={styles.meta}>
 					{allFolios.length} {allFolios.length === 1 ? 'ENTRY' : 'ENTRIES'}
 				</div>
-				
+
 				<div className={styles.searchBar}>
 					<span className={styles.searchIcon}>⌕</span>
-					<input 
-						type="text" 
-						placeholder="Search the archive..." 
+					<input
+						type="text"
+						placeholder="Search the index..."
 						className={styles.searchInput}
 					/>
 				</div>

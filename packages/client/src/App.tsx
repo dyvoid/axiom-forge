@@ -6,7 +6,7 @@ import { FolioRead } from './routes/FolioRead.js';
 import { FolioEdit } from './routes/FolioEdit.js';
 import { NotFound } from './routes/NotFound.js';
 import { AppShell } from './components/layout/AppShell.js';
-import { ArchiveIndexView } from './components/folio/ArchiveIndexView.js';
+import { GrandIndexView } from './components/folio/GrandIndexView.js';
 import { CategoryIndexView } from './components/folio/CategoryIndexView.js';
 
 const queryClient = new QueryClient({
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
 	{
 		element: <AppShell />,
 		children: [
-			{ path: '/archive', element: <ArchiveIndexView /> },
+			{ path: '/index', element: <GrandIndexView /> },
 			{ path: '/folio/:folder', element: <CategoryIndexView /> },
 			{ path: '/folio/:folder/:name', element: <FolioRead /> },
 			{ path: '/folio/:folder/:name/edit', element: <FolioEdit /> },

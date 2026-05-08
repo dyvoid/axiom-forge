@@ -24,7 +24,7 @@ export function TopHeader(): JSX.Element {
 
 	return (
 		<header className={styles.header}>
-			<Link to="/archive" className={styles.left}>
+			<Link to="/index" className={styles.left}>
 				<span className={styles.logo}>AXIOM · FORGE</span>
 				<div className={styles.separator} />
 				<span className={styles.projectTitle}>{config.name}</span>
@@ -42,7 +42,7 @@ export function TopHeader(): JSX.Element {
 					<Icon name="search" size={14} className={styles.searchIcon} />
 					<input
 						type="text"
-						placeholder="Search the archive..."
+						placeholder="Search the index..."
 						className={styles.searchInput}
 					/>
 					<span className={styles.shortcut}>/</span>

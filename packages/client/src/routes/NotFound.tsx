@@ -35,7 +35,7 @@ export function NotFound(): JSX.Element {
 				color: 'var(--accent-gold)',
 				marginTop: '16px',
 			}}>
-				← Return to Archive
+				← Return to Index
 			</Link>
 		</div>
 	);
