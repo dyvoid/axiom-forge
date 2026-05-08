@@ -36,8 +36,6 @@ git/
       index.html
       src/main.tsx
   burden-of-the-guardian/         # the seed test project (not part of the build)
-  plan/
-  prototype/
 ```
 
 ### Toolchain
@@ -45,7 +43,7 @@ git/
 - **Node:** `>=18.17` (pinned in root `package.json` `engines`). Required for stable `birthtime` cross-platform and modern ESM behaviour. Windows users on Node 18 should be fine; Linux/macOS users on Node ≤16 will be rejected.
 - **Package manager:** npm 9+. No pnpm/yarn — npm workspaces are sufficient and zero-install on a fresh Node.
 - **TypeScript:** 5.x, `strict: true`, `moduleResolution: "bundler"` for client/shared, `"node"` for server.
-- **Lint:** ESLint with `@typescript-eslint`, plus Prettier — but Prettier honours `.editorconfig` (tabs, LF). Markdown is linted by `.markdownlint.json` at the repo root.
+- **Lint:** ESLint with `@typescript-eslint`. Formatting is governed by `.editorconfig` only — no Prettier. Markdown is linted by `.markdownlint.json` at the repo root.
 - **Test:** Vitest, co-located `*.test.ts` files. Phase 1 tests target `shared/parser.ts` round-trip.
 
 ### Root scripts
@@ -68,7 +66,7 @@ git/
 
 - `npm install` at the repo root succeeds with zero workspace warnings.
 - `npm run lint` passes with no errors on the empty codebase.
-- `npm run dev -- --project ../burden-of-the-guardian` boots two processes; `http://127.0.0.1:5173/` responds with the empty Vite shell, and `http://127.0.0.1:8787/api/config` (or whichever port the server picks) returns the parsed `config.json`.
+- `npm run dev` boots two processes; `http://127.0.0.1:5173/` responds with the Vite shell displaying the live-fetched `config.json`, and `http://127.0.0.1:3000/api/config` and `/api/schema` return the parsed-and-validated JSON.
 
 ---
 
