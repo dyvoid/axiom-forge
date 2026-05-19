@@ -1,6 +1,6 @@
 # Axiom Forge
 
-A schema-driven, local-first encyclopedia and worldbuilding tool. Your world lives as a folder of plain Markdown files on disk; Axiom Forge reads them, parses structured fields out of standard Markdown headings and lists, and gives you a fast, navigable web UI for reading, linking, and editing.
+A schema-driven, local-first encyclopedia and worldbuilding tool. Your world lives as a folder of plain Markdown files on disk; Axiom Forge reads them, parses structured fields out of standard Markdown headings and lists, and gives you a fast, beautiful, navigable web UI for reading, linking, and editing.
 
 No database. No cloud. No lock-in. The Markdown files *are* the source of truth — open them in any editor, commit them to Git, sync them however you like.
 
