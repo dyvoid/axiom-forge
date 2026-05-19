@@ -6,9 +6,9 @@ uniform float u_time;
 uniform vec2 u_mouse;
 
 float hash(vec2 p) {
-	p = fract(p * vec2(123.34, 456.21));
-	p += dot(p, p + 45.32);
-	return fract(p.x * p.y);
+	vec2 q = fract(p * vec2(0.1031, 0.1030));
+	q += dot(q, q.yx + 33.33);
+	return fract((q.x + q.y) * q.x);
 }
 
 float vnoise(vec2 p) {

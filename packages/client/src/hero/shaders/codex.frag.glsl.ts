@@ -17,7 +17,7 @@ void main() {
 
 	// Warm parchment base.
 	vec3 base = mix(vec3(0.965, 0.945, 0.905), vec3(0.935, 0.905, 0.85), uv.y);
-	float grain = fbm(uv * vec2(u_res.x, u_res.y) * 0.004 + 13.0);
+	float grain = fbm(uv * vec2(1600.0, 900.0) * 0.004 + 13.0);
 	base *= 0.97 + 0.06 * grain;
 
 	// Smoke field — large soft shapes; slow upward drift.
