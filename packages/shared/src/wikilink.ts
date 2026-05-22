@@ -45,9 +45,11 @@ export function parseWikiLinks(raw: string): WikiLink[] {
 	return results;
 }
 
-/** Serialize a WikiLink back to `[[Folder/Name]]` form. */
+/** Serialize a WikiLink back to `[[Folder/Name]]` or `[[Folder/Name|Alias]]` form. */
 export function serializeWikiLink(link: WikiLink): string {
-	return `[[${link.folder}/${link.name}]]`;
+	return link.alias
+		? `[[${link.folder}/${link.name}|${link.alias}]]`
+		: `[[${link.folder}/${link.name}]]`;
 }
 
 /** Serialize an array of WikiLinks as comma-separated `[[…]], [[…]]`. */

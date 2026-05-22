@@ -48,12 +48,29 @@ export function fetchFolio(folder: string, name: string): Promise<ParsedFolio & 
 	return request(`/folios/${encodeURIComponent(folder)}/${encodeURIComponent(name)}`);
 }
 
+export interface BrokenLinkReport {
+	section: string;
+	field?: string;
+	folder: string;
+	name: string;
+}
+
+export interface SaveFolioResponse {
+	mtime: number;
+	warnings: string[];
+	brokenLinks: BrokenLinkReport[];
+	/** Present only when the H1 changed and the file was renamed on disk. */
+	renamedTo?: string;
+	/** Present only on rename; count of `[[…]]` occurrences rewritten across the project. */
+	linksRewritten?: number;
+}
+
 export async function putFolio(
 	folder: string,
 	name: string,
 	folio: ParsedFolio,
 	clientMtime: number,
-): Promise<{ mtime: number; warnings: string[] }> {
+): Promise<SaveFolioResponse> {
 	const res = await fetch(
 		`${BASE}/folios/${encodeURIComponent(folder)}/${encodeURIComponent(name)}`,
 		{
@@ -70,13 +87,13 @@ export async function putFolio(
 		const body = await res.text().catch(() => '');
 		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
 	}
-	return res.json() as Promise<{ mtime: number; warnings: string[] }>;
+	return res.json() as Promise<SaveFolioResponse>;
 }
 
 export async function postFolio(
 	folder: string,
 	folio: ParsedFolio,
-): Promise<{ name: string; mtime: number; warnings: string[] }> {
+): Promise<{ name: string; mtime: number; warnings: string[]; brokenLinks: BrokenLinkReport[] }> {
 	const res = await fetch(`${BASE}/folios/${encodeURIComponent(folder)}`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -89,7 +106,7 @@ export async function postFolio(
 		const body = await res.text().catch(() => '');
 		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
 	}
-	return res.json() as Promise<{ name: string; mtime: number; warnings: string[] }>;
+	return res.json() as Promise<{ name: string; mtime: number; warnings: string[]; brokenLinks: BrokenLinkReport[] }>;
 }
 
 export async function deleteFolio(folder: string, name: string): Promise<void> {

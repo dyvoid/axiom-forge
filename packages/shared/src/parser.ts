@@ -24,7 +24,7 @@ function splitSections(markdown: string): { h1: string; sections: [string, strin
 	let currentLines: string[] = [];
 
 	for (const line of lines) {
-		if (line.startsWith('# ') && !line.startsWith('## ')) {
+		if (line.startsWith('# ')) {
 			h1 = line.slice(2).trim();
 		} else if (line.startsWith('## ')) {
 			if (currentHeader !== null) {
@@ -261,7 +261,9 @@ export function serializeToMarkdown(folio: ParsedFolio, schema: ProjectSchema): 
 	// Meta block (always present, always first)
 	lines.push('## Meta');
 	lines.push(`- **Type:** ${folio.type}`);
-	lines.push(`- **Tags:** ${folio.tags.join(', ')}`);
+	if (folio.tags.length > 0) {
+		lines.push(`- **Tags:** ${folio.tags.join(', ')}`);
+	}
 
 	const typeDef = schema.types[folio.type];
 	if (!typeDef) return lines.join('\n') + '\n';

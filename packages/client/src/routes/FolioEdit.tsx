@@ -45,8 +45,11 @@ export function FolioEdit(): JSX.Element {
 		saveMutation.mutate(
 			{ folio: draft, clientMtime: folio!.mtime },
 			{
-				onSuccess: () => {
-					navigate(`/folio/${encodeURIComponent(folio!.folder)}/${encodeURIComponent(folio!.name)}`);
+				onSuccess: (response) => {
+					// If the server renamed the file (H1 changed), navigate to
+					// the new URL; otherwise back to the original read view.
+					const targetName = response.renamedTo ?? folio!.name;
+					navigate(`/folio/${encodeURIComponent(folio!.folder)}/${encodeURIComponent(targetName)}`);
 				},
 				onError: (err) => {
 					if (err instanceof ConflictError) {

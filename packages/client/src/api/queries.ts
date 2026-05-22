@@ -61,18 +61,30 @@ export function useDeleteFolio() {
 	});
 }
 
-/** Save an existing folio. */
+/** Save an existing folio. May rename the file if the H1 changed. */
 export function useSaveFolio(folder: string, name: string) {
 	const qc = useQueryClient();
 	return useMutation({
 		mutationFn: ({ folio, clientMtime }: { folio: ParsedFolio; clientMtime: number }) =>
 			putFolio(folder, name, folio, clientMtime),
-		onSuccess: ({ mtime, warnings }, { folio }) => {
-			qc.setQueryData(['folio', folder, name], (prev: unknown) => {
-				const base = (prev as ParsedFolio & { id: number; mtime: number } | undefined) ?? null;
-				if (!base) return prev;
-				return { ...base, ...folio, mtime, warnings };
-			});
+		onSuccess: (response, { folio }) => {
+			const { mtime, warnings, renamedTo } = response;
+			if (renamedTo) {
+				// File was renamed on disk — drop the stale cache entry under the
+				// old name, seed the new key, then refresh the sidebar.
+				qc.removeQueries({ queryKey: ['folio', folder, name] });
+				qc.setQueryData(['folio', folder, renamedTo], (prev: unknown) => {
+					const base = (prev as ParsedFolio & { id: number; mtime: number } | undefined) ?? null;
+					const next = { ...folio, name: renamedTo, mtime, warnings };
+					return base ? { ...base, ...next } : next;
+				});
+			} else {
+				qc.setQueryData(['folio', folder, name], (prev: unknown) => {
+					const base = (prev as ParsedFolio & { id: number; mtime: number } | undefined) ?? null;
+					if (!base) return prev;
+					return { ...base, ...folio, mtime, warnings };
+				});
+			}
 			qc.invalidateQueries({ queryKey: ['folios'] });
 		},
 	});

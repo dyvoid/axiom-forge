@@ -98,6 +98,33 @@ export class ProjectStore {
 	}
 
 	/**
+	 * Rename an existing folio record in place — preserves `id` so wiki-links
+	 * and any external references to the numeric folio number stay valid.
+	 * The on-disk rename is handled separately by `fileIO.renameFolioFile`.
+	 */
+	renameFolioRecord(
+		folder: string,
+		oldName: string,
+		newName: string,
+		newFilePath: string,
+		newMtime: number,
+	): void {
+		const record = this.folios.find((f) => f.folder === folder && f.name === oldName);
+		if (!record) return;
+		record.name = newName;
+		record.filePath = newFilePath;
+		record.mtime = newMtime;
+		// Keep the index alphabetical so consumers (sidebar) don't have to re-sort.
+		this.folios.sort((a, b) => a.name.localeCompare(b.name));
+	}
+
+	/** Update the cached mtime for a file path — used after batch wikilink rewrites. */
+	updateMtime(filePath: string, mtime: number): void {
+		const record = this.folios.find((f) => f.filePath === filePath);
+		if (record) record.mtime = mtime;
+	}
+
+	/**
 	 * Update an existing folio's index record in place, after a save.
 	 * Re-derives the snippet from the new prose content.
 	 */
@@ -199,30 +226,7 @@ export class ProjectStore {
 				tags = parsed.tags;
 				warnings = parsed.warnings ?? [];
 				if (parsed.title) title = parsed.title;
-
-				const typeDef = schema.types[typeKey];
-				if (typeDef) {
-					const proseSectionName = Object.entries(typeDef.sections).find(([, def]) => def.role === 'prose')?.[0];
-					if (proseSectionName) {
-						const proseContent = parsed.sections[proseSectionName]?.content;
-						if (proseContent) {
-							// Split by double newline to get the true first paragraph, then flatten any hard-wrapped lines
-							const firstParagraph = proseContent.split(/\n\s*\n/).map(s => s.trim().replace(/\n/g, ' ')).filter(Boolean)[0];
-							if (firstParagraph) {
-								let text = firstParagraph.replace(/^[#*>-]+\s*/, '');
-								if (text.length > 120) {
-									// Truncate cleanly without splitting words or leaving trailing punctuation
-									text = text.substring(0, 120);
-									text = text.substring(0, Math.min(text.length, text.lastIndexOf(' ')));
-									text = text.replace(/[\s,;:\-.]+$/, '');
-									snippet = text + '...';
-								} else {
-									snippet = text;
-								}
-							}
-						}
-					}
-				}
+				snippet = this.deriveSnippet(parsed);
 			} catch {
 				// If parsing fails, still index the folio with no tags
 			}

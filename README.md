@@ -157,7 +157,7 @@ The server reads the project folder once on startup, parses every Markdown file 
 
 ## Status
 
-Active development. The read/edit/create flow is functional; rename-with-link-rewriting and a wikilink picker are next on the roadmap.
+Active development. Phases 1 and 2 are complete: read, create, edit, delete, and **rename-with-project-wide-link-rewriting** all work end-to-end from the UI, with mtime conflict detection on save and broken-link reporting. Phase 3 (search + backlinks) is next.
 
 ## License
 
