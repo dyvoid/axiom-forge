@@ -101,20 +101,33 @@ git/
 
 ---
 
-## Phase 2 — Edit & Create
+## Phase 2 — Edit & Create ✓ Complete
 
 **Goal:** the app becomes a writing tool, not just a reader.
 
 - Edit mode with schema-driven form fields. One component per field type.
 - Field-type hints below each label (`date · freeform`, `wikilink → Locations`).
-- `PUT /api/folios/:type/:name` with mtime conflict check (409 path).
-- `POST /api/folios/:type` for new folios, with H1-derived filename.
-- `DELETE /api/folios/:type/:name` with confirmation dialog.
-- Server-side rename + project-wide wiki-link rewrite when H1 changes.
-- Save validation (zod): unknown fields/sections → 400; broken wiki-links → warning array.
-- Discard-while-dirty confirm dialog.
+- `PUT /api/folios/:folder/:name` with mtime conflict check (409 path, 5 ms NTFS-tuned slop).
+- `POST /api/folios/:folder` for new folios, with H1-derived filename.
+- `DELETE /api/folios/:folder/:name` with confirmation dialog (`ConfirmDialog` component, danger styling).
+- **Server-side rename pipeline:** when the H1 changes on save, the server (1) writes the new file, (2) deletes the old, (3) updates the index preserving the folio id, (4) rewrites every `[[Folder/OldName]]` (with or without `|alias`) to point at the new name across every other file in the project. Response includes `renamedTo` and `linksRewritten`.
+- **Save validation:** zod `ParsedFolioSchema` for structural shape + `validateAgainstSchema()` for unknown sections / unknown fields / invalid select values → 400 with machine-readable issue codes. Both helpers schema-agnostic.
+- **Broken wiki-link reporting:** PUT and POST responses include a `brokenLinks` array of `{ section, field?, folder, name }` for any wikilink whose target folio does not exist. Warning only — the save still succeeds. Phase 4 surfaces these visually.
+- Discard-while-dirty confirm via `window.confirm`.
+- **Test suite:**
+  - Parser round-trip tests against a synthetic in-memory schema covering every field type and every layout-role combination.
+  - `wikilinkRewrite` unit tests (alias preservation, idempotency, regex-meta safety, partial-name immunity).
+  - Server route tests via `supertest`, fixtures built per-test from a synthetic schema in `os.tmpdir()` — no coupling to any specific sample project.
+  - 42 tests across 4 files, all green.
 
-**Checkpoint:** create, rename, edit, and delete folios entirely from the UI.
+**Tech debt swept in this phase:**
+
+- `serializeWikiLink` now emits `|alias` when present (was silently dropping it).
+- Empty `Tags` line omitted on serialize when there are no tags (was writing `- **Tags:**`).
+- Dedupe of inline snippet-derivation code into `ProjectStore.deriveSnippet`.
+- Dead branch removed from `splitSections`.
+
+**Checkpoint:** create, rename, edit, and delete folios entirely from the UI, with link integrity preserved across renames.
 
 ---
 

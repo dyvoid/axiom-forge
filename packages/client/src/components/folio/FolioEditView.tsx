@@ -10,6 +10,7 @@ import {
 	type TypeDef,
 } from '@axiom-forge/shared';
 import { Icon } from '../ui/Icon.js';
+import { ConfirmDialog } from '../ui/ConfirmDialog.js';
 import { FieldEditor } from './edit/FieldEditor.js';
 import { FieldTypeHint } from './edit/FieldTypeHint.js';
 import { TextListField } from './edit/TextListField.js';
@@ -20,15 +21,18 @@ interface Props {
 	folio: ParsedFolio & { id: number; mtime: number };
 	typeDef: TypeDef;
 	saving: boolean;
+	deleting: boolean;
 	saveError: string | null;
 	onSave: (next: ParsedFolio) => void;
+	onDelete: () => void;
 }
 
-export function FolioEditView({ folio, typeDef, saving, saveError, onSave }: Props): JSX.Element {
+export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onSave, onDelete }: Props): JSX.Element {
 	const navigate = useNavigate();
 	// Local draft — initialised from server state, mutated on every keystroke.
 	const [draft, setDraft] = useState<ParsedFolio>(() => structuredClone(folio));
 	const [savedSnapshot, setSavedSnapshot] = useState<string>(() => JSON.stringify(folio));
+	const [confirmDelete, setConfirmDelete] = useState(false);
 
 	const dirty = JSON.stringify(draft) !== savedSnapshot;
 
@@ -77,6 +81,14 @@ export function FolioEditView({ folio, typeDef, saving, saveError, onSave }: Pro
 		<div className={styles.container}>
 			{/* Sticky toolbar */}
 			<div className={styles.toolbar}>
+				<button
+					type="button"
+					className={styles.btnGhost}
+					onClick={() => setConfirmDelete(true)}
+					disabled={saving || deleting}
+				>
+					Delete
+				</button>
 				<div className={styles.toolbarSpacer} />
 				<button type="button" className={styles.btnGhost} onClick={handleDiscard} disabled={saving}>
 					Discard
@@ -97,6 +109,19 @@ export function FolioEditView({ folio, typeDef, saving, saveError, onSave }: Pro
 					{saveError}
 				</div>
 			)}
+
+			<ConfirmDialog
+				open={confirmDelete}
+				title="Delete folio"
+				message={`Delete "${folio.title}"? This cannot be undone. The file will be removed from disk.`}
+				confirmLabel="Delete folio"
+				danger
+				onCancel={() => setConfirmDelete(false)}
+				onConfirm={() => {
+					setConfirmDelete(false);
+					onDelete();
+				}}
+			/>
 
 			{/* Folio eyebrow */}
 			<div className={styles.eyebrowRow}>
