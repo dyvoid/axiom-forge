@@ -15,7 +15,10 @@
 
 .chip.dead {
 	color: var(--text-muted);
-	pointer-events: none;
+	text-decoration: line-through;
+	text-decoration-thickness: 1px;
+	pointer-events: auto; /* re-enable so the title tooltip shows on hover */
+	cursor: help;
 }
 
 .icon {

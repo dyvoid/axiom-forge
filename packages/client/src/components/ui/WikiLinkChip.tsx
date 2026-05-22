@@ -18,7 +18,14 @@ export function WikiLinkChip({ link }: { link: WikiLink }): JSX.Element {
 	const iconName = targetType?.icon || 'circle';
 
 	if (isDead) {
-		return <span className={`${styles.chip} ${styles.dead}`}>[ <Icon name={iconName} size={10} className={styles.icon} /> {display} ]</span>;
+		return (
+			<span
+				className={`${styles.chip} ${styles.dead}`}
+				title={`No folio at ${link.folder}/${link.name}`}
+			>
+				[ <Icon name={iconName} size={10} className={styles.icon} /> {display} ]
+			</span>
+		);
 	}
 
 	return (

@@ -135,9 +135,25 @@ git/
 
 **Goal:** the lore graph becomes navigable.
 
-- `GET /api/search?q=` with the scope defined in `03_Backend.md`.
+Implementation order: **Stage A → Stage C → Stage B**
+
+### Stage A — Broken-link visibility ✓ Complete
+
+- `client/src/utils/links.ts`: schema-agnostic `isLinkResolved` / `collectUnresolvedLinks` helpers + unit tests.
+- `WikiLinkChip`: dead-link chip styled with strikethrough + hover tooltip ("No folio found at …").
+- `FolioEditView`: live warnings panel (gold-toned) above toolbar showing count and list of unresolved wikilink targets.
+
+### Stage C — Strict wikilink picker (next)
+
+- Replace freetext wikilink inputs with a `WikiLinkPicker` combobox that constrains selection to existing folios.
+- Wire into `FieldEditor` for `wikilink` field type.
+- Apply in prose editor for inline wikilink insertion.
+
+### Stage B — Search & backlinks (pending)
+
+- `GET /api/search?q=` — full-text across title, name, tags, prose snippet.
 - Header search bar, debounced, with result list and keyboard navigation.
-- `GET /api/backlinks/:type/:name` and the `▼ Backlinks (N)` collapsible panel.
+- `GET /api/folios/:folder/:name/backlinks` and the `▼ Backlinks (N)` collapsible panel on the read view.
 - Status semantics: `inactive: true` options drive italic-in-sidebar / muted-in-chips styling.
 
 **Checkpoint:** find any folio in under a second, see what links to what.
@@ -151,7 +167,6 @@ git/
 - `config.json` `theme.accent` override actually applied to the UI.
 - Tag filtering in the sidebar.
 - Keyboard navigation: arrow keys in sidebar, `/` to focus search, `e` to enter edit mode, `esc` to leave.
-- Broken wiki-link detection: links to non-existent folios flagged visually in both read and edit modes.
 - Project landing screen: title, description, type counts, optional `cover.jpg`/`cover.webp` background.
 - Empty-state polish (no folios of a type yet, no search results, etc.).
 

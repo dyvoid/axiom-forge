@@ -229,3 +229,27 @@
 	font-weight: 500;
 	margin-bottom: 6px;
 }
+
+/* Gold-toned variant: not an error, just an integrity warning. */
+.brokenLinks {
+	border-color: var(--accent-gold);
+	background: rgba(154, 122, 44, 0.06);
+}
+
+.brokenLinks .warningsLabel {
+	color: var(--accent-gold);
+}
+
+.brokenLinksList {
+	margin: 0;
+	padding-left: 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.brokenLinksList code {
+	font-family: var(--ff-mono);
+	font-size: 12px;
+	color: var(--text-primary);
+}
