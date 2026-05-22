@@ -15,6 +15,8 @@ import { FieldEditor } from './edit/FieldEditor.js';
 import { FieldTypeHint } from './edit/FieldTypeHint.js';
 import { TextListField } from './edit/TextListField.js';
 import { TextareaField } from './edit/TextareaField.js';
+import { useFolios } from '../../api/queries.js';
+import { collectUnresolvedLinks } from '../../utils/links.js';
 import styles from './FolioEditView.module.css';
 
 interface Props {
@@ -33,8 +35,10 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	const [draft, setDraft] = useState<ParsedFolio>(() => structuredClone(folio));
 	const [savedSnapshot, setSavedSnapshot] = useState<string>(() => JSON.stringify(folio));
 	const [confirmDelete, setConfirmDelete] = useState(false);
+	const { data: folios } = useFolios();
 
 	const dirty = JSON.stringify(draft) !== savedSnapshot;
+	const unresolvedLinks = collectUnresolvedLinks(draft, folios);
 
 	function patchSection(sectionName: string, patch: Partial<ParsedSection>): void {
 		setDraft((d) => ({
@@ -107,6 +111,24 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 				<div className={styles.warnings}>
 					<div className={styles.warningsLabel}>Save failed</div>
 					{saveError}
+				</div>
+			)}
+
+			{unresolvedLinks.length > 0 && (
+				<div className={`${styles.warnings} ${styles.brokenLinks}`}>
+					<div className={styles.warningsLabel}>
+						Unresolved wiki-links · {unresolvedLinks.length}
+					</div>
+					<ul className={styles.brokenLinksList}>
+						{unresolvedLinks.map((u, i) => (
+							<li key={i}>
+								{u.section}
+								{u.field ? ` · ${u.field}` : ''}
+								{' → '}
+								<code>{u.folder}/{u.name}</code>
+							</li>
+						))}
+					</ul>
 				</div>
 			)}
 
