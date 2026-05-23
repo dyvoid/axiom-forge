@@ -176,6 +176,30 @@ Implementation order: **Stage A → Stage C → Stage B**
 
 ---
 
-## Beyond Phase 4
+## Phase 5 — Themes (Placeholder)
+
+**Goal:** Allow extensive visual customization through project-specific themes.
+
+- **`theme.json` support:** Projects can define a `theme.json` file for colors and styles.
+- **Base themes:** Ship with two built-in defaults: `axiom-forge-light` and `axiom-forge-dark`.
+- **Overrides:** The project's `theme.json` will override the default `axiom-forge-light` base.
+- **UI Toggle:** Add a dropdown in the frontend to switch between the project's custom theme, the default light theme, and the default dark theme. 
+- *Note: Further specification required.*
+
+---
+
+## Phase 6 — Projects (Placeholder)
+
+**Goal:** Multi-project management directly within the application.
+
+- **Onboarding State:** Initial load without a project shows an "Add Project" button to point the app to a compatible folder.
+- **Top Bar Dropdown:** The header title becomes a dropdown menu allowing users to switch between loaded projects or add new ones.
+- **Project Editing:** Ability to edit a project's `config.json` directly from the UI.
+- **Project Deletion:** Ability to delete a project, with a critical choice presented to the user: delete all project files from the disk vs. just unlinking the folder from Axiom Forge.
+- *Note: Further specification required.*
+
+---
+
+## Beyond Phase 6
 
 Tracked as deferred items in `05_Implementation_Details.md` § Out of Scope. Pull into a phase only when a concrete user need surfaces.
