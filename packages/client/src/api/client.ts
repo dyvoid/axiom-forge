@@ -44,6 +44,14 @@ export function fetchFolios(): Promise<FolioIndexRecord[]> {
 	return request<FolioIndexRecord[]>('/folios');
 }
 
+export function fetchSearch(q: string): Promise<FolioIndexRecord[]> {
+	return request<FolioIndexRecord[]>(`/search?q=${encodeURIComponent(q)}`);
+}
+
+export function fetchBacklinks(folder: string, name: string): Promise<FolioIndexRecord[]> {
+	return request<FolioIndexRecord[]>(`/folios/${encodeURIComponent(folder)}/${encodeURIComponent(name)}/backlinks`);
+}
+
 export function fetchFolio(folder: string, name: string): Promise<ParsedFolio & { id: number; mtime: number }> {
 	return request(`/folios/${encodeURIComponent(folder)}/${encodeURIComponent(name)}`);
 }

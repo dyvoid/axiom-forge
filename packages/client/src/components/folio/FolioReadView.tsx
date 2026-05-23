@@ -4,6 +4,7 @@ import { FolioHeader } from './FolioHeader.js';
 import { ProseSection } from './ProseSection.js';
 import { MetaSection } from './MetaSection.js';
 import { FieldSection } from './FieldSection.js';
+import { BacklinksPanel } from './BacklinksPanel.js';
 import styles from './FolioReadView.module.css';
 
 interface FolioReadViewProps {
@@ -91,6 +92,8 @@ export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
 					);
 				})}
 			</div>
+
+			<BacklinksPanel folder={folio.folder} name={folio.name} />
 		</div>
 	);
 }

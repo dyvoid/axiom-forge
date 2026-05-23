@@ -5,7 +5,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { ParsedFolio } from '@axiom-forge/shared';
-import { fetchFolios, fetchFolio, putFolio, postFolio, deleteFolio, fetchWarnings } from './client.js';
+import { fetchFolios, fetchFolio, putFolio, postFolio, deleteFolio, fetchWarnings, fetchSearch, fetchBacklinks } from './client.js';
 
 /** Schema parse warnings across all project files — fetched once at startup. */
 export function useWarnings() {
@@ -22,6 +22,25 @@ export function useFolios() {
 		queryKey: ['folios'],
 		queryFn: fetchFolios,
 		staleTime: 30_000,
+	});
+}
+
+/** Search folios by query string. */
+export function useSearch(query: string) {
+	return useQuery({
+		queryKey: ['search', query],
+		queryFn: () => fetchSearch(query),
+		enabled: query.trim().length > 0,
+		staleTime: 5000,
+	});
+}
+
+/** Fetch folios that link to a specific folio. */
+export function useBacklinks(folder: string, name: string) {
+	return useQuery({
+		queryKey: ['backlinks', folder, name],
+		queryFn: () => fetchBacklinks(folder, name),
+		enabled: Boolean(folder && name),
 	});
 }
 
