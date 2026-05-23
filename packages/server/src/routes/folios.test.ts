@@ -372,6 +372,43 @@ describe('POST + DELETE /api/folios/:folder', () => {
 			} });
 		expect(res.status).toBe(409);
 	});
+	it('reports brokenLinks when a wikilink points to a missing folio on creation', async () => {
+		const newFolio = {
+			name: '',
+			title: 'Brand_New',
+			type: 'Alpha',
+			folder: 'Alphas',
+			tags: ['fresh'],
+			sections: { Vitals: { fields: { Label: 'Hello', Pal: { folder: 'Betas', name: 'Ghost' } } } },
+		};
+
+		const createRes = await request(app)
+			.post('/api/folios/Alphas')
+			.send({ folio: newFolio });
+
+		expect(createRes.status).toBe(201);
+		expect(createRes.body.brokenLinks).toEqual([
+			expect.objectContaining({ folder: 'Betas', name: 'Ghost', section: 'Vitals', field: 'Pal' }),
+		]);
+	});
+});
+
+// ── GET backlinks ───────────────────────────────────────────
+
+describe('GET /api/folios/:folder/:name/backlinks', () => {
+	it('returns folios that link to the target', async () => {
+		// Aleph is linked by One and Two
+		const res = await request(app).get('/api/folios/Betas/Aleph/backlinks');
+		expect(res.status).toBe(200);
+		const linkingNames = (res.body as { name: string }[]).map(f => f.name).sort();
+		expect(linkingNames).toEqual(['One', 'Two']);
+	});
+
+	it('returns an empty array if nothing links to the target', async () => {
+		const res = await request(app).get('/api/folios/Betas/Bet/backlinks');
+		expect(res.status).toBe(200);
+		expect(res.body).toEqual([]);
+	});
 });
 
 // touch unused imports so they don't get tree-shaken away by accident

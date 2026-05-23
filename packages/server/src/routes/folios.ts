@@ -1,4 +1,4 @@
-import { unlink, readFile, writeFile, stat } from 'node:fs/promises';
+import { unlink, readFile, stat } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { Router } from 'express';
 import {
@@ -282,6 +282,7 @@ export function foliosRouter(store: ProjectStore): Router {
 					mtime,
 					tags: body.folio.tags,
 					title: body.folio.title,
+					links: extractAllLinks(body.folio),
 				});
 			}
 
@@ -377,7 +378,7 @@ export function foliosRouter(store: ProjectStore): Router {
 				brokenLinks,
 			});
 		}).catch((err) => {
-			console.error(`Error creating folio ${folder}/${filename}:`, err);
+			console.error(`Error creating folio in ${folder}:`, err);
 			res.status(500).json({ error: 'Failed to create folio' });
 		});
 	});
