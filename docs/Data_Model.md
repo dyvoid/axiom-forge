@@ -60,7 +60,7 @@ Wiki-links use the **folder name** of the target type, not the type key. For exa
 `shared/parser.ts` handles the Markdown ↔ JSON structured data round trip.
 
 1. **Filename vs Display Name:** The `# Heading` inside the file is the source of truth for display. The filename is derived from the H1 with spaces replaced by underscores (e.g., `Mycenaean_Invasion_of_Kea.md`).
-2. **Meta section is always present:** Appended directly below the H1, the `## Meta` block is synthesized by the app (it is not in the schema). It identifies `Type`, `Status`, and `Tags`.
+2. **Meta section is always present:** Appended directly below the H1, the `## Meta` block is synthesized by the app (it is not in the schema). It identifies `Type` and `Tags`.
 3. **Empty fields are omitted:** No placeholder dashes or empty values are ever written to disk.
 4. **Sections are omitted if empty:** A section is only written if it contains at least one non-empty field.
 5. **Prose fields:** Rendered as free text directly under the section header, with no bullet prefix.
@@ -72,7 +72,6 @@ Wiki-links use the **folder name** of the target type, not the type key. For exa
 
 ## Meta
 - **Type:** Character
-- **Status:** Deceased
 - **Tags:** warrior
 
 ## Basic Information

@@ -18,4 +18,5 @@ Thetis went to Hephaestus, the divine smith, and asked him to forge a replacemen
 The new armour allowed Achilles to return to battle and gave him the divine protection that the original set had always carried. It did not protect his heel.
 
 ## Connected Events
-- [[Events/Death_of_Patroclus]], [[Events/Death_of_Hector]]
+- [[Events/Death_of_Patroclus]]
+- [[Events/Death_of_Hector]]
