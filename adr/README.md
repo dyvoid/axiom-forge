@@ -1,8 +1,8 @@
 # Architecture Decision Records (ADR)
 
-This directory tracks significant architectural decisions and major feature plans for Axiom Forge. 
+This directory tracks significant architectural decisions and major feature plans for Axiom Forge.
 
-We use a simplified Michael Nygard ADR format. Each record captures the Context, the Decision, and the Consequences. 
+We use a simplified Michael Nygard ADR format. Each record captures the Context, the Decision, and the Consequences.
 
 ## Log
 

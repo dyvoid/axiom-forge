@@ -53,7 +53,7 @@ Defines all folio types, their sections, fields, and field types. The app reads 
 | `wikilink-list` | `- **Field:** [[F/A]], [[F/B]]` | Multiple links to other folios. |
 
 **Wiki-Link Resolution:**
-Wiki-links use the **folder name** of the target type, not the type key. For example, `[[Characters/Thalirin]]` resolves to `Characters/Thalirin.md`. 
+Wiki-links use the **folder name** of the target type, not the type key. For example, `[[Characters/Thalirin]]` resolves to `Characters/Thalirin.md`.
 
 ## Markdown Serialization Rules
 
