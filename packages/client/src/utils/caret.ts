@@ -56,11 +56,12 @@ export function getCaretCoordinates(element: HTMLTextAreaElement, position: numb
 	style.visibility = 'hidden';
 
 	properties.forEach((prop) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		style[prop as any] = computed[prop as any];
 	});
 
 	// Handle Firefox textarea bug where scrolling affects calculation
-	if ((window as any).mozInnerScreenX != null) {
+	if ('mozInnerScreenX' in window) {
 		if (element.scrollHeight > parseInt(computed.height)) {
 			style.overflowY = 'scroll';
 		}
