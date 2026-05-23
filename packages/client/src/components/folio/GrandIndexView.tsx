@@ -14,14 +14,34 @@ export function GrandIndexView(): JSX.Element {
 
 	const allFolios = folios ?? [];
 	const q = query.trim().toLowerCase();
-	const filtered = q 
-		? allFolios.filter(f => f.title.toLowerCase().includes(q) || f.name.replace(/_/g, ' ').toLowerCase().includes(q))
-		: allFolios;
+	
+	const scoredFolios = allFolios.map(f => {
+		if (!q) return { folio: f, score: 0 };
+		const title = f.title.toLowerCase();
+		const name = f.name.replace(/_/g, ' ').toLowerCase();
+		const snippet = (f.snippet || '').toLowerCase();
+		const folder = f.folder.toLowerCase();
+		
+		let score = 0;
+		if (title === q || name === q) score += 100;
+		else if (title.startsWith(q) || name.startsWith(q)) score += 50;
+		else if (title.includes(q) || name.includes(q)) score += 10;
+		
+		if (score === 0 && (`${folder}/${name}`.includes(q) || `${folder}/${title}`.includes(q))) score += 5;
+		if (snippet.includes(q)) score += 1;
+		
+		return { folio: f, score };
+	});
+
+	const filtered = q ? scoredFolios.filter(sf => sf.score > 0) : scoredFolios;
+	
+	filtered.sort((a, b) => {
+		if (q && b.score !== a.score) return b.score - a.score;
+		return a.folio.title.localeCompare(b.folio.title);
+	});
 
 	const grouped: Record<string, typeof allFolios> = {};
-	const sortedFolios = [...filtered].sort((a, b) => a.title.localeCompare(b.title));
-
-	for (const folio of sortedFolios) {
+	for (const { folio } of filtered) {
 		const firstLetter = folio.title.charAt(0).toUpperCase();
 		const groupKey = /[A-Z]/.test(firstLetter) ? firstLetter : '#';
 		if (!grouped[groupKey]) grouped[groupKey] = [];
@@ -51,29 +71,57 @@ export function GrandIndexView(): JSX.Element {
 			</header>
 
 			<div className={styles.indexColumns}>
-				{letters.map(letter => (
-					<div key={letter} className={styles.letterGroup}>
-						<h2 className={styles.letterHeader}>{letter}</h2>
+				{q ? (
+					<div className={styles.letterGroup}>
+						<h2 className={styles.letterHeader}>Search Results</h2>
 						<div className={styles.letterList}>
-							{grouped[letter]!.map(f => {
-								const typeDef = Object.values(schema.types).find(t => t.folder === f.folder);
-								const icon = typeDef?.icon || 'circle';
-								return (
-									<Link
-										key={f.id}
-										to={`/folio/${f.folder}/${f.name}`}
-										className={styles.entryLink}
-									>
-										<span className={styles.iconWrapper}>
-											<Icon name={icon} size={10} />
-										</span>
-										{f.title}
-									</Link>
-								);
-							})}
+							{filtered.length === 0 ? (
+								<div style={{ color: 'var(--text-muted)' }}>No results found.</div>
+							) : (
+								filtered.map(({ folio: f }) => {
+									const typeDef = Object.values(schema.types).find(t => t.folder === f.folder);
+									const icon = typeDef?.icon || 'circle';
+									return (
+										<Link
+											key={f.id}
+											to={`/folio/${f.folder}/${f.name}`}
+											className={styles.entryLink}
+										>
+											<span className={styles.iconWrapper}>
+												<Icon name={icon} size={10} />
+											</span>
+											{f.title}
+										</Link>
+									);
+								})
+							)}
 						</div>
 					</div>
-				))}
+				) : (
+					letters.map(letter => (
+						<div key={letter} className={styles.letterGroup}>
+							<h2 className={styles.letterHeader}>{letter}</h2>
+							<div className={styles.letterList}>
+								{grouped[letter]!.map(f => {
+									const typeDef = Object.values(schema.types).find(t => t.folder === f.folder);
+									const icon = typeDef?.icon || 'circle';
+									return (
+										<Link
+											key={f.id}
+											to={`/folio/${f.folder}/${f.name}`}
+											className={styles.entryLink}
+										>
+											<span className={styles.iconWrapper}>
+												<Icon name={icon} size={10} />
+											</span>
+											{f.title}
+										</Link>
+									);
+								})}
+							</div>
+						</div>
+					))
+				)}
 			</div>
 		</div>
 	);
