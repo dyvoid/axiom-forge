@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useProject } from '../../context/ProjectContext.js';
 import type { ParsedFolio } from '@axiom-forge/shared';
 import { FolioHeader } from './FolioHeader.js';
@@ -12,7 +14,24 @@ interface FolioReadViewProps {
 }
 
 export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
+	const navigate = useNavigate();
 	const { schema } = useProject();
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (
+				e.key === 'e' && 
+				document.activeElement?.tagName !== 'INPUT' && 
+				document.activeElement?.tagName !== 'TEXTAREA'
+			) {
+				e.preventDefault();
+				navigate(`/folio/${folio.folder}/${folio.name}/edit`);
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [navigate, folio.folder, folio.name]);
+
 	const typeDef = schema.types[folio.type];
 
 	if (!typeDef) {

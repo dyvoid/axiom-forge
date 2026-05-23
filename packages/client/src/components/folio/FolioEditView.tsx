@@ -59,6 +59,21 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 		}
 	}, [blocker]);
 
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (
+				e.key === 'Escape' &&
+				document.activeElement?.tagName !== 'INPUT' &&
+				document.activeElement?.tagName !== 'TEXTAREA'
+			) {
+				e.preventDefault();
+				navigate(`/folio/${folio.folder}/${folio.name}`);
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [navigate, folio.folder, folio.name]);
+
 	function patchSection(sectionName: string, patch: Partial<ParsedSection>): void {
 		setDraft((d) => ({
 			...d,

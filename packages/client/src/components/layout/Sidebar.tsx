@@ -8,7 +8,7 @@ import { Icon } from '../ui/Icon.js';
 export function Sidebar(): JSX.Element {
 	const { schema } = useProject();
 	const { data: folios } = useFolios();
-	const { folder: routeFolder } = useParams<{ folder?: string }>();
+	const { folder: routeFolder, name: routeName } = useParams<{ folder?: string, name?: string }>();
 	const navigate = useNavigate();
 	const createFolio = useCreateFolio();
 
@@ -40,6 +40,61 @@ export function Sidebar(): JSX.Element {
 
 	const activeList = activeType ? byType[activeType] || [] : [];
 	const activeSchema = activeType ? schema.types[activeType] : null;
+
+	// Arrow key navigation between folios in the active category
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (
+				!routeFolder || 
+				document.activeElement?.tagName === 'INPUT' || 
+				document.activeElement?.tagName === 'TEXTAREA'
+			) {
+				return;
+			}
+
+			if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+				e.preventDefault();
+				
+				if (routeName && activeSchema) {
+					// Navigate between folios
+					const currentIndex = activeList.findIndex(f => f.name === routeName);
+					if (currentIndex === -1) return;
+					
+					let nextIndex = currentIndex;
+					if (e.key === 'ArrowUp' && currentIndex > 0) {
+						nextIndex = currentIndex - 1;
+					} else if (e.key === 'ArrowDown' && currentIndex < activeList.length - 1) {
+						nextIndex = currentIndex + 1;
+					}
+
+					if (nextIndex !== currentIndex) {
+						const nextFolio = activeList[nextIndex];
+						navigate(`/folio/${activeSchema.folder}/${nextFolio.name}`);
+					}
+				} else {
+					// Navigate between categories
+					const typeKeys = Object.keys(schema.types);
+					const currentIndex = typeKeys.findIndex(k => schema.types[k].folder === routeFolder);
+					if (currentIndex === -1) return;
+
+					let nextIndex = currentIndex;
+					if (e.key === 'ArrowUp' && currentIndex > 0) {
+						nextIndex = currentIndex - 1;
+					} else if (e.key === 'ArrowDown' && currentIndex < typeKeys.length - 1) {
+						nextIndex = currentIndex + 1;
+					}
+
+					if (nextIndex !== currentIndex) {
+						const nextFolder = schema.types[typeKeys[nextIndex]].folder;
+						navigate(`/folio/${nextFolder}`);
+					}
+				}
+			}
+		};
+
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [routeFolder, routeName, activeSchema, activeList, navigate]);
 
 	function handleNewEntry(): void {
 		setNewName('');
