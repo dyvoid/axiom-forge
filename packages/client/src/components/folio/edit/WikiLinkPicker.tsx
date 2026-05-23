@@ -83,7 +83,8 @@ export function WikiLinkPicker({
 			if (q) {
 				const title = f.title.toLowerCase();
 				const name = f.name.replace(/_/g, ' ').toLowerCase();
-				return title.includes(q) || name.includes(q);
+				const folder = f.folder.toLowerCase();
+				return title.includes(q) || name.includes(q) || `${folder}/${name}`.includes(q) || `${folder}/${title}`.includes(q);
 			}
 			return true;
 		});

@@ -138,11 +138,14 @@ export function Sidebar(): JSX.Element {
 							↵
 						</button>
 					</div>
-				) : (
-					<button className={styles.newBtn} onClick={handleNewEntry}>
+				) : activeSchema ? (
+					<button
+						className={styles.newBtn}
+						onClick={handleNewEntry}
+					>
 						+ New entry
 					</button>
-				)}
+				) : null}
 			</div>
 		</div>
 	);

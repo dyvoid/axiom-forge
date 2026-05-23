@@ -45,6 +45,7 @@ export interface ParsedFolio {
 	type: string;
 	folder: string;
 	tags: string[];
+	preface?: string;
 	sections: Record<string, ParsedSection>;
 	warnings?: string[];
 	mtime?: number;
