@@ -35,9 +35,9 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 				{folio.tags && folio.tags.length > 0 && (
 					<div className={styles.tags}>
 						{folio.tags.map((tag) => (
-							<span key={tag} className={styles.tag}>
+							<Link key={tag} to={`/index?tags=${encodeURIComponent(tag)}`} className={styles.tag}>
 								{tag}
-							</span>
+							</Link>
 						))}
 					</div>
 				)}

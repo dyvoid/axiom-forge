@@ -1,0 +1,90 @@
+/* ── TagFilter ────────────────────────────────────────
+   Component-specific styles. The bar, icon, and input
+   styles come from FilterBar.module.css.
+   ──────────────────────────────────────────────────── */
+
+.container {
+	position: relative;
+	width: 100%;
+}
+
+/* Extra flex-wrap so chips can wrap to a new line */
+.box {
+	flex-wrap: wrap;
+	cursor: text;
+}
+
+.chip {
+	display: flex;
+	align-items: center;
+	gap: var(--sp-1);
+	background: var(--bg-surface);
+	border: 1px solid var(--border);
+	border-radius: 2px;
+	padding: 2px var(--sp-2);
+	font-family: var(--ff-body);
+	font-size: var(--fs-small);
+	color: var(--text-primary);
+}
+
+.chipRemove {
+	background: transparent;
+	border: none;
+	color: var(--text-muted);
+	cursor: pointer;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.chipRemove:hover {
+	color: var(--text-danger);
+}
+
+
+
+/* ── Dropdown ──────────────────────────────────────── */
+
+.dropdown {
+	position: absolute;
+	top: calc(100% + var(--sp-1));
+	left: 0;
+	right: 0;
+	max-height: 240px;
+	background: var(--bg-page);
+	border: 1px solid var(--text-muted);
+	box-shadow: 0 8px 28px rgba(40, 30, 20, 0.18);
+	overflow-y: auto;
+	z-index: 100;
+}
+
+.dropdown::-webkit-scrollbar {
+	width: 6px;
+}
+.dropdown::-webkit-scrollbar-track {
+	background: transparent;
+}
+.dropdown::-webkit-scrollbar-thumb {
+	background: rgba(108, 94, 70, 0.3);
+	border-radius: 3px;
+}
+
+.item {
+	padding: 8px 12px;
+	cursor: pointer;
+	font-family: var(--ff-body);
+	font-size: 14px;
+	color: var(--text-primary);
+	border-bottom: 1px solid var(--border-soft);
+	text-align: left;
+}
+
+.item:last-child {
+	border-bottom: none;
+}
+
+.item:hover,
+.itemHighlight {
+	background: rgba(138, 53, 34, 0.08);
+}

@@ -97,6 +97,11 @@
 	font-style: italic;
 	font-size: var(--fs-body);
 	color: var(--text-secondary);
+	transition: color 0.2s;
+}
+
+.tag:hover {
+	color: var(--accent-gold);
 }
 
 .tag + .tag::before {
