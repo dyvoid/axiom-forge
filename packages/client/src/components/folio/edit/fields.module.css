@@ -146,3 +146,109 @@
 	font-style: italic;
 	padding: 3px 10px;
 }
+
+/* ── WikiLinkPicker (autocomplete combobox) ─────────── */
+
+.pickerWrap {
+	position: relative;
+}
+
+.pickerWrapInline {
+	flex: 1;
+	min-width: 120px;
+}
+
+.pickerInputWrap {
+	display: flex;
+	align-items: center;
+	border: 1px solid var(--border);
+	background: rgba(255, 250, 235, 0.55);
+	transition: border-color 120ms, background 120ms;
+}
+
+.pickerInputWrap.pickerFocused,
+.pickerInputWrap:focus-within {
+	border-color: var(--accent-rust);
+	background: rgba(255, 250, 235, 0.9);
+}
+
+.pickerInput {
+	border: 0;
+	background: transparent;
+	outline: none;
+	font-family: var(--ff-body);
+	font-size: var(--fs-body-sm);
+	color: var(--text-primary);
+	padding: 7px 10px;
+	flex: 1;
+	min-width: 0;
+}
+
+.pickerClear {
+	background: transparent;
+	border: 0;
+	color: var(--text-muted);
+	cursor: pointer;
+	font-size: 14px;
+	padding: 0 10px;
+	line-height: 1;
+}
+
+.pickerClear:hover {
+	color: var(--accent-rust);
+}
+
+.pickerSelected {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 7px 10px;
+	font-family: var(--ff-body);
+	font-size: var(--fs-body-sm);
+	color: var(--accent-gold);
+	flex: 1;
+	cursor: text;
+}
+
+.menuItemRow {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.menuItemFolder {
+	font-size: 11px;
+	color: var(--text-muted);
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	margin-left: auto;
+}
+
+.menuItemHighlight {
+	background: rgba(138, 53, 34, 0.08);
+}
+
+.menuEmpty {
+	padding: 12px;
+	font-family: var(--ff-body);
+	font-size: 13px;
+	color: var(--text-muted);
+	font-style: italic;
+	text-align: center;
+}
+
+/* Inline picker inside tagBox (WikilinkListField) */
+.tagPickerInput {
+	border: 0;
+	background: transparent;
+	outline: none;
+	font-family: var(--ff-body);
+	font-size: 14px;
+	color: var(--text-primary);
+	padding: 4px 0;
+	min-width: 120px;
+	flex: 1;
+	font-style: italic;
+}
+
+
