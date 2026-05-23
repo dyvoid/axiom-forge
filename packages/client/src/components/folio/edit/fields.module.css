@@ -22,7 +22,7 @@
 
 .textarea {
 	composes: input;
-	min-height: 120px;
+	min-height: 240px;
 	resize: vertical;
 	line-height: 1.7;
 	font-size: var(--fs-body);
@@ -251,4 +251,17 @@
 	font-style: italic;
 }
 
+/* Inline picker inside TextareaField */
+.textareaWrapper {
+	position: relative;
+	width: 100%;
+}
 
+.inlinePickerPopover {
+	position: absolute;
+	z-index: 50;
+	width: 260px;
+	background: var(--bg-page);
+	border: 1px solid var(--accent-rust);
+	box-shadow: 0 4px 16px rgba(138, 53, 34, 0.2);
+}

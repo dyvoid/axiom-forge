@@ -16,6 +16,8 @@ interface WikiLinkPickerProps {
 	exclude?: WikiLink[];
 	/** If true, renders seamlessly inside a tag container without borders. */
 	inline?: boolean;
+	/** Whether to autofocus the search input on mount. */
+	autoFocus?: boolean;
 	/** Called when the user selects or clears a folio. */
 	onChange: (next: WikiLink | null) => void;
 }
@@ -26,6 +28,7 @@ export function WikiLinkPicker({
 	placeholder,
 	exclude,
 	inline,
+	autoFocus,
 	onChange,
 }: WikiLinkPickerProps): JSX.Element {
 	const { schema } = useProject();
@@ -217,6 +220,7 @@ export function WikiLinkPicker({
 				) : (
 					<input
 						ref={inputRef}
+						autoFocus={autoFocus}
 						className={inline ? styles.tagPickerInput : styles.pickerInput}
 						value={query}
 						placeholder={placeholder || (targetDisplay ? `Search ${targetDisplay}…` : 'Search folios…')}

@@ -13,7 +13,7 @@
 - **Divine Patron:** [[Gods/Thetis]]
 
 ## Description & History
-The greatest warrior of his generation, Achilles was the son of the mortal king Peleus and the sea-nymph Thetis, who dipped him in the river Styx as an infant to make him invulnerable — all except the heel by which she held him. He was raised by the centaur Chiron, who taught him medicine, music, and the art of war in equal measure.
+The greatest warrior of his generation, Achilles was the son of the mortal king Peleus and the sea-nymph Thetis, who dipped him in the river Styx as an infant to make him invulnerable to [[Gods/Aphrodite]] — all except the heel by which she held him. He was raised by the centaur Chiron, who taught him medicine, music, and the art of war in equal measure.
 
 When Agamemnon called the Greek kings to war against Troy, Achilles came with his Myrmidons and his closest companion Patroclus. He was understood by all to be the greatest fighter alive — faster, stronger, and more brutal than any man on either side. But greatness and temperament proved inseparable. After Agamemnon seized the captive Briseis from him, Achilles withdrew from battle entirely, letting Greeks die on the beaches while he sat in his tent. His rage was not petulance; it was the fury of a man who had defined his life by honour and had been publicly humiliated by his own commander.
 
