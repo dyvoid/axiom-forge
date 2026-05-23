@@ -54,7 +54,9 @@ export async function readFolioFile(filePath: string): Promise<{ content: string
  * Write a .md file and return the new mtime.
  */
 export async function writeFolioFile(filePath: string, content: string): Promise<{ mtime: number }> {
-	await writeFile(filePath, content, 'utf-8');
+	const tempPath = filePath + '.tmp';
+	await writeFile(tempPath, content, 'utf-8');
+	await rename(tempPath, filePath);
 	const stats = await stat(filePath);
 	return { mtime: stats.mtimeMs };
 }

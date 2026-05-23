@@ -5,6 +5,7 @@ import {
 	ParsedFolioSchema,
 	displayNameToFilename,
 	parseMarkdown,
+	parseWikiLinks,
 	rewriteWikiLinks,
 	serializeToMarkdown,
 	validateAgainstSchema,
@@ -13,6 +14,7 @@ import {
 } from '@axiom-forge/shared';
 import type { ProjectStore } from '../projectStore.js';
 import { writeFolioFile, statFile } from '../fileIO.js';
+import { writeMutex } from '../utils/mutex.js';
 
 // ── Brokenlink walker ────────────────────────────────────────
 // Schema-agnostic: walks whatever sections/fields are populated in the
@@ -40,6 +42,16 @@ function collectBrokenLinks(
 	const exists = (folder: string, name: string): boolean => !!store.getRecord(folder, name);
 
 	for (const [sectionName, section] of Object.entries(folio.sections)) {
+		// Prose sections (check inline links in content)
+		if (section.content) {
+			const inlineLinks = parseWikiLinks(section.content);
+			for (const link of inlineLinks) {
+				if (!exists(link.folder, link.name)) {
+					out.push({ section: sectionName, folder: link.folder, name: link.name });
+				}
+			}
+		}
+
 		// Section-level value (e.g. a top-level wikilink-list section)
 		if (Array.isArray(section.value)) {
 			for (const v of section.value) {
@@ -92,9 +104,8 @@ async function rewriteProjectLinks(
 		const content = await readFile(filePath, 'utf-8');
 		const result = rewriteWikiLinks(content, { folder, name: oldName }, { name: newName });
 		if (result.rewrites > 0) {
-			await writeFile(filePath, result.content, 'utf-8');
-			const stats = await stat(filePath);
-			store.updateMtime(filePath, stats.mtimeMs);
+			const { mtime } = await writeFolioFile(filePath, result.content);
+			store.updateMtime(filePath, mtime);
 			totalRewrites += result.rewrites;
 		}
 	}
@@ -162,19 +173,20 @@ export function foliosRouter(store: ProjectStore): Router {
 	// across the project to point at the new filename.
 	r.put('/:folder/:name', async (req, res) => {
 		const { folder, name } = req.params;
-		const body = req.body as { folio?: ParsedFolio; clientMtime?: number };
+		writeMutex.runExclusive(async () => {
+			const body = req.body as { folio?: ParsedFolio; clientMtime?: number };
 
-		if (!body || typeof body !== 'object' || !body.folio || typeof body.clientMtime !== 'number') {
-			res.status(400).json({ error: 'Body must be { folio, clientMtime }' });
-			return;
-		}
+			if (!body || typeof body !== 'object' || !body.folio || typeof body.clientMtime !== 'number') {
+				res.status(400).json({ error: 'Body must be { folio, clientMtime }' });
+				return;
+			}
 
-		const schema = store.getSchema();
-		const validation = validateSaveBody(body.folio, schema);
-		if (validation) {
-			res.status(validation.status).json(validation.body);
-			return;
-		}
+			const schema = store.getSchema();
+			const validation = validateSaveBody(body.folio, schema);
+			if (validation) {
+				res.status(validation.status).json(validation.body);
+				return;
+			}
 
 		const record = store.getRecord(folder!, name!);
 		if (!record) {
@@ -194,8 +206,7 @@ export function foliosRouter(store: ProjectStore): Router {
 			return;
 		}
 
-		try {
-			// Derive the desired filename from the new title.
+		// Derive the desired filename from the new title.
 			const newName = displayNameToFilename(body.folio.title);
 			if (!newName) {
 				res.status(400).json({ error: 'invalid-title', reason: 'empty-after-sanitization' });
@@ -222,17 +233,12 @@ export function foliosRouter(store: ProjectStore): Router {
 				const folioToWrite: ParsedFolio = { ...body.folio, name: newName };
 				const markdown = serializeToMarkdown(folioToWrite, schema);
 
-				// 1. Write the new file. 2. Unlink the old. (Write-new-first
-				//    keeps the worst-case state as a duplicate file rather
-				//    than data loss.)
-				await writeFile(filePath, markdown, 'utf-8');
+				// 1. Write the new file atomically. 2. Unlink the old.
+				const { mtime } = await writeFolioFile(filePath, markdown);
 				await unlink(oldFilePath);
 
-				// 3. Update the index *before* rewriting links — otherwise the
-				//    rewriter would still see the (now-deleted) old filePath in
-				//    store.getAllFilePaths() and try to read it.
-				const newStats = await stat(filePath);
-				store.renameFolioRecord(folder!, oldName, newName, filePath, newStats.mtimeMs);
+				// 3. Update the index *before* rewriting links
+				store.renameFolioRecord(folder!, oldName, newName, filePath, mtime);
 
 				// 4. Rewrite every other file in the project — skip the file
 				//    we just wrote.
@@ -276,35 +282,36 @@ export function foliosRouter(store: ProjectStore): Router {
 				brokenLinks,
 				...(renamedTo ? { renamedTo, linksRewritten } : {}),
 			});
-		} catch (err) {
+		}).catch((err) => {
 			console.error(`Error saving folio ${folder}/${name}:`, err);
 			res.status(500).json({ error: 'Failed to save folio' });
-		}
+		});
 	});
 
 	// POST /api/folios/:folder — create a new folio
 	r.post('/:folder', async (req, res) => {
 		const { folder } = req.params;
-		const body = req.body as { folio?: ParsedFolio };
+		writeMutex.runExclusive(async () => {
+			const body = req.body as { folio?: ParsedFolio };
 
-		if (!body?.folio) {
-			res.status(400).json({ error: 'Body must be { folio }' });
-			return;
-		}
+			if (!body?.folio) {
+				res.status(400).json({ error: 'Body must be { folio }' });
+				return;
+			}
 
-		const schema = store.getSchema();
-		const typeEntry = Object.entries(schema.types).find(([, t]) => t.folder === folder);
-		if (!typeEntry) {
-			res.status(400).json({ error: `Unknown folder: ${folder}` });
-			return;
-		}
-		const [typeKey] = typeEntry;
+			const schema = store.getSchema();
+			const typeEntry = Object.entries(schema.types).find(([, t]) => t.folder === folder);
+			if (!typeEntry) {
+				res.status(400).json({ error: `Unknown folder: ${folder}` });
+				return;
+			}
+			const [typeKey] = typeEntry;
 
-		const validation = validateSaveBody(body.folio, schema);
-		if (validation) {
-			res.status(validation.status).json(validation.body);
-			return;
-		}
+			const validation = validateSaveBody(body.folio, schema);
+			if (validation) {
+				res.status(validation.status).json(validation.body);
+				return;
+			}
 
 		const filename = displayNameToFilename(body.folio.title || body.folio.name);
 		if (!filename) {
@@ -322,8 +329,7 @@ export function foliosRouter(store: ProjectStore): Router {
 		const folderPath = resolve(store.projectPath, folder!);
 		const filePath = join(folderPath, `${filename}.md`);
 
-		try {
-			const markdown = serializeToMarkdown(folioToWrite, schema);
+		const markdown = serializeToMarkdown(folioToWrite, schema);
 			const { mtime } = await writeFolioFile(filePath, markdown);
 			const reparsed = parseMarkdown(markdown, schema);
 			const snippet = store.deriveSnippet(reparsed);
@@ -345,28 +351,28 @@ export function foliosRouter(store: ProjectStore): Router {
 				warnings: reparsed.warnings ?? [],
 				brokenLinks,
 			});
-		} catch (err) {
+		}).catch((err) => {
 			console.error(`Error creating folio ${folder}/${filename}:`, err);
 			res.status(500).json({ error: 'Failed to create folio' });
-		}
+		});
 	});
 
 	// DELETE /api/folios/:folder/:name — delete a folio
 	r.delete('/:folder/:name', async (req, res) => {
 		const { folder, name } = req.params;
-		const record = store.getRecord(folder!, name!);
-		if (!record) {
-			res.status(404).json({ error: 'Folio not found' });
-			return;
-		}
-		try {
+		writeMutex.runExclusive(async () => {
+			const record = store.getRecord(folder!, name!);
+			if (!record) {
+				res.status(404).json({ error: 'Folio not found' });
+				return;
+			}
 			await unlink(record.filePath);
 			store.removeFolioRecord(folder!, name!);
 			res.json({ ok: true });
-		} catch (err) {
+		}).catch((err) => {
 			console.error(`Error deleting folio ${folder}/${name}:`, err);
 			res.status(500).json({ error: 'Failed to delete folio' });
-		}
+		});
 	});
 
 	return r;

@@ -44,6 +44,7 @@ export function useCreateFolio(options?: { navigateOnSuccess?: boolean }) {
 			postFolio(folder, folio),
 		onSuccess: ({ name }, { folder }) => {
 			qc.invalidateQueries({ queryKey: ['folios'] });
+			qc.invalidateQueries({ queryKey: ['warnings'] });
 			if (navigateOnSuccess) {
 				navigate(`/folio/${encodeURIComponent(folder)}/${encodeURIComponent(name)}/edit`);
 			}
@@ -60,6 +61,7 @@ export function useDeleteFolio() {
 		onSuccess: (_, { folder, name }) => {
 			qc.removeQueries({ queryKey: ['folio', folder, name] });
 			qc.invalidateQueries({ queryKey: ['folios'] });
+			qc.invalidateQueries({ queryKey: ['warnings'] });
 		},
 	});
 }
@@ -89,6 +91,7 @@ export function useSaveFolio(folder: string, name: string) {
 				});
 			}
 			qc.invalidateQueries({ queryKey: ['folios'] });
+			qc.invalidateQueries({ queryKey: ['warnings'] });
 		},
 	});
 }

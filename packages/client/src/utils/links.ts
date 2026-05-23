@@ -11,7 +11,7 @@
  * the same update.
  */
 
-import type { FolioIndexRecord, ParsedFolio } from '@axiom-forge/shared';
+import { parseWikiLinks, type FolioIndexRecord, type ParsedFolio } from '@axiom-forge/shared';
 
 export interface UnresolvedLink {
 	section: string;
@@ -57,6 +57,16 @@ export function collectUnresolvedLinks(
 	const out: UnresolvedLink[] = [];
 
 	for (const [sectionName, section] of Object.entries(folio.sections)) {
+		// Prose sections (check inline links in content)
+		if (section.content) {
+			const inlineLinks = parseWikiLinks(section.content);
+			for (const link of inlineLinks) {
+				if (!isLinkResolved(folios, link.folder, link.name)) {
+					out.push({ section: sectionName, folder: link.folder, name: link.name });
+				}
+			}
+		}
+
 		// Section-level value (top-level wikilink-list sections)
 		if (Array.isArray(section.value)) {
 			for (const v of section.value) {

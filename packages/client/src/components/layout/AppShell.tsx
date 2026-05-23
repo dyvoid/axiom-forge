@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useWarnings } from '../../api/queries.js';
 import { SchemaWarningsDialog } from '../ui/SchemaWarningsDialog.js';
@@ -10,10 +10,18 @@ export function AppShell(): JSX.Element {
 	const { data: warnings } = useWarnings();
 	const [dismissed, setDismissed] = useState(false);
 
-	// Auto-show once when warnings first arrive
+	const lastWarningsRef = useRef('');
+
+	// Auto-show once when warnings first arrive or change content
 	useEffect(() => {
 		if (warnings && warnings.length > 0) {
-			setDismissed(false);
+			const str = JSON.stringify(warnings);
+			if (str !== lastWarningsRef.current) {
+				setDismissed(false);
+				lastWarningsRef.current = str;
+			}
+		} else {
+			lastWarningsRef.current = '';
 		}
 	}, [warnings]);
 

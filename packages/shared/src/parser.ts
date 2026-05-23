@@ -16,9 +16,10 @@ import { parseWikiLink, parseWikiLinks, serializeWikiLink, serializeWikiLinks } 
 // ── Helpers ─────────────────────────────────────────────────
 
 /** Split markdown content on `## ` headers, returning [headerName, body] pairs. */
-function splitSections(markdown: string): { h1: string; sections: [string, string][] } {
+function splitSections(markdown: string): { h1: string; preface: string; sections: [string, string][] } {
 	const lines = markdown.split(/\r?\n/);
 	let h1 = '';
+	const prefaceLines: string[] = [];
 	const sections: [string, string][] = [];
 	let currentHeader: string | null = null;
 	let currentLines: string[] = [];
@@ -34,12 +35,16 @@ function splitSections(markdown: string): { h1: string; sections: [string, strin
 			currentLines = [];
 		} else if (currentHeader !== null) {
 			currentLines.push(line);
+		} else {
+			if (line.trim() !== '' || prefaceLines.length > 0) {
+				prefaceLines.push(line);
+			}
 		}
 	}
 	if (currentHeader !== null) {
 		sections.push([currentHeader, currentLines.join('\n').trim()]);
 	}
-	return { h1, sections };
+	return { h1, preface: prefaceLines.join('\n').trim(), sections };
 }
 
 /** Parse a `- **Field Name:** value` line. Returns [fieldName, rawValue] or null. */
@@ -166,7 +171,7 @@ function parseMeta(body: string): { type: string; tags: string[] } {
  * @returns A ParsedFolio (without id or mtime — those are assigned by the server).
  */
 export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFolio {
-	const { h1, sections: rawSections } = splitSections(markdown);
+	const { h1, preface, sections: rawSections } = splitSections(markdown);
 
 	// The first section must be Meta.
 	const metaEntry = rawSections.find(([name]) => name === 'Meta');
@@ -210,6 +215,7 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 		type: meta.type,
 		folder,
 		tags: meta.tags,
+		preface: preface || undefined,
 		sections,
 		warnings,
 	};
@@ -257,6 +263,11 @@ export function serializeToMarkdown(folio: ParsedFolio, schema: ProjectSchema): 
 	// H1 title (display name — separate from filename)
 	lines.push(`# ${folio.title}`);
 	lines.push('');
+
+	if (folio.preface) {
+		lines.push(folio.preface);
+		lines.push('');
+	}
 
 	// Meta block (always present, always first)
 	lines.push('## Meta');
