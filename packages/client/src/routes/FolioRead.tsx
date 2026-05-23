@@ -1,7 +1,3 @@
-/**
- * FolioRead route — placeholder for now, will be fleshed out next.
- */
-
 import { useParams } from 'react-router-dom';
 import { useFolio } from '../api/queries.js';
 import { FolioReadView } from '../components/folio/FolioReadView.js';

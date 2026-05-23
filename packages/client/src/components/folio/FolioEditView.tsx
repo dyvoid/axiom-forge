@@ -34,8 +34,15 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	const navigate = useNavigate();
 	// Local draft — initialised from server state, mutated on every keystroke.
 	const [draft, setDraft] = useState<ParsedFolio>(() => structuredClone(folio));
-	const [savedSnapshot, setSavedSnapshot] = useState<string>(() => JSON.stringify(folio));
+	const [dirty, setDirty] = useState(false);
 	const [confirmDelete, setConfirmDelete] = useState(false);
+
+	// Wrap setDraft so any mutation flips the dirty flag. Avoids the
+	// per-keystroke JSON.stringify(folio) that the previous diff used.
+	const mutateDraft = (updater: (prev: ParsedFolio) => ParsedFolio): void => {
+		setDraft(updater);
+		setDirty(true);
+	};
 	const { data: folios } = useFolios();
 	const { schema } = useProject();
 	const createStub = useCreateFolio({ navigateOnSuccess: false });
@@ -46,7 +53,6 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 		return Array.from(new Set(folios.flatMap(f => f.tags || []))).sort();
 	}, [folios]);
 
-	const dirty = JSON.stringify(draft) !== savedSnapshot;
 	const unresolvedLinks = collectUnresolvedLinks(draft, folios);
 
 	const blocker = useBlocker(
@@ -80,7 +86,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	}, [navigate, folio.folder, folio.name]);
 
 	function patchSection(sectionName: string, patch: Partial<ParsedSection>): void {
-		setDraft((d) => ({
+		mutateDraft((d) => ({
 			...d,
 			sections: {
 				...d.sections,
@@ -90,7 +96,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	}
 
 	function updateField(sectionName: string, fieldName: string, next: FieldValue): void {
-		setDraft((d) => {
+		mutateDraft((d) => {
 			const section = d.sections[sectionName] ?? {};
 			return {
 				...d,
@@ -107,7 +113,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 
 	function handleSave(): void {
 		onSave(draft);
-		setSavedSnapshot(JSON.stringify(draft));
+		setDirty(false);
 	}
 
 	function handleDiscard(): void {
@@ -236,7 +242,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 			<input
 				className={styles.titleInput}
 				value={draft.title}
-				onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
+				onChange={(e) => mutateDraft((d) => ({ ...d, title: e.target.value }))}
 			/>
 
 			{/* Tags row */}
@@ -245,7 +251,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 				<div className={styles.tagsSlot}>
 					<TextListField
 						value={draft.tags}
-						onChange={(v) => setDraft((d) => ({ ...d, tags: v }))}
+						onChange={(v) => mutateDraft((d) => ({ ...d, tags: v }))}
 						suggestions={allTags}
 					/>
 				</div>
