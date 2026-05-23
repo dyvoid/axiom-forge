@@ -21,7 +21,8 @@ export function MetaSection({ name, schema, data }: MetaSectionProps): JSX.Eleme
 					if (Array.isArray(val) && val.length === 0) return null;
 
 					const isList = ['text-list', 'wikilink-list', 'multiselect'].includes(fDef.type);
-					const className = isList ? styles.fieldStacked : styles.field;
+					const hasMultipleItems = Array.isArray(val) && val.length > 1;
+					const className = (isList && hasMultipleItems) ? styles.fieldStacked : styles.field;
 
 					return (
 						<div key={fName} className={className}>
