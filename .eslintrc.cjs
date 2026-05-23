@@ -20,7 +20,7 @@ module.exports = {
 		'dist/',
 		'node_modules/',
 		'prototype/',
-		'plan/',
+		'adr/',
 		'burden-of-the-guardian/',
 		'*.cjs',
 	],

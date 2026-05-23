@@ -155,9 +155,13 @@ The server reads the project folder once on startup, parses every Markdown file 
 | `npm test` | Runs the Vitest suite |
 | `npm run lint` | Runs ESLint and markdownlint |
 
+## Documentation
+
+For full architectural details, data models, and design systems, see the [`docs/`](docs/) directory. For upcoming features and architecture decisions, see the [`adr/`](adr/) directory.
+
 ## Status
 
-Active development. Phases 1 and 2 are complete: read, create, edit, delete, and **rename-with-project-wide-link-rewriting** all work end-to-end from the UI, with mtime conflict detection on save and broken-link reporting. Phase 3 (search + backlinks) is next.
+Active development. Phases 1 through 4 are complete. The core application is fully featured, polished, and ready for use as a daily driver. Features include full read/edit views, project-wide link rewriting on rename, live search and tag filtering, backlinks, and broken-link detection. We are now moving into Phase 5 (Themes) and Phase 6 (Projects).
 
 ## License
 
