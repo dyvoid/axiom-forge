@@ -131,7 +131,7 @@ git/
 
 ---
 
-## Phase 3 — Search & Relations
+## Phase 3 — Search & Relations ✓ Complete
 
 **Goal:** the lore graph becomes navigable.
 
@@ -143,20 +143,18 @@ Implementation order: **Stage A → Stage C → Stage B**
 - `WikiLinkChip`: dead-link chip styled with strikethrough + hover tooltip ("No folio found at …").
 - `FolioEditView`: live warnings panel (gold-toned) above toolbar showing count and list of unresolved wikilink targets.
 
-### Stage C — WikiLink Picker & Stubbing (in progress)
+### Stage C — WikiLink Picker & Stubbing ✓ Complete
 
 - Replace freetext wikilink inputs with a `WikiLinkPicker` combobox that filters by target folder but allows fallback for missing folios.
 - Wire into `FieldEditor` for `wikilink` and `wikilink-list` field types.
 - **Inline Folio Stubbing:** Add "Create" and "Create & Edit" buttons to the unresolved wikilinks warning panel on the edit view.
 - **Unsaved Changes Protection:** Use React Router v6 `useBlocker` to globally intercept accidental navigation (sidebar clicks, back button) when the current edit view is dirty.
-- Apply in prose editor for inline wikilink insertion (deferred to follow-up).
 
-### Stage B — Search & backlinks (pending)
+### Stage B — Search & backlinks ✓ Complete
 
 - `GET /api/search?q=` — full-text across title, name, tags, prose snippet.
 - Header search bar, debounced, with result list and keyboard navigation.
 - `GET /api/folios/:folder/:name/backlinks` and the `▼ Backlinks (N)` collapsible panel on the read view.
-- Status semantics: `inactive: true` options drive italic-in-sidebar / muted-in-chips styling.
 
 **Checkpoint:** find any folio in under a second, see what links to what.
 
