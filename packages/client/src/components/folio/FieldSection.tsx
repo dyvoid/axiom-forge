@@ -37,14 +37,21 @@ export function FieldSection({ name, schema, data }: FieldSectionProps): JSX.Ele
 	// Structured field section (like "Relationships")
 	if (!data.fields) return <></>;
 
+	const validFields = Object.entries(schema.fields).filter(([fName]) => {
+		const val = data.fields![fName];
+		if (val === undefined || val === null || val === '') return false;
+		if (Array.isArray(val) && val.length === 0) return false;
+		return true;
+	});
+
+	if (validFields.length === 0) return <></>;
+
 	return (
 		<section className={styles.section}>
 			<h2 className={styles.title}>{name}</h2>
-			<div className={styles.grid}>
-				{Object.entries(schema.fields).map(([fName, fDef]) => {
+			<div className={styles.wrap}>
+				{validFields.map(([fName, fDef]) => {
 					const val = data.fields![fName];
-					if (val === undefined || val === null || val === '') return null;
-					if (Array.isArray(val) && val.length === 0) return null;
 
 					return (
 						<div key={fName} className={styles.field}>
