@@ -253,3 +253,38 @@
 	font-size: 12px;
 	color: var(--text-primary);
 }
+
+.brokenLinkRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.stubActions {
+	display: flex;
+	gap: 8px;
+}
+
+.btnStub {
+	background: transparent;
+	border: 1px solid var(--accent-gold);
+	color: var(--accent-gold);
+	font-family: var(--ff-body);
+	font-size: 10px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	padding: 2px 6px;
+	cursor: pointer;
+	opacity: 0.7;
+	transition: all 0.2s;
+}
+
+.btnStub:hover {
+	opacity: 1;
+	background: rgba(154, 122, 44, 0.1);
+}
+
+.btnStub:disabled {
+	opacity: 0.3;
+	cursor: default;
+}

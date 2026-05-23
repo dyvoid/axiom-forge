@@ -15,8 +15,6 @@
 
 .chip.dead {
 	color: var(--text-muted);
-	text-decoration: line-through;
-	text-decoration-thickness: 1px;
 	pointer-events: auto; /* re-enable so the title tooltip shows on hover */
 	cursor: help;
 }
