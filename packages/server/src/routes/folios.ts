@@ -6,6 +6,7 @@ import {
 	displayNameToFilename,
 	parseMarkdown,
 	parseWikiLinks,
+	extractAllLinks,
 	rewriteWikiLinks,
 	serializeToMarkdown,
 	validateAgainstSchema,
@@ -168,6 +169,28 @@ export function foliosRouter(store: ProjectStore): Router {
 		}
 	});
 
+	// GET /api/folios/:folder/:name/backlinks — folios linking to this one
+	r.get('/:folder/:name/backlinks', (req, res) => {
+		const { folder, name } = req.params;
+		if (!folder || !name) {
+			res.status(400).json({ error: 'Folder and name required' });
+			return;
+		}
+		
+		// The `getRecord` returns the internal record with the cached `.links` array
+		// But we need to search ALL internal records. `store.getFolios()` returns the
+		// public `FolioIndexRecord` without `links`. We should search using an internal method
+		// or expose a `getBacklinks` in `ProjectStore`. Let's just do it directly on `store.folios`
+		// Wait, `store` is accessible here, but `folios` is private. 
+		// Actually, I should add `getBacklinks` to `ProjectStore`! 
+		// For now, I'll update `ProjectStore` in the next call, and here I'll call `store.getBacklinks(folder, name)`.
+		try {
+			res.json(store.getBacklinks(folder, name));
+		} catch (err) {
+			res.status(500).json({ error: 'Failed to fetch backlinks' });
+		}
+	});
+
 	// PUT /api/folios/:folder/:name — save an existing folio.
 	// May rename the file if the H1 changes; rewrites every wiki-link
 	// across the project to point at the new filename.
@@ -272,6 +295,7 @@ export function foliosRouter(store: ProjectStore): Router {
 				title: reparsed.title,
 				tags: reparsed.tags,
 				snippet,
+				links: extractAllLinks(reparsed),
 			});
 
 			const brokenLinks = collectBrokenLinks(reparsed, store);
@@ -343,6 +367,7 @@ export function foliosRouter(store: ProjectStore): Router {
 				tags: reparsed.tags,
 				snippet,
 				warnings: reparsed.warnings ?? [],
+				links: extractAllLinks(reparsed),
 			});
 			const brokenLinks = collectBrokenLinks(reparsed, store);
 			res.status(201).json({

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useFolios } from '../../api/queries.js';
 import { Icon } from '../ui/Icon.js';
@@ -7,13 +8,18 @@ import { useProject } from '../../context/ProjectContext.js';
 export function GrandIndexView(): JSX.Element {
 	const { data: folios, isLoading } = useFolios();
 	const { schema } = useProject();
+	const [query, setQuery] = useState('');
 
 	if (isLoading) return <div className={styles.container}>Loading...</div>;
 
 	const allFolios = folios ?? [];
+	const q = query.trim().toLowerCase();
+	const filtered = q 
+		? allFolios.filter(f => f.title.toLowerCase().includes(q) || f.name.replace(/_/g, ' ').toLowerCase().includes(q))
+		: allFolios;
 
 	const grouped: Record<string, typeof allFolios> = {};
-	const sortedFolios = [...allFolios].sort((a, b) => a.title.localeCompare(b.title));
+	const sortedFolios = [...filtered].sort((a, b) => a.title.localeCompare(b.title));
 
 	for (const folio of sortedFolios) {
 		const firstLetter = folio.title.charAt(0).toUpperCase();
@@ -38,6 +44,8 @@ export function GrandIndexView(): JSX.Element {
 						type="text"
 						placeholder="Search the index..."
 						className={styles.searchInput}
+						value={query}
+						onChange={(e) => setQuery(e.target.value)}
 					/>
 				</div>
 			</header>

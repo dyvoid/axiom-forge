@@ -9,13 +9,16 @@ import {
 	type ProjectSchema,
 	type FolioIndexRecord,
 	type ParsedFolio,
+	type WikiLink,
 } from '@axiom-forge/shared';
+import { extractAllLinks } from '@axiom-forge/shared';
 import { scanFolder, readFolioFile } from './fileIO.js';
 
 interface InternalFolioRecord extends FolioIndexRecord {
 	filePath: string;
 	mtime: number;
 	warnings: string[];
+	links: WikiLink[];
 }
 
 export class ProjectStore {
@@ -64,6 +67,13 @@ export class ProjectStore {
 	/** Return folios filtered by type key (e.g. "Character"). */
 	getFoliosByType(typeKey: string): FolioIndexRecord[] {
 		return this.getFolios().filter((f) => f.type === typeKey);
+	}
+
+	/** Return all folios that link to a specific target. */
+	getBacklinks(targetFolder: string, targetName: string): FolioIndexRecord[] {
+		return this.folios
+			.filter((f) => f.links.some((l) => l.folder === targetFolder && l.name === targetName))
+			.map(({ filePath: _f, mtime: _m, links: _l, ...rest }) => rest);
 	}
 
 	/** Look up the internal record (incl. filePath, mtime). */
@@ -131,7 +141,7 @@ export class ProjectStore {
 	updateFolioRecord(
 		folder: string,
 		name: string,
-		patch: { mtime: number; title?: string; tags: string[]; snippet?: string },
+		patch: { mtime: number; title?: string; tags: string[]; snippet?: string; links: WikiLink[] },
 	): void {
 		const record = this.folios.find((f) => f.folder === folder && f.name === name);
 		if (!record) return;
@@ -139,6 +149,7 @@ export class ProjectStore {
 		if (patch.title !== undefined) record.title = patch.title;
 		record.tags = patch.tags;
 		record.snippet = patch.snippet;
+		record.links = patch.links;
 	}
 
 	/** Compute a snippet from a parsed folio (first paragraph of prose, ≤120 chars). */
@@ -155,6 +166,14 @@ export class ProjectStore {
 			.filter(Boolean)[0];
 		if (!firstParagraph) return undefined;
 		let text = firstParagraph.replace(/^[#*>-]+\s*/, '');
+		
+		// Strip wikilink syntax: [[Folder/Name|Alias]] -> Alias, [[Folder/Name]] -> Name
+		text = text.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_match, path, alias) => {
+			if (alias) return alias.trim();
+			const slashIdx = path.indexOf('/');
+			return slashIdx !== -1 ? path.slice(slashIdx + 1).replace(/_/g, ' ').trim() : path.trim();
+		});
+
 		if (text.length > 120) {
 			text = text.substring(0, 120);
 			text = text.substring(0, Math.min(text.length, text.lastIndexOf(' ')));
@@ -219,6 +238,7 @@ export class ProjectStore {
 			let tags: string[] = [];
 			let snippet: string | undefined;
 			let warnings: string[] = [];
+			let links: WikiLink[] = [];
 			let title = filenameToDisplayName(file.name);
 			try {
 				const { content } = await readFolioFile(file.filePath);
@@ -227,6 +247,7 @@ export class ProjectStore {
 				warnings = parsed.warnings ?? [];
 				if (parsed.title) title = parsed.title;
 				snippet = this.deriveSnippet(parsed);
+				links = extractAllLinks(parsed);
 			} catch {
 				// If parsing fails, still index the folio with no tags
 			}
@@ -241,6 +262,7 @@ export class ProjectStore {
 				tags,
 				snippet,
 				warnings,
+				links,
 			});
 		}
 		this.nextId = id;

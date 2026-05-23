@@ -18,4 +18,31 @@ export function mountRoutes(app: Express, store: ProjectStore): void {
 			.then(() => res.json({ ok: true }))
 			.catch((err: unknown) => res.status(500).json({ ok: false, error: String(err) }));
 	});
+
+	app.get('/api/search', (req, res) => {
+		const q = (req.query.q as string || '').trim().toLowerCase();
+		if (!q) {
+			res.json([]);
+			return;
+		}
+		
+		const results = [];
+		for (const f of store.getFolios()) {
+			const title = f.title.toLowerCase();
+			const name = f.name.replace(/_/g, ' ').toLowerCase();
+			const snippet = (f.snippet || '').toLowerCase();
+			const folder = f.folder.toLowerCase();
+			if (
+				title.includes(q) ||
+				name.includes(q) ||
+				`${folder}/${name}`.includes(q) ||
+				`${folder}/${title}`.includes(q) ||
+				snippet.includes(q)
+			) {
+				results.push(f);
+				if (results.length >= 20) break;
+			}
+		}
+		res.json(results);
+	});
 }
