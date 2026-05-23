@@ -15,7 +15,7 @@ Spectral smallcaps labels use generous tracking (e.g. `letter-spacing: 0.18em` f
 
 ## Color Palette
 
-The app ships with a canonical "Parchment" theme defined via CSS variables in `tokens.css`. 
+The app ships with a canonical "Parchment" theme defined via CSS variables in `tokens.css`.
 
 | Semantic Alias | Hex | Role |
 |---|---|---|

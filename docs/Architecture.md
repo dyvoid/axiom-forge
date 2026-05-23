@@ -18,7 +18,7 @@ packages/
 The backend is a lightweight Node.js/Express server that runs on `127.0.0.1`. It accepts a `--project` CLI argument pointing to the target markdown directory.
 
 ### `projectStore` (In-Memory Index)
-Because the app does not watch the filesystem (no `chokidar`), it relies on a live in-memory index built on startup. 
+Because the app does not watch the filesystem (no `chokidar`), it relies on a live in-memory index built on startup.
 - Scans the folder, reads all `.md` files, and validates them via `shared/parser.ts`.
 - Folio IDs are not persisted to disk. They are assigned alphabetically by filename at boot.
 - Caches a small `snippet` of prose for fast searching.

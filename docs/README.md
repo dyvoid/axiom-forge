@@ -1,6 +1,6 @@
 # Axiom Forge — System Manual
 
-Welcome to the Axiom Forge system documentation. This directory (`docs/`) contains the architectural truth of the application in its current, functional state. 
+Welcome to the Axiom Forge system documentation. This directory (`docs/`) contains the architectural truth of the application in its current, functional state.
 
 **Axiom Forge** is a local web application for writers and world-builders. It reads a folder of structured Markdown files as its database, renders them as a browsable encyclopedia, and allows in-app editing. The Markdown files are simultaneously valid Obsidian documents, so the same files can be opened and edited in Obsidian without any conversion.
 
