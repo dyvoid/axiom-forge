@@ -20,8 +20,11 @@ export function MetaSection({ name, schema, data }: MetaSectionProps): JSX.Eleme
 					if (val === undefined || val === null || val === '') return null;
 					if (Array.isArray(val) && val.length === 0) return null;
 
+					const isList = ['text-list', 'wikilink-list', 'multiselect'].includes(fDef.type);
+					const className = isList ? styles.fieldStacked : styles.field;
+
 					return (
-						<div key={fName} className={styles.field}>
+						<div key={fName} className={className}>
 							<div className={styles.label}>{fName}</div>
 							<div className={styles.value}>
 								<FieldValueRenderer value={val} type={fDef.type} />

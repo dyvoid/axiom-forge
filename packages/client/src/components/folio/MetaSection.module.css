@@ -27,7 +27,16 @@
 	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
 }
 
-.field:last-child {
+.fieldStacked {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 8px 0;
+	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
+}
+
+.field:last-child,
+.fieldStacked:last-child {
 	border-bottom: none;
 }
 
