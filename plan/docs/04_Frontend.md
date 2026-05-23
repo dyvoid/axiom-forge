@@ -79,8 +79,8 @@ utils/
 | Path | Component | Notes |
 |---|---|---|
 | `/` | `Landing` | Project home with WebGL hero, type counts, and "Enter the Archive" CTA. |
-| `/archive` | `ArchiveIndexView` | All types with entry counts; entry point from the landing CTA. |
-| `/folio/:folder` | `CategoryIndexView` | All entries for a given type, with name and prose snippet. |
+| `/archive` | `GrandIndexView` | All types searchable, with tag filtering via `?tags=` |
+| `/folio/:folder` | `CategoryIndexView` | All entries for a given type, searchable and tag-filterable via `?tags=` |
 | `/folio/:folder/:name` | `FolioRead` | Read mode. `:folder` is the folder name (matching wiki-link form). |
 | `/folio/:folder/:name/edit` | `FolioEdit` | Edit mode (Phase 2). Separate route — not a stateful host inside `FolioRead`. "↩ Back to read mode" link navigates back. |
 | `*` | `NotFound` | |
@@ -123,6 +123,10 @@ This is the single biggest expansion vector for the app and is treated as a publ
 
 1. The **top block** — uses the schema's `role` declarations to pick one of four arrangements (see `01_Data_Model.md` § Layout Roles).
 2. The **rest of the sections**, sequentially at full width, in declaration order.
+
+*Layout Modifiers:*
+- If a structured section (like Meta or Relationships) contains only empty fields, its header is omitted entirely from rendering.
+- Within structured sections (`MetaSection`, `FieldSection`), list-type fields with exactly 1 item use the compact inline 2-column layout (like scalar fields). Only lists with >1 item render in the stacked, wrapping layout.
 
 The layout has no per-type knowledge. A new folio type with the same `role` conventions just works.
 
@@ -214,7 +218,7 @@ Chip style: `background: rgba(154,122,44,0.12); border: 1px solid rgba(154,122,4
 
 ### Wikilink chips (in picker)
 
-Each selected wikilink chip shows: type glyph in `var(--accent-gold)` + display name in `var(--accent-rust)`. If the linked folio has an inactive status, the name renders in `var(--text-muted)` italic.
+Each selected wikilink chip shows: type glyph in `var(--accent-gold)` + display name in `var(--accent-rust)`. (Note: The `[ ]` square brackets around wikilinks have been intentionally omitted for a cleaner visual layout). If the linked folio has an inactive status, the name renders in `var(--text-muted)` italic.
 
 ### Footer save row
 
