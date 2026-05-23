@@ -8,11 +8,6 @@ export const ConfigSchema = z.object({
 	name: z.string().min(1),
 	description: z.string().optional(),
 	version: z.string().optional(),
-	theme: z
-		.object({
-			accent: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
-		})
-		.optional(),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
@@ -53,15 +48,49 @@ const FieldDefSchema = z.object({
 
 const SectionRoleSchema = z.enum(['meta', 'prose']);
 
+/**
+ * Section-level `type` is restricted to value-bearing types that round-trip
+ * cleanly through the parser/serializer pair. Per-field types (text, date,
+ * select, etc.) only make sense inside a `fields` map.
+ */
+const SectionLevelTypeSchema = z.enum(['textarea', 'wikilink-list']);
+
 const SectionDefSchema = z.object({
 	role: SectionRoleSchema.optional(),
 	type: FieldTypeSchema.optional(),
 	target: z.union([z.string(), z.array(z.string())]).optional(),
 	fields: z.record(z.string(), FieldDefSchema).optional(),
-}).refine(
-	(s) => Boolean(s.fields) !== Boolean(s.type),
-	{ message: 'A section must declare exactly one of `fields` or `type`.' },
-);
+}).superRefine((s, ctx) => {
+	// 1. Exactly one of `fields` or `type` — they describe disjoint section shapes.
+	if (Boolean(s.fields) === Boolean(s.type)) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: 'A section must declare exactly one of `fields` or `type`.',
+		});
+		return;
+	}
+	// 2. role: 'meta' implies a structured field section.
+	if (s.role === 'meta' && !s.fields) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: 'A section with `role: "meta"` must declare `fields`.',
+		});
+	}
+	// 3. role: 'prose' implies exactly `type: "textarea"`.
+	if (s.role === 'prose' && s.type !== 'textarea') {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: 'A section with `role: "prose"` must declare `type: "textarea"`.',
+		});
+	}
+	// 4. Section-level `type` is restricted to textarea / wikilink-list.
+	if (s.type && !SectionLevelTypeSchema.safeParse(s.type).success) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: `Section-level \`type\` must be "textarea" or "wikilink-list" (got "${s.type}"). Per-field types belong inside a \`fields\` map.`,
+		});
+	}
+});
 
 const TypeDefSchema = z.object({
 	icon: z.string(),
@@ -204,20 +233,36 @@ export function validateAgainstSchema(
 						});
 						continue;
 					}
-					checkSelectValue(issues, `sections.${sectionName}.fields.${fieldName}`, fieldName, fieldDef, fieldValue);
+					checkFieldValue(issues, `sections.${sectionName}.fields.${fieldName}`, fieldName, fieldDef, fieldValue);
 				}
 			}
 		} else if (sectionDef.type) {
-			// Section with a top-level type — validate its `value` (select/multiselect only).
+			// Section with a top-level type — validate its `value`.
 			const path = `sections.${sectionName}.value`;
-			checkSelectValue(issues, path, sectionName, { type: sectionDef.type, options: undefined, target: sectionDef.target }, section.value);
+			checkFieldValue(issues, path, sectionName, { type: sectionDef.type, options: undefined, target: sectionDef.target }, section.value);
 		}
 	}
 
 	return issues;
 }
 
-function checkSelectValue(
+function isPlainWikiLinkObject(v: unknown): boolean {
+	if (!v || typeof v !== 'object' || Array.isArray(v)) return false;
+	const o = v as Record<string, unknown>;
+	return typeof o.folder === 'string' && typeof o.name === 'string';
+}
+
+/**
+ * Per-field-type shape and value check. Issues come in two flavours:
+ *   - `wrong-shape`: the runtime value doesn't match the declared type's
+ *     expected shape (e.g. a wikilink field receiving a bare string).
+ *   - `invalid-select-value`: a select/multiselect value is not in the
+ *     declared options.
+ *
+ * Shape mismatches are reported once per field and short-circuit further
+ * checks for that field.
+ */
+function checkFieldValue(
 	issues: SchemaConformanceIssue[],
 	path: string,
 	label: string,
@@ -225,6 +270,49 @@ function checkSelectValue(
 	value: unknown,
 ): void {
 	if (value === null || value === undefined) return;
+
+	const stringTypes: FieldType[] = ['text', 'date', 'select', 'textarea'];
+	const stringListTypes: FieldType[] = ['text-list', 'multiselect'];
+
+	if (stringTypes.includes(fieldDef.type)) {
+		if (typeof value !== 'string') {
+			issues.push({
+				path,
+				code: 'wrong-shape',
+				message: `Field "${label}" of type ${fieldDef.type} expects a string, got ${describeShape(value)}.`,
+			});
+			return;
+		}
+	} else if (stringListTypes.includes(fieldDef.type)) {
+		if (!Array.isArray(value) || !value.every((v) => typeof v === 'string')) {
+			issues.push({
+				path,
+				code: 'wrong-shape',
+				message: `Field "${label}" of type ${fieldDef.type} expects string[], got ${describeShape(value)}.`,
+			});
+			return;
+		}
+	} else if (fieldDef.type === 'wikilink') {
+		if (!isPlainWikiLinkObject(value)) {
+			issues.push({
+				path,
+				code: 'wrong-shape',
+				message: `Field "${label}" of type wikilink expects a { folder, name } object, got ${describeShape(value)}.`,
+			});
+			return;
+		}
+	} else if (fieldDef.type === 'wikilink-list') {
+		if (!Array.isArray(value) || !value.every(isPlainWikiLinkObject)) {
+			issues.push({
+				path,
+				code: 'wrong-shape',
+				message: `Field "${label}" of type wikilink-list expects an array of { folder, name } objects, got ${describeShape(value)}.`,
+			});
+			return;
+		}
+	}
+
+	// Select/multiselect option-set check.
 	if (fieldDef.type === 'select' && typeof value === 'string' && fieldDef.options) {
 		const allowed = fieldDef.options.map(selectOptionValue);
 		if (!allowed.includes(value)) {
@@ -247,6 +335,12 @@ function checkSelectValue(
 			}
 		}
 	}
+}
+
+function describeShape(v: unknown): string {
+	if (v === null) return 'null';
+	if (Array.isArray(v)) return `array(length=${v.length})`;
+	return typeof v;
 }
 
 export type ParsedFolioInput = z.infer<typeof ParsedFolioSchema>;

@@ -111,7 +111,6 @@ export function Sidebar(): JSX.Element {
 			folder: activeSchema.folder,
 			name: '',
 			title: trimmed,
-			status: undefined,
 			tags: [],
 			sections: {},
 			warnings: [],
