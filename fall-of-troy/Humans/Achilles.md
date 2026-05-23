@@ -24,4 +24,7 @@ He returned to battle only when Patroclus was killed wearing his armour. The gri
 - **Enemies:** [[Humans/Hector]], [[Humans/Paris]]
 
 ## Connected Events
-- [[Events/Judgment_of_Achilles]], [[Events/Death_of_Patroclus]], [[Events/Death_of_Hector]], [[Events/Fall_of_Troy]]
+- [[Events/Judgment_of_Achilles]]
+- [[Events/Death_of_Patroclus]]
+- [[Events/Death_of_Hector]]
+- [[Events/Fall_of_Troy]]

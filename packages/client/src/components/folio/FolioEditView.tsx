@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useBlocker } from 'react-router-dom';
 import {
 	toRoman,
 	type FieldDef,
@@ -15,7 +15,8 @@ import { FieldEditor } from './edit/FieldEditor.js';
 import { FieldTypeHint } from './edit/FieldTypeHint.js';
 import { TextListField } from './edit/TextListField.js';
 import { TextareaField } from './edit/TextareaField.js';
-import { useFolios } from '../../api/queries.js';
+import { useFolios, useCreateFolio } from '../../api/queries.js';
+import { useProject } from '../../context/ProjectContext.js';
 import { collectUnresolvedLinks } from '../../utils/links.js';
 import styles from './FolioEditView.module.css';
 
@@ -36,9 +37,27 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	const [savedSnapshot, setSavedSnapshot] = useState<string>(() => JSON.stringify(folio));
 	const [confirmDelete, setConfirmDelete] = useState(false);
 	const { data: folios } = useFolios();
+	const { schema } = useProject();
+	const createStub = useCreateFolio({ navigateOnSuccess: false });
+	const createAndEdit = useCreateFolio({ navigateOnSuccess: true });
 
 	const dirty = JSON.stringify(draft) !== savedSnapshot;
 	const unresolvedLinks = collectUnresolvedLinks(draft, folios);
+
+	const blocker = useBlocker(
+		({ currentLocation, nextLocation }) =>
+			dirty && currentLocation.pathname !== nextLocation.pathname
+	);
+
+	useEffect(() => {
+		if (blocker.state === 'blocked') {
+			if (window.confirm('You have unsaved changes. Discard them and navigate?')) {
+				blocker.proceed();
+			} else {
+				blocker.reset();
+			}
+		}
+	}, [blocker]);
 
 	function patchSection(sectionName: string, patch: Partial<ParsedSection>): void {
 		setDraft((d) => ({
@@ -72,8 +91,25 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	}
 
 	function handleDiscard(): void {
-		if (dirty && !window.confirm('Discard your changes?')) return;
 		navigate(backTo);
+	}
+
+	function handleCreateStub(folder: string, name: string): void {
+		const entry = Object.entries(schema.types).find(([, def]) => def.folder === folder);
+		if (!entry) return;
+		createStub.mutate({
+			folder,
+			folio: { name, title: name.replace(/_/g, ' '), type: entry[0], folder, tags: [], sections: {} },
+		});
+	}
+
+	function handleCreateAndEdit(folder: string, name: string): void {
+		const entry = Object.entries(schema.types).find(([, def]) => def.folder === folder);
+		if (!entry) return;
+		createAndEdit.mutate({
+			folder,
+			folio: { name, title: name.replace(/_/g, ' '), type: entry[0], folder, tags: [], sections: {} },
+		});
 	}
 
 	const backTo = `/folio/${encodeURIComponent(folio.folder)}/${encodeURIComponent(folio.name)}`;
@@ -121,11 +157,31 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 					</div>
 					<ul className={styles.brokenLinksList}>
 						{unresolvedLinks.map((u, i) => (
-							<li key={i}>
-								{u.section}
-								{u.field ? ` · ${u.field}` : ''}
-								{' → '}
-								<code>{u.folder}/{u.name}</code>
+							<li key={i} className={styles.brokenLinkRow}>
+								<div>
+									{u.section}
+									{u.field ? ` · ${u.field}` : ''}
+									{' → '}
+									<code>{u.folder}/{u.name}</code>
+								</div>
+								<div className={styles.stubActions}>
+									<button
+										type="button"
+										className={styles.btnStub}
+										onClick={() => handleCreateStub(u.folder, u.name)}
+										disabled={createStub.isPending || createAndEdit.isPending}
+									>
+										Create
+									</button>
+									<button
+										type="button"
+										className={styles.btnStub}
+										onClick={() => handleCreateAndEdit(u.folder, u.name)}
+										disabled={createStub.isPending || createAndEdit.isPending}
+									>
+										Create & Edit
+									</button>
+								</div>
 							</li>
 						))}
 					</ul>

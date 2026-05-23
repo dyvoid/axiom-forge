@@ -107,6 +107,32 @@ export function WikiLinkPicker({
 		return entry?.[1].icon || 'circle';
 	}
 
+	function parseRaw(raw: string): WikiLink | null {
+		const str = raw.trim();
+		if (!str) return null;
+		
+		const parts = str.split('/');
+		let folder = '';
+		let name = '';
+		
+		if (parts.length > 1) {
+			folder = parts[0]!;
+			name = parts.slice(1).join('/');
+		} else {
+			name = str;
+			if (Array.isArray(target) && target.length > 0) {
+				folder = target[0]!;
+			} else if (typeof target === 'string' && target) {
+				folder = target;
+			} else {
+				folder = 'Unsorted';
+			}
+		}
+		
+		name = name.replace(/\s+/g, '_');
+		return { folder, name };
+	}
+
 	function handleSelect(folder: string, name: string): void {
 		onChange({ folder, name });
 		setQuery('');
@@ -140,6 +166,9 @@ export function WikiLinkPicker({
 				e.preventDefault();
 				if (candidates[highlightIdx]) {
 					handleSelect(candidates[highlightIdx]!.folder, candidates[highlightIdx]!.name);
+				} else {
+					const link = parseRaw(query);
+					if (link) handleSelect(link.folder, link.name);
 				}
 				break;
 			case 'Escape':
@@ -204,7 +233,9 @@ export function WikiLinkPicker({
 			{open && (
 				<div ref={menuRef} className={styles.menu}>
 					{candidates.length === 0 ? (
-						<div className={styles.menuEmpty}>No matches</div>
+						<div className={styles.menuEmpty}>
+							{query.trim() ? `Press ↵ to add "${query.trim()}"` : 'No matches'}
+						</div>
 					) : (
 						candidates.map((f, i) => (
 							<div

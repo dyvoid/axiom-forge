@@ -35,15 +35,18 @@ export function useFolio(folder: string, name: string) {
 }
 
 /** Create a new folio and navigate to its edit URL on success. */
-export function useCreateFolio() {
+export function useCreateFolio(options?: { navigateOnSuccess?: boolean }) {
 	const qc = useQueryClient();
 	const navigate = useNavigate();
+	const navigateOnSuccess = options?.navigateOnSuccess ?? true;
 	return useMutation({
 		mutationFn: ({ folder, folio }: { folder: string; folio: ParsedFolio }) =>
 			postFolio(folder, folio),
 		onSuccess: ({ name }, { folder }) => {
 			qc.invalidateQueries({ queryKey: ['folios'] });
-			navigate(`/folio/${encodeURIComponent(folder)}/${encodeURIComponent(name)}/edit`);
+			if (navigateOnSuccess) {
+				navigate(`/folio/${encodeURIComponent(folder)}/${encodeURIComponent(name)}/edit`);
+			}
 		},
 	});
 }
