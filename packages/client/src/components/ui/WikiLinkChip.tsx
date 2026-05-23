@@ -23,7 +23,7 @@ export function WikiLinkChip({ link }: { link: WikiLink }): JSX.Element {
 				className={`${styles.chip} ${styles.dead}`}
 				title={`No folio at ${link.folder}/${link.name}`}
 			>
-				[ <Icon name={iconName} size={10} className={styles.icon} /> {display} ]
+				<Icon name={iconName} size={10} className={styles.icon} /> {display}
 			</span>
 		);
 	}
@@ -33,7 +33,7 @@ export function WikiLinkChip({ link }: { link: WikiLink }): JSX.Element {
 			to={`/folio/${link.folder}/${link.name}`}
 			className={styles.chip}
 		>
-			[ <Icon name={iconName} size={10} className={styles.icon} /> {display} ]
+			<Icon name={iconName} size={10} className={styles.icon} /> {display}
 		</Link>
 	);
 }
