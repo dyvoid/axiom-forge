@@ -32,12 +32,16 @@ export function mountRoutes(app: Express, store: ProjectStore): void {
 			const name = f.name.replace(/_/g, ' ').toLowerCase();
 			const snippet = (f.snippet || '').toLowerCase();
 			const folder = f.folder.toLowerCase();
-			
+			const tags = f.tags.map((t) => t.toLowerCase());
+
 			let score = 0;
 			if (title === q || name === q) score += 100;
 			else if (title.startsWith(q) || name.startsWith(q)) score += 50;
 			else if (title.includes(q) || name.includes(q)) score += 10;
-			
+
+			if (tags.some((t) => t === q)) score += 20;
+			else if (tags.some((t) => t.includes(q))) score += 10;
+
 			if (score === 0 && (`${folder}/${name}`.includes(q) || `${folder}/${title}`.includes(q))) score += 5;
 			if (snippet.includes(q)) score += 1;
 

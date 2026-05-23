@@ -248,8 +248,8 @@ export class ProjectStore {
 				if (parsed.title) title = parsed.title;
 				snippet = this.deriveSnippet(parsed);
 				links = extractAllLinks(parsed);
-			} catch {
-				// If parsing fails, still index the folio with no tags
+			} catch (err) {
+				warnings = [`Failed to parse: ${err instanceof Error ? err.message : String(err)}`];
 			}
 			this.folios.push({
 				id: id++,
