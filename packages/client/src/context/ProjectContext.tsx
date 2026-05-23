@@ -1,9 +1,14 @@
 /**
- * ProjectContext — loads config + schema once at boot and exposes via useProject().
- * Both are effectively immutable for the session.
+ * ProjectContext — exposes the project's config + schema via useProject().
+ *
+ * Both are fetched through TanStack Query so the Sync button's
+ * `queryClient.invalidateQueries()` causes them to refetch alongside the
+ * folio index. Otherwise schema edits on disk would silently desync the
+ * client until a full page reload.
  */
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import type { Config, ProjectSchema } from '@axiom-forge/shared';
 import { fetchConfig, fetchSchema } from '../api/client.js';
 
@@ -20,32 +25,27 @@ export function useProject(): ProjectContextValue {
 	return ctx;
 }
 
-type LoadState =
-	| { status: 'loading' }
-	| { status: 'ok'; config: Config; schema: ProjectSchema }
-	| { status: 'error'; message: string };
+export function useConfigQuery() {
+	return useQuery({
+		queryKey: ['config'],
+		queryFn: fetchConfig,
+		staleTime: Infinity,
+	});
+}
+
+export function useSchemaQuery() {
+	return useQuery({
+		queryKey: ['schema'],
+		queryFn: fetchSchema,
+		staleTime: Infinity,
+	});
+}
 
 export function ProjectProvider({ children }: { children: ReactNode }): JSX.Element {
-	const [state, setState] = useState<LoadState>({ status: 'loading' });
+	const configQuery = useConfigQuery();
+	const schemaQuery = useSchemaQuery();
 
-	useEffect(() => {
-		let cancelled = false;
-		Promise.all([fetchConfig(), fetchSchema()])
-			.then(([config, schema]) => {
-				if (!cancelled) setState({ status: 'ok', config, schema });
-			})
-			.catch((err: unknown) => {
-				if (!cancelled) {
-					setState({
-						status: 'error',
-						message: err instanceof Error ? err.message : String(err),
-					});
-				}
-			});
-		return () => { cancelled = true; };
-	}, []);
-
-	if (state.status === 'loading') {
+	if (configQuery.isLoading || schemaQuery.isLoading) {
 		return (
 			<div style={{
 				display: 'flex',
@@ -63,7 +63,9 @@ export function ProjectProvider({ children }: { children: ReactNode }): JSX.Elem
 		);
 	}
 
-	if (state.status === 'error') {
+	const error = configQuery.error ?? schemaQuery.error;
+	if (error || !configQuery.data || !schemaQuery.data) {
+		const message = error instanceof Error ? error.message : String(error ?? 'Unknown error');
 		return (
 			<div style={{
 				display: 'flex',
@@ -73,13 +75,13 @@ export function ProjectProvider({ children }: { children: ReactNode }): JSX.Elem
 				fontFamily: 'var(--ff-body)',
 				color: 'var(--accent-rust)',
 			}}>
-				Failed to load project: {state.message}
+				Failed to load project: {message}
 			</div>
 		);
 	}
 
 	return (
-		<ProjectContext.Provider value={{ config: state.config, schema: state.schema }}>
+		<ProjectContext.Provider value={{ config: configQuery.data, schema: schemaQuery.data }}>
 			{children}
 		</ProjectContext.Provider>
 	);
