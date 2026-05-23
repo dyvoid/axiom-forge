@@ -20,8 +20,8 @@
 				"Description & History": { "role": "prose", "type": "textarea" },
 				"Relationships": {
 					"fields": {
-						"Allies": { "type": "wikilink-list", "target": "Humans" },
-						"Enemies": { "type": "wikilink-list", "target": "Humans" },
+						"Allies": { "type": "wikilink-list", "target": ["Humans", "Gods"] },
+						"Enemies": { "type": "wikilink-list", "target": ["Humans", "Gods"] },
 						"Children": { "type": "wikilink-list", "target": "Humans" }
 					}
 				},

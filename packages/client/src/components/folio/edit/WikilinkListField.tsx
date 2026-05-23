@@ -1,39 +1,34 @@
 import type { WikiLink } from '@axiom-forge/shared';
-import { useState } from 'react';
+import { WikiLinkPicker } from './WikiLinkPicker.js';
+import { useProject } from '../../../context/ProjectContext.js';
+import { Icon } from '../../ui/Icon.js';
 import styles from './fields.module.css';
 
 interface Props {
 	value: WikiLink[];
-	target?: string;
+	target?: string | string[];
 	onChange: (next: WikiLink[]) => void;
 }
 
 /**
- * M1 stub: wikilinks as plain text chips. Type "Folder/Name" or "Name"
- * (using the target folder as default), Enter to commit.
- * Replaced by the autocomplete picker in M3.
+ * Wikilink list field — renders selected links as chips and provides
+ * an inline WikiLinkPicker for adding more.
  */
 export function WikilinkListField({ value, target, onChange }: Props): JSX.Element {
-	const [draft, setDraft] = useState('');
-	const folder = target ?? '';
+	const { schema } = useProject();
 
-	function commit(): void {
-		const trimmed = draft.trim();
-		if (!trimmed) return;
-		const slashIdx = trimmed.indexOf('/');
-		const link: WikiLink =
-			slashIdx === -1
-				? { folder, name: trimmed.replace(/\s+/g, '_') }
-				: { folder: trimmed.slice(0, slashIdx), name: trimmed.slice(slashIdx + 1).replace(/\s+/g, '_') };
-		onChange([...value, link]);
-		setDraft('');
+	// Resolve icon for a folder
+	function folderIcon(folder: string): string {
+		const entry = Object.entries(schema.types).find(([, def]) => def.folder === folder);
+		return entry?.[1].icon || 'circle';
 	}
 
 	return (
 		<div className={styles.tagBox}>
 			{value.map((link, i) => (
 				<span key={`${link.folder}/${link.name}-${i}`} className={styles.chip}>
-					{link.folder}/{link.name.replace(/_/g, ' ')}
+					<Icon name={folderIcon(link.folder)} size={10} />
+					<span>{link.alias || link.name.replace(/_/g, ' ')}</span>
 					<button
 						type="button"
 						className={styles.chipRemove}
@@ -43,20 +38,14 @@ export function WikilinkListField({ value, target, onChange }: Props): JSX.Eleme
 					</button>
 				</span>
 			))}
-			<input
-				className={styles.tagInput}
-				value={draft}
-				placeholder={folder ? `${folder}/Name` : 'Folder/Name'}
-				onChange={(e) => setDraft(e.target.value)}
-				onKeyDown={(e) => {
-					if (e.key === 'Enter') {
-						e.preventDefault();
-						commit();
-					} else if (e.key === 'Backspace' && !draft && value.length) {
-						onChange(value.slice(0, -1));
-					}
+			<WikiLinkPicker
+				value={null}
+				target={target}
+				exclude={value}
+				inline={true}
+				onChange={(next) => {
+					if (next) onChange([...value, next]);
 				}}
-				onBlur={commit}
 			/>
 		</div>
 	);

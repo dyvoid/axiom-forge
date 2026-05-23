@@ -48,7 +48,7 @@ const FieldTypeSchema = z.enum([
 const FieldDefSchema = z.object({
 	type: FieldTypeSchema,
 	options: z.array(SelectOptionSchema).optional(),
-	target: z.string().optional(),
+	target: z.union([z.string(), z.array(z.string())]).optional(),
 });
 
 const SectionRoleSchema = z.enum(['meta', 'prose']);
@@ -56,7 +56,7 @@ const SectionRoleSchema = z.enum(['meta', 'prose']);
 const SectionDefSchema = z.object({
 	role: SectionRoleSchema.optional(),
 	type: FieldTypeSchema.optional(),
-	target: z.string().optional(),
+	target: z.union([z.string(), z.array(z.string())]).optional(),
 	fields: z.record(z.string(), FieldDefSchema).optional(),
 }).refine(
 	(s) => Boolean(s.fields) !== Boolean(s.type),
