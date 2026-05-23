@@ -3,10 +3,10 @@ import { resolve, join } from 'node:path';
 import { Router } from 'express';
 import {
 	ParsedFolioSchema,
+	collectBrokenLinks,
 	displayNameToFilename,
-	parseMarkdown,
-	parseWikiLinks,
 	extractAllLinks,
+	parseMarkdown,
 	rewriteWikiLinks,
 	serializeToMarkdown,
 	validateAgainstSchema,
@@ -16,74 +16,6 @@ import {
 import type { ProjectStore } from '../projectStore.js';
 import { writeFolioFile, statFile } from '../fileIO.js';
 import { writeMutex } from '../utils/mutex.js';
-
-// ── Brokenlink walker ────────────────────────────────────────
-// Schema-agnostic: walks whatever sections/fields are populated in the
-// supplied folio and asks the store whether each wiki-link target exists.
-
-interface BrokenLink {
-	section: string;
-	/** Undefined for top-level wikilink-list sections (no inner field name). */
-	field?: string;
-	folder: string;
-	name: string;
-}
-
-function isWikiLink(v: unknown): v is { folder: string; name: string } {
-	return !!v && typeof v === 'object' && 'folder' in v && 'name' in v
-		&& typeof (v as Record<string, unknown>).folder === 'string'
-		&& typeof (v as Record<string, unknown>).name === 'string';
-}
-
-function collectBrokenLinks(
-	folio: ParsedFolio,
-	store: ProjectStore,
-): BrokenLink[] {
-	const out: BrokenLink[] = [];
-	const exists = (folder: string, name: string): boolean => !!store.getRecord(folder, name);
-
-	for (const [sectionName, section] of Object.entries(folio.sections)) {
-		// Prose sections (check inline links in content)
-		if (section.content) {
-			const inlineLinks = parseWikiLinks(section.content);
-			for (const link of inlineLinks) {
-				if (!exists(link.folder, link.name)) {
-					out.push({ section: sectionName, folder: link.folder, name: link.name });
-				}
-			}
-		}
-
-		// Section-level value (e.g. a top-level wikilink-list section)
-		if (Array.isArray(section.value)) {
-			for (const v of section.value) {
-				if (isWikiLink(v) && !exists(v.folder, v.name)) {
-					out.push({ section: sectionName, folder: v.folder, name: v.name });
-				}
-			}
-		} else if (isWikiLink(section.value)) {
-			if (!exists(section.value.folder, section.value.name)) {
-				out.push({ section: sectionName, folder: section.value.folder, name: section.value.name });
-			}
-		}
-		// Field-level values
-		if (section.fields) {
-			for (const [fieldName, value] of Object.entries(section.fields)) {
-				if (Array.isArray(value)) {
-					for (const v of value) {
-						if (isWikiLink(v) && !exists(v.folder, v.name)) {
-							out.push({ section: sectionName, field: fieldName, folder: v.folder, name: v.name });
-						}
-					}
-				} else if (isWikiLink(value)) {
-					if (!exists(value.folder, value.name)) {
-						out.push({ section: sectionName, field: fieldName, folder: value.folder, name: value.name });
-					}
-				}
-			}
-		}
-	}
-	return out;
-}
 
 // ── Rename helper ────────────────────────────────────────────
 
@@ -299,7 +231,7 @@ export function foliosRouter(store: ProjectStore): Router {
 				links: extractAllLinks(reparsed),
 			});
 
-			const brokenLinks = collectBrokenLinks(reparsed, store);
+			const brokenLinks = collectBrokenLinks(reparsed, (folder, name) => !!store.getRecord(folder, name));
 
 			res.json({
 				mtime: finalStats.mtimeMs,
@@ -370,7 +302,7 @@ export function foliosRouter(store: ProjectStore): Router {
 				warnings: reparsed.warnings ?? [],
 				links: extractAllLinks(reparsed),
 			});
-			const brokenLinks = collectBrokenLinks(reparsed, store);
+			const brokenLinks = collectBrokenLinks(reparsed, (folder, name) => !!store.getRecord(folder, name));
 			res.status(201).json({
 				name: filename,
 				mtime,
