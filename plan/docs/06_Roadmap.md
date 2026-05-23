@@ -140,7 +140,7 @@ Implementation order: **Stage A → Stage C → Stage B**
 ### Stage A — Broken-link visibility ✓ Complete
 
 - `client/src/utils/links.ts`: schema-agnostic `isLinkResolved` / `collectUnresolvedLinks` helpers + unit tests.
-- `WikiLinkChip`: dead-link chip styled with strikethrough + hover tooltip ("No folio found at …").
+- `WikiLinkChip`: dead-link styling with hover tooltip ("No folio found at …").
 - `FolioEditView`: live warnings panel (gold-toned) above toolbar showing count and list of unresolved wikilink targets.
 
 ### Stage C — WikiLink Picker & Stubbing ✓ Complete
@@ -165,10 +165,12 @@ Implementation order: **Stage A → Stage C → Stage B**
 **Goal:** everyday use feels good.
 
 - `config.json` `theme.accent` override actually applied to the UI.
-- Tag filtering in the sidebar.
-- Keyboard navigation: arrow keys in sidebar, `/` to focus search, `e` to enter edit mode, `esc` to leave.
+- ✓ Tag filtering in the Grand Index and Category Index views (via `?tags=` URL parameters).
+- ✓ UI/Layout refinements: empty wikilink brackets removed, empty sections omitted, and 1-item lists styled as inline grids.
+- ✓ Tag autocomplete provided in the editor (`TextListField.tsx`).
+- ✓ Keyboard navigation: arrow keys in sidebar, `/` to focus search, `e` to enter edit mode, `esc` to leave.
 - Project landing screen: title, description, type counts, optional `cover.jpg`/`cover.webp` background.
-- Empty-state polish (no folios of a type yet, no search results, etc.).
+- ✓ Empty-state polish (no folios of a type yet, no search results, etc.).
 
 **Checkpoint:** the app is the canonical place to work on the project, not Obsidian.
 
