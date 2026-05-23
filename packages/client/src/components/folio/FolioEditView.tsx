@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useBlocker } from 'react-router-dom';
 import {
 	toRoman,
@@ -40,6 +40,11 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	const { schema } = useProject();
 	const createStub = useCreateFolio({ navigateOnSuccess: false });
 	const createAndEdit = useCreateFolio({ navigateOnSuccess: true });
+
+	const allTags = useMemo(() => {
+		if (!folios) return [];
+		return Array.from(new Set(folios.flatMap(f => f.tags || []))).sort();
+	}, [folios]);
 
 	const dirty = JSON.stringify(draft) !== savedSnapshot;
 	const unresolvedLinks = collectUnresolvedLinks(draft, folios);
@@ -241,6 +246,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 					<TextListField
 						value={draft.tags}
 						onChange={(v) => setDraft((d) => ({ ...d, tags: v }))}
+						suggestions={allTags}
 					/>
 				</div>
 			</div>
