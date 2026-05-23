@@ -2,7 +2,7 @@
 
 ## Meta
 - **Type:** Event
-- **Tags:** divine, origin, apple-of-discord
+- **Tags:** divine, origin, apple of discord
 
 ## Basic Information
 - **Type:** Divine, Personal, Cosmic

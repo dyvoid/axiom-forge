@@ -1,8 +1,10 @@
-import { useRef, useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useRef, useState, useEffect, useMemo } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useFolios, useCreateFolio } from '../../api/queries.js';
 import { useProject } from '../../context/ProjectContext.js';
 import { Icon } from '../ui/Icon.js';
+import { TagFilter } from '../ui/TagFilter.js';
+import bar from '../ui/FilterBar.module.css';
 import styles from './CategoryIndexView.module.css';
 
 export function CategoryIndexView(): JSX.Element {
@@ -13,14 +15,57 @@ export function CategoryIndexView(): JSX.Element {
 	const [creating, setCreating] = useState(false);
 	const [newName, setNewName] = useState('');
 	const inputRef = useRef<HTMLInputElement>(null);
+	const [searchParams, setSearchParams] = useSearchParams();
+	const [query, setQuery] = useState('');
 
 	useEffect(() => {
 		if (creating) inputRef.current?.focus();
 	}, [creating]);
 
-	if (isLoading) return <div className={styles.container}>Loading index...</div>;
-
 	const categoryFolios = folios?.filter(f => f.folder === folder) ?? [];
+	
+	const allTags = Array.from(new Set(categoryFolios.flatMap(f => f.tags || []))).sort();
+	const selectedTags = searchParams.get('tags')?.split(',').filter(Boolean) || [];
+
+	const handleTagsChange = (tags: string[]) => {
+		const newParams = new URLSearchParams(searchParams);
+		if (tags.length > 0) {
+			newParams.set('tags', tags.join(','));
+		} else {
+			newParams.delete('tags');
+		}
+		setSearchParams(newParams);
+	};
+
+	const q = query.trim().toLowerCase();
+
+	const scoredFolios = useMemo(() => {
+		if (!categoryFolios.length) return [];
+		return categoryFolios.map(f => {
+			if (!q) return { folio: f, score: 0 };
+			const title = f.title.toLowerCase();
+			const name = f.name.replace(/_/g, ' ').toLowerCase();
+			const snippet = (f.snippet || '').toLowerCase();
+			
+			let score = 0;
+			if (title === q || name === q) score += 100;
+			else if (title.startsWith(q) || name.startsWith(q)) score += 50;
+			else if (title.includes(q) || name.includes(q)) score += 10;
+			if (snippet.includes(q)) score += 1;
+			
+			return { folio: f, score };
+		});
+	}, [categoryFolios, q]);
+
+	const queryFiltered = scoredFolios
+		.filter(sf => sf.score >= 0 && (q ? sf.score > 0 : true))
+		.map(sf => sf.folio);
+
+	const filteredFolios = selectedTags.length > 0
+		? queryFiltered.filter(f => selectedTags.every(t => f.tags?.includes(t)))
+		: queryFiltered;
+
+	if (isLoading) return <div className={styles.container}>Loading index...</div>;
 
 	const typeDefEntry = Object.entries(schema.types).find(([, def]) => def.folder === folder);
 	const typeName = typeDefEntry ? typeDefEntry[0] : folder;
@@ -90,15 +135,50 @@ export function CategoryIndexView(): JSX.Element {
 				</div>
 				<h1 className={styles.title}>{typeName}</h1>
 				<div className={styles.meta}>
-					{categoryFolios.length} {categoryFolios.length === 1 ? 'ENTRY' : 'ENTRIES'}
+					{filteredFolios.length} {filteredFolios.length === 1 ? 'ENTRY' : 'ENTRIES'}
+				</div>
+				<div className={styles.filterRow}>
+					{/* Search bar — uses the shared FilterBar classes */}
+					<div className={bar.bar}>
+						<span className={bar.icon}>
+							<Icon name="search" size={18} />
+						</span>
+						<input
+							type="text"
+							placeholder="Search the index..."
+							className={bar.input}
+							value={query}
+							onChange={(e) => setQuery(e.target.value)}
+						/>
+						{query && (
+							<button
+								type="button"
+								className={bar.clearBtn}
+								onClick={(e) => {
+									e.stopPropagation();
+									setQuery('');
+								}}
+								title="Clear search"
+							>
+								<Icon name="x" size={16} />
+							</button>
+						)}
+					</div>
+					<div style={{ flex: 1 }}>
+						<TagFilter 
+							availableTags={allTags}
+							selectedTags={selectedTags}
+							onChange={handleTagsChange}
+						/>
+					</div>
 				</div>
 			</header>
 
 			<div className={styles.list}>
-				{categoryFolios.length === 0 ? (
+				{filteredFolios.length === 0 ? (
 					<div className={styles.empty}>No entries yet.</div>
 				) : (
-					categoryFolios.map(f => {
+					filteredFolios.map(f => {
 						return (
 						<Link key={f.id} to={`/folio/${f.folder}/${f.name}`} className={styles.entry}>
 							<span className={styles.name}>
