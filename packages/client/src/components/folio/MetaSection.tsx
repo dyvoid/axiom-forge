@@ -11,14 +11,21 @@ interface MetaSectionProps {
 export function MetaSection({ name, schema, data }: MetaSectionProps): JSX.Element {
 	if (!data.fields) return <></>;
 
+	const validFields = Object.entries(schema.fields || {}).filter(([fName]) => {
+		const val = data.fields![fName];
+		if (val === undefined || val === null || val === '') return false;
+		if (Array.isArray(val) && val.length === 0) return false;
+		return true;
+	});
+
+	if (validFields.length === 0) return <></>;
+
 	return (
 		<section className={styles.section}>
 			<h2 className={styles.title}>{name}</h2>
 			<div className={styles.box}>
-				{Object.entries(schema.fields || {}).map(([fName, fDef]) => {
+				{validFields.map(([fName, fDef]) => {
 					const val = data.fields![fName];
-					if (val === undefined || val === null || val === '') return null;
-					if (Array.isArray(val) && val.length === 0) return null;
 
 					const isList = ['text-list', 'wikilink-list', 'multiselect'].includes(fDef.type);
 					const hasMultipleItems = Array.isArray(val) && val.length > 1;
