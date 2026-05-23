@@ -14,10 +14,9 @@ export function ProseSection({ name, data, isDropCap }: ProseSectionProps): JSX.
 	return (
 		<section className={styles.section}>
 			<h2 className={styles.title}>{name}</h2>
-			<div
-				className={styles.content}
-				dangerouslySetInnerHTML={{ __html: renderMarkdown(data.content, isDropCap) }}
-			/>
+			<div className={styles.content}>
+				{renderMarkdown(data.content, isDropCap)}
+			</div>
 		</section>
 	);
 }
