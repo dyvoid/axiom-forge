@@ -21,7 +21,7 @@ export function FieldSection({ name, schema, data }: FieldSectionProps): JSX.Ele
 			return (
 				<section className={styles.section}>
 					<h2 className={styles.title}>{name}</h2>
-					<div className={styles.grid}>
+					<div className={styles.wrap}>
 						{links.map((link, i) => (
 							<div key={i}>
 								<FieldValueRenderer value={link} type="wikilink" />

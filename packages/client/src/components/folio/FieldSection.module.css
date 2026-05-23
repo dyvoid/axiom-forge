@@ -19,6 +19,12 @@
 	gap: var(--sp-5);
 }
 
+.wrap {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--sp-2) var(--sp-3);
+}
+
 .field {
 	display: flex;
 	flex-direction: column;
