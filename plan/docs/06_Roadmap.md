@@ -164,12 +164,12 @@ Implementation order: **Stage A → Stage C → Stage B**
 
 **Goal:** everyday use feels good.
 
-- `config.json` `theme.accent` override actually applied to the UI.
+- ✕ `config.json` `theme.accent` override (Dropped per user request).
 - ✓ Tag filtering in the Grand Index and Category Index views (via `?tags=` URL parameters).
 - ✓ UI/Layout refinements: empty wikilink brackets removed, empty sections omitted, and 1-item lists styled as inline grids.
 - ✓ Tag autocomplete provided in the editor (`TextListField.tsx`).
 - ✓ Keyboard navigation: arrow keys in sidebar, `/` to focus search, `e` to enter edit mode, `esc` to leave.
-- Project landing screen: title, description, type counts, optional `cover.jpg`/`cover.webp` background.
+- ✕ Project landing screen background cover image (Dropped per user request - title/counts already implemented).
 - ✓ Empty-state polish (no folios of a type yet, no search results, etc.).
 
 **Checkpoint:** the app is the canonical place to work on the project, not Obsidian.
