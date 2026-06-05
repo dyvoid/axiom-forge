@@ -1,5 +1,10 @@
 # Axiom Forge
 
+[![CI](https://github.com/dyvoid/axiom-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/dyvoid/axiom-forge/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node](https://img.shields.io/badge/node-%E2%89%A518.17-green)](https://nodejs.org/)
+
 A schema-driven, local-first encyclopedia and worldbuilding tool. Your world lives as a folder of plain Markdown files on disk; Axiom Forge reads them, parses structured fields out of standard Markdown headings and lists, and gives you a fast, beautiful, navigable web UI for reading, linking, and editing.
 
 No database. No cloud. No lock-in. The Markdown files *are* the source of truth — open them in any editor, commit them to Git, sync them however you like.
@@ -161,7 +166,7 @@ For full architectural details, data models, and design systems, see the [`docs/
 
 ## Status
 
-Active development. Phases 1 through 4 are complete. The core application is fully featured, polished, and ready for use as a daily driver. Features include full read/edit views, project-wide link rewriting on rename, live search and tag filtering, backlinks, and broken-link detection. We are now moving into Phase 5 (Themes) and Phase 6 (Projects).
+The core feature set is complete and ready for daily use: read/edit views, live search and tag filtering, backlinks, broken-link detection, and project-wide link rewriting on rename. New features are tracked in [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## License
 
