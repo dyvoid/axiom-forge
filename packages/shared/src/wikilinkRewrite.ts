@@ -29,9 +29,16 @@ export interface WikiLinkRewriteResult {
 	rewrites: number;
 }
 
+// Matches a fenced code block (``` or ```` with optional language tag).
+// Used as a split boundary so wikilinks inside fences are never rewritten.
+const FENCE_PATTERN = /(`{3,}[^\n]*\n[\s\S]*?`{3,})/g;
+
 /**
  * Rewrite every `[[from.folder/from.name]]` (with or without `|alias`) in
  * `markdown` to point at `to.name`, keeping the folder and alias untouched.
+ *
+ * Fenced code blocks are left entirely unchanged — a `[[link]]` inside a
+ * ``` block is documentation/example content, not a live reference.
  */
 export function rewriteWikiLinks(
 	markdown: string,
@@ -46,13 +53,20 @@ export function rewriteWikiLinks(
 		'g',
 	);
 
+	// Split on fenced code blocks (capturing group keeps the fences in the array).
+	// Even-indexed segments are normal text; odd-indexed segments are fences.
+	const parts = markdown.split(FENCE_PATTERN);
+
 	let rewrites = 0;
-	const content = markdown.replace(pattern, (_full, _path, _pipeWithAlias, alias?: string) => {
-		rewrites++;
-		return alias
-			? `[[${from.folder}/${to.name}|${alias}]]`
-			: `[[${from.folder}/${to.name}]]`;
-	});
+	const content = parts.map((part, i) => {
+		if (i % 2 === 1) return part; // inside a fence — leave untouched
+		return part.replace(pattern, (_full, _path, _pipeWithAlias, alias?: string) => {
+			rewrites++;
+			return alias
+				? `[[${from.folder}/${to.name}|${alias}]]`
+				: `[[${from.folder}/${to.name}]]`;
+		});
+	}).join('');
 
 	return { content, rewrites };
 }

@@ -70,3 +70,36 @@ describe('rewriteWikiLinks', () => {
 		expect(rewrites).toBe(1);
 	});
 });
+
+describe('rewriteWikiLinks — code fence awareness', () => {
+	it('does not rewrite a wikilink inside a plain fenced code block', () => {
+		const md = '```\nSee [[Foo/Bar]] for syntax.\n```';
+		const { content, rewrites } = rewriteWikiLinks(md, { folder: 'Foo', name: 'Bar' }, { name: 'Baz' });
+		expect(content).toBe(md);
+		expect(rewrites).toBe(0);
+	});
+
+	it('does not rewrite a wikilink inside a language-tagged fence', () => {
+		const md = '```md\nExample: [[Foo/Bar]]\n```';
+		const { content, rewrites } = rewriteWikiLinks(md, { folder: 'Foo', name: 'Bar' }, { name: 'Baz' });
+		expect(content).toBe(md);
+		expect(rewrites).toBe(0);
+	});
+
+	it('rewrites a link outside a fence but leaves one inside untouched', () => {
+		const md = [
+			'Normal prose: [[Foo/Bar]].',
+			'',
+			'```',
+			'Example: [[Foo/Bar]]',
+			'```',
+			'',
+			'After the fence: [[Foo/Bar]].',
+		].join('\n');
+		const { content, rewrites } = rewriteWikiLinks(md, { folder: 'Foo', name: 'Bar' }, { name: 'Baz' });
+		expect(rewrites).toBe(2);
+		expect(content).toContain('Normal prose: [[Foo/Baz]].');
+		expect(content).toContain('Example: [[Foo/Bar]]');
+		expect(content).toContain('After the fence: [[Foo/Baz]].');
+	});
+});

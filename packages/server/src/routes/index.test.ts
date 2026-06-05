@@ -97,6 +97,23 @@ afterEach(async () => {
 	await rm(tmpDir, { recursive: true, force: true });
 });
 
+// ── POST /api/reload ─────────────────────────────────────────
+
+describe('POST /api/reload', () => {
+	it('returns { ok: true }', async () => {
+		const res = await request(app).post('/api/reload');
+		expect(res.status).toBe(200);
+		expect(res.body).toEqual({ ok: true });
+	});
+
+	it('keeps folios accessible after reload', async () => {
+		await request(app).post('/api/reload');
+		const res = await request(app).get('/api/folios/Alphas/Ghost');
+		expect(res.status).toBe(200);
+		expect(res.body.title).toBe('Ghost');
+	});
+});
+
 // ── GET /api/search ──────────────────────────────────────────
 
 describe('GET /api/search', () => {
