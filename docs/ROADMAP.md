@@ -12,6 +12,8 @@ reasoning, and consequences. To start a feature: ensure its ADR is Accepted, the
 | Project Themes | Proposed | [ADR-0001](adr/0001-project-themes.md) | — |
 | Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | — |
 | Desktop Packaging & Distribution | Proposed | [ADR-0005](adr/0005-desktop-packaging-distribution.md) | Uses Electron and electron-builder |
+| Encapsulate Folio Mutations | Proposed | [ADR-0006](adr/0006-encapsulate-folio-mutations.md) | Architectural prerequisite for ADR-0003 |
+| Consolidate Folio Integrity Checking | Proposed | [ADR-0007](adr/0007-consolidate-folio-integrity.md) | Speculative cleanup of validation locality |
 
 ## Completed
 
@@ -23,3 +25,9 @@ The core feature set shipped in the initial build:
 - Backlinks panel ("Linked Mentions")
 - Broken-link detection on save
 - Project-wide wikilink rewriting on entry rename
+
+## Housekeeping
+
+Agreed-upon cleanups that don't warrant an ADR. Check them off when done.
+
+- [ ] Move search ranking logic from `routes/index.ts` inline handler into `ProjectStore.search()` — makes it testable without HTTP and reusable by future CLI tools
