@@ -11,7 +11,7 @@ If you want to understand how the system is built, read these files in order:
 | File | Description |
 |---|---|
 | [`architecture.md`](architecture.md) | How the npm workspaces monorepo is structured, how the Vite frontend and Express backend communicate, API routes, and React Router logic. |
-| [`Data_Model.md`](Data_Model.md) | The strict rules governing `.md` file parsing, `schema.json` layouts, and save validation logic. |
-| [`Design_System.md`](Design_System.md) | The print-aesthetic CSS Modules design tokens, typography, colors, and layout modifiers (like omitting empty sections). |
+| [`data-model.md`](data-model.md) | The strict rules governing `.md` file parsing, `schema.json` layouts, and save validation logic. |
+| [`design-system.md`](design-system.md) | The print-aesthetic CSS Modules design tokens, typography, colors, and layout modifiers (like omitting empty sections). |
 
-*Note: If you are looking for future milestones, planned features, or architecture decisions, look in the `adr/` directory at the root of the project.*
+*Note: For candidate features and architecture decisions, see [`ROADMAP.md`](ROADMAP.md) and [`adr/`](adr/).*
