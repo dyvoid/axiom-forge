@@ -13,9 +13,9 @@ plain Markdown file on disk — no database, no cloud, no lock-in. A `schema.jso
 world's types and fields; the app parses, validates, and renders them as a fast navigable web UI.
 Wikilinks (`[[Folder/Name]]`) are first-class. The files are the source of truth.
 
-Active development. Phases 1–4 complete (read/edit views, live search, tag filtering, backlinks,
-broken-link detection, project-wide link rewriting on rename). Currently in Phase 5 (Themes) and
-Phase 6 (multi-project management).
+The core feature set is complete: read/edit views, live search, tag filtering, backlinks,
+broken-link detection, and project-wide link rewriting on rename. New features are chosen
+from a backlog; see [PICKUP.md](PICKUP.md) for the current state and candidate features.
 
 ---
 
@@ -26,7 +26,7 @@ npm workspaces monorepo: `packages/shared` (Markdown parser, Zod schemas, wikili
 (React + Vite SPA on `:5173`, TanStack Query). No database — the server reads the project folder
 on startup and builds an in-memory index. Saves write back to disk via the API.
 
-See [Architecture Overview](docs/architecture.md) for the full picture, and the [ADR log](adr/)
+See [Architecture Overview](docs/architecture.md) for the full picture, and the [ADR log](docs/adr/)
 for the reasoning behind specific decisions.
 
 ---
@@ -49,7 +49,7 @@ for the reasoning behind specific decisions.
 ### Do not do these
 - Commit directly to `main`
 - Delete or rename files without being asked
-- Change architecture without recording an ADR in `adr/`
+- Change architecture without recording an ADR in `docs/adr/`
 - Rename or move public API endpoints without explicit instruction — these are a public contract
 - Add third-party dependencies without explicit instruction — prefer the existing dep tree
 - Introduce a new global state library (Redux, Zustand, Jotai, MobX, etc.) — if you feel the
@@ -119,9 +119,9 @@ Prompts that produced meaningful code live in `.prompts/`. Reference them from t
 Before closing any feature or architecture task, answer each question explicitly:
 
 - Did any API endpoint change, or was a server behavior added/removed? → Update `docs/architecture.md`
-- Did the on-disk Markdown format, field types, or validation rules change? → Update `docs/Data_Model.md`
-- Did any UI convention, design token, or layout rule change? → Update `docs/Design_System.md`
-- Is this a new feature or a new architectural direction? → Write an ADR in `adr/`
+- Did the on-disk Markdown format, field types, or validation rules change? → Update `docs/data-model.md`
+- Did any UI convention, design token, or layout rule change? → Update `docs/design-system.md`
+- Is this a new feature or a new architectural direction? → Write an ADR in `docs/adr/`
 - Did an existing ADR's decision get superseded or changed? → Update its status and link to the new ADR
 
 ---
@@ -130,9 +130,10 @@ Before closing any feature or architecture task, answer each question explicitly
 
 | Document | What it covers |
 |---|---|
+| [Roadmap](docs/ROADMAP.md) | Candidate features and their status |
 | [Architecture](docs/architecture.md) | System structure, API endpoints, data flow |
-| [Data Model](docs/Data_Model.md) | On-disk Markdown format, field types, serialization rules |
-| [Design System](docs/Design_System.md) | Typography, color tokens, layout conventions |
-| [ADR Log](adr/) | Architecture decisions and their rationale |
+| [Data Model](docs/data-model.md) | On-disk Markdown format, field types, serialization rules |
+| [Design System](docs/design-system.md) | Typography, color tokens, layout conventions |
+| [ADR Log](docs/adr/) | Architecture decisions and their rationale |
 | [Git Strategy](docs/git-strategy.md) | Branching, merging, commit rules |
 | [PICKUP](PICKUP.md) | Where the last session left off |
