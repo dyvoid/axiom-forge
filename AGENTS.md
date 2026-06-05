@@ -120,9 +120,11 @@ There is no separate `__tests__/` folder.
 
 ### Three tiers
 
-- **`packages/shared`** — pure unit tests. No file I/O, no mocking. Input is a constructed
-  `ProjectSchema` + raw Markdown string; assertions cover parse output and round-trip fidelity
-  (`parseMarkdown` → `serializeToMarkdown` → re-parse must be stable).
+- **`packages/shared`** — unit tests. No mocking. Parser and wikilink tests are purely
+  in-memory: input is a constructed `ProjectSchema` or raw Markdown string; assertions cover
+  parse output, round-trip fidelity (`parseMarkdown` → `serializeToMarkdown` → re-parse must
+  be stable), and rewrite correctness. The schema tests additionally smoke-test the real
+  `fall-of-troy/` project files — see Synthetic schemas rule below.
 
 - **`packages/server`** — integration tests. Each test builds a fresh project directory under
   `os.tmpdir()`, writes real `.md` and `.json` files, spins up a `ProjectStore`, mounts Express
@@ -133,9 +135,14 @@ There is no separate `__tests__/` folder.
 
 ### Synthetic schemas rule
 
-Tests must never reference real-world type names (`Character`, `Location`, etc.) or files from
-`fall-of-troy/`. The engine is schema-agnostic; tests prove it on schemas that exist nowhere
-else (`Alpha`, `Beta`, etc.). This prevents tests from becoming coupled to sample-data choices.
+Tests must prefer synthetic type names (`Alpha`, `Beta`, etc.) and must not couple behavior
+assertions to files in `fall-of-troy/`. The engine is schema-agnostic; tests prove it on
+schemas that exist nowhere else. This prevents tests from becoming coupled to sample-data
+choices.
+
+**Exception:** Reading `fall-of-troy/` is acceptable *only* to verify that specific project
+files parse correctly (smoke tests). Assert only `result.success` — never specific type names
+or field values from the sample project. See `schema.test.ts` for the established pattern.
 
 ### What to test when writing new code
 
@@ -143,8 +150,9 @@ else (`Alpha`, `Beta`, etc.). This prevents tests from becoming coupled to sampl
 - New or changed API routes → integration test in `packages/server`, using a synthetic project
   fixture in `tmpdir`.
 - New pure utility functions in `packages/client` → unit test.
-- React components → not tested; skip unless a testing infrastructure decision is made (see ADR
-  process).
+- React components → not tested today. Adding them requires a test renderer setup (e.g. jsdom
+  + `@testing-library/react`), which is a deliberate omission, not an oversight. Add when the
+  benefit justifies the setup cost.
 
 ---
 
