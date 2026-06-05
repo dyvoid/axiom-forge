@@ -20,4 +20,5 @@ instead of archaeology.
 <!-- Anything unresolved that the next session needs to decide or check. -->
 
 ---
-*Last updated: 2026-06-04*
+
+Last updated: 2026-06-04
