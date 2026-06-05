@@ -108,4 +108,4 @@ Enforce the strategy at the repo level:
 ## Versioning
 
 Tag meaningful milestones with `v<major>.<minor>.<patch>`. Phase completions (Phase 5, Phase 6)
-are natural tag points.
+and major feature landings are natural tag points.
