@@ -11,6 +11,7 @@ reasoning, and consequences. To start a feature: ensure its ADR is Accepted, the
 | Bidirectional / Inverse Fields | Proposed | [ADR-0004](adr/0004-bidirectional-inverse-fields.md) | Depends on ADR-0003 |
 | Project Themes | Proposed | [ADR-0001](adr/0001-project-themes.md) | — |
 | Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | — |
+| Desktop Packaging & Distribution | Proposed | [ADR-0005](adr/0005-desktop-packaging-distribution.md) | Uses Electron and electron-builder |
 
 ## Completed
 
