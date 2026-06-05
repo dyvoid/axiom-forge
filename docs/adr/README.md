@@ -1,12 +1,19 @@
 # Architecture Decision Records (ADR)
 
-This directory tracks significant architectural decisions and major feature plans for Axiom Forge.
+This directory contains architectural decisions and major feature designs for Axiom Forge.
+For the full index of ADRs and their current status, see [docs/ROADMAP.md](../ROADMAP.md).
 
-We use a simplified Michael Nygard ADR format. Each record captures the Context, the Decision, and the Consequences.
+## Format
 
-## Log
+We use a simplified [Michael Nygard](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) format. Each record contains:
 
-| ADR | Title | Status |
-|---|---|---|
-| [0001](0001-project-themes.md) | Project Themes | Proposed |
-| [0002](0002-multi-project-management.md) | Multi-Project Management | Proposed |
+- **Context** — the problem or situation that prompted a decision
+- **Decision** — what we decided to do
+- **Consequences** — what changes as a result, including tradeoffs
+
+## Status values
+
+- **Proposed** — under consideration, not yet built
+- **Accepted** — approved and either in progress or complete
+- **Deprecated** — no longer applies
+- **Superseded** — replaced by a later ADR (link to the new one)
