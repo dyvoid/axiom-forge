@@ -11,6 +11,10 @@ function readJson(relPath: string): unknown {
 	return JSON.parse(readFileSync(resolve(projectRoot, relPath), 'utf-8'));
 }
 
+// Intentional exception to the synthetic-schemas rule: these tests read
+// fall-of-troy/ directly to verify that the sample project stays valid
+// against the Zod schemas as they evolve. They assert only `result.success`
+// — not specific type names — so they don't couple tests to sample-data choices.
 describe('seed project validates against the shared zod schemas', () => {
 	it('accepts fall-of-troy/config.json', () => {
 		const result = ConfigSchema.safeParse(readJson('config.json'));

@@ -411,5 +411,15 @@ describe('GET /api/folios/:folder/:name/backlinks', () => {
 	});
 });
 
+// ── DELETE — 404 for unknown folio ─────────────────────────
+
+describe('DELETE /api/folios/:folder/:name — not found', () => {
+	it('returns 404 when the folio does not exist', async () => {
+		const res = await request(app).delete('/api/folios/Alphas/Nope');
+		expect(res.status).toBe(404);
+		expect(res.body.error).toBe('Folio not found');
+	});
+});
+
 // touch unused imports so they don't get tree-shaken away by accident
 void stat;
