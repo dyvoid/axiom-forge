@@ -26,7 +26,7 @@ npm workspaces monorepo: `packages/shared` (Markdown parser, Zod schemas, wikili
 (React + Vite SPA on `:5173`, TanStack Query). No database — the server reads the project folder
 on startup and builds an in-memory index. Saves write back to disk via the API.
 
-See [Architecture Overview](docs/Architecture.md) for the full picture, and the [ADR log](adr/)
+See [Architecture Overview](docs/architecture.md) for the full picture, and the [ADR log](adr/)
 for the reasoning behind specific decisions.
 
 ---
@@ -118,7 +118,7 @@ Prompts that produced meaningful code live in `.prompts/`. Reference them from t
 
 Before closing any feature or architecture task, answer each question explicitly:
 
-- Did any API endpoint change, or was a server behavior added/removed? → Update `docs/Architecture.md`
+- Did any API endpoint change, or was a server behavior added/removed? → Update `docs/architecture.md`
 - Did the on-disk Markdown format, field types, or validation rules change? → Update `docs/Data_Model.md`
 - Did any UI convention, design token, or layout rule change? → Update `docs/Design_System.md`
 - Is this a new feature or a new architectural direction? → Write an ADR in `adr/`
@@ -130,7 +130,7 @@ Before closing any feature or architecture task, answer each question explicitly
 
 | Document | What it covers |
 |---|---|
-| [Architecture](docs/Architecture.md) | System structure, API endpoints, data flow |
+| [Architecture](docs/architecture.md) | System structure, API endpoints, data flow |
 | [Data Model](docs/Data_Model.md) | On-disk Markdown format, field types, serialization rules |
 | [Design System](docs/Design_System.md) | Typography, color tokens, layout conventions |
 | [ADR Log](adr/) | Architecture decisions and their rationale |
