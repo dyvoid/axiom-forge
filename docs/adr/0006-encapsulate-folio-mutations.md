@@ -17,10 +17,10 @@ This leads to several architectural issues:
 
 ## Decision
 
-Move all folio mutation orchestration out of the route handler and into `ProjectStore`. 
+Move all folio mutation orchestration out of the route handler and into `ProjectStore`.
 
 1. **New Store Methods:** Expose `saveFolio`, `createFolio`, and `deleteFolio` on `ProjectStore`. These methods will absorb the mutex locking, validation, mtime checks, disk writes, link rewrites, and index updates.
-2. **Typed Errors:** The store will throw domain-specific error classes (`ValidationError`, `NotFoundError`, `ConflictError`, `InvalidTitleError`). 
+2. **Typed Errors:** The store will throw domain-specific error classes (`ValidationError`, `NotFoundError`, `ConflictError`, `InvalidTitleError`).
 3. **Thin HTTP Layer:** The route handler will catch these typed errors and map them to appropriate HTTP status codes (400, 404, 409), stripping it of filesystem and mutex knowledge.
 4. **Internalize State:** The global `writeMutex` will become a private instance field on `ProjectStore`.
 
