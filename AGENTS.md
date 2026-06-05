@@ -150,9 +150,9 @@ or field values from the sample project. See `schema.test.ts` for the establishe
 - New or changed API routes → integration test in `packages/server`, using a synthetic project
   fixture in `tmpdir`.
 - New pure utility functions in `packages/client` → unit test.
-- React components → not tested today. Adding them requires a test renderer setup (e.g. jsdom
-  + `@testing-library/react`), which is a deliberate omission, not an oversight. Add when the
-  benefit justifies the setup cost.
+- React components → not tested today. Adding them requires a test renderer setup
+  (e.g. jsdom + `@testing-library/react`), which is a deliberate omission, not an
+  oversight. Add when the benefit justifies the setup cost.
 
 ---
 
