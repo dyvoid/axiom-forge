@@ -157,7 +157,7 @@ The server reads the project folder once on startup, parses every Markdown file 
 
 ## Documentation
 
-For full architectural details, data models, and design systems, see the [`docs/`](docs/) directory. For upcoming features and architecture decisions, see the [`adr/`](adr/) directory.
+For full architectural details, data models, and design systems, see the [`docs/`](docs/) directory. For upcoming features and architecture decisions, see the [`docs/adr/`](docs/adr/) directory.
 
 ## Status
 
