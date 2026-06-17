@@ -1,8 +1,12 @@
-# Trojan Horse
+---
+type: Artifact
+tags:
+  - deception
+  - stratagem
+  - wooden-horse
+---
 
-## Meta
-- **Type:** Artifact
-- **Tags:** deception, stratagem, wooden-horse
+# Trojan Horse
 
 ## Basic Information
 - **Type:** Structure

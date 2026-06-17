@@ -1,8 +1,13 @@
-# Greek Camp
+---
+type: Location
+tags:
+  - greek
+  - military
+  - beach
+  - siege-base
+---
 
-## Meta
-- **Type:** Location
-- **Tags:** greek, military, beach, siege-base
+# Greek Camp
 
 ## Basic Information
 - **Type:** Camp

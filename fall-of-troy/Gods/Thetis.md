@@ -1,8 +1,12 @@
-# Thetis
+---
+type: God
+tags:
+  - sea-nymph
+  - nereid
+  - mother-of-achilles
+---
 
-## Meta
-- **Type:** God
-- **Tags:** sea-nymph, nereid, mother-of-achilles
+# Thetis
 
 ## Basic Information
 - **Domains:** Sea, Fate

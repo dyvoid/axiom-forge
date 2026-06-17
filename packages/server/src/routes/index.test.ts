@@ -36,11 +36,13 @@ const SYNTH_CONFIG = {
 
 function alphaFile(title: string, body?: string): string {
 	const lines = [
-		`# ${title}`,
+		'---',
+		'type: Alpha',
+		'tags:',
+		'  - sample',
+		'---',
 		'',
-		'## Meta',
-		'- **Type:** Alpha',
-		'- **Tags:** sample',
+		`# ${title}`,
 		'',
 		'## Vitals',
 		'- **Label:** A label',
@@ -144,6 +146,28 @@ describe('GET /api/search', () => {
 		expect(res.body[3].title).toBe('Random');
 	});
 	
+	it('matches on a folio alias even when the title differs', async () => {
+		const aliased = [
+			'---',
+			'type: Alpha',
+			'aliases:',
+			'  - Phantom',
+			'---',
+			'',
+			'# Wraith',
+			'',
+			'## Vitals',
+			'- **Label:** A label',
+			'',
+		].join('\n');
+		await writeFile(join(tmpDir, 'Alphas', 'Wraith.md'), aliased, 'utf-8');
+		app = await makeApp(tmpDir);
+
+		const res = await request(app).get('/api/search?q=phantom');
+		expect(res.status).toBe(200);
+		expect(res.body.map((f: { title: string }) => f.title)).toContain('Wraith');
+	});
+
 	it('sorts identically scored items alphabetically', async () => {
 		// Create another exact snippet match to verify alphabetical fallback
 		await writeFile(join(tmpDir, 'Alphas', 'Another.md'), alphaFile('Another', 'He also saw a ghost.'), 'utf-8');

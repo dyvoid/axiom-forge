@@ -1,8 +1,12 @@
-# Armor of Achilles
+---
+type: Artifact
+tags:
+  - divine
+  - hephaestus
+  - achilles
+---
 
-## Meta
-- **Type:** Artifact
-- **Tags:** divine, hephaestus, achilles
+# Armor of Achilles
 
 ## Basic Information
 - **Type:** Armor

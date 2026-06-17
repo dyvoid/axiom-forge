@@ -75,6 +75,7 @@ function expectStructurallyEqual(a: ParsedFolio, b: ParsedFolio): void {
 	expect(b.type).toEqual(a.type);
 	expect(b.folder).toEqual(a.folder);
 	expect(b.tags).toEqual(a.tags);
+	expect(b.aliases).toEqual(a.aliases);
 	expect(b.sections).toEqual(a.sections);
 }
 
@@ -254,7 +255,7 @@ describe('parser — empty-field omission', () => {
 		expect(markdown).toMatch(/\*\*Label:\*\* set/);
 	});
 
-	it('omits the Tags line entirely when tags array is empty', () => {
+	it('omits the tags frontmatter key entirely when tags array is empty', () => {
 		const folio: ParsedFolio = {
 			name: 'NoTags',
 			title: 'NoTags',
@@ -264,9 +265,21 @@ describe('parser — empty-field omission', () => {
 			sections: { Vitals: { fields: { Label: 'x' } } },
 		};
 		const markdown = serializeToMarkdown(folio, synthSchema);
-		// No "- **Tags:** " line with nothing after it.
-		expect(markdown).not.toMatch(/\*\*Tags:\*\*\s*$/m);
-		expect(markdown).not.toMatch(/\*\*Tags:\*\*\s*\n/);
+		// No `tags:` key appears in the frontmatter when there are none.
+		expect(markdown).not.toMatch(/^tags:/m);
+	});
+
+	it('omits the aliases frontmatter key entirely when there are none', () => {
+		const folio: ParsedFolio = {
+			name: 'NoAliases',
+			title: 'NoAliases',
+			type: 'Alpha',
+			folder: 'Alphas',
+			tags: ['t'],
+			sections: { Vitals: { fields: { Label: 'x' } } },
+		};
+		const markdown = serializeToMarkdown(folio, synthSchema);
+		expect(markdown).not.toMatch(/^aliases:/m);
 	});
 
 	it('omits a section that has all-empty fields', () => {
@@ -302,16 +315,107 @@ describe('parser — empty-field omission', () => {
 	});
 });
 
+// ── YAML frontmatter ─────────────────────────────────────────
+
+describe('parser — YAML frontmatter', () => {
+	it('emits metadata as a leading YAML frontmatter block, not a Meta section', () => {
+		const folio: ParsedFolio = {
+			name: 'Fronted',
+			title: 'Fronted',
+			type: 'Alpha',
+			folder: 'Alphas',
+			tags: ['x', 'y'],
+			aliases: ['Other Name'],
+			sections: { Vitals: { fields: { Label: 'set' } } },
+		};
+		const markdown = serializeToMarkdown(folio, synthSchema);
+		// Document opens with a frontmatter fence containing the metadata keys.
+		expect(markdown.startsWith('---\n')).toBe(true);
+		expect(markdown).toMatch(/^type: Alpha$/m);
+		expect(markdown).toMatch(/^tags:$/m);
+		expect(markdown).toMatch(/^aliases:$/m);
+		// The H1 follows the closing fence; the old "## Meta" section is gone.
+		expect(markdown).not.toContain('## Meta');
+		expect(markdown).toMatch(/---\n\n# Fronted/);
+	});
+
+	it('round-trips aliases through parse → serialize → parse', () => {
+		const folio: ParsedFolio = {
+			name: 'Aka',
+			title: 'Aka',
+			type: 'Alpha',
+			folder: 'Alphas',
+			tags: [],
+			aliases: ['The First', 'The Last'],
+			sections: { Vitals: { fields: { Label: 'x' } } },
+		};
+		const { second } = roundTrip(folio);
+		expect(second.aliases).toEqual(['The First', 'The Last']);
+	});
+
+	it('parses tags and aliases authored as YAML block lists', () => {
+		const raw = [
+			'---',
+			'type: Alpha',
+			'tags:',
+			'  - greek',
+			'  - hero',
+			'aliases:',
+			'  - Pelides',
+			'---',
+			'',
+			'# Achilles',
+			'',
+			'## Vitals',
+			'- **Label:** x',
+			'',
+		].join('\n');
+		const parsed = parseMarkdown(raw, synthSchema);
+		expect(parsed.type).toBe('Alpha');
+		expect(parsed.tags).toEqual(['greek', 'hero']);
+		expect(parsed.aliases).toEqual(['Pelides']);
+		expect(parsed.title).toBe('Achilles');
+	});
+
+	it('quotes values containing YAML-special characters and reads them back', () => {
+		const folio: ParsedFolio = {
+			name: 'Special',
+			title: 'Special',
+			type: 'Alpha',
+			folder: 'Alphas',
+			tags: [],
+			aliases: ['Lys: the elder'],
+			sections: { Vitals: { fields: { Label: 'x' } } },
+		};
+		const { second, markdown } = roundTrip(folio);
+		expect(markdown).toContain("'Lys: the elder'");
+		expect(second.aliases).toEqual(['Lys: the elder']);
+	});
+
+	it('leaves aliases undefined when the frontmatter has none', () => {
+		const raw = [
+			'---',
+			'type: Alpha',
+			'---',
+			'',
+			'# Plain',
+			'',
+		].join('\n');
+		const parsed = parseMarkdown(raw, synthSchema);
+		expect(parsed.aliases).toBeUndefined();
+	});
+});
+
 // ── Schema warnings ──────────────────────────────────────────
 
 describe('parser — schema warnings', () => {
 	it('emits a warning for an unknown section', () => {
 		const raw = [
-			'# Mystery',
+			'---',
+			'type: Alpha',
+			'---',
 			'',
-			'## Meta',
-			'- **Type:** Alpha',
-			'- **Tags:**',
+			'# Mystery',
 			'',
 			'## Mystery Section',
 			'- **X:** y',
@@ -325,11 +429,11 @@ describe('parser — schema warnings', () => {
 
 	it('emits a warning for an unknown field inside a known section', () => {
 		const raw = [
-			'# X',
+			'---',
+			'type: Alpha',
+			'---',
 			'',
-			'## Meta',
-			'- **Type:** Alpha',
-			'- **Tags:**',
+			'# X',
 			'',
 			'## Vitals',
 			'- **Label:** ok',
@@ -344,11 +448,11 @@ describe('parser — schema warnings', () => {
 
 	it('emits a warning for an invalid select value', () => {
 		const raw = [
-			'# X',
+			'---',
+			'type: Alpha',
+			'---',
 			'',
-			'## Meta',
-			'- **Type:** Alpha',
-			'- **Tags:**',
+			'# X',
 			'',
 			'## Vitals',
 			'- **Mood:** Joyful',
@@ -362,11 +466,11 @@ describe('parser — schema warnings', () => {
 
 	it('emits a warning for an unknown type', () => {
 		const raw = [
-			'# X',
+			'---',
+			'type: NotATypeAtAll',
+			'---',
 			'',
-			'## Meta',
-			'- **Type:** NotATypeAtAll',
-			'- **Tags:**',
+			'# X',
 			'',
 		].join('\n');
 		const parsed = parseMarkdown(raw, synthSchema);

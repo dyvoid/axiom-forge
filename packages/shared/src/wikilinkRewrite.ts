@@ -33,6 +33,11 @@ export interface WikiLinkRewriteResult {
 // Used as a split boundary so wikilinks inside fences are never rewritten.
 const FENCE_PATTERN = /(`{3,}[^\n]*\n[\s\S]*?`{3,})/g;
 
+// Matches a leading YAML frontmatter block (`---` … `---`) at the very start
+// of the document. Our frontmatter holds no wikilinks today (only type, tags,
+// aliases), but peeling it off keeps the rewriter from ever touching metadata.
+const FRONTMATTER_PATTERN = /^---\r?\n[\s\S]*?\r?\n---\r?\n?/;
+
 /**
  * Rewrite every `[[from.folder/from.name]]` (with or without `|alias`) in
  * `markdown` to point at `to.name`, keeping the folder and alias untouched.
@@ -53,12 +58,18 @@ export function rewriteWikiLinks(
 		'g',
 	);
 
+	// Peel off a leading frontmatter block so it is never rewritten. The body
+	// (everything after it) is the only region we touch.
+	const fmMatch = FRONTMATTER_PATTERN.exec(markdown);
+	const frontmatter = fmMatch ? fmMatch[0] : '';
+	const body = fmMatch ? markdown.slice(frontmatter.length) : markdown;
+
 	// Split on fenced code blocks (capturing group keeps the fences in the array).
 	// Even-indexed segments are normal text; odd-indexed segments are fences.
-	const parts = markdown.split(FENCE_PATTERN);
+	const parts = body.split(FENCE_PATTERN);
 
 	let rewrites = 0;
-	const content = parts.map((part, i) => {
+	const rewrittenBody = parts.map((part, i) => {
 		if (i % 2 === 1) return part; // inside a fence — leave untouched
 		return part.replace(pattern, (_full, _path, _pipeWithAlias, alias?: string) => {
 			rewrites++;
@@ -68,5 +79,5 @@ export function rewriteWikiLinks(
 		});
 	}).join('');
 
-	return { content, rewrites };
+	return { content: frontmatter + rewrittenBody, rewrites };
 }

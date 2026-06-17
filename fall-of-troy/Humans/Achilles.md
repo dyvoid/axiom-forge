@@ -1,8 +1,16 @@
-# Achilles
+---
+type: Human
+tags:
+  - greek
+  - hero
+  - demigod
+  - warrior
+aliases:
+  - Pelides
+  - Swift-footed
+---
 
-## Meta
-- **Type:** Human
-- **Tags:** greek, hero, demigod, warrior
+# Achilles
 
 ## Basic Information
 - **Epithets:** Swift-footed, Lion-hearted, Son of Peleus

@@ -148,6 +148,7 @@ export const ParsedFolioSchema = z.object({
 	type: z.string().min(1),
 	folder: z.string().min(1),
 	tags: z.array(z.string()),
+	aliases: z.array(z.string()).optional(),
 	sections: z.record(z.string(), ParsedSectionSchema),
 	// `warnings` and `mtime` are server-side annotations, not user input —
 	// accept-and-ignore rather than reject if a client sends them back.

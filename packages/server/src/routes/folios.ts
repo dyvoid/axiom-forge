@@ -223,6 +223,7 @@ export function foliosRouter(store: ProjectStore): Router {
 					mtime: finalStat.mtimeMs,
 					title: folioToWrite.title,
 					tags: folioToWrite.tags,
+					aliases: folioToWrite.aliases,
 					snippet,
 					links: extractAllLinks(folioToWrite),
 				});
@@ -294,6 +295,7 @@ export function foliosRouter(store: ProjectStore): Router {
 					filePath,
 					mtime,
 					tags: folioToWrite.tags,
+					aliases: folioToWrite.aliases,
 					snippet,
 					warnings: [],
 					links: extractAllLinks(folioToWrite),

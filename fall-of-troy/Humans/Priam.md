@@ -1,8 +1,12 @@
-# Priam
+---
+type: Human
+tags:
+  - trojan
+  - king
+  - elder
+---
 
-## Meta
-- **Type:** Human
-- **Tags:** trojan, king, elder
+# Priam
 
 ## Basic Information
 - **Epithets:** King of Troy, Father of Hector, Lord of Ilium

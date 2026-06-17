@@ -1,8 +1,12 @@
-# Patroclus
+---
+type: Human
+tags:
+  - greek
+  - hero
+  - companion
+---
 
-## Meta
-- **Type:** Human
-- **Tags:** greek, hero, companion
+# Patroclus
 
 ## Basic Information
 - **Epithets:** Companion of Achilles, Gentle Among the Greeks

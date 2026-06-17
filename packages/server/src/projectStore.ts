@@ -141,13 +141,14 @@ export class ProjectStore {
 	updateFolioRecord(
 		folder: string,
 		name: string,
-		patch: { mtime: number; title?: string; tags: string[]; snippet?: string; links: WikiLink[] },
+		patch: { mtime: number; title?: string; tags: string[]; aliases?: string[]; snippet?: string; links: WikiLink[] },
 	): void {
 		const record = this.folios.find((f) => f.folder === folder && f.name === name);
 		if (!record) return;
 		record.mtime = patch.mtime;
 		if (patch.title !== undefined) record.title = patch.title;
 		record.tags = patch.tags;
+		record.aliases = patch.aliases;
 		record.snippet = patch.snippet;
 		record.links = patch.links;
 	}
@@ -236,6 +237,7 @@ export class ProjectStore {
 		let id = 1;
 		for (const { typeKey, folder, file } of allFiles) {
 			let tags: string[] = [];
+			let aliases: string[] | undefined;
 			let snippet: string | undefined;
 			let warnings: string[] = [];
 			let links: WikiLink[] = [];
@@ -244,6 +246,7 @@ export class ProjectStore {
 				const { content } = await readFolioFile(file.filePath);
 				const parsed = parseMarkdown(content, schema);
 				tags = parsed.tags;
+				aliases = parsed.aliases;
 				warnings = parsed.warnings ?? [];
 				if (parsed.title) title = parsed.title;
 				snippet = this.deriveSnippet(parsed);
@@ -260,6 +263,7 @@ export class ProjectStore {
 				filePath: file.filePath,
 				mtime: file.mtime,
 				tags,
+				aliases,
 				snippet,
 				warnings,
 				links,

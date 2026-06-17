@@ -1,8 +1,12 @@
-# Death of Patroclus
+---
+type: Event
+tags:
+  - turning-point
+  - grief
+  - hector
+---
 
-## Meta
-- **Type:** Event
-- **Tags:** turning-point, grief, hector
+# Death of Patroclus
 
 ## Basic Information
 - **Type:** Battle, Personal

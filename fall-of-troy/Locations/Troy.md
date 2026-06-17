@@ -1,8 +1,13 @@
-# Troy
+---
+type: Location
+tags:
+  - city
+  - ilium
+  - besieged
+  - trojan
+---
 
-## Meta
-- **Type:** Location
-- **Tags:** city, ilium, besieged, trojan
+# Troy
 
 ## Basic Information
 - **Type:** City

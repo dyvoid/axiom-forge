@@ -1,8 +1,13 @@
-# Athena
+---
+type: God
+tags:
+  - olympian
+  - wisdom
+  - war
+  - greek-patron
+---
 
-## Meta
-- **Type:** God
-- **Tags:** olympian, wisdom, war, greek-patron
+# Athena
 
 ## Basic Information
 - **Domains:** Wisdom, War, Crafts

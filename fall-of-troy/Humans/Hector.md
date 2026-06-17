@@ -1,8 +1,13 @@
-# Hector
+---
+type: Human
+tags:
+  - trojan
+  - hero
+  - prince
+  - warrior
+---
 
-## Meta
-- **Type:** Human
-- **Tags:** trojan, hero, prince, warrior
+# Hector
 
 ## Basic Information
 - **Epithets:** Tamer of Horses, Bulwark of Troy, Prince of Troy

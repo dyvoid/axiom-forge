@@ -1,8 +1,15 @@
-# Odysseus
+---
+type: Human
+tags:
+  - greek
+  - hero
+  - strategist
+  - king
+aliases:
+  - Ulysses
+---
 
-## Meta
-- **Type:** Human
-- **Tags:** greek, hero, strategist, king
+# Odysseus
 
 ## Basic Information
 - **Epithets:** The Cunning, Man of Many Devices, Sacker of Cities

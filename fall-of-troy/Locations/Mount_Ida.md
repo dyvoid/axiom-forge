@@ -1,8 +1,12 @@
-# Mount Ida
+---
+type: Location
+tags:
+  - mountain
+  - divine
+  - judgment
+---
 
-## Meta
-- **Type:** Location
-- **Tags:** mountain, divine, judgment
+# Mount Ida
 
 ## Basic Information
 - **Type:** Mountain

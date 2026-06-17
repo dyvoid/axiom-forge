@@ -1,8 +1,12 @@
-# Greeks
+---
+type: Faction
+tags:
+  - achaeans
+  - coalition
+  - besiegers
+---
 
-## Meta
-- **Type:** Faction
-- **Tags:** achaeans, coalition, besiegers
+# Greeks
 
 ## Basic Information
 - **Type:** Military, Political

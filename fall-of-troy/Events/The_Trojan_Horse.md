@@ -1,8 +1,12 @@
-# The Trojan Horse
+---
+type: Event
+tags:
+  - deception
+  - stratagem
+  - odysseus
+---
 
-## Meta
-- **Type:** Event
-- **Tags:** deception, stratagem, odysseus
+# The Trojan Horse
 
 ## Basic Information
 - **Type:** Deception, Political
