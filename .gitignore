@@ -41,3 +41,8 @@ dist/
 .cursor/
 coverage/
 .npm/
+
+# --- Project tooling ---
+# Obsidian vault metadata. Sample data is frontmatter-compatible, but Obsidian's own
+# workspace config should not be tracked.
+fall-of-troy/.obsidian/
