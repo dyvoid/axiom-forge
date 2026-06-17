@@ -1,8 +1,12 @@
-# Fall of Troy
+---
+type: Event
+tags:
+  - sack
+  - fire
+  - end-of-an-age
+---
 
-## Meta
-- **Type:** Event
-- **Tags:** sack, fire, end-of-an-age
+# Fall of Troy
 
 ## Basic Information
 - **Type:** Battle, Cosmic

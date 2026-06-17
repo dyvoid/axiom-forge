@@ -33,11 +33,17 @@ export function mountRoutes(app: Express, store: ProjectStore): void {
 			const snippet = (f.snippet || '').toLowerCase();
 			const folder = f.folder.toLowerCase();
 			const tags = f.tags.map((t) => t.toLowerCase());
+			const aliases = (f.aliases ?? []).map((a) => a.toLowerCase());
 
 			let score = 0;
 			if (title === q || name === q) score += 100;
 			else if (title.startsWith(q) || name.startsWith(q)) score += 50;
 			else if (title.includes(q) || name.includes(q)) score += 10;
+
+			// Aliases are alternative names — score just below the primary title.
+			if (aliases.some((a) => a === q)) score += 80;
+			else if (aliases.some((a) => a.startsWith(q))) score += 40;
+			else if (aliases.some((a) => a.includes(q))) score += 8;
 
 			if (tags.some((t) => t === q)) score += 20;
 			else if (tags.some((t) => t.includes(q))) score += 10;

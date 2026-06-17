@@ -45,6 +45,8 @@ export interface ParsedFolio {
 	type: string;
 	folder: string;
 	tags: string[];
+	/** Alternative names (Obsidian-native `aliases` frontmatter property). Omitted when empty. */
+	aliases?: string[];
 	preface?: string;
 	sections: Record<string, ParsedSection>;
 	warnings?: string[];
@@ -62,5 +64,7 @@ export interface FolioIndexRecord {
 	/** Display title from the H1. */
 	title: string;
 	tags: string[];
+	/** Alternative names (Obsidian-native `aliases`). Omitted when empty. */
+	aliases?: string[];
 	snippet?: string;
 }

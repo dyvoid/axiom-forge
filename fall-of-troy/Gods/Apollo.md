@@ -1,8 +1,13 @@
-# Apollo
+---
+type: God
+tags:
+  - olympian
+  - sun
+  - prophecy
+  - trojan-patron
+---
 
-## Meta
-- **Type:** God
-- **Tags:** olympian, sun, prophecy, trojan-patron
+# Apollo
 
 ## Basic Information
 - **Domains:** Sun, Prophecy, War

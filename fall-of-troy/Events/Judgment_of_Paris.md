@@ -1,8 +1,12 @@
-# Judgment of Paris
+---
+type: Event
+tags:
+  - divine
+  - origin
+  - apple of discord
+---
 
-## Meta
-- **Type:** Event
-- **Tags:** divine, origin, apple of discord
+# Judgment of Paris
 
 ## Basic Information
 - **Type:** Divine, Personal, Cosmic

@@ -1,8 +1,14 @@
-# Paris
+---
+type: Human
+tags:
+  - trojan
+  - prince
+  - archer
+aliases:
+  - Alexander
+---
 
-## Meta
-- **Type:** Human
-- **Tags:** trojan, prince, archer
+# Paris
 
 ## Basic Information
 - **Epithets:** Alexander, Shepherd of the People, Breaker of Oaths

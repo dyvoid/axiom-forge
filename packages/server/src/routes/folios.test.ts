@@ -57,11 +57,13 @@ const SYNTH_CONFIG = {
 
 function alphaFile(title: string, pal?: string, body?: string): string {
 	const lines = [
-		`# ${title}`,
+		'---',
+		'type: Alpha',
+		'tags:',
+		'  - sample',
+		'---',
 		'',
-		'## Meta',
-		'- **Type:** Alpha',
-		'- **Tags:** sample',
+		`# ${title}`,
 		'',
 		'## Vitals',
 		'- **Label:** A label',
@@ -78,11 +80,11 @@ function alphaFile(title: string, pal?: string, body?: string): string {
 
 function betaFile(title: string): string {
 	return [
-		`# ${title}`,
+		'---',
+		'type: Beta',
+		'---',
 		'',
-		'## Meta',
-		'- **Type:** Beta',
-		'- **Tags:**',
+		`# ${title}`,
 		'',
 		'## Vitals',
 		'- **Label:** A beta',

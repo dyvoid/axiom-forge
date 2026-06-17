@@ -1,8 +1,13 @@
-# Aphrodite
+---
+type: God
+tags:
+  - olympian
+  - love
+  - trojan-patron
+  - cause-of-war
+---
 
-## Meta
-- **Type:** God
-- **Tags:** olympian, love, trojan-patron, cause-of-war
+# Aphrodite
 
 ## Basic Information
 - **Domains:** Love, Trickery

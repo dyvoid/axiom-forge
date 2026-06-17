@@ -1,8 +1,12 @@
-# Defense of the Ships
+---
+type: Event
+tags:
+  - battle
+  - crisis
+  - trojan-offensive
+---
 
-## Meta
-- **Type:** Event
-- **Tags:** battle, crisis, trojan-offensive
+# Defense of the Ships
 
 ## Basic Information
 - **Type:** Battle

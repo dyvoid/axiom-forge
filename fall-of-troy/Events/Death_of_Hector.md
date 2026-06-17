@@ -1,8 +1,12 @@
-# Death of Hector
+---
+type: Event
+tags:
+  - duel
+  - achilles
+  - mourning
+---
 
-## Meta
-- **Type:** Event
-- **Tags:** duel, achilles, mourning
+# Death of Hector
 
 ## Basic Information
 - **Type:** Battle, Personal

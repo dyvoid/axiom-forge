@@ -1,8 +1,12 @@
-# Theft of the Palladium
+---
+type: Event
+tags:
+  - infiltration
+  - odysseus
+  - sacred-object
+---
 
-## Meta
-- **Type:** Event
-- **Tags:** infiltration, odysseus, sacred-object
+# Theft of the Palladium
 
 ## Basic Information
 - **Type:** Deception, Personal

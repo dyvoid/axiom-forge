@@ -1,8 +1,13 @@
-# Judgment of Achilles
+---
+type: Event
+tags:
+  - dispute
+  - rage
+  - withdrawal
+  - agamemnon
+---
 
-## Meta
-- **Type:** Event
-- **Tags:** dispute, rage, withdrawal, agamemnon
+# Judgment of Achilles
 
 ## Basic Information
 - **Type:** Personal, Political

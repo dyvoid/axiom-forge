@@ -1,8 +1,12 @@
-# Trojans
+---
+type: Faction
+tags:
+  - ilians
+  - defenders
+  - besieged
+---
 
-## Meta
-- **Type:** Faction
-- **Tags:** ilians, defenders, besieged
+# Trojans
 
 ## Basic Information
 - **Type:** Military, Political, Royal

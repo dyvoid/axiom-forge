@@ -1,8 +1,14 @@
-# Helen
+---
+type: Human
+tags:
+  - spartan
+  - cause-of-war
+  - divine-born
+aliases:
+  - Helen of Troy
+---
 
-## Meta
-- **Type:** Human
-- **Tags:** spartan, cause-of-war, divine-born
+# Helen
 
 ## Basic Information
 - **Epithets:** Helen of Troy, Helen of Sparta, Face That Launched a Thousand Ships
