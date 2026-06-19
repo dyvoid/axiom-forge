@@ -66,11 +66,21 @@ Specifics:
   etc.) remain ordinary body sections, not frontmatter. Obsidian does not track frontmatter
   wikilinks as backlinks or graph edges, so moving them would lose link semantics for pure-Obsidian
   users. Only `type`/`tags`/`aliases` go in frontmatter.
-- **Parser:** `gray-matter` is adopted as the frontmatter parser/serializer in
-  `packages/shared`. It is the standard, battle-tested choice (used by Hugo, Astro, etc.) and is
-  the only new dependency this change introduces.
+- **Parser:** `js-yaml` is adopted as the frontmatter parser/serializer in
+  `packages/shared`. It is the standard, battle-tested YAML library (used by
+  Eleventy, Cypress, etc.) and is the only new dependency this change introduces.
+  An earlier draft of this ADR proposed `gray-matter`; that was dropped after a
+  first-principles review — `gray-matter` wraps `js-yaml` and adds Markdown-body
+  parsing we don't need, so depending on it directly gave us better control over
+  emission (for idempotency) with fewer transitive deps.
 - **Clean cut:** no backwards-compatible reader for `## Meta`. All sample data is rewritten to the
   new format in the same change.
+- **Parse-error contract:** frontmatter is treated as a hard contract, not a forgiving hint.
+  Malformed YAML (syntax errors) throws from `parseMarkdown` — at index time the error is caught
+  and surfaced as a per-folio warning; at read time it produces a `500`. A broken file should be
+  visible, not silently treated as having an empty type. Valid YAML that isn't a mapping (e.g. a
+  bare list as the entire payload) is a semantic error rather than a syntax one, so it degrades
+  gracefully: empty `type` plus a warning. Missing frontmatter is treated as an empty mapping.
 
 ## Consequences
 
