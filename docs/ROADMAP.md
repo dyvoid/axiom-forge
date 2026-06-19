@@ -32,3 +32,10 @@ The core feature set shipped in the initial build:
 Agreed-upon cleanups that don't warrant an ADR. Check them off when done.
 
 - [x] Move search ranking logic from `routes/index.ts` inline handler into `ProjectStore.search()` — makes it testable without HTTP and reusable by future CLI tools
+- [x] Deduplicate the `isWikiLink` type guard — export it from `wikilink.ts`, reuse in `brokenLinks.ts`
+- [x] Route PUT rename through `fileIO.renameFolioFile` instead of a direct `node:fs/promises` `rename` (wires up the previously-dead export). Partial step toward [ADR-0006](adr/0006-encapsulate-folio-mutations.md); DELETE still calls `unlink` directly
+- [x] Surface `createStub`/`createAndEdit` mutation failures in `FolioEditView` (were silently swallowed)
+- [x] Memoize `Sidebar` `byType` grouping with `useMemo`
+- [x] Add integration tests for the `config` and `schema` routes
+- [x] Return real parse warnings from PUT/POST save responses (was hardcoded `[]`) via a serialize→parse round-trip
+- [ ] Replace `ProjectStore` linear array scans (`.find`/`.filter`) with `Map` lookups — deferred to [ADR-0003](adr/0003-in-memory-document-model.md), the natural time to revisit the data structure

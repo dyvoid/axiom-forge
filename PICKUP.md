@@ -5,6 +5,30 @@ instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROAD
 
 ## Current Focus
 
+**Tech-debt batch** — a maintenance pass from an external audit, **complete and merged to `main`**
+(commits `f247e6a`, `6c15cbf`, `96490ae`). `main` is ahead of `origin/main` by these 3 commits
+and **not yet pushed**. The `fix/tech-debt-batch-1` branch is already deleted.
+
+### What is done (this session)
+- **#1** `isWikiLink` deduplicated — exported from `wikilink.ts`, reused in `brokenLinks.ts`.
+- **#3/#7** PUT rename now routes through `fileIO.renameFolioFile` (was a direct `node:fs/promises`
+  `rename`); the previously-dead `renameFolioFile` export is now wired up. This is the interim
+  step toward ADR-0006 (still *Proposed* — mutations not yet moved into `ProjectStore`).
+- **#4** `createStub`/`createAndEdit` failures now surface via a "Create failed" banner in
+  `FolioEditView` (were silently swallowed).
+- **#8** `Sidebar` `byType` grouping memoized with `useMemo`.
+- **#5** Integration tests added for `GET /api/config` and `GET /api/schema`.
+- **#6** PUT/POST save responses now return *real* parse warnings (was hardcoded `[]`) via a
+  serialize→parse round-trip (no extra disk read), also stored on the index record so
+  `GET /api/warnings` stays accurate. Canary tests assert clean round-trips stay empty.
+- **#2** (search in route handler) was already fixed before this session.
+- **#9** (Map-based store lookups) deliberately **deferred to ADR-0003**.
+- 94 tests pass; build + lint clean. Verified live against `fall-of-troy` (landing + edit view).
+
+---
+
+## Previous Focus
+
 **[ADR-0008] YAML Frontmatter for Metadata** — implementation **complete and merged to `main`**
 (commits `834f926`, `c71b570`, `e4ba8ad`, then follow-ups `b21b138`, `e9b987e`, `e7512a2`).
 All work is on `main`; the original `task/yaml-frontmatter-metadata` branch can be deleted.
