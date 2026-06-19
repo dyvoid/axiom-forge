@@ -36,6 +36,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	const [draft, setDraft] = useState<ParsedFolio>(() => structuredClone(folio));
 	const [dirty, setDirty] = useState(false);
 	const [confirmDelete, setConfirmDelete] = useState(false);
+	const [createError, setCreateError] = useState<string | null>(null);
 
 	// Wrap setDraft so any mutation flips the dirty flag. Avoids the
 	// per-keystroke JSON.stringify(folio) that the previous diff used.
@@ -120,22 +121,34 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 		navigate(backTo);
 	}
 
+	const onCreateError = (err: unknown): void => {
+		setCreateError(err instanceof Error ? err.message : String(err));
+	};
+
 	function handleCreateStub(folder: string, name: string): void {
 		const entry = Object.entries(schema.types).find(([, def]) => def.folder === folder);
 		if (!entry) return;
-		createStub.mutate({
-			folder,
-			folio: { name, title: name.replace(/_/g, ' '), type: entry[0], folder, tags: [], sections: {} },
-		});
+		setCreateError(null);
+		createStub.mutate(
+			{
+				folder,
+				folio: { name, title: name.replace(/_/g, ' '), type: entry[0], folder, tags: [], sections: {} },
+			},
+			{ onError: onCreateError },
+		);
 	}
 
 	function handleCreateAndEdit(folder: string, name: string): void {
 		const entry = Object.entries(schema.types).find(([, def]) => def.folder === folder);
 		if (!entry) return;
-		createAndEdit.mutate({
-			folder,
-			folio: { name, title: name.replace(/_/g, ' '), type: entry[0], folder, tags: [], sections: {} },
-		});
+		setCreateError(null);
+		createAndEdit.mutate(
+			{
+				folder,
+				folio: { name, title: name.replace(/_/g, ' '), type: entry[0], folder, tags: [], sections: {} },
+			},
+			{ onError: onCreateError },
+		);
 	}
 
 	const backTo = `/folio/${encodeURIComponent(folio.folder)}/${encodeURIComponent(folio.name)}`;
@@ -173,6 +186,13 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 				<div className={styles.warnings}>
 					<div className={styles.warningsLabel}>Save failed</div>
 					{saveError}
+				</div>
+			)}
+
+			{createError && (
+				<div className={styles.warnings}>
+					<div className={styles.warningsLabel}>Create failed</div>
+					{createError}
 				</div>
 			)}
 

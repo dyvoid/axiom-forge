@@ -82,7 +82,8 @@ export function filenameToDisplayName(filename: string): string {
 	return filename.replace(/_/g, ' ');
 }
 
-function isWikiLink(v: unknown): v is WikiLink {
+/** Type guard for a structured wiki-link value (has string `folder` and `name`). */
+export function isWikiLink(v: unknown): v is WikiLink {
 	return !!v && typeof v === 'object' && 'folder' in v && 'name' in v
 		&& typeof (v as Record<string, unknown>).folder === 'string'
 		&& typeof (v as Record<string, unknown>).name === 'string';

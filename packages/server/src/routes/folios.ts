@@ -1,4 +1,4 @@
-import { unlink, readFile, rename, stat } from 'node:fs/promises';
+import { unlink, readFile, stat } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { Router } from 'express';
 import {
@@ -13,7 +13,7 @@ import {
 	type ProjectSchema,
 } from '@axiom-forge/shared';
 import type { ProjectStore } from '../projectStore.js';
-import { writeFolioFile, statFile } from '../fileIO.js';
+import { writeFolioFile, renameFolioFile, statFile } from '../fileIO.js';
 import { writeMutex } from '../utils/mutex.js';
 
 // ── Rename helper ────────────────────────────────────────────
@@ -189,15 +189,15 @@ export function foliosRouter(store: ProjectStore): Router {
 				//    the old name and we surface the rename failure.
 				if (isRename) {
 					filePath = join(folderPath, `${newName}.md`);
+					let renamedMtime: number;
 					try {
-						await rename(oldFilePath, filePath);
+						({ mtime: renamedMtime } = await renameFolioFile(oldFilePath, filePath));
 					} catch (err) {
 						console.error(`Rename failed ${oldFilePath} -> ${filePath}:`, err);
 						res.status(500).json({ error: 'rename-failed', reason: String(err) });
 						return;
 					}
-					const renamedStat = await stat(filePath);
-					store.renameFolioRecord(folder!, oldName, newName, filePath, renamedStat.mtimeMs);
+					store.renameFolioRecord(folder!, oldName, newName, filePath, renamedMtime);
 
 					// 3. Best-effort project-wide link rewrite. If this fails partway
 					//    the index and primary file are already consistent — only

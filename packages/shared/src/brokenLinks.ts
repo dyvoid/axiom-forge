@@ -9,8 +9,8 @@
  * and the client (which checks against the cached folio index).
  */
 
-import { parseWikiLinks } from './wikilink.js';
-import type { ParsedFolio, WikiLink } from './types.js';
+import { parseWikiLinks, isWikiLink } from './wikilink.js';
+import type { ParsedFolio } from './types.js';
 
 export interface BrokenLinkRef {
 	section: string;
@@ -18,17 +18,6 @@ export interface BrokenLinkRef {
 	field?: string;
 	folder: string;
 	name: string;
-}
-
-function isWikiLink(v: unknown): v is WikiLink {
-	return (
-		!!v &&
-		typeof v === 'object' &&
-		'folder' in v &&
-		'name' in v &&
-		typeof (v as Record<string, unknown>).folder === 'string' &&
-		typeof (v as Record<string, unknown>).name === 'string'
-	);
 }
 
 export function collectBrokenLinks(
