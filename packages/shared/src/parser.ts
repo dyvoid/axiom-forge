@@ -151,16 +151,29 @@ const FRONTMATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
  * frontmatter or it isn't a YAML mapping) and the remaining body. Only the
  * `---`-delimited block at the very start of the file is treated as
  * frontmatter, matching Obsidian's behaviour.
+ *
+ * Malformed YAML (syntax errors) is **not** caught — `load()` throws and the
+ * caller is expected to handle it. A valid YAML payload that isn't a mapping
+ * (e.g. a bare scalar or a list) is a semantic error, not a syntax one, so it
+ * is surfaced as a warning string rather than thrown.
  */
-function parseFrontmatter(markdown: string): { data: Record<string, unknown>; content: string } {
+function parseFrontmatter(markdown: string): {
+	data: Record<string, unknown>;
+	content: string;
+	warning?: string;
+} {
 	const m = FRONTMATTER_PATTERN.exec(markdown);
 	if (!m) return { data: {}, content: markdown };
 	const loaded = load(m[1] ?? '');
-	const data =
-		loaded && typeof loaded === 'object' && !Array.isArray(loaded)
-			? (loaded as Record<string, unknown>)
-			: {};
-	return { data, content: markdown.slice(m[0].length) };
+	if (loaded && typeof loaded === 'object' && !Array.isArray(loaded)) {
+		return { data: loaded as Record<string, unknown>, content: markdown.slice(m[0].length) };
+	}
+	// Valid YAML but not a mapping — e.g. `---\n- just\n- a\n- list\n---`.
+	return {
+		data: {},
+		content: markdown.slice(m[0].length),
+		warning: 'Frontmatter is valid YAML but not a mapping (expected key: value pairs)',
+	};
 }
 
 /**
@@ -193,8 +206,9 @@ function normalizeStringList(value: unknown): string[] {
  */
 export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFolio {
 	// Metadata (type, tags, aliases) lives in YAML frontmatter; strip it off and
-	// parse sections from the remaining body.
-	const { data, content } = parseFrontmatter(markdown);
+	// parse sections from the remaining body. Malformed YAML throws (caller
+	// handles); a non-mapping payload surfaces as a warning.
+	const { data, content, warning: fmWarning } = parseFrontmatter(markdown);
 	const type = typeof data.type === 'string' ? data.type : '';
 	const tags = normalizeStringList(data.tags);
 	const aliases = normalizeStringList(data.aliases);
@@ -205,6 +219,7 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 	const folder = typeDef?.folder ?? '';
 	const warnings: string[] = [];
 
+	if (fmWarning) warnings.push(fmWarning);
 	if (type && !typeDef) {
 		warnings.push(`Unknown type "${type}" — no schema definition found`);
 	}
