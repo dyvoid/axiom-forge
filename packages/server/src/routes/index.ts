@@ -20,7 +20,8 @@ export function mountRoutes(app: Express, store: ProjectStore): void {
 	});
 
 	app.get('/api/search', (req, res) => {
-		const q = (req.query.q as string || '');
-		res.json(store.search(q));
+		const raw = req.query.q;
+		const q = Array.isArray(raw) ? (raw[0] ?? '') : (raw ?? '');
+		res.json(store.search(String(q)));
 	});
 }
