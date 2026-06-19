@@ -41,6 +41,3 @@ export class Mutex {
 		}
 	}
 }
-
-// A global mutex for all file operations in the project.
-export const writeMutex = new Mutex();

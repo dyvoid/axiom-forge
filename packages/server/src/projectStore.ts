@@ -1,18 +1,58 @@
 import { readFile, stat } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { resolve, join } from 'node:path';
 import {
 	ConfigSchema,
 	ProjectSchemaSchema,
+	ParsedFolioSchema,
+	collectBrokenLinks,
+	displayNameToFilename,
+	extractAllLinks,
 	filenameToDisplayName,
 	parseMarkdown,
+	rewriteWikiLinks,
+	serializeToMarkdown,
+	validateAgainstSchema,
 	type Config,
 	type ProjectSchema,
 	type FolioIndexRecord,
 	type ParsedFolio,
 	type WikiLink,
 } from '@axiom-forge/shared';
-import { extractAllLinks } from '@axiom-forge/shared';
-import { scanFolder, readFolioFile } from './fileIO.js';
+import {
+	scanFolder,
+	readFolioFile,
+	writeFolioFile,
+	renameFolioFile,
+	deleteFolioFile,
+	statFile,
+} from './fileIO.js';
+import { Mutex } from './utils/mutex.js';
+import {
+	ValidationError,
+	NotFoundError,
+	BadRequestError,
+	InvalidTitleError,
+	ConflictError,
+	RenameFailedError,
+	LinkRewriteFailedError,
+} from './storeErrors.js';
+
+/** Payload returned by saveFolio (mirrors the PUT response body). */
+export interface SaveResult {
+	mtime: number;
+	warnings: string[];
+	brokenLinks: ReturnType<typeof collectBrokenLinks>;
+	renamedTo?: string;
+	linksRewritten?: number;
+}
+
+/** Payload returned by createFolio (mirrors the POST response body). */
+export interface CreateResult {
+	name: string;
+	mtime: number;
+	warnings: string[];
+	brokenLinks: ReturnType<typeof collectBrokenLinks>;
+}
 
 interface InternalFolioRecord extends FolioIndexRecord {
 	filePath: string;
@@ -26,6 +66,8 @@ export class ProjectStore {
 	private schema: ProjectSchema | null = null;
 	private folios: InternalFolioRecord[] = [];
 	private nextId = 1;
+	/** Serializes all mutating operations so concurrent writes can't interleave. */
+	private readonly writeMutex = new Mutex();
 
 	constructor(public readonly projectPath: string) {}
 
@@ -262,6 +304,161 @@ export class ProjectStore {
 		};
 	}
 
+	// ── Mutations (ADR-0006) ────────────────────────────────
+	// All folio writes go through these methods. Each acquires the write mutex,
+	// validates, performs atomic disk I/O via fileIO, and updates the in-memory
+	// index. Failures throw typed domain errors (see storeErrors.ts); the route
+	// layer maps those to HTTP responses.
+
+	/**
+	 * Save an existing folio. If the H1 title changes, the file is renamed and
+	 * every `[[folder/oldName]]` wikilink across the project is rewritten.
+	 */
+	async saveFolio(
+		folder: string,
+		name: string,
+		folio: ParsedFolio,
+		clientMtime: number,
+	): Promise<SaveResult> {
+		return this.writeMutex.runExclusive(async () => {
+			const schema = this.getSchema();
+			this.validateForWrite(folio, schema);
+
+			const record = this.getRecord(folder, name);
+			if (!record) throw new NotFoundError('Folio not found');
+
+			const fileStat = await statFile(record.filePath);
+			if (!fileStat) throw new NotFoundError('File missing on disk');
+			// 5 ms of slop absorbs Node's `mtimeMs` float-rounding on Windows
+			// (mtime is stored as Windows FILETIME, converted to JS float ms).
+			if (Math.abs(fileStat.mtime - clientMtime) > 5) {
+				throw new ConflictError({ kind: 'stale', serverMtime: fileStat.mtime });
+			}
+
+			const newName = displayNameToFilename(folio.title);
+			if (!newName) throw new InvalidTitleError();
+
+			const folderPath = resolve(this.projectPath, folder);
+			const oldName = record.name;
+			const oldFilePath = record.filePath;
+			const isRename = newName !== oldName;
+
+			if (isRename && this.getRecord(folder, newName)) {
+				throw new ConflictError({ kind: 'exists', name: newName });
+			}
+
+			// 1. Write updated content to the *current* path atomically.
+			//    writeFolioFile uses tmp+rename internally; if it fails, the
+			//    old file is untouched.
+			const folioToWrite: ParsedFolio = { ...folio, name: isRename ? newName : oldName };
+			const markdown = serializeToMarkdown(folioToWrite, schema);
+			const warnings = this.reparseWarnings(markdown, schema);
+			await writeFolioFile(oldFilePath, markdown);
+
+			let filePath = oldFilePath;
+			let renamedTo: string | undefined;
+			let linksRewritten = 0;
+
+			// 2. Atomic move to the new path. If this fails, the in-place write
+			//    above already succeeded; the save is consistent at the old name.
+			if (isRename) {
+				filePath = join(folderPath, `${newName}.md`);
+				let renamedMtime: number;
+				try {
+					({ mtime: renamedMtime } = await renameFolioFile(oldFilePath, filePath));
+				} catch (err) {
+					console.error(`Rename failed ${oldFilePath} -> ${filePath}:`, err);
+					throw new RenameFailedError(String(err));
+				}
+				this.renameFolioRecord(folder, oldName, newName, filePath, renamedMtime);
+
+				// 3. Best-effort project-wide link rewrite. If this fails partway
+				//    the index and primary file are already consistent — only
+				//    other files' wikilinks may be stale.
+				try {
+					linksRewritten = await this.rewriteProjectLinks(folder, oldName, newName, filePath);
+				} catch (err) {
+					console.error(`Partial link rewrite after rename ${oldName} -> ${newName}:`, err);
+					throw new LinkRewriteFailedError(String(err), newName);
+				}
+				renamedTo = newName;
+			}
+
+			// Update index from the validated in-memory folio — no re-read needed.
+			const finalStat = await stat(filePath);
+			const snippet = this.deriveSnippet(folioToWrite);
+			this.updateFolioRecord(folder, renamedTo ?? oldName, {
+				mtime: finalStat.mtimeMs,
+				title: folioToWrite.title,
+				tags: folioToWrite.tags,
+				aliases: folioToWrite.aliases,
+				snippet,
+				warnings,
+				links: extractAllLinks(folioToWrite),
+			});
+
+			const brokenLinks = collectBrokenLinks(folioToWrite, (f, n) => !!this.getRecord(f, n));
+
+			return {
+				mtime: finalStat.mtimeMs,
+				warnings,
+				brokenLinks,
+				...(renamedTo ? { renamedTo, linksRewritten } : {}),
+			};
+		});
+	}
+
+	/** Create a new folio in the given folder. */
+	async createFolio(folder: string, folio: ParsedFolio): Promise<CreateResult> {
+		return this.writeMutex.runExclusive(async () => {
+			const schema = this.getSchema();
+			const typeEntry = Object.entries(schema.types).find(([, t]) => t.folder === folder);
+			if (!typeEntry) throw new BadRequestError(`Unknown folder: ${folder}`);
+			const [typeKey] = typeEntry;
+
+			this.validateForWrite(folio, schema);
+
+			const filename = displayNameToFilename(folio.title || folio.name);
+			if (!filename) throw new InvalidTitleError();
+			if (this.getRecord(folder, filename)) {
+				throw new ConflictError({ kind: 'exists', name: filename });
+			}
+
+			const folioToWrite: ParsedFolio = { ...folio, name: filename };
+			const folderPath = resolve(this.projectPath, folder);
+			const filePath = join(folderPath, `${filename}.md`);
+			const markdown = serializeToMarkdown(folioToWrite, schema);
+			const warnings = this.reparseWarnings(markdown, schema);
+			const { mtime } = await writeFolioFile(filePath, markdown);
+			const snippet = this.deriveSnippet(folioToWrite);
+			this.addFolioRecord({
+				type: typeKey,
+				folder,
+				name: filename,
+				title: folioToWrite.title || filename,
+				filePath,
+				mtime,
+				tags: folioToWrite.tags,
+				aliases: folioToWrite.aliases,
+				snippet,
+				warnings,
+				links: extractAllLinks(folioToWrite),
+			});
+			const brokenLinks = collectBrokenLinks(folioToWrite, (f, n) => !!this.getRecord(f, n));
+			return { name: filename, mtime, warnings, brokenLinks };
+		});
+	}
+
+	/** Delete a folio and remove it from the index. */
+	async deleteFolio(folder: string, name: string): Promise<void> {
+		return this.writeMutex.runExclusive(async () => {
+			const record = this.getRecord(folder, name);
+			if (!record) throw new NotFoundError('Folio not found');
+			await deleteFolioFile(record.filePath);
+			this.removeFolioRecord(folder, name);
+		});
+	}
+
 	async reload(): Promise<void> {
 		this.config = await this.loadJson('config.json', ConfigSchema.parse);
 		this.schema = await this.loadJson('schema.json', ProjectSchemaSchema.parse);
@@ -272,6 +469,62 @@ export class ProjectStore {
 	}
 
 	// ── Private ─────────────────────────────────────────────
+
+	/**
+	 * Validate a folio for writing: structural shape (zod) then schema
+	 * conformance (unknown sections/fields, invalid select values). Throws
+	 * ValidationError on the first failing tier.
+	 */
+	private validateForWrite(folio: ParsedFolio, schema: ProjectSchema): void {
+		const parsed = ParsedFolioSchema.safeParse(folio);
+		if (!parsed.success) {
+			throw new ValidationError('invalid-shape', parsed.error.issues);
+		}
+		const issues = validateAgainstSchema(parsed.data, schema);
+		if (issues.length > 0) {
+			throw new ValidationError('schema-violation', issues);
+		}
+	}
+
+	/**
+	 * Project-wide rewrite of `[[folder/oldName]]` (with or without `|alias`)
+	 * to `[[folder/newName]]` across every file except `skipFilePath`. Returns
+	 * the total number of link occurrences rewritten.
+	 */
+	private async rewriteProjectLinks(
+		folder: string,
+		oldName: string,
+		newName: string,
+		skipFilePath: string,
+	): Promise<number> {
+		let totalRewrites = 0;
+		for (const filePath of this.getAllFilePaths()) {
+			if (filePath === skipFilePath) continue;
+			const content = await readFile(filePath, 'utf-8');
+			const result = rewriteWikiLinks(content, { folder, name: oldName }, { name: newName });
+			if (result.rewrites > 0) {
+				const { mtime } = await writeFolioFile(filePath, result.content);
+				this.updateMtime(filePath, mtime);
+				totalRewrites += result.rewrites;
+			}
+		}
+		return totalRewrites;
+	}
+
+	/**
+	 * Re-parse just-serialized markdown to surface any parse warnings the
+	 * round-trip produces. Input was validated before write, so in practice
+	 * this is empty — a non-empty result signals serializer/parser drift. A
+	 * throw is downgraded to a warning so the already-written save still
+	 * returns consistently.
+	 */
+	private reparseWarnings(markdown: string, schema: ProjectSchema): string[] {
+		try {
+			return parseMarkdown(markdown, schema).warnings ?? [];
+		} catch (err) {
+			return [`Failed to re-parse after save: ${err instanceof Error ? err.message : String(err)}`];
+		}
+	}
 
 	private async buildFolioIndex(): Promise<void> {
 		const schema = this.getSchema();

@@ -3,7 +3,7 @@
  * All disk access goes through this module — no route or store reads files directly.
  */
 
-import { readFile, readdir, stat, writeFile, rename } from 'node:fs/promises';
+import { readFile, readdir, stat, writeFile, rename, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export interface FileInfo {
@@ -68,6 +68,13 @@ export async function renameFolioFile(oldPath: string, newPath: string): Promise
 	await rename(oldPath, newPath);
 	const stats = await stat(newPath);
 	return { mtime: stats.mtimeMs };
+}
+
+/**
+ * Delete a folio file from disk.
+ */
+export async function deleteFolioFile(filePath: string): Promise<void> {
+	await unlink(filePath);
 }
 
 /**
