@@ -171,6 +171,16 @@ Before closing any feature or architecture task, answer each question explicitly
 - Is this a new feature or a new architectural direction? → Write an ADR in `docs/adr/`
 - Did an existing ADR's decision get superseded or changed? → Update its status and link to the new ADR
 
+Then, at the end of **every** session (not just feature/architecture work), always:
+
+- **Update [PICKUP.md](PICKUP.md)** so the next session starts with context, not archaeology.
+- **Update [docs/ROADMAP.md](docs/ROADMAP.md)** if any backlog or housekeeping item was started,
+  finished, or re-scoped.
+- **Re-check the [ADR log](docs/adr/)** against the work just done. If a session advanced or
+  completed an ADR's decision — even inadvertently — update that ADR: move a `Proposed` ADR to
+  `Accepted` when its decision has actually been implemented, or revise its status if the work
+  superseded or changed it.
+
 ---
 
 ## Document Index
