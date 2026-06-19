@@ -13,8 +13,9 @@ reasoning, and consequences. To start a feature: ensure its ADR is Accepted, the
 | Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | — |
 | Desktop Packaging & Distribution | Proposed | [ADR-0005](adr/0005-desktop-packaging-distribution.md) | Uses Electron and electron-builder |
 | Encapsulate Folio Mutations | Proposed | [ADR-0006](adr/0006-encapsulate-folio-mutations.md) | Architectural prerequisite for ADR-0003 |
-| Consolidate Folio Integrity Checking | Proposed | [ADR-0007](adr/0007-consolidate-folio-integrity.md) | Speculative cleanup of validation locality |
+| Shared Folio Walker | Proposed | [ADR-0007](adr/0007-consolidate-folio-integrity.md) | De-dupes folio traversal; clear win (split from old 0007) |
 | YAML Frontmatter for Metadata | Accepted | [ADR-0008](adr/0008-yaml-frontmatter-metadata.md) | Breaking format change; replaces `## Meta` |
+| Consolidate Folio Validation Rules | Proposed | [ADR-0009](adr/0009-consolidate-folio-validation-rules.md) | Speculative; severity-unification risk (split from old 0007) |
 
 ## Completed
 
