@@ -404,6 +404,40 @@ describe('parser — YAML frontmatter', () => {
 		const parsed = parseMarkdown(raw, synthSchema);
 		expect(parsed.aliases).toBeUndefined();
 	});
+
+	it('throws on malformed YAML frontmatter (syntax error)', () => {
+		// Unclosed bracket — invalid YAML. The parser must throw, not silently
+		// degrade: a broken file should be surfaced, not hidden behind an empty type.
+		const raw = [
+			'---',
+			'type: [unclosed',
+			'---',
+			'',
+			'# Broken',
+			'',
+		].join('\n');
+		expect(() => parseMarkdown(raw, synthSchema)).toThrow();
+	});
+
+	it('warns when frontmatter is valid YAML but not a mapping', () => {
+		// A bare YAML list is syntactically valid but semantically wrong —
+		// frontmatter must be key: value pairs. Surface as a warning, not a throw.
+		const raw = [
+			'---',
+			'- just',
+			'- a',
+			'- list',
+			'---',
+			'',
+			'# Weird',
+			'',
+		].join('\n');
+		const parsed = parseMarkdown(raw, synthSchema);
+		expect(parsed.type).toBe('');
+		expect(parsed.warnings ?? []).toEqual(
+			expect.arrayContaining([expect.stringContaining('not a mapping')]),
+		);
+	});
 });
 
 // ── Schema warnings ──────────────────────────────────────────
