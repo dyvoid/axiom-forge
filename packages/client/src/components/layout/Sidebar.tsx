@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { NavLink, useParams, useNavigate } from 'react-router-dom';
 import { useProject } from '../../context/ProjectContext.js';
 import { useFolios, useCreateFolio } from '../../api/queries.js';
@@ -30,13 +30,16 @@ export function Sidebar(): JSX.Element {
 		if (creating) nameInputRef.current?.focus();
 	}, [creating]);
 
-	const byType: Record<string, typeof folios> = {};
-	if (folios) {
-		for (const f of folios) {
-			if (!byType[f.type]) byType[f.type] = [];
-			byType[f.type]!.push(f);
+	const byType = useMemo(() => {
+		const acc: Record<string, typeof folios> = {};
+		if (folios) {
+			for (const f of folios) {
+				if (!acc[f.type]) acc[f.type] = [];
+				acc[f.type]!.push(f);
+			}
 		}
-	}
+		return acc;
+	}, [folios]);
 
 	const activeList = activeType ? byType[activeType] || [] : [];
 	const activeSchema = activeType ? schema.types[activeType] : null;
