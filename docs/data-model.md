@@ -93,3 +93,11 @@ Before writing to disk, the server validates incoming data:
 - Unknown sections or fields trigger a `400` error.
 - Invalid `select` values trigger a `400` error.
 - Broken wiki-links (pointing to non-existent folios) are allowed to save, but return a warning array so the UI can flag them.
+
+## Frontmatter Parse Errors
+
+The parser treats frontmatter as a hard contract, not a forgiving hint:
+
+- **Malformed YAML (syntax error):** `parseMarkdown` throws. At index time the error is caught and surfaced as a per-folio warning; at read time it produces a `500`. A broken file should be visible, not silently treated as having an empty type.
+- **Valid YAML but not a mapping** (e.g. a bare list or scalar as the entire payload): the parser returns an empty `type` and emits a warning (`"Frontmatter is valid YAML but not a mapping"`). This is a semantic error, not a syntax one, so it degrades gracefully rather than throwing.
+- **Missing frontmatter:** treated as an empty mapping — `type` is `""`, which produces an "Unknown type" warning if the schema requires a type key.
