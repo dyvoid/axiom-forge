@@ -6,6 +6,7 @@ import {
 	collectBrokenLinks,
 	displayNameToFilename,
 	extractAllLinks,
+	parseMarkdown,
 	rewriteWikiLinks,
 	serializeToMarkdown,
 	validateAgainstSchema,
@@ -76,6 +77,21 @@ function validateSaveBody(
 
 const exists = (store: ProjectStore) => (folder: string, name: string): boolean =>
 	!!store.getRecord(folder, name);
+
+/**
+ * Re-parse the markdown we just serialized to surface any parse warnings the
+ * round-trip produces. Input was validated before write, so in practice this
+ * is empty — a non-empty result signals serializer/parser drift, not user
+ * error. A throw (malformed output) is downgraded to a warning so the save,
+ * which already hit disk, still returns a consistent response.
+ */
+function reparseWarnings(markdown: string, schema: ProjectSchema): string[] {
+	try {
+		return parseMarkdown(markdown, schema).warnings ?? [];
+	} catch (err) {
+		return [`Failed to re-parse after save: ${err instanceof Error ? err.message : String(err)}`];
+	}
+}
 
 // ── Router ───────────────────────────────────────────────────
 
@@ -178,6 +194,7 @@ export function foliosRouter(store: ProjectStore): Router {
 				//    old file is untouched.
 				const folioToWrite: ParsedFolio = { ...body.folio, name: isRename ? newName : oldName };
 				const markdown = serializeToMarkdown(folioToWrite, schema);
+				const warnings = reparseWarnings(markdown, schema);
 				await writeFolioFile(oldFilePath, markdown);
 
 				let filePath = oldFilePath;
@@ -225,6 +242,7 @@ export function foliosRouter(store: ProjectStore): Router {
 					tags: folioToWrite.tags,
 					aliases: folioToWrite.aliases,
 					snippet,
+					warnings,
 					links: extractAllLinks(folioToWrite),
 				});
 
@@ -232,7 +250,7 @@ export function foliosRouter(store: ProjectStore): Router {
 
 				res.json({
 					mtime: finalStat.mtimeMs,
-					warnings: [],
+					warnings,
 					brokenLinks,
 					...(renamedTo ? { renamedTo, linksRewritten } : {}),
 				});
@@ -285,6 +303,7 @@ export function foliosRouter(store: ProjectStore): Router {
 				const folderPath = resolve(store.projectPath, folder!);
 				const filePath = join(folderPath, `${filename}.md`);
 				const markdown = serializeToMarkdown(folioToWrite, schema);
+				const warnings = reparseWarnings(markdown, schema);
 				const { mtime } = await writeFolioFile(filePath, markdown);
 				const snippet = store.deriveSnippet(folioToWrite);
 				store.addFolioRecord({
@@ -297,14 +316,14 @@ export function foliosRouter(store: ProjectStore): Router {
 					tags: folioToWrite.tags,
 					aliases: folioToWrite.aliases,
 					snippet,
-					warnings: [],
+					warnings,
 					links: extractAllLinks(folioToWrite),
 				});
 				const brokenLinks = collectBrokenLinks(folioToWrite, exists(store));
 				res.status(201).json({
 					name: filename,
 					mtime,
-					warnings: [],
+					warnings,
 					brokenLinks,
 				});
 			});

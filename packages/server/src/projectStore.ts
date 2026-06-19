@@ -196,7 +196,7 @@ export class ProjectStore {
 	updateFolioRecord(
 		folder: string,
 		name: string,
-		patch: { mtime: number; title?: string; tags: string[]; aliases?: string[]; snippet?: string; links: WikiLink[] },
+		patch: { mtime: number; title?: string; tags: string[]; aliases?: string[]; snippet?: string; warnings?: string[]; links: WikiLink[] },
 	): void {
 		const record = this.folios.find((f) => f.folder === folder && f.name === name);
 		if (!record) return;
@@ -205,6 +205,7 @@ export class ProjectStore {
 		record.tags = patch.tags;
 		record.aliases = patch.aliases;
 		record.snippet = patch.snippet;
+		if (patch.warnings !== undefined) record.warnings = patch.warnings;
 		record.links = patch.links;
 	}
 

@@ -180,6 +180,9 @@ describe('PUT /api/folios/:folder/:name — in-place', () => {
 		expect(res.status).toBe(200);
 		expect(res.body.mtime).toBeGreaterThanOrEqual(folio.mtime);
 		expect(res.body.brokenLinks).toEqual([]);
+		// Round-trip canary: serialize -> parse of validated input must be clean.
+		// A non-empty array here signals serializer/parser drift.
+		expect(res.body.warnings).toEqual([]);
 		const disk = await readFile(join(tmpDir, 'Alphas', 'One.md'), 'utf-8');
 		expect(disk).toContain('A revised story.');
 	});
@@ -341,6 +344,7 @@ describe('POST + DELETE /api/folios/:folder', () => {
 		expect(createRes.status).toBe(201);
 		expect(createRes.body.name).toBe('Brand_New');
 		expect(createRes.body.brokenLinks).toEqual([]);
+		expect(createRes.body.warnings).toEqual([]);
 		await access(join(tmpDir, 'Alphas', 'Brand_New.md'));
 
 		const list = await request(app).get('/api/folios');
