@@ -93,6 +93,61 @@ export class ProjectStore {
 			.map(({ folder, name, warnings }) => ({ folder, name, warnings }));
 	}
 
+	/**
+	 * Search the folio index by free-text query. Scores each record against the
+	 * query (lowercased) across title, name, aliases, tags, folder path, and
+	 * snippet, then returns the top 20 by score with alphabetical tie-breaking.
+	 *
+	 * Scoring tiers:
+	 *   title/name exact     +100    alias exact         +80
+	 *   title/name prefix    +50     alias prefix        +40
+	 *   title/name contains  +10     alias contains      +8
+	 *   tag exact            +20     tag contains        +10
+	 *   folder/path contains +5      snippet contains    +1
+	 *
+	 * Extracted from the route handler so it can be unit-tested directly and
+	 * reused by future CLI tools without an HTTP layer.
+	 */
+	search(query: string): FolioIndexRecord[] {
+		const q = query.trim().toLowerCase();
+		if (!q) return [];
+
+		const results: { folio: FolioIndexRecord; score: number }[] = [];
+		for (const f of this.getFolios()) {
+			const title = f.title.toLowerCase();
+			const name = f.name.replace(/_/g, ' ').toLowerCase();
+			const snippet = (f.snippet || '').toLowerCase();
+			const folder = f.folder.toLowerCase();
+			const tags = f.tags.map((t) => t.toLowerCase());
+			const aliases = (f.aliases ?? []).map((a) => a.toLowerCase());
+
+			let score = 0;
+			if (title === q || name === q) score += 100;
+			else if (title.startsWith(q) || name.startsWith(q)) score += 50;
+			else if (title.includes(q) || name.includes(q)) score += 10;
+
+			// Aliases are alternative names — score just below the primary title.
+			if (aliases.some((a) => a === q)) score += 80;
+			else if (aliases.some((a) => a.startsWith(q))) score += 40;
+			else if (aliases.some((a) => a.includes(q))) score += 8;
+
+			if (tags.some((t) => t === q)) score += 20;
+			else if (tags.some((t) => t.includes(q))) score += 10;
+
+			if (score === 0 && (`${folder}/${name}`.includes(q) || `${folder}/${title}`.includes(q))) score += 5;
+			if (snippet.includes(q)) score += 1;
+
+			if (score > 0) results.push({ folio: f, score });
+		}
+
+		results.sort((a, b) => {
+			if (b.score !== a.score) return b.score - a.score;
+			return a.folio.title.localeCompare(b.folio.title);
+		});
+
+		return results.slice(0, 20).map((r) => r.folio);
+	}
+
 	/** Add a new folio record, assign the next ID, and re-sort alphabetically. */
 	addFolioRecord(record: Omit<InternalFolioRecord, 'id'>): InternalFolioRecord {
 		const full: InternalFolioRecord = { ...record, id: this.nextId++ };

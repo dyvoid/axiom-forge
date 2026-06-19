@@ -31,4 +31,4 @@ The core feature set shipped in the initial build:
 
 Agreed-upon cleanups that don't warrant an ADR. Check them off when done.
 
-- [ ] Move search ranking logic from `routes/index.ts` inline handler into `ProjectStore.search()` — makes it testable without HTTP and reusable by future CLI tools
+- [x] Move search ranking logic from `routes/index.ts` inline handler into `ProjectStore.search()` — makes it testable without HTTP and reusable by future CLI tools
