@@ -176,10 +176,18 @@ Then, at the end of **every** session (not just feature/architecture work), alwa
 - **Update [PICKUP.md](PICKUP.md)** so the next session starts with context, not archaeology.
 - **Update [docs/ROADMAP.md](docs/ROADMAP.md)** if any backlog or housekeeping item was started,
   finished, or re-scoped.
-- **Re-check the [ADR log](docs/adr/)** against the work just done. If a session advanced or
-  completed an ADR's decision — even inadvertently — update that ADR: move a `Proposed` ADR to
-  `Accepted` when its decision has actually been implemented, or revise its status if the work
-  superseded or changed it.
+- **Re-check the [ADR log](docs/adr/) for correctness** against the work just done — not just the
+  status field, the *content*. For every ADR the session touched, overlapped with, or partially
+  advanced, ask whether its Context, Decision, or Consequences are still accurate. This is the
+  important part: an ADR that quietly drifts out of sync with reality is worse than none.
+  Then act by the ADR's status:
+  - **`Proposed` ADR** → it's still a draft, so **edit the body in place** to match current
+    reality (e.g. correct a Context sentence that a partial fix made stale), and promote it to
+    `Accepted` only once its decision is actually fully implemented.
+  - **`Accepted` ADR** → treat the body as an immutable historical record. **Do not rewrite it.**
+    If the work changed or invalidated its decision, set its status to `Superseded` (or `Rejected`
+    if the decision was abandoned), and write a **new ADR** capturing the new direction, linking
+    the two.
 
 ---
 

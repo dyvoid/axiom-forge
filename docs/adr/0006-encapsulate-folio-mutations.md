@@ -11,7 +11,7 @@ Methods like `addFolioRecord` and `updateFolioRecord` on the store are bare arra
 
 This leads to several architectural issues:
 - **Leaked Domain Logic:** The HTTP layer acts as the domain orchestrator, making it ~340 lines long and highly complex.
-- **Bypassed Seams:** The route handler imports `node:fs/promises` directly to perform `unlink` and `rename`, bypassing the intended `fileIO.ts` adapter layer.
+- **Bypassed Seams:** The route handler still imports `node:fs/promises` directly to perform `unlink` (in DELETE), bypassing the intended `fileIO.ts` adapter layer. (The PUT rename path was routed through `fileIO.renameFolioFile` in a later housekeeping pass; `unlink` remains the last direct call.)
 - **Untestable Core Logic:** Because mutations are tangled with Express, they can only be tested via HTTP integration tests (`supertest`).
 - **Global State:** The `writeMutex` is a global singleton that callers must remember to acquire.
 
