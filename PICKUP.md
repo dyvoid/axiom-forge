@@ -5,9 +5,24 @@ instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROAD
 
 ## Current Focus
 
-**Tech-debt batch** — a maintenance pass from an external audit, **complete and merged to `main`**
-(commits `f247e6a`, `6c15cbf`, `96490ae`). `main` is ahead of `origin/main` by these 3 commits
-and **not yet pushed**. The `fix/tech-debt-batch-1` branch is already deleted.
+**[ADR-0006] Encapsulate Folio Mutations — implemented.** All folio mutation orchestration moved
+out of `routes/folios.ts` into `ProjectStore.saveFolio/createFolio/deleteFolio`; domain errors in
+`storeErrors.ts`; thin route layer maps errors to status codes; mutex internalized; DELETE's
+`unlink` now goes through `fileIO.deleteFolioFile`. ADR-0006 set to Accepted. 11 direct store
+mutation tests added (105 tests total). Done on branch `task/encapsulate-folio-mutations`.
+
+This unblocks **ADR-0003 (In-Memory Document Model)** — the natural next architectural step (note
+my standing caveat: 0003's read-staleness gap + the watcher question should be resolved before it's
+built; see the architecture discussion).
+
+Also this session: **ADR-0007 split** into the shared walker (0007) + validation rule engine
+(new [ADR-0009](docs/adr/0009-consolidate-folio-validation-rules.md)).
+
+### Earlier this session — tech-debt batch
+A maintenance pass from an external audit (commits `f247e6a`, `6c15cbf`, `96490ae`): dedup
+`isWikiLink`, route PUT rename through `fileIO`, surface create-mutation errors, memoize Sidebar
+grouping, add config/schema route tests, return real save warnings. #9 (Map lookups) deferred to
+ADR-0003.
 
 ### What is done (this session)
 - **#1** `isWikiLink` deduplicated — exported from `wikilink.ts`, reused in `brokenLinks.ts`.
