@@ -29,7 +29,7 @@ The server exposes the following REST API:
 - `GET /api/schema` - Returns the validated `schema.json`
 - `GET /api/folios` - Returns the full folio index (sidebar & index views)
 - `GET /api/folios/:folder/:name` - Returns a single parsed folio as structured JSON
-- `GET /api/search?q=` - Ranked search across titles, names, tags, and prose snippets
+- `GET /api/search?q=` - Ranked search across titles, names, aliases, tags, and prose snippets
 - `GET /api/folios/:folder/:name/backlinks` - Returns folios linking to this target
 - `GET /api/warnings` - Returns all parse warnings, grouped by folio
 - `POST /api/reload` - Rebuilds the in-memory index from disk and re-reads config + schema
