@@ -9,6 +9,12 @@ A schema-driven, local-first encyclopedia and worldbuilding tool. Your world liv
 
 No database. No cloud. No lock-in. The Markdown files *are* the source of truth — open them in any editor, commit them to Git, sync them however you like.
 
+## Screenshots
+
+| Landing | Grand Index | Folio |
+|---|---|---|
+| ![Landing page](docs/screenshots/landing.jpg) | ![Grand Index](docs/screenshots/index.jpg) | ![Folio detail](docs/screenshots/folio.jpg) |
+
 ## Why
 
 Most worldbuilding tools either (a) lock your content inside a proprietary database, or (b) leave you alone with a folder of free-form notes that drift out of structure as the world grows. Axiom Forge sits in between: you describe the *shape* of your world once in a `schema.json`, and every Markdown file is parsed and validated against it. Wikilinks between entries are first-class. The web app renders structured views; the underlying files stay portable.
