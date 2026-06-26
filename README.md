@@ -116,18 +116,26 @@ See `fall-of-troy/schema.json` for a full working example with all field types i
 
 ### Markdown files
 
-Each entry's filename (without `.md`) is its stable ID. The first H1 is the display title:
+Each entry's filename (without `.md`) is its stable ID. The YAML frontmatter declares the type, tags, and optional aliases; sections and fields below match the schema:
 
 ```markdown
+---
+type: Human
+tags:
+  - greek
+  - hero
+  - demigod
+aliases:
+  - Pelides
+  - Swift-footed
+---
+
 # Achilles
 
-## Meta
-- **Type:** Character
-- **Tags:** greek, hero, demigod
-
 ## Basic Information
-- **Epithets:** Swift-footed, Lion-hearted
+- **Epithets:** Swift-footed, Lion-hearted, Son of Peleus
 - **Sex:** Male
+- **Born:** c. 1235 BCE
 - **Allegiance:** [[Factions/Greeks]]
 - **Divine Patron:** [[Gods/Thetis]]
 
@@ -135,11 +143,12 @@ Each entry's filename (without `.md`) is its stable ID. The first H1 is the disp
 The greatest warrior of his generation…
 
 ## Relationships
-- **Allies:** [[Characters/Patroclus]], [[Characters/Odysseus]]
-- **Enemies:** [[Characters/Hector]]
+- **Allies:** [[Humans/Patroclus]], [[Humans/Odysseus]]
+- **Enemies:** [[Humans/Hector]]
 
 ## Connected Events
-- [[Events/Death_of_Hector]], [[Events/Fall_of_Troy]]
+- [[Events/Death_of_Hector]]
+- [[Events/Fall_of_Troy]]
 ```
 
 ## Architecture
