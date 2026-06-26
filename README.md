@@ -116,7 +116,7 @@ See `fall-of-troy/schema.json` for a full working example with all field types i
 
 ### Markdown files
 
-Each entry's filename (without `.md`) is its stable ID. The YAML frontmatter declares the type, tags, and optional aliases; sections and fields below match the schema:
+Each entry's filename (without `.md`) is its stable ID. The YAML frontmatter is Obsidian-compatible and declares the type, tags, and optional aliases; sections and fields below match the schema:
 
 ```markdown
 ---
