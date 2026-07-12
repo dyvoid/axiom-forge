@@ -1,7 +1,7 @@
 # 7. Shared Folio Walker
 
 **Date:** 2026-06-05 (split 2026-06-19)
-**Status:** Proposed
+**Status:** Accepted — implemented 2026-07-12
 
 > **Note:** This ADR originally bundled two decisions — a shared traversal
 > *walker* and a unified validation *rule engine*. They were split on
@@ -36,3 +36,10 @@ instead of writing their own traversal loops.
   `extractAllLinks` and `collectBrokenLinks`.
 - **Flexibility:** a standard walker makes it trivial to add new analysis
   passes as visitors.
+
+## Implementation
+
+`walkFolioLinks` lives in `packages/shared/src/folioWalker.ts`. `extractAllLinks`
+(moved out of `wikilink.ts`) and `collectBrokenLinks` (`brokenLinks.ts`) are now
+visitors over it — same traversal, same public API, no caller changes needed.
+Covered by `folioWalker.test.ts`.
