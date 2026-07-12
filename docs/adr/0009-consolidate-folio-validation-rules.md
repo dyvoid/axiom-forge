@@ -1,7 +1,7 @@
 # 9. Consolidate Folio Validation Rules
 
 **Date:** 2026-06-19
-**Status:** Proposed
+**Status:** Accepted
 
 > **Note:** Split out of [ADR-0007](0007-consolidate-folio-integrity.md), which
 > originally bundled this validation rule engine with a shared traversal walker.
@@ -40,3 +40,21 @@ write).
   deliberate design choice rather than incidental duplication. This is the open
   question that must be resolved before this ADR is accepted. The lower-risk
   half of the original ADR-0007 (the walker) does not depend on resolving it.
+
+## Resolved Open Question (2026-07-12)
+
+Re-reading both call sites: the overlap is narrower than originally scoped. `parser.ts` only
+duplicates two rule categories — `unknown-type`/`unknown-section`/`unknown-field` and
+`invalid-select-value` — as warnings. `schema.ts`'s `wrong-shape` check (type/shape mismatches)
+has no read-time counterpart at all; it's write-only today and stays that way.
+
+The lenient-read/strict-write **behavior** is a deliberate, worth-keeping property: tolerate
+schema drift already on disk (e.g. a select option removed from the schema after files were
+written with it), enforce conformance strictly on anything the app itself writes. That split is
+not the duplication problem — it's intentional and this ADR does not remove it.
+
+The duplication problem is narrower: the *rule definitions* for those two categories are
+copy-pasted between the two files with a different severity hard-coded at each site. Proceeding
+as originally decided — one engine, severity passed as a parameter — deduplicates the rule logic
+without flattening the two severities. No scope change to the Decision above; this note exists so
+future readers don't re-litigate the read/write split as if unifying meant erasing it.

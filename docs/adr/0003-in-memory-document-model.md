@@ -1,7 +1,7 @@
 # 3. In-Memory Document Model
 
 **Date:** 2026-06-05  
-**Status:** Proposed
+**Status:** Accepted
 
 ## Context
 
@@ -47,3 +47,15 @@ class, not a new subsystem.
 - A file watcher (e.g. `chokidar`) would improve live responsiveness to external edits but is
   not required for correctness and would add a dependency — suitable as a follow-on decision.
 - Startup time is unchanged (the index already parses every file at load).
+
+## Resolved Open Questions (2026-07-12)
+
+- **File watcher: deferred, not bundled into this ADR.** Ship without one. External edits are
+  invisible to the in-memory model until write-back, where a stale mtime produces a conflict
+  error. A watcher can be added later as its own decision without changing the core model —
+  bundling it now would add scope (a new dependency, and live-reload semantics for in-memory
+  edits when the underlying file changes) without being required for correctness.
+- **Conflict UX: hard error, no auto-merge.** When a flush is rejected due to a stale mtime, the
+  save fails with an error; the user must reload the file and redo their edit. No diff/merge UI.
+  Simple and safe; a smarter reconciliation flow is out of scope and would need its own ADR
+  addendum if ever pursued.

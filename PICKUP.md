@@ -5,17 +5,31 @@ instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROAD
 
 ## Current Focus
 
+**ADR-0003 and ADR-0009 unblocked (docs only, not yet built).** Resolved the open questions that
+were gating both:
+
+- **ADR-0003 (In-Memory Document Model):** watcher question resolved as *deferred* — ship without
+  a file watcher; external edits surface as a write-time mtime-conflict error, not a live refresh.
+  Conflict UX resolved as *hard error, no auto-merge* — reload and redo, no diff/merge flow.
+  Status set to Accepted. Not yet implemented.
+- **ADR-0009 (Validation Rule Engine):** resolved that the read-lenient/write-strict *behavior*
+  split is intentional and stays; only the underlying rule *definitions* (duplicated between
+  `parser.ts` and `schema.ts` for `unknown-type`/`unknown-section`/`unknown-field` and
+  `invalid-select-value` — `schema.ts`'s `wrong-shape` check has no read-time counterpart at all)
+  get unified behind one engine parameterized by severity. Status set to Accepted. Not yet
+  implemented.
+
+Next session can build either. ADR-0003 is the bigger lift and unblocks ADR-0004 (Bidirectional
+Fields) plus the deferred Map-lookup perf cleanup; ADR-0009 is smaller and self-contained.
+
+### Earlier — ADR-0007
+
 **[ADR-0007] Shared Folio Walker — implemented.** `walkFolioLinks` added in
 `packages/shared/src/folioWalker.ts`; `extractAllLinks` (moved out of `wikilink.ts`) and
 `collectBrokenLinks` (`brokenLinks.ts`) are now visitors over it instead of hand-written
 traversals. Public API unchanged — no caller updates needed in `projectStore.ts` or the client.
 4 new tests in `folioWalker.test.ts` (109 tests total); build + lint clean. ADR-0007 set to
 Accepted.
-
-Remaining roadmap items with no open blocker: **ADR-0003 (In-Memory Document Model)**, still
-gated on resolving the read-staleness/watcher question noted below before it's built.
-**ADR-0009 (Validation Rule Engine)** still has its own open question (whether read-lenient /
-write-strict severity is intentional) to resolve before it can be accepted.
 
 ### Earlier — ADR-0006
 
