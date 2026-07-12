@@ -5,6 +5,20 @@ instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROAD
 
 ## Current Focus
 
+**[ADR-0007] Shared Folio Walker — implemented.** `walkFolioLinks` added in
+`packages/shared/src/folioWalker.ts`; `extractAllLinks` (moved out of `wikilink.ts`) and
+`collectBrokenLinks` (`brokenLinks.ts`) are now visitors over it instead of hand-written
+traversals. Public API unchanged — no caller updates needed in `projectStore.ts` or the client.
+4 new tests in `folioWalker.test.ts` (109 tests total); build + lint clean. ADR-0007 set to
+Accepted.
+
+Remaining roadmap items with no open blocker: **ADR-0003 (In-Memory Document Model)**, still
+gated on resolving the read-staleness/watcher question noted below before it's built.
+**ADR-0009 (Validation Rule Engine)** still has its own open question (whether read-lenient /
+write-strict severity is intentional) to resolve before it can be accepted.
+
+### Earlier — ADR-0006
+
 **[ADR-0006] Encapsulate Folio Mutations — implemented.** All folio mutation orchestration moved
 out of `routes/folios.ts` into `ProjectStore.saveFolio/createFolio/deleteFolio`; domain errors in
 `storeErrors.ts`; thin route layer maps errors to status codes; mutex internalized; DELETE's
@@ -78,4 +92,4 @@ All work is on `main`; the original `task/yaml-frontmatter-metadata` branch can 
 
 ---
 
-Last updated: 2026-06-19
+Last updated: 2026-07-12

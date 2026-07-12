@@ -1,4 +1,4 @@
-import type { WikiLink, ParsedFolio } from './types.js';
+import type { WikiLink } from './types.js';
 
 const WIKILINK_RE = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/;
 const WIKILINK_GLOBAL_RE = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
@@ -87,42 +87,4 @@ export function isWikiLink(v: unknown): v is WikiLink {
 	return !!v && typeof v === 'object' && 'folder' in v && 'name' in v
 		&& typeof (v as Record<string, unknown>).folder === 'string'
 		&& typeof (v as Record<string, unknown>).name === 'string';
-}
-
-/**
- * Extracts all outgoing wiki-links from a parsed folio, including links
- * in prose content and structured fields.
- */
-export function extractAllLinks(folio: ParsedFolio): WikiLink[] {
-	const links: WikiLink[] = [];
-
-	for (const section of Object.values(folio.sections)) {
-		// Prose sections
-		if (section.content) {
-			links.push(...parseWikiLinks(section.content));
-		}
-
-		// Section-level value (e.g. top-level list)
-		if (Array.isArray(section.value)) {
-			for (const v of section.value) {
-				if (isWikiLink(v)) links.push(v);
-			}
-		} else if (isWikiLink(section.value)) {
-			links.push(section.value);
-		}
-
-		// Field-level values
-		if (section.fields) {
-			for (const value of Object.values(section.fields)) {
-				if (Array.isArray(value)) {
-					for (const v of value) {
-						if (isWikiLink(v)) links.push(v);
-					}
-				} else if (isWikiLink(value)) {
-					links.push(value);
-				}
-			}
-		}
-	}
-	return links;
 }
