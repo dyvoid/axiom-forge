@@ -7,7 +7,7 @@ reasoning, and consequences. To start a feature: ensure its ADR is Accepted, the
 
 | Feature | Status | ADR | Notes |
 |---|---|---|---|
-| In-Memory Document Model | Proposed | [ADR-0003](adr/0003-in-memory-document-model.md) | Prerequisite for Inverse Fields |
+| In-Memory Document Model | Accepted | [ADR-0003](adr/0003-in-memory-document-model.md) | Not yet built; prerequisite for Inverse Fields |
 | Bidirectional / Inverse Fields | Proposed | [ADR-0004](adr/0004-bidirectional-inverse-fields.md) | Depends on ADR-0003 |
 | Project Themes | Proposed | [ADR-0001](adr/0001-project-themes.md) | — |
 | Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | — |
@@ -15,7 +15,7 @@ reasoning, and consequences. To start a feature: ensure its ADR is Accepted, the
 | Encapsulate Folio Mutations | Accepted | [ADR-0006](adr/0006-encapsulate-folio-mutations.md) | Implemented 2026-06-19; unblocks ADR-0003 |
 | Shared Folio Walker | Accepted | [ADR-0007](adr/0007-consolidate-folio-integrity.md) | Implemented 2026-07-12; de-dupes folio traversal (split from old 0007) |
 | YAML Frontmatter for Metadata | Accepted | [ADR-0008](adr/0008-yaml-frontmatter-metadata.md) | Breaking format change; replaces `## Meta` |
-| Consolidate Folio Validation Rules | Proposed | [ADR-0009](adr/0009-consolidate-folio-validation-rules.md) | Speculative; severity-unification risk (split from old 0007) |
+| Consolidate Folio Validation Rules | Accepted | [ADR-0009](adr/0009-consolidate-folio-validation-rules.md) | Not yet built; keeps read/write severity split, unifies rule logic (split from old 0007) |
 
 ## Completed
 
