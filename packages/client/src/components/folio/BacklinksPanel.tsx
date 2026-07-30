@@ -28,6 +28,9 @@ export function BacklinksPanel({ folder, name }: BacklinksPanelProps): JSX.Eleme
 							<span className={styles.cardTitle}>{link.title}</span>
 							<span className={styles.cardFolder}>{link.folder}</span>
 						</div>
+						{link.aliases && link.aliases.length > 0 && (
+							<div className={styles.cardAliases}>aka {link.aliases.join(' · ')}</div>
+						)}
 						{link.snippet && (
 							<div className={styles.cardSnippet}>{link.snippet}</div>
 						)}

@@ -69,3 +69,11 @@
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 }
+
+.cardAliases {
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: var(--fs-small);
+	color: var(--text-secondary);
+	margin-bottom: var(--sp-2);
+}

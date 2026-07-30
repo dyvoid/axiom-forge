@@ -190,3 +190,12 @@
 	text-overflow: ellipsis;
 	max-width: 100%;
 }
+
+.aliases {
+	font-family: var(--ff-body);
+	font-size: var(--fs-small);
+	font-weight: 400;
+	font-style: italic;
+	color: var(--text-muted);
+	margin-left: var(--sp-3);
+}

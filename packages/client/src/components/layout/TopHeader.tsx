@@ -155,6 +155,11 @@ export function TopHeader(): JSX.Element {
 											<span className={styles.searchItemTitle}>{item.title}</span>
 											<span className={styles.searchItemFolder}>{item.folder}</span>
 										</div>
+										{item.aliases && item.aliases.length > 0 && (
+											<div className={styles.searchItemAliases}>
+												aka {item.aliases.join(' · ')}
+											</div>
+										)}
 										{item.snippet && (
 											<div className={styles.searchItemSnippet}>{item.snippet}</div>
 										)}

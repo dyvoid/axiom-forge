@@ -203,3 +203,10 @@
 .clearBtn:hover {
 	color: var(--text-primary);
 }
+
+.searchItemAliases {
+	font-style: italic;
+	font-size: var(--fs-small);
+	color: var(--text-secondary);
+	margin-bottom: 2px;
+}

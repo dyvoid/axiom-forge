@@ -46,13 +46,22 @@ export function CategoryIndexView(): JSX.Element {
 			const title = f.title.toLowerCase();
 			const name = f.name.replace(/_/g, ' ').toLowerCase();
 			const snippet = (f.snippet || '').toLowerCase();
-			
+			const aliases = (f.aliases ?? []).map((a) => a.toLowerCase());
+
 			let score = 0;
 			if (title === q || name === q) score += 100;
 			else if (title.startsWith(q) || name.startsWith(q)) score += 50;
 			else if (title.includes(q) || name.includes(q)) score += 10;
+
+			// Alias tiers mirror ProjectStore.search() so an alias resolves to its
+			// folio here exactly as it does in the header search (ADR-0011 will
+			// collapse these duplicated scorers into one shared function).
+			if (aliases.some((a) => a === q)) score += 80;
+			else if (aliases.some((a) => a.startsWith(q))) score += 40;
+			else if (aliases.some((a) => a.includes(q))) score += 8;
+
 			if (snippet.includes(q)) score += 1;
-			
+
 			return { folio: f, score };
 		});
 	}, [categoryFolios, q]);
@@ -183,6 +192,9 @@ export function CategoryIndexView(): JSX.Element {
 						<Link key={f.id} to={`/folio/${f.folder}/${f.name}`} className={styles.entry}>
 							<span className={styles.name}>
 								{f.title}
+								{f.aliases && f.aliases.length > 0 && (
+									<span className={styles.aliases}>aka {f.aliases.join(' · ')}</span>
+								)}
 							</span>
 							<div className={styles.entryMeta}>
 								{f.snippet ? (
