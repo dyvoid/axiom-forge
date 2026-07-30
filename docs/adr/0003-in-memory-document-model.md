@@ -1,7 +1,13 @@
 # 3. In-Memory Document Model
 
 **Date:** 2026-06-05  
-**Status:** Accepted
+**Status:** Superseded by [ADR-0010](0010-multi-file-write-safety.md) (2026-07-30)
+
+> **Note:** Never implemented. This ADR bundled two separable decisions: a safe multi-file
+> write path, and an in-memory content cache. [ADR-0010](0010-multi-file-write-safety.md)
+> takes the former and declines the latter — the cache's only named consumer was ADR-0004,
+> which was revised to a display-first design that needs no cached content. The Context
+> below remains an accurate statement of the problem; the Decision is what was replaced.
 
 ## Context
 
