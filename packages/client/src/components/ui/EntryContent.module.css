@@ -2,25 +2,35 @@
  * Presentation for a folio entry (ADR-0011). Content only — wrappers, hover,
  * active and highlight states stay with the calling surface.
  *
- * Where the previous hand-rolled copies disagreed on a value, the card variant
- * settles on one: the folder eyebrow uses --fs-small, and the snippet clamps to
- * two lines. The search dropdown was the narrower of the two callers, so the
- * tighter clamp wins; the folder now sits right-aligned in both, as the
- * Linked Mentions card already did.
+ * Two deliberate idioms, not one (see docs/design-system.md):
+ *   • `card`  — a *preview* of an entry you may not know. Stacked, folder
+ *               eyebrow, snippet. Used where entries arrive unsorted.
+ *   • `row` / `inline` — an *index*, scanned alphabetically. One line per
+ *               entry, aligned columns, no folder (the index already is one).
+ * What is shared across all three is the field order (name → alias → gloss)
+ * and the type scale below, not the layout.
+ *
+ * Every text run truncates with an ellipsis rather than wrapping. Long titles
+ * and long alias lists always exist; a predictable ellipsis is preferable to
+ * rows and cards that change height with their content.
+ *
+ * Type scale — all sizes must come from a token that actually exists in
+ * tokens.css. `--fs-small` does not, and `font-size: var(--fs-small)` silently
+ * falls back to `inherit`, which is why cards previously rendered title,
+ * alias, folder and snippet all at the same 16px with no hierarchy.
  */
 
-/* ── card: stacked block (search dropdown, Linked Mentions) ───────── */
+/* ── card: stacked preview (search dropdown, Linked Mentions) ─────── */
 
 .cardHeader {
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
 	gap: var(--sp-3);
-	margin-bottom: var(--sp-2);
+	margin-bottom: var(--sp-1);
 }
 
-/* Title + alias travel together on the left; the folder eyebrow stays pinned
-   right. `min-width: 0` lets the alias truncate instead of shoving the folder. */
+/* Title + alias share the left side; the folder eyebrow stays pinned right. */
 .cardHeading {
 	display: flex;
 	align-items: baseline;
@@ -35,31 +45,38 @@
 	font-size: var(--fs-body);
 	color: var(--text-primary);
 	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	/* Shrinks only after the alias has given up its space — the name is the
+	   thing you identify the entry by, so it truncates last. */
+	flex: 0 1 auto;
 }
 
 .cardFolder {
 	font-family: var(--ff-display);
-	font-size: var(--fs-small);
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
 	color: var(--text-muted);
 	text-transform: uppercase;
-	letter-spacing: 0.1em;
 	white-space: nowrap;
+	flex: 0 0 auto;
 }
 
 .cardAliases {
 	font-family: var(--ff-body);
 	font-style: italic;
-	font-size: var(--fs-small);
+	font-size: var(--fs-body-sm);
 	color: var(--text-secondary);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	flex: 0 100 auto;
 }
 
 .cardSnippet {
 	font-family: var(--ff-body);
 	font-style: italic;
-	font-size: var(--fs-small);
+	font-size: var(--fs-meta);
 	color: var(--text-muted);
 	line-height: 1.5;
 	display: -webkit-box;
@@ -68,61 +85,60 @@
 	overflow: hidden;
 }
 
-/* ── row: two-column index row (category index) ───────────────────── */
+/* ── row: single-line index entry (category index) ─────────────────── */
 
 /*
- * Fixed name column, so every row's description column starts at the same x.
- * The previous `min-width: 140px` only held while no title exceeded it — the
- * longest title in the sample project renders at 174px, so the Events index was
- * already ragged before aliases were added. 200px clears every title measured;
- * anything longer wraps inside the column rather than shifting the description.
+ * The name column is sized relative to its container and its own type, never
+ * to a pixel width measured off one project's titles. `ch` tracks the font,
+ * the percentage tracks the viewport, and the clamp keeps it sane at both
+ * extremes. Because the width does not depend on content, every row aligns by
+ * construction — no subgrid, no measurement pass.
  */
 .rowTitle {
+	flex: 0 0 clamp(9ch, 22%, 24ch);
+	min-width: 0;
 	font-family: var(--ff-serif);
 	font-size: var(--fs-subtitle);
 	font-weight: 700;
 	color: var(--text-primary);
-	flex: 0 0 200px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Alias, separator and gloss share one line so row height never varies. */
+.rowLine {
+	flex: 1;
+	min-width: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .rowAliases {
-	display: block;
 	font-family: var(--ff-body);
-	font-size: var(--fs-small);
-	font-weight: 400;
+	font-size: var(--fs-body-sm);
 	font-style: italic;
-	color: var(--text-muted);
-	margin-top: 2px;
+	color: var(--text-secondary);
 }
 
-.rowMeta {
-	display: flex;
-	align-items: center;
-	gap: var(--sp-5);
-	font-family: var(--ff-body);
-	font-size: var(--fs-tiny);
-	letter-spacing: 0.18em;
-	text-transform: uppercase;
-	flex: 1;
-	min-width: 0;
-}
-
-.rowTags {
-	color: var(--text-muted);
-	font-style: italic;
-	text-transform: lowercase;
+.rowSep {
+	color: var(--border);
+	margin: 0 var(--sp-2);
 }
 
 .rowSnippet {
 	font-family: var(--ff-body);
-	font-size: var(--fs-body);
+	font-size: var(--fs-body-sm);
 	color: var(--text-muted);
-	letter-spacing: 0;
-	text-transform: none;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	max-width: 100%;
+}
+
+.rowTags {
+	font-family: var(--ff-body);
+	font-size: var(--fs-meta);
+	font-style: italic;
+	letter-spacing: var(--ls-eyebrow);
+	color: var(--text-muted);
 }
 
 /* ── inline: dense single line (Grand Index columns) ───────────────── */
@@ -134,11 +150,12 @@
 	align-items: center;
 	justify-content: center;
 	width: 14px;
+	flex: 0 0 auto;
 }
 
 .inlineAliases {
 	font-family: var(--ff-body);
-	font-size: var(--fs-small);
+	font-size: var(--fs-meta);
 	font-style: italic;
 	color: var(--text-muted);
 	margin-left: var(--sp-2);

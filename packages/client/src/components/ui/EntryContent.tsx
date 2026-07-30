@@ -59,26 +59,24 @@ export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.E
 	}
 
 	if (variant === 'row') {
+		// One line, always: name column then a single gloss line carrying the
+		// alias, the snippet, or the tag fallback. Anything that overruns
+		// ellipses rather than wrapping, so every row in an index is the same
+		// height and the gloss column starts at the same x on every row.
+		const gloss = folio.snippet ? (
+			<span className={styles.rowSnippet}>{folio.snippet}</span>
+		) : folio.tags.length > 0 ? (
+			<span className={styles.rowTags}>{folio.tags.join(' · ')}</span>
+		) : null;
+
 		return (
 			<>
-				{/*
-				 * Aliases sit on their own line *below* the title, never inline. The
-				 * name column is a fixed width so every row's description starts at
-				 * the same x; an inline alias would push it and leave the list ragged.
-				 */}
-				<span className={styles.rowTitle}>
-					{folio.title}
+				<span className={styles.rowTitle}>{folio.title}</span>
+				<span className={styles.rowLine}>
 					{hasAliases && <Aliases aliases={aliases} className={styles.rowAliases} />}
+					{hasAliases && gloss && <span className={styles.rowSep}>—</span>}
+					{gloss}
 				</span>
-				<div className={styles.rowMeta}>
-					{folio.snippet ? (
-						<span className={styles.rowSnippet}>{folio.snippet}</span>
-					) : (
-						folio.tags.length > 0 && (
-							<span className={styles.rowTags}>{folio.tags.join(' · ')}</span>
-						)
-					)}
-				</div>
 			</>
 		);
 	}

@@ -91,8 +91,9 @@ plus hover, active, keyboard-highlight and grid styling. That split is what kept
 at three (`folio`, `variant`, `icon`), avoiding the flag explosion the Consequences warned about.
 The superseded per-view classes were removed from the four CSS modules.
 
-Where the old copies disagreed on a value, the card variant picked one: the folder eyebrow uses
-`--fs-small`, the snippet clamps to two lines, and the folder is right-aligned in both callers.
+Where the old copies disagreed on a value, the card variant picked one: the snippet clamps to two
+lines and the folder is right-aligned in both callers. (The folder eyebrow initially kept
+`--fs-small` from the old code; see the design revision below — that token does not exist.)
 
 **Deviation from the Decision:** the sidebar was left alone. It is listed above as a fifth
 surface and as a candidate variant, but it renders the title and nothing else, so there is no field
@@ -128,3 +129,38 @@ underneath:
 
 Flex baseline alignment keeps working in the `row` case: a flex item's baseline is that of its
 first line, so the description still sits on the title's baseline and the stacked alias hangs below.
+
+### Design revision — index idiom and type scale (same day)
+
+The two earlier layout attempts were both judged bad on review. Stress-testing with adversarial
+data — a 52-character title, a four-alias entry, an entry with no snippet, an entry with nothing —
+rather than the sample project's happy path found three separate faults:
+
+- **The fixed 200px name column was fitted to sample data.** It was chosen because the longest
+  title in `fall-of-troy` measured 174px, which is a property of that project, not of the design.
+  Under adversarial titles it wrapped to three lines and broke alignment anyway, producing five
+  distinct row heights. Replaced with a content-relative `clamp(9ch, 22%, 24ch)`: `ch` tracks the
+  type size, the percentage tracks the viewport, and because the width is content-independent every
+  row aligns by construction — no subgrid, no measurement pass.
+- **Card titles clipped with no ellipsis and collided with the folder eyebrow.** `cardTitle` had
+  `white-space: nowrap` inside an `overflow: hidden` heading but no `text-overflow`, so a long title
+  was hard-cut mid-glyph and ran into the folder label. Only a title longer than any in the sample
+  project triggered it. The title now ellipses, and the alias yields its space first so the name —
+  the thing that identifies the entry — truncates last.
+- **The card type scale was entirely flat.** `--fs-small` is not a defined token, so
+  `font-size: var(--fs-small)` fell back to `inherit` and title, alias, folder and snippet all
+  rendered at 16px. This predated ADR-0011 (it came from `BacklinksPanel` and `TopHeader`) and was
+  inherited when those were consolidated. Now 16 / 15 / 11 / 13.5px against real tokens.
+  `TagFilter.module.css` still carries the same bug and is left for a separate change.
+
+**Index rows are now one line, always:** name column, then a single gloss line carrying the alias
+as an italic lead-in, an em-dash, and the snippet (or tags when there is no snippet). Overrun
+ellipses. Truncation therefore lands on the gloss — the least load-bearing content — instead of on
+the title. Verified with adversarial rows injected into the live Humans index: one row height, one
+gloss column position, no horizontal overflow.
+
+**The row/card idiom split is deliberate and is now documented** in `docs/design-system.md`. A card
+previews an entry that arrived unsorted; an index line supports scanning a known alphabetical list.
+Rendering the index as cards was prototyped and rejected — it loses A–Z scanability and reintroduces
+uneven heights, since cards without snippets are shorter. What the two idioms share is field order
+(name → alias → gloss) and the type scale, not the layout.
