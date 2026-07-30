@@ -5,8 +5,51 @@ instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROAD
 
 ## Current Focus
 
+**Next-work validation pass (docs only, no code changed).** Reviewed the queued features against
+the codebase before building any of them. Two decisions changed:
+
+- **ADR-0003 (In-Memory Document Model) → Superseded, never built.** It bundled two separable
+  things: a safe multi-file write, and an in-memory content cache. Only the first was needed. The
+  cache's sole named consumer was ADR-0004, and its cost was real — caching content removes the
+  read-fresh behaviour in `getFolio` that makes external Obsidian edits visible, and the watcher
+  was already deferred, so external edits would have stayed invisible until a save conflict.
+  `POST /api/reload` exists but no client code calls it, so the escape hatch was unreachable.
+  Replaced by **[ADR-0010](docs/adr/0010-multi-file-write-safety.md)** (Proposed): pre-flight all
+  targets, verify each `mtime`, then write — closing the hole that `rewriteProjectLinks` leaves
+  today (it rewrites every linking file with no staleness check, while `saveFolio` guards only the
+  primary file). No cache, no watcher, no new dependency.
+- **ADR-0004 (Bidirectional / Inverse Fields) → revised in place, write-through to
+  display-first.** Still Proposed. Inverse relationships are derived from the link index for
+  display and written only on explicit confirmation, as ordinary single-file saves (a push prompt
+  after saving the source, and a pull affordance on the target). Surveying
+  `fall-of-troy/schema.json` found four relationship topologies — cross-type pairs
+  (`Divine Patron` ↔ `Mortal Champions`), symmetric/self-inverse (`Spouse`), same-type field pairs
+  (`Preceding`/`Succeeding Events`), and one-sided fields with no inverse to write to (`Children`,
+  `Leader`, `Current Owner`) — plus two spec gaps in the old ADR: section-level lists can't be
+  named by `"<Section>.<Field>"` paths, and `Allies` targets a type (`God`) that has no `Allies`
+  field. Display-first handles all four; write-through could not handle the fourth at all without
+  a `schema.json` change. The ADR-0003 dependency is gone.
+
+The enabler is small: `walkFolioLinks` already yields `{ section, field? }` per link and
+`extractAllLinks` throws it away. Keeping that location in the index is the only data change the
+feature needs — no disk reads, backlinks stays an in-memory scan.
+
+**Both ADRs are Proposed, so neither is startable until accepted.** ADR-0004 also carries three
+open items (deletion cleanup, dangling targets like `Penelope`/`Diomedes` which have no files, and
+whether the push prompt covers link *removals*). ADR-0009 is untouched and remains the one
+Accepted, self-contained, ready-to-build item.
+
+Also still outstanding and unrelated: the **aliases client UI** (see Previous Focus). Confirmed
+still unbuilt — no reference to `aliases` anywhere in `packages/client/src`, though the data
+already reaches the client and is scored in search. Blocked on a design call, not engineering.
+
+109 tests pass; nothing was changed in `packages/`.
+
+### Earlier — ADR-0003 / ADR-0009 open questions
+
 **ADR-0003 and ADR-0009 unblocked (docs only, not yet built).** Resolved the open questions that
-were gating both:
+were gating both. *(ADR-0003's resolution is now moot — see Current Focus; it was superseded by
+ADR-0010 before being built.)*
 
 - **ADR-0003 (In-Memory Document Model):** watcher question resolved as *deferred* — ship without
   a file watcher; external edits surface as a write-time mtime-conflict error, not a live refresh.
@@ -19,8 +62,10 @@ were gating both:
   get unified behind one engine parameterized by severity. Status set to Accepted. Not yet
   implemented.
 
-Next session can build either. ADR-0003 is the bigger lift and unblocks ADR-0004 (Bidirectional
-Fields) plus the deferred Map-lookup perf cleanup; ADR-0009 is smaller and self-contained.
+At the time, the plan was to build either next — ADR-0003 as the bigger lift said to unblock
+ADR-0004 and the Map-lookup cleanup, ADR-0009 as the smaller self-contained one. The validation
+pass above dissolved the ADR-0003 half of that: ADR-0004 turned out not to need it, and the
+Map-lookup item is independent. ADR-0009 stands unchanged.
 
 ### Earlier — ADR-0007
 
@@ -106,4 +151,4 @@ All work is on `main`; the original `task/yaml-frontmatter-metadata` branch can 
 
 ---
 
-Last updated: 2026-07-12
+Last updated: 2026-07-30
