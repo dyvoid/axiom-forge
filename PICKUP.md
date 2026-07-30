@@ -5,8 +5,41 @@ instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROAD
 
 ## Current Focus
 
-**Next-work validation pass (docs only, no code changed).** Reviewed the queued features against
-the codebase before building any of them. Two decisions changed:
+**Aliases UI shipped; ADR-0004 and ADR-0010 accepted; ADR-0011 opened.**
+
+- **Aliases now render and search consistently.** The design call was made: aliases appear under
+  the folio title on folio pages ("also known as"), and as an `aka …` line on every entry surface
+  that shows a snippet — header search results, Linked Mentions cards, category index rows, and
+  Grand Index entries. Sidebar deliberately left alone (narrow nav, no search).
+- **Alias search fixed on the index views.** Server-side search already scored aliases, but
+  `GrandIndexView` and `CategoryIndexView` each carry their *own* copy of the scoring logic and
+  neither knew about aliases — so "Ulysses" found Odysseus in the header and found nothing in
+  either index. Both now mirror the server's alias tiers (exact 80 / prefix 40 / contains 8).
+  Verified live against `fall-of-troy`: `/api/search?q=ulysses` returns Odysseus with
+  `aliases: ["Ulysses"]` and resolvable `folder`/`name`. That contract is now pinned by an
+  assertion in `routes/index.test.ts` rather than just the title check it had before.
+- **ADR-0004 and ADR-0010 set to Accepted** (not yet implemented) at the user's call. ADR-0004
+  still carries its three open items — settle those before building.
+- **New [ADR-0011](docs/adr/0011-unify-entry-cards-and-ranking.md) (Proposed)** — entry cards look
+  different in all five places they appear, and the root cause runs deeper than styling: there are
+  **three independent implementations of folio ranking** (server `ProjectStore.search()`, plus a
+  narrower copy in each of the two index views). Proposes a shared entry-card component and a
+  shared scoring function in `packages/shared`. Cross-package, so it needs human review.
+  The alias tiers added above are duplicated a third time on purpose — the minimal correct fix,
+  with the consolidation tracked in 0011 rather than done as an unrequested refactor.
+
+**Correction to the previous entry:** it claimed `POST /api/reload` had no client caller and was
+unreachable from the UI. That was wrong — `TopHeader` has a sync button ("Reload project from
+disk") that calls it and invalidates every query. ADR-0010's Context has been corrected. The
+decision it supports is unchanged: the manual, project-wide sync is still a downgrade from today's
+automatic per-entry freshness, and the content cache has no consumer either way.
+
+109 tests pass; build and lint clean.
+
+### Earlier this session — next-work validation pass
+
+**Reviewed the queued features against the codebase before building any of them.** Two decisions
+changed:
 
 - **ADR-0003 (In-Memory Document Model) → Superseded, never built.** It bundled two separable
   things: a safe multi-file write, and an in-memory content cache. Only the first was needed. The

@@ -1,7 +1,7 @@
 # 4. Bidirectional / Inverse Fields
 
 **Date:** 2026-06-05 (revised 2026-07-30)
-**Status:** Proposed
+**Status:** Accepted — not yet implemented. See Open Items below.
 
 > **Note:** Revised 2026-07-30 from *write-through* to *display-first*. The original decision
 > had every save silently patch the inverse field on all referenced folios, using the batched

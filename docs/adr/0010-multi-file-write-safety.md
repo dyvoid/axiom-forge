@@ -1,7 +1,7 @@
 # 10. Multi-File Write Safety
 
 **Date:** 2026-07-30
-**Status:** Proposed
+**Status:** Accepted — not yet implemented
 
 > **Note:** Supersedes [ADR-0003](0003-in-memory-document-model.md), which bundled two
 > separable decisions — an in-memory content cache and a safe multi-file write path. This
@@ -36,9 +36,10 @@ Today `getFolio` re-reads from disk on every call, so an entry edited externally
 content as soon as you navigate to it (`useFolio` sets no `staleTime`, so it refetches on mount).
 Caching content removes that. With the file watcher deferred — as ADR-0003 resolved — an external
 edit becomes invisible until a save attempt fails with a hard conflict, at which point the user
-must redo the edit. `POST /api/reload` exists as an escape hatch but no client code calls it, so
-the workaround is unreachable from the UI. That is a net regression in the Obsidian round-trip,
-which `AGENTS.md` lists as a product guarantee.
+must redo the edit. A manual escape hatch does exist — the header's sync button calls
+`POST /api/reload` and invalidates every query — but it is a deliberate, project-wide action,
+where today freshness is automatic and per-entry. That is still a net regression in the Obsidian
+round-trip, which `AGENTS.md` lists as a product guarantee, just a recoverable one.
 
 ## Decision
 
