@@ -61,6 +61,11 @@ export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.E
 	if (variant === 'row') {
 		return (
 			<>
+				{/*
+				 * Aliases sit on their own line *below* the title, never inline. The
+				 * name column is a fixed width so every row's description starts at
+				 * the same x; an inline alias would push it and leave the list ragged.
+				 */}
 				<span className={styles.rowTitle}>
 					{folio.title}
 					{hasAliases && <Aliases aliases={aliases} className={styles.rowAliases} />}
@@ -80,11 +85,19 @@ export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.E
 
 	return (
 		<>
+			{/*
+			 * The alias rides on the title line rather than taking one of its own, so
+			 * an aliased card is exactly as tall as an unaliased one. Cards sit in a
+			 * stretch grid, so a taller card would pad out every neighbour in its row.
+			 * It truncates when space runs short — the folio page shows the full list.
+			 */}
 			<div className={styles.cardHeader}>
-				<span className={styles.cardTitle}>{folio.title}</span>
+				<span className={styles.cardHeading}>
+					<span className={styles.cardTitle}>{folio.title}</span>
+					{hasAliases && <Aliases aliases={aliases} className={styles.cardAliases} />}
+				</span>
 				<span className={styles.cardFolder}>{folio.folder}</span>
 			</div>
-			{hasAliases && <Aliases aliases={aliases} className={styles.cardAliases} />}
 			{folio.snippet && <div className={styles.cardSnippet}>{folio.snippet}</div>}
 		</>
 	);

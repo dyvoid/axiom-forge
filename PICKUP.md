@@ -31,6 +31,23 @@ while the tier contract is tested in `packages/shared`. Build and lint clean. Si
 components are untested by policy, all four surfaces were checked in a real browser against
 `fall-of-troy`, including alias and tag queries in both index views.
 
+**Alias layout revised after visual review** (the first cut looked bad in the category index):
+
+- **Category rows:** name column is now a fixed **200px** with the alias stacked *beneath* the
+  name. Inline aliases widened the name cell per-row, so the description column started at five
+  different x positions across seven rows. Measuring also turned up a **pre-existing** fault: the
+  old `min-width: 140px` only looked like a column because no title exceeded it — the longest
+  sample title renders at 174px, so the Events index was already ragged before aliases existed.
+  Both indexes now have a single description offset (verified: 1 distinct position, was 5).
+- **Cards:** the alias now rides on the title line and truncates with an ellipsis when tight. On
+  its own line it made aliased cards taller, and the Linked Mentions grid stretches items to the
+  tallest in a row, so one aliased card padded out its whole row. Card heights are now uniform
+  (verified: 1 distinct height across 14 cards). The folio header still shows aliases in full and
+  never truncates.
+
+No horizontal overflow at a 900px viewport; no page errors. The faint `·` between multiple aliases
+is `--border-soft`, the same token the tag separators use — light by design, not a bug.
+
 ### Earlier this session — aliases UI, ADR-0004/0010 accepted, ADR-0011 opened
 
 **Aliases UI shipped; ADR-0004 and ADR-0010 accepted; ADR-0011 opened.**

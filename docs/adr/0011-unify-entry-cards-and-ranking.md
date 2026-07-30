@@ -106,3 +106,25 @@ index source and top-20 limit — while the tier contract is tested directly in 
 React components remain untested per the `AGENTS.md` policy, so all four surfaces were additionally
 checked in a real browser against `fall-of-troy` (folio header, category rows, Grand Index entries,
 header dropdown; alias and tag queries in both index views).
+
+### Layout revision (same day)
+
+The first cut placed aliases inline after the title in the `row` variant and on their own line in
+the `card` variant. Both were wrong, and reviewing the rendered result found a pre-existing fault
+underneath:
+
+- **`row`: the name column is now a fixed 200px, with aliases stacked beneath the name.** An inline
+  alias widened the name cell by a variable amount, so the description column started at a
+  different x on every row — five distinct positions across seven rows in the Humans index. The
+  old `min-width: 140px` had only ever *looked* like a column because no title exceeded it; the
+  longest title in the sample project renders at 174px, so the Events index was already ragged
+  before aliases existed. 200px clears every title measured, and anything longer wraps inside the
+  column instead of shifting the description. Both indexes now have a single description offset.
+- **`card`: the alias rides on the title line, truncating with an ellipsis when space is tight.**
+  On its own line it made aliased cards taller than unaliased ones, and because the Linked Mentions
+  grid stretches items to the tallest in each row, one aliased card padded out its whole row. Card
+  heights are now uniform. Truncation is acceptable here because the folio page shows the full
+  alias list; the folio header itself never truncates.
+
+Flex baseline alignment keeps working in the `row` case: a flex item's baseline is that of its
+first line, so the description still sits on the title's baseline and the stacked alias hangs below.
