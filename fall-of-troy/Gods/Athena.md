@@ -5,6 +5,9 @@ tags:
   - wisdom
   - war
   - greek-patron
+aliases:
+  - Minerva
+  - Pallas Athena
 ---
 
 # Athena

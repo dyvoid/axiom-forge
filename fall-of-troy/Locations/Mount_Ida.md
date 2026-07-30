@@ -4,6 +4,8 @@ tags:
   - mountain
   - divine
   - judgment
+aliases:
+  - Gargarus
 ---
 
 # Mount Ida
