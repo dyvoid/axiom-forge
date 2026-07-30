@@ -1,8 +1,10 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { scoreFolio } from '@axiom-forge/shared';
 import { useFolios, useCreateFolio } from '../../api/queries.js';
 import { useProject } from '../../context/ProjectContext.js';
 import { Icon } from '../ui/Icon.js';
+import { EntryContent } from '../ui/EntryContent.js';
 import { TagFilter } from '../ui/TagFilter.js';
 import bar from '../ui/FilterBar.module.css';
 import styles from './CategoryIndexView.module.css';
@@ -39,36 +41,12 @@ export function CategoryIndexView(): JSX.Element {
 
 	const q = query.trim().toLowerCase();
 
-	const scoredFolios = useMemo(() => {
-		if (!categoryFolios.length) return [];
-		return categoryFolios.map(f => {
-			if (!q) return { folio: f, score: 0 };
-			const title = f.title.toLowerCase();
-			const name = f.name.replace(/_/g, ' ').toLowerCase();
-			const snippet = (f.snippet || '').toLowerCase();
-			const aliases = (f.aliases ?? []).map((a) => a.toLowerCase());
-
-			let score = 0;
-			if (title === q || name === q) score += 100;
-			else if (title.startsWith(q) || name.startsWith(q)) score += 50;
-			else if (title.includes(q) || name.includes(q)) score += 10;
-
-			// Alias tiers mirror ProjectStore.search() so an alias resolves to its
-			// folio here exactly as it does in the header search (ADR-0011 will
-			// collapse these duplicated scorers into one shared function).
-			if (aliases.some((a) => a === q)) score += 80;
-			else if (aliases.some((a) => a.startsWith(q))) score += 40;
-			else if (aliases.some((a) => a.includes(q))) score += 8;
-
-			if (snippet.includes(q)) score += 1;
-
-			return { folio: f, score };
-		});
-	}, [categoryFolios, q]);
-
-	const queryFiltered = scoredFolios
-		.filter(sf => sf.score >= 0 && (q ? sf.score > 0 : true))
-		.map(sf => sf.folio);
+	// Ranking is shared with the server and the Grand Index (ADR-0011). This view
+	// keeps its own ordering: the index stays alphabetical, search only narrows it.
+	const queryFiltered = useMemo(
+		() => (q ? categoryFolios.filter((f) => scoreFolio(f, q) > 0) : categoryFolios),
+		[categoryFolios, q],
+	);
 
 	const filteredFolios = selectedTags.length > 0
 		? queryFiltered.filter(f => selectedTags.every(t => f.tags?.includes(t)))
@@ -190,21 +168,7 @@ export function CategoryIndexView(): JSX.Element {
 					filteredFolios.map(f => {
 						return (
 						<Link key={f.id} to={`/folio/${f.folder}/${f.name}`} className={styles.entry}>
-							<span className={styles.name}>
-								{f.title}
-								{f.aliases && f.aliases.length > 0 && (
-									<span className={styles.aliases}>aka {f.aliases.join(' · ')}</span>
-								)}
-							</span>
-							<div className={styles.entryMeta}>
-								{f.snippet ? (
-									<span className={styles.snippet}>{f.snippet}</span>
-								) : (
-									f.tags && f.tags.length > 0 && (
-										<span className={styles.tags}>{f.tags.join(' · ')}</span>
-									)
-								)}
-							</div>
+							<EntryContent folio={f} variant="row" />
 						</Link>
 					);
 					})

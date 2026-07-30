@@ -1,0 +1,124 @@
+/*
+ * Presentation for a folio entry (ADR-0011). Content only — wrappers, hover,
+ * active and highlight states stay with the calling surface.
+ *
+ * Where the previous hand-rolled copies disagreed on a value, the card variant
+ * settles on one: the folder eyebrow uses --fs-small, and the snippet clamps to
+ * two lines. The search dropdown was the narrower of the two callers, so the
+ * tighter clamp wins; the folder now sits right-aligned in both, as the
+ * Linked Mentions card already did.
+ */
+
+/* ── card: stacked block (search dropdown, Linked Mentions) ───────── */
+
+.cardHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--sp-3);
+	margin-bottom: var(--sp-2);
+}
+
+.cardTitle {
+	font-family: var(--ff-body);
+	font-weight: 500;
+	font-size: var(--fs-body);
+	color: var(--text-primary);
+}
+
+.cardFolder {
+	font-family: var(--ff-display);
+	font-size: var(--fs-small);
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	white-space: nowrap;
+}
+
+.cardAliases {
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: var(--fs-small);
+	color: var(--text-secondary);
+	margin-bottom: var(--sp-2);
+}
+
+.cardSnippet {
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: var(--fs-small);
+	color: var(--text-muted);
+	line-height: 1.5;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* ── row: two-column index row (category index) ───────────────────── */
+
+.rowTitle {
+	font-family: var(--ff-serif);
+	font-size: var(--fs-subtitle);
+	font-weight: 700;
+	color: var(--text-primary);
+	min-width: 140px;
+}
+
+.rowAliases {
+	font-family: var(--ff-body);
+	font-size: var(--fs-small);
+	font-weight: 400;
+	font-style: italic;
+	color: var(--text-muted);
+	margin-left: var(--sp-3);
+}
+
+.rowMeta {
+	display: flex;
+	align-items: center;
+	gap: var(--sp-5);
+	font-family: var(--ff-body);
+	font-size: var(--fs-tiny);
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	flex: 1;
+	min-width: 0;
+}
+
+.rowTags {
+	color: var(--text-muted);
+	font-style: italic;
+	text-transform: lowercase;
+}
+
+.rowSnippet {
+	font-family: var(--ff-body);
+	font-size: var(--fs-body);
+	color: var(--text-muted);
+	letter-spacing: 0;
+	text-transform: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 100%;
+}
+
+/* ── inline: dense single line (Grand Index columns) ───────────────── */
+
+.iconWrapper {
+	color: var(--accent-gold);
+	margin-right: 6px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 14px;
+}
+
+.inlineAliases {
+	font-family: var(--ff-body);
+	font-size: var(--fs-small);
+	font-style: italic;
+	color: var(--text-muted);
+	margin-left: var(--sp-2);
+}

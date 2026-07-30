@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { rankFolios } from '@axiom-forge/shared';
 import { useFolios } from '../../api/queries.js';
 import { Icon } from '../ui/Icon.js';
+import { EntryContent } from '../ui/EntryContent.js';
 import { TagFilter } from '../ui/TagFilter.js';
 import bar from '../ui/FilterBar.module.css';
 import styles from './GrandIndexView.module.css';
@@ -31,47 +33,20 @@ export function GrandIndexView(): JSX.Element {
 		setSearchParams(newParams);
 	};
 
-	const scoredFolios = allFolios.map(f => {
-		if (selectedTags.length > 0) {
-			const hasAllTags = selectedTags.every(t => f.tags?.includes(t));
-			if (!hasAllTags) return { folio: f, score: -1 };
-		}
-		
-		if (!q) return { folio: f, score: 0 };
-		const title = f.title.toLowerCase();
-		const name = f.name.replace(/_/g, ' ').toLowerCase();
-		const snippet = (f.snippet || '').toLowerCase();
-		const folder = f.folder.toLowerCase();
-		const aliases = (f.aliases ?? []).map((a) => a.toLowerCase());
+	const tagFiltered = selectedTags.length > 0
+		? allFolios.filter(f => selectedTags.every(t => f.tags?.includes(t)))
+		: allFolios;
 
-		let score = 0;
-		if (title === q || name === q) score += 100;
-		else if (title.startsWith(q) || name.startsWith(q)) score += 50;
-		else if (title.includes(q) || name.includes(q)) score += 10;
-
-		// Alias tiers mirror ProjectStore.search() so an alias resolves to its
-		// folio here exactly as it does in the header search (ADR-0011 will
-		// collapse these duplicated scorers into one shared function).
-		if (aliases.some((a) => a === q)) score += 80;
-		else if (aliases.some((a) => a.startsWith(q))) score += 40;
-		else if (aliases.some((a) => a.includes(q))) score += 8;
-
-		if (score === 0 && (`${folder}/${name}`.includes(q) || `${folder}/${title}`.includes(q))) score += 5;
-		if (snippet.includes(q)) score += 1;
-		
-		return { folio: f, score };
-	});
-
-	const filtered = scoredFolios.filter(sf => sf.score >= 0 && (q ? sf.score > 0 : true));
-	
-	filtered.sort((a, b) => {
-		if (q && b.score !== a.score) return b.score - a.score;
-		return a.folio.title.localeCompare(b.folio.title);
-	});
+	// Ranking is shared with the server and the category index (ADR-0011).
+	// Grouping below is alphabetical either way, so rank order only decides
+	// placement within a letter.
+	const filtered = q
+		? rankFolios(tagFiltered, q)
+		: [...tagFiltered].sort((a, b) => a.title.localeCompare(b.title));
 
 	// Always group alphabetically — search just narrows what's shown
 	const grouped: Record<string, typeof allFolios> = {};
-	for (const { folio } of filtered) {
+	for (const folio of filtered) {
 		const firstLetter = folio.title.charAt(0).toUpperCase();
 		const groupKey = /[A-Z]/.test(firstLetter) ? firstLetter : '#';
 		if (!grouped[groupKey]) grouped[groupKey] = [];
@@ -144,13 +119,7 @@ export function GrandIndexView(): JSX.Element {
 											to={`/folio/${f.folder}/${f.name}`}
 											className={styles.entryLink}
 										>
-											<span className={styles.iconWrapper}>
-												<Icon name={icon} size={10} />
-											</span>
-											{f.title}
-											{f.aliases && f.aliases.length > 0 && (
-												<span className={styles.aliases}>aka {f.aliases.join(' · ')}</span>
-											)}
+											<EntryContent folio={f} variant="inline" icon={icon} />
 										</Link>
 									);
 								})}

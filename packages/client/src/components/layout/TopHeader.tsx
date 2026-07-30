@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useProject } from '../../context/ProjectContext.js';
 import { useSearch } from '../../api/queries.js';
 import { Icon } from '../ui/Icon.js';
+import { EntryContent } from '../ui/EntryContent.js';
 import { reloadProject } from '../../api/client.js';
 import styles from './TopHeader.module.css';
 
@@ -151,18 +152,7 @@ export function TopHeader(): JSX.Element {
 										onMouseEnter={() => setHighlightIdx(idx)}
 										onClick={() => navigateTo(item.folder, item.name)}
 									>
-										<div className={styles.searchItemHeader}>
-											<span className={styles.searchItemTitle}>{item.title}</span>
-											<span className={styles.searchItemFolder}>{item.folder}</span>
-										</div>
-										{item.aliases && item.aliases.length > 0 && (
-											<div className={styles.searchItemAliases}>
-												aka {item.aliases.join(' · ')}
-											</div>
-										)}
-										{item.snippet && (
-											<div className={styles.searchItemSnippet}>{item.snippet}</div>
-										)}
+										<EntryContent folio={item} variant="card" />
 									</div>
 								))
 							)}
