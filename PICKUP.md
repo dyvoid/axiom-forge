@@ -3,6 +3,34 @@
 Where the last session left off. Update this when you stop, so the next session starts with context
 instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROADMAP.md).
 
+## State of Play
+
+**Branch `claude/next-work-validation-33fbct` is 5 commits ahead of `main` and unmerged**, carrying
+the aliases UI and the whole of ADR-0011 (shared ranking + shared entry presentation + the design
+rework below). It is awaiting human review — `AGENTS.md` classifies cross-package refactors as
+needing review before they land — and a visual check of the category index and cards. Everything on
+`main` is docs only. 128 tests pass, build and lint clean on the branch.
+
+## Next Up
+
+Recommended order, with the reasoning so it does not need re-deriving:
+
+1. **[ADR-0010] Multi-File Write Safety** — the only open item that closes a *live data-loss path*.
+   Renaming an entry rewrites every file linking to it, and `rewriteProjectLinks` writes all of them
+   with **no mtime check**, while `saveFolio` carefully guards the single file being edited. An
+   external edit to any linking file is silently overwritten. Server-only, Accepted, no pending
+   design decisions, and it fits the existing integration-test pattern (real temp project, real I/O).
+2. **[ADR-0009] Consolidate Folio Validation Rules** — Accepted and self-contained, but modest
+   payoff: roughly 25 lines and four message strings against a new module. It changes user-visible
+   warning wording, so the four parser tests asserting those strings need updating.
+3. **[ADR-0004] Bidirectional / Inverse Fields** — Accepted but **blocked on three open items** (see
+   the ADR). Two are decidable without the user (skip dangling targets; let broken-link detection
+   handle deletions). The third is a product call: should the save-time prompt also offer to *clear*
+   an inverse when a link is removed, or handle additions only?
+
+Small and unclaimed: `TagFilter.module.css` still uses the undefined `--fs-small` token (same defect
+that flattened the card type scale — see `docs/design-system.md`). One word to fix.
+
 ## Current Focus
 
 **[ADR-0011] Unify Entry Cards & Ranking — implemented.** The consolidation behind the card
