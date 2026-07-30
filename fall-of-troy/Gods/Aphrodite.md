@@ -5,6 +5,8 @@ tags:
   - love
   - trojan-patron
   - cause-of-war
+aliases:
+  - Venus
 ---
 
 # Aphrodite

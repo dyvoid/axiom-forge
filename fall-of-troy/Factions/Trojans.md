@@ -4,6 +4,8 @@ tags:
   - ilians
   - defenders
   - besieged
+aliases:
+  - Dardanians
 ---
 
 # Trojans
@@ -22,7 +24,7 @@ They held out for ten years. Against a coalition that outnumbered them, that had
 Their defeat came not from failure of courage but from a failure of judgment: they brought the horse inside. The priests and Cassandra warned against it. Cassandra had always warned against everything, and had never been believed — that was her curse, given by Apollo when she refused him. The Trojans opened their gates.
 
 ## Members
-- **Key Members:** [[Humans/Hector]], [[Humans/Paris]], [[Humans/Priam]], [[Humans/Aeneas]]
+- **Key Members:** [[Humans/Hector]], [[Humans/Paris]], [[Humans/Priam]], [[Humans/Aeneas]], [[Humans/Cassandra]], [[Humans/Andromache]]
 - **Divine Supporters:** [[Gods/Apollo]], [[Gods/Aphrodite]]
 
 ## Connected Events

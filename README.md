@@ -52,6 +52,11 @@ npm run dev
 
 Then open <http://localhost:5173>.
 
+Two wikilinks in the sample point at entries that do not exist — `Humans/Aeneas` and
+`Humans/Astyanax`. These are **left broken on purpose**, so the broken-link detection has something
+to find on a fresh clone. Both are figures whose stories run past the fall of the city, so they read
+naturally as entries nobody has written yet. Please don't "fix" them.
+
 To run against your own project folder:
 
 ```bash

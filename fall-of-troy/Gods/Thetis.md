@@ -4,6 +4,8 @@ tags:
   - sea-nymph
   - nereid
   - mother-of-achilles
+aliases:
+  - Silver-footed Thetis
 ---
 
 # Thetis
