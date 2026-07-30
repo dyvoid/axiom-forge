@@ -61,7 +61,7 @@ previews an unsorted entry, an index line supports A–Z scanning. Rendering the
 prototyped and rejected — it loses scanability and reintroduces uneven heights. The two idioms
 share field order (name → alias → gloss) and the type scale, not the layout.
 
-#### Superseded second iteration
+### Superseded second iteration
 
 *(Kept for context; the stress test above replaced this.)* Alias layout revised after visual review,
 because the first cut looked bad in the category index:
