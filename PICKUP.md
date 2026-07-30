@@ -3,14 +3,6 @@
 Where the last session left off. Update this when you stop, so the next session starts with context
 instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROADMAP.md).
 
-## State of Play
-
-**Branch `claude/next-work-validation-33fbct` is 5 commits ahead of `main` and unmerged**, carrying
-the aliases UI and the whole of ADR-0011 (shared ranking + shared entry presentation + the design
-rework below). It is awaiting human review — `AGENTS.md` classifies cross-package refactors as
-needing review before they land — and a visual check of the category index and cards. Everything on
-`main` is docs only. 128 tests pass, build and lint clean on the branch.
-
 ## Next Up
 
 Recommended order, with the reasoning so it does not need re-deriving:
