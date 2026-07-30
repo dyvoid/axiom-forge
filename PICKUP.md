@@ -3,6 +3,34 @@
 Where the last session left off. Update this when you stop, so the next session starts with context
 instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROADMAP.md).
 
+## Repo checks + six shipped token bugs
+
+`npm run lint` now also runs `scripts/check-repo.mjs`. It was written to answer "which GitHub
+Actions are worth adding", and the answer turned out to be *none* — the useful checks belong inside
+`lint` and `test`, which CI already runs, so a failure reproduces locally instead of only on a PR.
+
+It found **six design tokens referenced but never defined**. An undefined `var(--…)` is invalid at
+computed-value time, so the declaration is dropped silently — invisible to ESLint and to the type
+checker. `--bg-hover` meant hover on Linked Mentions cards and the search-dropdown highlight did
+nothing whatsoever; `--ff-mono` meant monospace never applied; `--fs-small` was the one that
+flattened the card type scale. Fixed by pointing four at tokens that already existed
+(`--bg-surface`→`--bg-panel`, `--text-danger`→`--accent-rust`, `--bg-subtle`→`--bg-panel`,
+`--fs-small`→`--fs-meta`) and defining the two the system genuinely lacked (`--bg-hover`,
+`--ff-mono`). Verified in a browser: card background now shifts on hover, where before it was
+identical.
+
+The checker also covers dead relative Markdown links, `fall-of-troy` wikilinks outside the
+deliberate allowlist, and ADRs missing from the ROADMAP.
+
+**Two new tests** in `schema.test.ts` parse and round-trip every `fall-of-troy` Markdown file. The
+existing smoke test only ever validated `config.json` and `schema.json` — no `.md` file was parsed
+by anything, so sample content could drift from the schema with the suite green. The round-trip
+comparison is deliberately order-insensitive: `serializeToMarkdown` rewrites fields into schema
+declaration order, which is intended normalisation, and `Humans/Helen.md` (Spouse before Divine
+Patron) is the live case that proves it.
+
+CI triggers were left alone at PR + main, as requested.
+
 ## Next Up
 
 Recommended order, with the reasoning so it does not need re-deriving:
