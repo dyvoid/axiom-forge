@@ -30,6 +30,9 @@
 
 	--bg-page: #f3ead8;
 	--bg-panel: #ebe0c8;
+	/* Hover / keyboard-highlight surface. A shade past --bg-panel and well short
+	   of --border-soft, so it reads on both page and panel backgrounds. */
+	--bg-hover: #e4d8be;
 	--border: #cdb98e;
 	--border-soft: #d9c8a4;
 
@@ -49,6 +52,8 @@
 	--ff-display: "Spectral", "EB Garamond", Georgia, serif;
 	--ff-body: "Spectral", "EB Garamond", Georgia, serif;
 	--ff-serif: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+	/* Raw values only — schema warnings and the edit view's code blocks. */
+	--ff-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 	--color-fg: var(--text-primary);
 	--color-fg-secondary: var(--text-secondary);
 	--color-fg-muted: var(--text-muted);
