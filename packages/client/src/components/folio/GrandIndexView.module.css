@@ -80,19 +80,3 @@
 	color: var(--accent-rust);
 }
 
-.iconWrapper {
-	color: var(--accent-gold);
-	margin-right: 6px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 14px;
-}
-
-.aliases {
-	font-family: var(--ff-body);
-	font-size: var(--fs-small);
-	font-style: italic;
-	color: var(--text-muted);
-	margin-left: var(--sp-2);
-}

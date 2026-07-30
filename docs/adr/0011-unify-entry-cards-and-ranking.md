@@ -1,7 +1,7 @@
 # 11. Unify Entry Cards and Ranking
 
 **Date:** 2026-07-30
-**Status:** Proposed
+**Status:** Accepted — implemented 2026-07-30
 
 ## Context
 
@@ -68,3 +68,41 @@ Two consolidations, which can land independently:
   layout primitive plus per-context composition over one component with a wide prop surface.
 - Existing per-view CSS modules are consolidated or removed, so the token-based styling must be
   re-verified against `docs/design-system.md` in both light and dark contexts.
+
+## Implementation
+
+**Shared ranking** lives in `packages/shared/src/folioSearch.ts`, exporting `scoreFolio` (one
+record, one query, returns 0 for no match) and `rankFolios` (score, drop non-matches, sort by score
+with alphabetical tie-breaking). `ProjectStore.search()` is now `rankFolios(...).slice(0, 20)` —
+it kept only the index source and the result limit. Both client index views call in as well.
+
+Ordering deliberately stayed with the callers, as the Decision anticipated: the Grand Index groups
+alphabetically by letter (so rank only decides placement within a letter), and a category index
+preserves its alphabetical index order and uses the score purely as a filter.
+
+Two behaviour changes fall out of the consolidation, both intended: the index views now score
+**tags** (previously server-only), and the category index now scores **folder paths**. Searching a
+tag such as `strategist` in the Grand Index returned nothing before and now returns its folio.
+
+**Shared presentation** lives in `packages/client/src/components/ui/EntryContent.tsx` with three
+variants — `card` (search dropdown, Linked Mentions), `row` (category index), `inline` (Grand
+Index). It renders content only and never a wrapper: callers keep their own `Link`/`NavLink`/`div`,
+plus hover, active, keyboard-highlight and grid styling. That split is what kept the prop surface
+at three (`folio`, `variant`, `icon`), avoiding the flag explosion the Consequences warned about.
+The superseded per-view classes were removed from the four CSS modules.
+
+Where the old copies disagreed on a value, the card variant picked one: the folder eyebrow uses
+`--fs-small`, the snippet clamps to two lines, and the folder is right-aligned in both callers.
+
+**Deviation from the Decision:** the sidebar was left alone. It is listed above as a fifth
+surface and as a candidate variant, but it renders the title and nothing else, so there is no field
+set to share — routing it through `EntryContent` would be indirection wrapping a single expression.
+The unification is therefore four surfaces into one component, not five.
+
+**Verification.** 19 unit tests in `folioSearch.test.ts` pin every scoring tier and the
+`rankFolios` ordering (128 tests total). The 8 existing `ProjectStore.search()` tests were kept
+rather than moved, as the Consequences suggested they might be: they now cover the store's wiring —
+index source and top-20 limit — while the tier contract is tested directly in `packages/shared`.
+React components remain untested per the `AGENTS.md` policy, so all four surfaces were additionally
+checked in a real browser against `fall-of-troy` (folio header, category rows, Grand Index entries,
+header dropdown; alias and tag queries in both index views).

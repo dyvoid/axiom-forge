@@ -5,6 +5,34 @@ instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROAD
 
 ## Current Focus
 
+**[ADR-0011] Unify Entry Cards & Ranking — implemented.** The consolidation behind the card
+inconsistency is done, and it fixed a real behaviour bug on the way.
+
+- **Shared ranking** in `packages/shared/src/folioSearch.ts`: `scoreFolio` (per-record score, 0 =
+  no match) and `rankFolios` (score, filter, sort with alphabetical tie-break).
+  `ProjectStore.search()` is now `rankFolios(...).slice(0, 20)`; the two client index views call
+  the same function. Three divergent scorers became one.
+- **Two intended behaviour changes:** the index views now score **tags**, and the category index
+  now scores **folder paths** — both previously server-only. Searching the tag `strategist` in the
+  Grand Index returned nothing before and now returns Odysseus.
+- **Shared presentation** in `packages/client/src/components/ui/EntryContent.tsx`, variants
+  `card` / `row` / `inline`. It renders content only, never a wrapper — callers keep their own
+  `Link`/`NavLink`/`div` plus hover, active, highlight and grid styling. That kept the prop surface
+  at three and avoided the flag explosion ADR-0011 warned about. Superseded classes deleted from
+  four CSS modules.
+- **Sidebar deliberately excluded** — it renders the title alone, so there is nothing to share.
+  Four surfaces unified, not five; recorded as a deviation in the ADR.
+- **Ordering stayed with the callers** by design: Grand Index groups alphabetically by letter,
+  category index keeps index order and uses score only as a filter.
+
+128 tests pass (19 new in `folioSearch.test.ts` pinning every tier and the ranking order). The 8
+existing `ProjectStore.search()` tests were kept rather than moved — they now cover store wiring
+while the tier contract is tested in `packages/shared`. Build and lint clean. Since React
+components are untested by policy, all four surfaces were checked in a real browser against
+`fall-of-troy`, including alias and tag queries in both index views.
+
+### Earlier this session — aliases UI, ADR-0004/0010 accepted, ADR-0011 opened
+
 **Aliases UI shipped; ADR-0004 and ADR-0010 accepted; ADR-0011 opened.**
 
 - **Aliases now render and search consistently.** The design call was made: aliases appear under
@@ -27,6 +55,8 @@ instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROAD
   shared scoring function in `packages/shared`. Cross-package, so it needs human review.
   The alias tiers added above are duplicated a third time on purpose — the minimal correct fix,
   with the consolidation tracked in 0011 rather than done as an unrequested refactor.
+  *(That duplication is now gone — ADR-0011 was implemented later the same session; see
+  Current Focus.)*
 
 **Correction to the previous entry:** it claimed `POST /api/reload` had no client caller and was
 unreachable from the UI. That was wrong — `TopHeader` has a sync button ("Reload project from

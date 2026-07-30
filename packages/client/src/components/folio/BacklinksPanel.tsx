@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useBacklinks } from '../../api/queries.js';
+import { EntryContent } from '../ui/EntryContent.js';
 import styles from './BacklinksPanel.module.css';
 
 interface BacklinksPanelProps {
@@ -24,16 +25,7 @@ export function BacklinksPanel({ folder, name }: BacklinksPanelProps): JSX.Eleme
 						to={`/folio/${encodeURIComponent(link.folder)}/${encodeURIComponent(link.name)}`}
 						className={styles.card}
 					>
-						<div className={styles.cardHeader}>
-							<span className={styles.cardTitle}>{link.title}</span>
-							<span className={styles.cardFolder}>{link.folder}</span>
-						</div>
-						{link.aliases && link.aliases.length > 0 && (
-							<div className={styles.cardAliases}>aka {link.aliases.join(' · ')}</div>
-						)}
-						{link.snippet && (
-							<div className={styles.cardSnippet}>{link.snippet}</div>
-						)}
+						<EntryContent folio={link} variant="card" />
 					</Link>
 				))}
 			</div>
