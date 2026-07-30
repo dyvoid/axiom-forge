@@ -161,6 +161,23 @@ or field values from the sample project. See `schema.test.ts` for the establishe
 - **Docs describe what the code *does*, never what it *should* do.** If a behavior isn't
   implemented yet, it doesn't go in `docs/`. It goes in an ADR as a proposed decision.
 
+- **Never write a fact into a tracked file when another system already owns it.** Git owns branch
+  and merge state; the pull request owns its own review status; CI owns whether the build passed.
+  Duplicating any of those into `PICKUP.md`, an ADR, or a README produces a statement that is true
+  for a few hours and then silently false — and it is *most* misleading exactly when someone trusts
+  it. "This branch is unmerged", "awaiting review", "N commits ahead", "PR #12 is open" belong in
+  the pull request description or the commit message, both of which are scoped to the change and
+  stop being read once it lands.
+
+  The test to apply before writing a sentence into a tracked file: **would an ordinary action —
+  merging, pushing, cutting a release — make this false without anyone editing the file?** If yes,
+  it goes in the PR or commit message instead.
+
+  This does not forbid `PICKUP.md` from recording where work stood; that is its job. It forbids
+  restating what git and the forge already answer authoritatively. Prefer the durable half: "ADR-0010
+  is next, because `rewriteProjectLinks` writes every linking file with no mtime check" stays true
+  regardless of what has merged.
+
 ## End-of-Task Checklist
 
 Before closing any feature or architecture task, answer each question explicitly:

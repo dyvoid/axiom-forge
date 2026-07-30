@@ -4,6 +4,8 @@ tags:
   - sack
   - fire
   - end-of-an-age
+aliases:
+  - The Sack of Ilium
 ---
 
 # Fall of Troy
