@@ -166,6 +166,13 @@ describe('GET /api/search', () => {
 		const res = await request(app).get('/api/search?q=phantom');
 		expect(res.status).toBe(200);
 		expect(res.body.map((f: { title: string }) => f.title)).toContain('Wraith');
+
+		// An alias hit must resolve to the aliased folio itself, and carry its
+		// aliases, so result cards can both navigate to it and show why it matched.
+		const hit = res.body.find((f: { title: string }) => f.title === 'Wraith');
+		expect(hit.folder).toBe('Alphas');
+		expect(hit.name).toBe('Wraith');
+		expect(hit.aliases).toEqual(['Phantom']);
 	});
 
 	it('sorts identically scored items alphabetically', async () => {
