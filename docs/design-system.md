@@ -42,5 +42,41 @@ The layout engine implements specific aesthetic rules based on content density:
 2. **List Layouts**: Within structured sections (`MetaSection`, `FieldSection`), list-type fields (e.g. `wikilink-list`) with exactly 1 item use the compact inline 2-column layout (just like scalar fields). Only lists with >1 item render in the stacked, wrapping layout.
 3. **Wikilinks**: Selected wikilink chips show a type glyph in `--color-accent` and the display name. The literal `[ ]` markdown brackets around wikilinks are intentionally omitted from the UI for a cleaner visual layout. There is no strikethrough styling for dead links (they are identified by tooltips and warnings in edit mode).
 
+### Entry Presentation: Two Idioms
+
+A folio appears as a compact "entry" on several surfaces. These use **two deliberate idioms**, both
+rendered by `EntryContent` (ADR-0011). They are not meant to converge — they answer different
+questions — but their field order and type scale are shared.
+
+| Idiom | Variant | Used by | Question it answers |
+|---|---|---|---|
+| **Preview card** | `card` | Header search dropdown, Linked Mentions | "What is this thing I don't recognise?" |
+| **Index line** | `row`, `inline` | Category index, Grand Index | "Where is the one I'm looking for?" |
+
+A card is a stacked block carrying the folder eyebrow and a snippet, because entries reach you
+unsorted and out of context. An index line is a single line with aligned columns and no folder
+label — the index *is* the folder, and the value is scanning a known alphabetical list. Making the
+index look like cards would trade away that scanability.
+
+Field order is the same in both: **name → alias → gloss** (snippet, falling back to tags).
+
+**Every text run truncates with an ellipsis; nothing wraps.** Long titles and long alias lists
+always exist, so the layout is designed for them rather than around them. A predictable ellipsis
+beats rows and cards whose height changes with their content — uneven heights break the vertical
+rhythm of a list far more visibly than a clipped tail breaks a single entry. Within a card the
+alias yields its space before the name does, since the name is what identifies the entry.
+
+Index column widths are **content-relative** (`clamp(9ch, 22%, 24ch)`), never a pixel width
+measured against whatever titles a particular project happens to contain. `ch` tracks the type
+size and the percentage tracks the viewport, so the column holds up across projects and zoom
+levels. Because the width does not depend on content, rows align by construction — no subgrid and
+no measurement pass.
+
+> **Caution:** `--fs-small` is *not* a defined token. `font-size: var(--fs-small)` is invalid at
+> computed-value time and silently falls back to `inherit`, so text meant to be small renders at
+> its parent's size. This flattened the entire card type scale to 16px until ADR-0011. Use
+> `--fs-body-sm` (15px), `--fs-meta` (13.5px), `--fs-label` (13px), `--fs-eyebrow` (11px) or
+> `--fs-tiny` (10px). `TagFilter.module.css` still carries this bug.
+
 ### WebGL Integration
 The `/` Landing route features a WebGL fragment shader drifting warm-gray smoke over parchment (ported from `prototype/webgl-hero.js`). Read mode does not display this shader.

@@ -141,7 +141,9 @@
 .entry {
 	display: flex;
 	align-items: baseline;
-	flex-wrap: wrap;
+	/* nowrap: an index row is always one line, so every row is the same height
+	   and the gloss column starts at the same x. Overrun ellipses instead. */
+	flex-wrap: nowrap;
 	gap: var(--sp-5);
 	padding: var(--sp-4) 0;
 	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);

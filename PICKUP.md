@@ -31,7 +31,40 @@ while the tier contract is tested in `packages/shared`. Build and lint clean. Si
 components are untested by policy, all four surfaces were checked in a real browser against
 `fall-of-troy`, including alias and tag queries in both index views.
 
-**Alias layout revised after visual review** (the first cut looked bad in the category index):
+**Entry design reworked after a stress test** (third and current iteration — the first two were
+judged bad on review). Testing with adversarial data instead of the sample project's happy path —
+a 52-character title, a four-alias entry, an entry with no snippet, an empty entry — found three
+faults:
+
+- **The 200px name column was fitted to sample data.** It came from measuring the longest title in
+  `fall-of-troy` (174px), which is a fact about that project, not about the design. Under long
+  titles it wrapped to three lines and broke alignment anyway — five distinct row heights. Now
+  `clamp(9ch, 22%, 24ch)`: `ch` tracks type size, `%` tracks viewport, and since the width doesn't
+  depend on content, rows align by construction. No subgrid, no measurement pass.
+- **Card titles clipped with no ellipsis and ran into the folder eyebrow.** `cardTitle` had
+  `nowrap` inside an `overflow: hidden` heading but no `text-overflow`. Only a title longer than any
+  in the sample project triggered it. Title now ellipses; the alias yields space first so the name
+  truncates last.
+- **The card type scale was completely flat — everything computed to 16px.** `--fs-small` is *not a
+  defined token*, so `font-size: var(--fs-small)` falls back to `inherit`. Title, alias, folder and
+  snippet were all identical size, which is much of why the cards felt unresolved. Predates this
+  work (came from `BacklinksPanel`/`TopHeader`). Now 16 / 15 / 11 / 13.5px on real tokens.
+  **`TagFilter.module.css` still has this bug** — left alone deliberately, its own change.
+
+**Index rows are now one line, always:** name column, then a single gloss line with the alias as an
+italic lead-in, an em-dash, then snippet (or tags if no snippet). Truncation lands on the gloss
+rather than the title. Verified with adversarial rows injected into the live index: one row height,
+one gloss column position, no horizontal overflow.
+
+**The row/card idiom split is deliberate and now documented** in `docs/design-system.md`: a card
+previews an unsorted entry, an index line supports A–Z scanning. Rendering the index as cards was
+prototyped and rejected — it loses scanability and reintroduces uneven heights. The two idioms
+share field order (name → alias → gloss) and the type scale, not the layout.
+
+#### Superseded second iteration
+
+*(Kept for context; the stress test above replaced this.)* Alias layout revised after visual review,
+because the first cut looked bad in the category index:
 
 - **Category rows:** name column is now a fixed **200px** with the alias stacked *beneath* the
   name. Inline aliases widened the name cell per-row, so the description column started at five
