@@ -13,10 +13,20 @@
 
 .cardHeader {
 	display: flex;
-	align-items: center;
+	align-items: baseline;
 	justify-content: space-between;
 	gap: var(--sp-3);
 	margin-bottom: var(--sp-2);
+}
+
+/* Title + alias travel together on the left; the folder eyebrow stays pinned
+   right. `min-width: 0` lets the alias truncate instead of shoving the folder. */
+.cardHeading {
+	display: flex;
+	align-items: baseline;
+	gap: var(--sp-2);
+	min-width: 0;
+	overflow: hidden;
 }
 
 .cardTitle {
@@ -24,6 +34,7 @@
 	font-weight: 500;
 	font-size: var(--fs-body);
 	color: var(--text-primary);
+	white-space: nowrap;
 }
 
 .cardFolder {
@@ -40,7 +51,9 @@
 	font-style: italic;
 	font-size: var(--fs-small);
 	color: var(--text-secondary);
-	margin-bottom: var(--sp-2);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .cardSnippet {
@@ -57,21 +70,29 @@
 
 /* ── row: two-column index row (category index) ───────────────────── */
 
+/*
+ * Fixed name column, so every row's description column starts at the same x.
+ * The previous `min-width: 140px` only held while no title exceeded it — the
+ * longest title in the sample project renders at 174px, so the Events index was
+ * already ragged before aliases were added. 200px clears every title measured;
+ * anything longer wraps inside the column rather than shifting the description.
+ */
 .rowTitle {
 	font-family: var(--ff-serif);
 	font-size: var(--fs-subtitle);
 	font-weight: 700;
 	color: var(--text-primary);
-	min-width: 140px;
+	flex: 0 0 200px;
 }
 
 .rowAliases {
+	display: block;
 	font-family: var(--ff-body);
 	font-size: var(--fs-small);
 	font-weight: 400;
 	font-style: italic;
 	color: var(--text-muted);
-	margin-left: var(--sp-3);
+	margin-top: 2px;
 }
 
 .rowMeta {
