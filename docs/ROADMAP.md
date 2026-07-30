@@ -8,8 +8,9 @@ reasoning, and consequences. To start a feature: ensure its ADR is Accepted, the
 | Feature | Status | ADR | Notes |
 |---|---|---|---|
 | In-Memory Document Model | Superseded | [ADR-0003](adr/0003-in-memory-document-model.md) | Never built; replaced by ADR-0010 (content cache declined) |
-| Multi-File Write Safety | Proposed | [ADR-0010](adr/0010-multi-file-write-safety.md) | Closes the unguarded rename link-rewrite; supersedes ADR-0003 |
-| Bidirectional / Inverse Fields | Proposed | [ADR-0004](adr/0004-bidirectional-inverse-fields.md) | Revised 2026-07-30 to display-first; no longer depends on ADR-0003 |
+| Multi-File Write Safety | Accepted | [ADR-0010](adr/0010-multi-file-write-safety.md) | Not yet built; closes the unguarded rename link-rewrite; supersedes ADR-0003 |
+| Bidirectional / Inverse Fields | Accepted | [ADR-0004](adr/0004-bidirectional-inverse-fields.md) | Not yet built; display-first (revised 2026-07-30); 3 open items to settle first |
+| Unify Entry Cards & Ranking | Proposed | [ADR-0011](adr/0011-unify-entry-cards-and-ranking.md) | 5 hand-rolled entry renderings; 3 divergent scoring copies |
 | Project Themes | Proposed | [ADR-0001](adr/0001-project-themes.md) | — |
 | Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | — |
 | Desktop Packaging & Distribution | Proposed | [ADR-0005](adr/0005-desktop-packaging-distribution.md) | Uses Electron and electron-builder |
