@@ -4,6 +4,10 @@ tags:
   - achaeans
   - coalition
   - besiegers
+aliases:
+  - Achaeans
+  - Argives
+  - Danaans
 ---
 
 # Greeks
@@ -22,7 +26,7 @@ The coalition included some of the greatest warriors of the age: Achilles with h
 The Greeks' ultimate victory owed as much to Odysseus's cunning as to any military achievement. Troy was never taken by force. It was taken by a story — the story of a horse.
 
 ## Members
-- **Key Members:** [[Humans/Achilles]], [[Humans/Odysseus]], [[Humans/Patroclus]], [[Humans/Ajax]]
+- **Key Members:** [[Humans/Achilles]], [[Humans/Odysseus]], [[Humans/Patroclus]], [[Humans/Ajax]], [[Humans/Diomedes]], [[Humans/Menelaus]]
 - **Divine Supporters:** [[Gods/Athena]], [[Gods/Thetis]]
 
 ## Connected Events

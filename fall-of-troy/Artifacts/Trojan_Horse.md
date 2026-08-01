@@ -4,6 +4,8 @@ tags:
   - deception
   - stratagem
   - wooden-horse
+aliases:
+  - The Wooden Horse
 ---
 
 # Trojan Horse
