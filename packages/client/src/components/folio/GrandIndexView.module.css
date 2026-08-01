@@ -80,11 +80,3 @@
 	color: var(--accent-rust);
 }
 
-.iconWrapper {
-	color: var(--accent-gold);
-	margin-right: 6px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 14px;
-}

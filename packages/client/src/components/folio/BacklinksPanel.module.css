@@ -35,37 +35,3 @@
 	background: var(--bg-hover);
 }
 
-.cardHeader {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--sp-3);
-	margin-bottom: var(--sp-2);
-}
-
-.cardTitle {
-	font-family: var(--ff-body);
-	font-weight: 500;
-	color: var(--text-primary);
-	font-size: var(--fs-body);
-}
-
-.cardFolder {
-	font-family: var(--ff-display);
-	font-size: var(--fs-small);
-	color: var(--text-muted);
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-}
-
-.cardSnippet {
-	font-family: var(--ff-body);
-	font-style: italic;
-	font-size: var(--fs-small);
-	color: var(--text-muted);
-	line-height: 1.5;
-	display: -webkit-box;
-	-webkit-line-clamp: 3;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
-}

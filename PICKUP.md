@@ -3,7 +3,105 @@
 Where the last session left off. Update this when you stop, so the next session starts with context
 instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROADMAP.md).
 
+## Next Up
+
+Recommended order, with the reasoning so it does not need re-deriving:
+
+1. **[ADR-0010] Multi-File Write Safety** — the only open item that closes a *live data-loss path*.
+   Renaming an entry rewrites every file linking to it, and `rewriteProjectLinks` writes all of them
+   with **no mtime check**, while `saveFolio` carefully guards the single file being edited. An
+   external edit to any linking file is silently overwritten. Server-only, Accepted, no pending
+   design decisions, and it fits the existing integration-test pattern (real temp project, real I/O).
+2. **[ADR-0009] Consolidate Folio Validation Rules** — Accepted and self-contained, but modest
+   payoff: roughly 25 lines and four message strings against a new module. It changes user-visible
+   warning wording, so the four parser tests asserting those strings need updating.
+3. **[ADR-0004] Bidirectional / Inverse Fields** — Accepted but **blocked on three open items** (see
+   the ADR). Two are decidable without the user (skip dangling targets; let broken-link detection
+   handle deletions). The third is a product call: should the save-time prompt also offer to *clear*
+   an inverse when a link is removed, or handle additions only?
+
+Small and unclaimed: `TagFilter.module.css` still uses the undefined `--fs-small` token (same defect
+that flattened the card type scale — see `docs/design-system.md`). One word to fix.
+
 ## Current Focus
+
+**[ADR-0011] Unify Entry Cards & Ranking — implemented.** The consolidation behind the card
+inconsistency is done, and it fixed a real behaviour bug on the way.
+
+- **Shared ranking** in `packages/shared/src/folioSearch.ts`: `scoreFolio` (per-record score, 0 =
+  no match) and `rankFolios` (score, filter, sort with alphabetical tie-break).
+  `ProjectStore.search()` is now `rankFolios(...).slice(0, 20)`; the two client index views call
+  the same function. Three divergent scorers became one.
+- **Two intended behaviour changes:** the index views now score **tags**, and the category index
+  now scores **folder paths** — both previously server-only. Searching the tag `strategist` in the
+  Grand Index returned nothing before and now returns Odysseus.
+- **Shared presentation** in `packages/client/src/components/ui/EntryContent.tsx`, variants
+  `card` / `row` / `inline`. It renders content only, never a wrapper — callers keep their own
+  `Link`/`NavLink`/`div` plus hover, active, highlight and grid styling. That kept the prop surface
+  at three and avoided the flag explosion ADR-0011 warned about. Superseded classes deleted from
+  four CSS modules.
+- **Sidebar deliberately excluded** — it renders the title alone, so there is nothing to share.
+  Four surfaces unified, not five; recorded as a deviation in the ADR.
+- **Ordering stayed with the callers** by design: Grand Index groups alphabetically by letter,
+  category index keeps index order and uses score only as a filter.
+
+128 tests pass (19 new in `folioSearch.test.ts` pinning every tier and the ranking order). The 8
+existing `ProjectStore.search()` tests were kept rather than moved — they now cover store wiring
+while the tier contract is tested in `packages/shared`. Build and lint clean. Since React
+components are untested by policy, all four surfaces were checked in a real browser against
+`fall-of-troy`, including alias and tag queries in both index views.
+
+**Entry design reworked after a stress test** (third and current iteration — the first two were
+judged bad on review). Testing with adversarial data instead of the sample project's happy path —
+a 52-character title, a four-alias entry, an entry with no snippet, an empty entry — found three
+faults:
+
+- **The 200px name column was fitted to sample data.** It came from measuring the longest title in
+  `fall-of-troy` (174px), which is a fact about that project, not about the design. Under long
+  titles it wrapped to three lines and broke alignment anyway — five distinct row heights. Now
+  `clamp(9ch, 22%, 24ch)`: `ch` tracks type size, `%` tracks viewport, and since the width doesn't
+  depend on content, rows align by construction. No subgrid, no measurement pass.
+- **Card titles clipped with no ellipsis and ran into the folder eyebrow.** `cardTitle` had
+  `nowrap` inside an `overflow: hidden` heading but no `text-overflow`. Only a title longer than any
+  in the sample project triggered it. Title now ellipses; the alias yields space first so the name
+  truncates last.
+- **The card type scale was completely flat — everything computed to 16px.** `--fs-small` is *not a
+  defined token*, so `font-size: var(--fs-small)` falls back to `inherit`. Title, alias, folder and
+  snippet were all identical size, which is much of why the cards felt unresolved. Predates this
+  work (came from `BacklinksPanel`/`TopHeader`). Now 16 / 15 / 11 / 13.5px on real tokens.
+  **`TagFilter.module.css` still has this bug** — left alone deliberately, its own change.
+
+**Index rows are now one line, always:** name column, then a single gloss line with the alias as an
+italic lead-in, an em-dash, then snippet (or tags if no snippet). Truncation lands on the gloss
+rather than the title. Verified with adversarial rows injected into the live index: one row height,
+one gloss column position, no horizontal overflow.
+
+**The row/card idiom split is deliberate and now documented** in `docs/design-system.md`: a card
+previews an unsorted entry, an index line supports A–Z scanning. Rendering the index as cards was
+prototyped and rejected — it loses scanability and reintroduces uneven heights. The two idioms
+share field order (name → alias → gloss) and the type scale, not the layout.
+
+### Superseded second iteration
+
+*(Kept for context; the stress test above replaced this.)* Alias layout revised after visual review,
+because the first cut looked bad in the category index:
+
+- **Category rows:** name column is now a fixed **200px** with the alias stacked *beneath* the
+  name. Inline aliases widened the name cell per-row, so the description column started at five
+  different x positions across seven rows. Measuring also turned up a **pre-existing** fault: the
+  old `min-width: 140px` only looked like a column because no title exceeded it — the longest
+  sample title renders at 174px, so the Events index was already ragged before aliases existed.
+  Both indexes now have a single description offset (verified: 1 distinct position, was 5).
+- **Cards:** the alias now rides on the title line and truncates with an ellipsis when tight. On
+  its own line it made aliased cards taller, and the Linked Mentions grid stretches items to the
+  tallest in a row, so one aliased card padded out its whole row. Card heights are now uniform
+  (verified: 1 distinct height across 14 cards). The folio header still shows aliases in full and
+  never truncates.
+
+No horizontal overflow at a 900px viewport; no page errors. The faint `·` between multiple aliases
+is `--border-soft`, the same token the tag separators use — light by design, not a bug.
+
+### Earlier this session — aliases UI, ADR-0004/0010 accepted, ADR-0011 opened
 
 **Aliases UI shipped; ADR-0004 and ADR-0010 accepted; ADR-0011 opened.**
 
@@ -27,6 +125,8 @@ instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROAD
   shared scoring function in `packages/shared`. Cross-package, so it needs human review.
   The alias tiers added above are duplicated a third time on purpose — the minimal correct fix,
   with the consolidation tracked in 0011 rather than done as an unrequested refactor.
+  *(That duplication is now gone — ADR-0011 was implemented later the same session; see
+  Current Focus.)*
 
 **Correction to the previous entry:** it claimed `POST /api/reload` had no client caller and was
 unreachable from the UI. That was wrong — `TopHeader` has a sync button ("Reload project from

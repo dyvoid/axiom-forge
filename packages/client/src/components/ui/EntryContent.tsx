@@ -1,0 +1,96 @@
+/**
+ * Shared presentation of a folio index record (ADR-0011).
+ *
+ * A folio used to be rendered as a compact entry in five hand-rolled places,
+ * each showing a different field set — so adding `aliases` meant making the
+ * same presentation decision five times. This component owns *what* an entry
+ * shows and in what order.
+ *
+ * It deliberately renders content only, never a wrapper. Callers keep their own
+ * element (`Link`, `NavLink`, or a `div` with a click handler) and their own
+ * interaction chrome — hover, active, keyboard highlight, card borders, grid
+ * placement. That split is what keeps the prop surface narrow: the variants
+ * below differ in layout of the same fields, not in behaviour.
+ *
+ * The sidebar is not a variant. It renders the title alone, so it has no field
+ * set to share and wrapping it here would be indirection with nothing inside.
+ */
+
+import type { FolioIndexRecord } from '@axiom-forge/shared';
+import { Icon } from './Icon.js';
+import styles from './EntryContent.module.css';
+
+export type EntryVariant =
+	/** Stacked block: title + folder, aliases, snippet. Search dropdown, Linked Mentions. */
+	| 'card'
+	/** Two-column row: title on the left, snippet or tags on the right. Category Index. */
+	| 'row'
+	/** Dense single line: icon + title. Grand Index columns. */
+	| 'inline';
+
+interface EntryContentProps {
+	folio: FolioIndexRecord;
+	variant: EntryVariant;
+	/** Icon name for the `inline` variant. Ignored by the others. */
+	icon?: string;
+}
+
+/** The `aka …` line. Rendered by the `card` variant only. */
+function Aliases({ aliases, className }: { aliases: string[]; className: string }): JSX.Element {
+	return <span className={className}>aka {aliases.join(' · ')}</span>;
+}
+
+export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.Element {
+	if (variant === 'inline') {
+		return (
+			<>
+				{icon && (
+					<span className={styles.iconWrapper}>
+						<Icon name={icon} size={10} />
+					</span>
+				)}
+				{folio.title}
+			</>
+		);
+	}
+
+	if (variant === 'row') {
+		// One line, always: name column then a single gloss line carrying the
+		// snippet, or the tag fallback. Anything that overruns ellipses rather
+		// than wrapping, so every row in an index is the same height and the
+		// gloss column starts at the same x on every row.
+		const gloss = folio.snippet ? (
+			<span className={styles.rowSnippet}>{folio.snippet}</span>
+		) : folio.tags.length > 0 ? (
+			<span className={styles.rowTags}>{folio.tags.join(' · ')}</span>
+		) : null;
+
+		return (
+			<>
+				<span className={styles.rowTitle}>{folio.title}</span>
+				<span className={styles.rowLine}>{gloss}</span>
+			</>
+		);
+	}
+
+	const aliases = folio.aliases ?? [];
+
+	return (
+		<>
+			{/*
+			 * The alias rides on the title line rather than taking one of its own, so
+			 * an aliased card is exactly as tall as an unaliased one. Cards sit in a
+			 * stretch grid, so a taller card would pad out every neighbour in its row.
+			 * It truncates when space runs short — the folio page shows the full list.
+			 */}
+			<div className={styles.cardHeader}>
+				<span className={styles.cardHeading}>
+					<span className={styles.cardTitle}>{folio.title}</span>
+					{aliases.length > 0 && <Aliases aliases={aliases} className={styles.cardAliases} />}
+				</span>
+				<span className={styles.cardFolder}>{folio.folder}</span>
+			</div>
+			{folio.snippet && <div className={styles.cardSnippet}>{folio.snippet}</div>}
+		</>
+	);
+}
