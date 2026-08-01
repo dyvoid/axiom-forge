@@ -1,0 +1,143 @@
+/*
+ * Presentation for a folio entry (ADR-0011). Content only — wrappers, hover,
+ * active and highlight states stay with the calling surface.
+ *
+ * Two deliberate idioms, not one (see docs/design-system.md):
+ *   • `card`  — a *preview* of an entry you may not know. Stacked, folder
+ *               eyebrow, snippet. Used where entries arrive unsorted.
+ *   • `row` / `inline` — an *index*, scanned alphabetically. One line per
+ *               entry, aligned columns, no folder (the index already is one),
+ *               no alias — an alphabetical index sorts and scans by title.
+ * What is shared across all three is the type scale below, not the layout.
+ *
+ * Every text run truncates with an ellipsis rather than wrapping. Long titles
+ * and long alias lists always exist; a predictable ellipsis is preferable to
+ * rows and cards that change height with their content.
+ *
+ * Type scale — all sizes must come from a token that actually exists in
+ * tokens.css. `--fs-small` does not, and `font-size: var(--fs-small)` silently
+ * falls back to `inherit`, which is why cards previously rendered title,
+ * alias, folder and snippet all at the same 16px with no hierarchy.
+ */
+
+/* ── card: stacked preview (search dropdown, Linked Mentions) ─────── */
+
+.cardHeader {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--sp-3);
+	margin-bottom: var(--sp-1);
+}
+
+/* Title + alias share the left side; the folder eyebrow stays pinned right. */
+.cardHeading {
+	display: flex;
+	align-items: baseline;
+	gap: var(--sp-2);
+	min-width: 0;
+	overflow: hidden;
+}
+
+.cardTitle {
+	font-family: var(--ff-body);
+	font-weight: 500;
+	font-size: var(--fs-body);
+	color: var(--text-primary);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	/* Shrinks only after the alias has given up its space — the name is the
+	   thing you identify the entry by, so it truncates last. */
+	flex: 0 1 auto;
+}
+
+.cardFolder {
+	font-family: var(--ff-display);
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	color: var(--text-muted);
+	text-transform: uppercase;
+	white-space: nowrap;
+	flex: 0 0 auto;
+}
+
+.cardAliases {
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: var(--fs-body-sm);
+	color: var(--text-secondary);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	flex: 0 100 auto;
+}
+
+.cardSnippet {
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: var(--fs-meta);
+	color: var(--text-muted);
+	line-height: 1.5;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* ── row: single-line index entry (category index) ─────────────────── */
+
+/*
+ * The name column is sized relative to its container and its own type, never
+ * to a pixel width measured off one project's titles. `ch` tracks the font,
+ * the percentage tracks the viewport, and the clamp keeps it sane at both
+ * extremes. Because the width does not depend on content, every row aligns by
+ * construction — no subgrid, no measurement pass.
+ */
+.rowTitle {
+	flex: 0 0 clamp(9ch, 22%, 24ch);
+	min-width: 0;
+	font-family: var(--ff-serif);
+	font-size: var(--fs-subtitle);
+	font-weight: 700;
+	color: var(--text-primary);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Alias, separator and gloss share one line so row height never varies. */
+.rowLine {
+	flex: 1;
+	min-width: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.rowSnippet {
+	font-family: var(--ff-body);
+	font-size: var(--fs-body-sm);
+	color: var(--text-muted);
+}
+
+.rowTags {
+	font-family: var(--ff-body);
+	font-size: var(--fs-meta);
+	font-style: italic;
+	letter-spacing: var(--ls-eyebrow);
+	color: var(--text-muted);
+}
+
+/* ── inline: dense single line (Grand Index columns) ───────────────── */
+
+.iconWrapper {
+	color: var(--accent-gold);
+	margin-right: 6px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 14px;
+	flex: 0 0 auto;
+}
+

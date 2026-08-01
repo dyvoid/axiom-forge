@@ -141,7 +141,9 @@
 .entry {
 	display: flex;
 	align-items: baseline;
-	flex-wrap: wrap;
+	/* nowrap: an index row is always one line, so every row is the same height
+	   and the gloss column starts at the same x. Overrun ellipses instead. */
+	flex-wrap: nowrap;
 	gap: var(--sp-5);
 	padding: var(--sp-4) 0;
 	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
@@ -153,40 +155,3 @@
 	opacity: 0.7;
 }
 
-.name {
-	font-family: var(--ff-serif);
-	font-size: var(--fs-subtitle);
-	font-weight: 700;
-	color: var(--text-primary);
-	min-width: 140px;
-}
-
-.entryMeta {
-	display: flex;
-	align-items: center;
-	gap: var(--sp-5);
-	font-family: var(--ff-body);
-	font-size: var(--fs-tiny);
-	letter-spacing: 0.18em;
-	text-transform: uppercase;
-	flex: 1;
-	min-width: 0;
-}
-
-.tags {
-	color: var(--text-muted);
-	font-style: italic;
-	text-transform: lowercase;
-}
-
-.snippet {
-	font-family: var(--ff-body);
-	font-size: var(--fs-body);
-	color: var(--text-muted);
-	letter-spacing: 0;
-	text-transform: none;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	max-width: 100%;
-}

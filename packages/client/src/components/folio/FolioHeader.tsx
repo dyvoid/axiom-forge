@@ -31,6 +31,15 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 			
 			<h1 className={styles.title}>{folio.title}</h1>
 
+			{folio.aliases && folio.aliases.length > 0 && (
+				<div className={styles.aliases}>
+					<span className={styles.aliasLabel}>also known as</span>
+					{folio.aliases.map((alias) => (
+						<span key={alias} className={styles.alias}>{alias}</span>
+					))}
+				</div>
+			)}
+
 			<div className={styles.metaRow}>
 				{folio.tags && folio.tags.length > 0 && (
 					<div className={styles.tags}>

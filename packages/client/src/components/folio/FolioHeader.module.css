@@ -109,3 +109,33 @@
 	margin-right: var(--sp-3);
 	color: var(--border-soft);
 }
+
+.aliases {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: var(--sp-3);
+	margin-top: calc(var(--sp-2) * -1);
+	margin-bottom: var(--sp-3);
+}
+
+.aliasLabel {
+	font-family: var(--ff-display);
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.alias {
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: var(--fs-body);
+	color: var(--text-secondary);
+}
+
+.alias + .alias::before {
+	content: '·';
+	margin-right: var(--sp-3);
+	color: var(--border-soft);
+}
