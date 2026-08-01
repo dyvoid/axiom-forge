@@ -153,14 +153,22 @@ rather than the sample project's happy path found three separate faults:
   inherited when those were consolidated. Now 16 / 15 / 11 / 13.5px against real tokens.
   `TagFilter.module.css` still carries the same bug and is left for a separate change.
 
-**Index rows are now one line, always:** name column, then a single gloss line carrying the alias
-as an italic lead-in, an em-dash, and the snippet (or tags when there is no snippet). Overrun
-ellipses. Truncation therefore lands on the gloss — the least load-bearing content — instead of on
-the title. Verified with adversarial rows injected into the live Humans index: one row height, one
-gloss column position, no horizontal overflow.
+**Index rows are now one line, always:** name column, then a single gloss line carrying the snippet
+(or tags when there is no snippet). Overrun ellipses. Truncation therefore lands on the gloss — the
+least load-bearing content — instead of on the title. Verified with adversarial rows injected into
+the live Humans index: one row height, one gloss column position, no horizontal overflow.
 
 **The row/card idiom split is deliberate and is now documented** in `docs/design-system.md`. A card
 previews an entry that arrived unsorted; an index line supports scanning a known alphabetical list.
 Rendering the index as cards was prototyped and rejected — it loses A–Z scanability and reintroduces
-uneven heights, since cards without snippets are shorter. What the two idioms share is field order
-(name → alias → gloss) and the type scale, not the layout.
+uneven heights, since cards without snippets are shorter. What the two idioms share is the type
+scale, not the layout.
+
+### Aliases dropped from both index views
+
+Aliases render only on the folio header, the search dropdown, and Linked Mentions. Both index views
+(`row` and `inline`) show the title alone. An index is sorted and scanned by title, so an alias
+sitting in that column is noise in the exact place the eye is running down; the surfaces that keep
+it are the ones where you are identifying an entry rather than locating a known one. Alias
+*matching* in search is unaffected — `folioSearch` still scores aliases, so typing an alias into
+either index still finds the folio, it just does not display the alias in the result.
