@@ -6,9 +6,9 @@
  *   • `card`  — a *preview* of an entry you may not know. Stacked, folder
  *               eyebrow, snippet. Used where entries arrive unsorted.
  *   • `row` / `inline` — an *index*, scanned alphabetically. One line per
- *               entry, aligned columns, no folder (the index already is one).
- * What is shared across all three is the field order (name → alias → gloss)
- * and the type scale below, not the layout.
+ *               entry, aligned columns, no folder (the index already is one),
+ *               no alias — an alphabetical index sorts and scans by title.
+ * What is shared across all three is the type scale below, not the layout.
  *
  * Every text run truncates with an ellipsis rather than wrapping. Long titles
  * and long alias lists always exist; a predictable ellipsis is preferable to
@@ -115,18 +115,6 @@
 	text-overflow: ellipsis;
 }
 
-.rowAliases {
-	font-family: var(--ff-body);
-	font-size: var(--fs-body-sm);
-	font-style: italic;
-	color: var(--text-secondary);
-}
-
-.rowSep {
-	color: var(--border);
-	margin: 0 var(--sp-2);
-}
-
 .rowSnippet {
 	font-family: var(--ff-body);
 	font-size: var(--fs-body-sm);
@@ -153,10 +141,3 @@
 	flex: 0 0 auto;
 }
 
-.inlineAliases {
-	font-family: var(--ff-body);
-	font-size: var(--fs-meta);
-	font-style: italic;
-	color: var(--text-muted);
-	margin-left: var(--sp-2);
-}

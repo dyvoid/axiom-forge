@@ -23,9 +23,9 @@ import styles from './EntryContent.module.css';
 export type EntryVariant =
 	/** Stacked block: title + folder, aliases, snippet. Search dropdown, Linked Mentions. */
 	| 'card'
-	/** Two-column row: title + aliases on the left, snippet or tags on the right. */
+	/** Two-column row: title on the left, snippet or tags on the right. Category Index. */
 	| 'row'
-	/** Dense single line: icon + title + aliases. Grand Index columns. */
+	/** Dense single line: icon + title. Grand Index columns. */
 	| 'inline';
 
 interface EntryContentProps {
@@ -35,15 +35,12 @@ interface EntryContentProps {
 	icon?: string;
 }
 
-/** The `aka …` line. Rendered by every variant that has room for it. */
+/** The `aka …` line. Rendered by the `card` variant only. */
 function Aliases({ aliases, className }: { aliases: string[]; className: string }): JSX.Element {
 	return <span className={className}>aka {aliases.join(' · ')}</span>;
 }
 
 export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.Element {
-	const aliases = folio.aliases ?? [];
-	const hasAliases = aliases.length > 0;
-
 	if (variant === 'inline') {
 		return (
 			<>
@@ -53,16 +50,15 @@ export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.E
 					</span>
 				)}
 				{folio.title}
-				{hasAliases && <Aliases aliases={aliases} className={styles.inlineAliases} />}
 			</>
 		);
 	}
 
 	if (variant === 'row') {
 		// One line, always: name column then a single gloss line carrying the
-		// alias, the snippet, or the tag fallback. Anything that overruns
-		// ellipses rather than wrapping, so every row in an index is the same
-		// height and the gloss column starts at the same x on every row.
+		// snippet, or the tag fallback. Anything that overruns ellipses rather
+		// than wrapping, so every row in an index is the same height and the
+		// gloss column starts at the same x on every row.
 		const gloss = folio.snippet ? (
 			<span className={styles.rowSnippet}>{folio.snippet}</span>
 		) : folio.tags.length > 0 ? (
@@ -72,14 +68,12 @@ export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.E
 		return (
 			<>
 				<span className={styles.rowTitle}>{folio.title}</span>
-				<span className={styles.rowLine}>
-					{hasAliases && <Aliases aliases={aliases} className={styles.rowAliases} />}
-					{hasAliases && gloss && <span className={styles.rowSep}>—</span>}
-					{gloss}
-				</span>
+				<span className={styles.rowLine}>{gloss}</span>
 			</>
 		);
 	}
+
+	const aliases = folio.aliases ?? [];
 
 	return (
 		<>
@@ -92,7 +86,7 @@ export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.E
 			<div className={styles.cardHeader}>
 				<span className={styles.cardHeading}>
 					<span className={styles.cardTitle}>{folio.title}</span>
-					{hasAliases && <Aliases aliases={aliases} className={styles.cardAliases} />}
+					{aliases.length > 0 && <Aliases aliases={aliases} className={styles.cardAliases} />}
 				</span>
 				<span className={styles.cardFolder}>{folio.folder}</span>
 			</div>

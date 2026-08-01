@@ -58,7 +58,9 @@ unsorted and out of context. An index line is a single line with aligned columns
 label — the index *is* the folder, and the value is scanning a known alphabetical list. Making the
 index look like cards would trade away that scanability.
 
-Field order is the same in both: **name → alias → gloss** (snippet, falling back to tags).
+Field order is **name → alias → gloss** (snippet, falling back to tags), but only the card shows
+the alias. An index is scanned and sorted by title, so an alias there is noise in the column the
+eye is running down; the folio page and the search dropdown are where an alias earns its space.
 
 **Every text run truncates with an ellipsis; nothing wraps.** Long titles and long alias lists
 always exist, so the layout is designed for them rather than around them. A predictable ellipsis
