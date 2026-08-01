@@ -1,6 +1,6 @@
 /**
  * Landing route — project home page.
- * Phase 1: title block, description, type counts, "Enter the Archive" CTA.
+ * Phase 1: title block, description, type counts, "Enter" CTA.
  * WebGL hero will be layered in after we confirm the basics work.
  */
 
@@ -51,7 +51,7 @@ export function Landing(): JSX.Element {
 						<div className={styles.line} />
 					</div>
 					<button className={styles.cta} onClick={handleEnter}>
-						ENTER THE ARCHIVE &nbsp; →
+						ENTER &nbsp; →
 					</button>
 				</div>
 			</div>
