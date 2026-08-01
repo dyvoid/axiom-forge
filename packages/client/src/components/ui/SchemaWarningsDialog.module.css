@@ -67,7 +67,7 @@
 }
 
 .warningList {
-	background: var(--bg-subtle, rgba(0,0,0,0.03));
+	background: var(--bg-panel);
 	border: 1px solid var(--border-soft);
 	padding: 10px 14px;
 }

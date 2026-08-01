@@ -5,6 +5,8 @@ tags:
   - sun
   - prophecy
   - trojan-patron
+aliases:
+  - Phoebus
 ---
 
 # Apollo
@@ -22,7 +24,7 @@ It was Apollo who sent the plague that opened the Iliad, punishing Agamemnon for
 Unlike Athena, whose interventions were strategic, Apollo's involvement often felt like the hand of fate rather than calculation. He saw the war's outcome in his capacity as god of prophecy and still could not — or would not — change what was written.
 
 ## Mortal Champions
-- [[Humans/Hector]], [[Humans/Paris]]
+- [[Humans/Hector]], [[Humans/Paris]], [[Humans/Cassandra]]
 
 ## Connected Events
 - [[Events/Death_of_Patroclus]], [[Events/Death_of_Hector]], [[Events/Fall_of_Troy]]

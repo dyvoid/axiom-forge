@@ -89,6 +89,9 @@ Each rule has a *why* so edge cases can be reasoned through, not just pattern-ma
 - **TypeScript** throughout all three packages. Do not loosen `tsconfig` strictness.
 - Commit the lockfile (`package-lock.json`). Do not commit `dist/` or build output.
 - Linting: ESLint (`.eslintrc.cjs`). Formatting: follow existing style — no Prettier introduced.
+- `npm run lint` also runs `scripts/check-repo.mjs`: undefined design tokens, dead relative links
+  in Markdown, unresolved `fall-of-troy` wikilinks outside its allowlist, and ADRs missing from the
+  ROADMAP. These live in `lint` rather than a separate CI job so a failure reproduces locally.
 - Module system: ESM. Do not mix CommonJS into the packages.
 
 ### Branching
