@@ -50,7 +50,8 @@ The repo ships with a sample project — `fall-of-troy` — so you can try it im
 npm run dev
 ```
 
-Then open <http://localhost:5173>.
+Your default browser opens at <http://127.0.0.1:5173> once Vite is listening. Set
+`AXIOM_FORGE_NO_OPEN=1` to suppress that and open the page yourself.
 
 There are also launchers at the repo root that install dependencies on first run and start
 both servers, so a fresh clone needs one step instead of two — `start.bat` on Windows,
