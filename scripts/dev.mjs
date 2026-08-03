@@ -3,6 +3,7 @@
 // Spawns: shared (tsc --watch), server (tsx watch), client (vite).
 // Forwards extra CLI args to the server (e.g. --project "C:\path with spaces").
 // Spawns Node-resolved binaries directly to avoid npm/shell quoting problems on Windows.
+// Opens the default browser once Vite reports its URL; set AXIOM_FORGE_NO_OPEN=1 to skip.
 
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -44,6 +45,7 @@ const procs = [
 		color: '\x1b[36m',
 		args: [viteBin],
 		cwd: resolve(repoRoot, 'packages/client'),
+		onLine: watchForViteUrl,
 	},
 ];
 
@@ -51,7 +53,55 @@ const reset = '\x1b[0m';
 const children = [];
 let shuttingDown = false;
 
-function prefixStream(stream, name, color) {
+/**
+ * Open `url` in the platform's default browser.
+ *
+ * Lives here rather than in start.sh/start.bat so there is one implementation
+ * instead of one per launcher, and so a plain `npm run dev` behaves the same as
+ * a double-clicked launcher.
+ *
+ * Failure is non-fatal: a headless box, a container, or a machine with no
+ * xdg-open should still get a working dev server, just without the browser.
+ */
+const opened = new Set();
+
+function openBrowser(url)
+{
+	if (process.env.AXIOM_FORGE_NO_OPEN || opened.has(url))
+	{
+		return;
+	}
+	opened.add(url);
+
+	// `start` treats a leading quoted argument as the window title, so it needs
+	// an empty one before the URL or a quoted path would be swallowed.
+	const [command, args] = process.platform === 'win32'
+		? ['cmd', ['/c', 'start', '', url]]
+		: process.platform === 'darwin'
+			? ['open', [url]]
+			: ['xdg-open', [url]];
+
+	const child = spawn(command, args, { stdio: 'ignore', detached: true });
+	child.on('error', () => {
+		process.stdout.write(`Could not open a browser automatically — open ${url}\n`);
+	});
+	child.unref();
+}
+
+/** Vite prints its URL once it is actually listening, which is the cue to open. */
+const ansi = /\x1b\[[0-9;]*m/g;
+const viteLocalUrl = /Local:\s+(https?:\/\/\S+?)\/?$/;
+
+function watchForViteUrl(line)
+{
+	const match = viteLocalUrl.exec(line.replace(ansi, '').trimEnd());
+	if (match)
+	{
+		openBrowser(match[1]);
+	}
+}
+
+function prefixStream(stream, name, color, onLine) {
 	let buffer = '';
 	stream.setEncoding('utf8');
 	stream.on('data', (chunk) => {
@@ -61,12 +111,14 @@ function prefixStream(stream, name, color) {
 		for (const line of lines)
 		{
 			process.stdout.write(`${color}[${name}]${reset} ${line}\n`);
+			onLine?.(line);
 		}
 	});
 	stream.on('end', () => {
 		if (buffer.length > 0)
 		{
 			process.stdout.write(`${color}[${name}]${reset} ${buffer}\n`);
+			onLine?.(buffer);
 		}
 	});
 }
@@ -96,8 +148,8 @@ for (const def of procs)
 		stdio: ['ignore', 'pipe', 'pipe'],
 		env: process.env,
 	});
-	prefixStream(child.stdout, def.name, def.color);
-	prefixStream(child.stderr, def.name, def.color);
+	prefixStream(child.stdout, def.name, def.color, def.onLine);
+	prefixStream(child.stderr, def.name, def.color, def.onLine);
 	child.on('exit', (code, signal) => {
 		process.stdout.write(`${def.color}[${def.name}]${reset} exited (code=${code} signal=${signal})\n`);
 		shutdown(code ?? 0);
