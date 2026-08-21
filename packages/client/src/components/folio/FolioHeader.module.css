@@ -12,6 +12,7 @@
 .eyebrow {
 	display: flex;
 	align-items: center;
+	gap: var(--sp-2);
 	font-family: var(--ff-body);
 	font-weight: 500;
 	font-size: var(--fs-eyebrow);
@@ -20,9 +21,25 @@
 	color: var(--text-muted);
 }
 
+.crumb {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--sp-1);
+	color: var(--text-muted);
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.crumb:hover {
+	color: var(--text-primary);
+}
+
+.crumbCurrent {
+	color: var(--text-secondary);
+}
+
 .separator {
-	margin: 0 var(--sp-2);
-	opacity: 0.5;
+	opacity: 0.4;
 }
 
 .actions {

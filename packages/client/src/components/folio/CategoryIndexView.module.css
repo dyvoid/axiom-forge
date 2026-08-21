@@ -28,12 +28,31 @@
 	color: var(--text-muted);
 	display: flex;
 	align-items: center;
-	gap: 4px;
+	gap: var(--sp-2);
+}
+
+.crumb {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--sp-1);
+	color: var(--text-muted);
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.crumb:hover {
+	color: var(--text-primary);
+}
+
+.crumbCurrent {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--sp-1);
+	color: var(--text-secondary);
 }
 
 .separator {
-	margin: 0 4px;
-	color: var(--border);
+	opacity: 0.4;
 }
 
 .addBtn {

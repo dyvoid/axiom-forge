@@ -138,6 +138,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 							<button
 								key={typeKey}
 								className={`${styles.typeRow} ${isActive ? styles.activeTypeRow : ''}`}
+								aria-current={isActive ? 'location' : undefined}
 								onClick={() => {
 									navigate(`/folio/${typeDef.folder}`);
 									onNavigate?.();

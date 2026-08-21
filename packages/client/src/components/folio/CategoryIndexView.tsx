@@ -84,11 +84,14 @@ export function CategoryIndexView(): JSX.Element {
 		<div className={styles.container}>
 			<header className={styles.header}>
 				<div className={styles.headerTop}>
-					<div className={styles.eyebrow}>
-						{typeDef && <Icon name={typeDef.icon} size={14} />}
-						{typeDef && <span className={styles.separator}>·</span>}
-						<span>CATEGORY INDEX</span>
-					</div>
+					<nav className={styles.eyebrow} aria-label="Breadcrumb">
+						<Link to="/index" className={styles.crumb}>Index</Link>
+						<span className={styles.separator}>→</span>
+						<span className={styles.crumbCurrent} aria-current="page">
+							{typeDef && <Icon name={typeDef.icon} size={12} />}
+							{typeName}
+						</span>
+					</nav>
 					{creating ? (
 						<div className={styles.addForm}>
 							<input
