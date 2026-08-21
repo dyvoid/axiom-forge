@@ -20,7 +20,12 @@
 
 .field {
 	display: grid;
-	grid-template-columns: 170px 1fr;
+	/* Label column sizes to the longest label (max-content) but can shrink
+	   below it (the 0 lower bound). The previous fixed 170px ate most of the
+	   280px meta column and left ~94px for values, so "Year 10 of the Siege
+	   of Troy" wrapped into 3+ ragged lines. Now the value gets whatever the
+	   labels don't need. */
+	grid-template-columns: minmax(0, max-content) 1fr;
 	gap: 16px;
 	align-items: baseline;
 	padding: 6px 0;
