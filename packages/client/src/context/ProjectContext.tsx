@@ -52,7 +52,7 @@ export function ProjectProvider({ children }: { children: ReactNode }): JSX.Elem
 				alignItems: 'center',
 				justifyContent: 'center',
 				height: '100vh',
-				fontFamily: 'var(--ff-display)',
+				fontFamily: 'var(--ff-body)',
 				color: 'var(--text-muted)',
 				fontSize: 'var(--fs-eyebrow)',
 				letterSpacing: 'var(--ls-eyebrow)',

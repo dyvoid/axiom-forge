@@ -5,7 +5,7 @@
 }
 
 .header {
-	font-family: var(--ff-display);
+	font-family: var(--ff-body);
 	font-size: var(--fs-eyebrow);
 	color: var(--text-muted);
 	text-transform: uppercase;

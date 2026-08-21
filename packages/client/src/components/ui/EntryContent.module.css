@@ -53,7 +53,7 @@
 }
 
 .cardFolder {
-	font-family: var(--ff-display);
+	font-family: var(--ff-body);
 	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-eyebrow);
 	color: var(--text-muted);
@@ -97,7 +97,7 @@
 .rowTitle {
 	flex: 0 0 clamp(9ch, 22%, 24ch);
 	min-width: 0;
-	font-family: var(--ff-serif);
+	font-family: var(--ff-display);
 	font-size: var(--fs-subtitle);
 	/* 600 is the heaviest weight Cormorant Garamond is loaded at (index.html).
 	   700 made the browser synthesize a faux bold — the letters smeared on

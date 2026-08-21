@@ -14,7 +14,7 @@
 }
 
 .title {
-	font-family: var(--ff-serif);
+	font-family: var(--ff-display);
 	font-weight: 400;
 	font-size: var(--fs-h1);
 	color: var(--text-primary);
@@ -54,7 +54,7 @@
 }
 
 .letterHeader {
-	font-family: var(--ff-serif);
+	font-family: var(--ff-display);
 	font-weight: 400;
 	font-size: var(--fs-h2);
 	color: var(--accent-rust);

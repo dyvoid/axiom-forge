@@ -82,7 +82,7 @@
 
 
 .titleInput {
-	font-family: var(--ff-serif);
+	font-family: var(--ff-display);
 	font-weight: 400;
 	font-size: var(--fs-hero);
 	line-height: 1;

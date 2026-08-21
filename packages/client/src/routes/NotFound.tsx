@@ -19,7 +19,7 @@ export function NotFound(): JSX.Element {
 				404
 			</h1>
 			<p style={{
-				fontFamily: 'var(--ff-display)',
+				fontFamily: 'var(--ff-body)',
 				fontSize: 'var(--fs-eyebrow)',
 				letterSpacing: 'var(--ls-eyebrow)',
 				textTransform: 'uppercase',
@@ -28,7 +28,7 @@ export function NotFound(): JSX.Element {
 				Folio not found
 			</p>
 			<Link to="/" style={{
-				fontFamily: 'var(--ff-display)',
+				fontFamily: 'var(--ff-body)',
 				fontSize: 'var(--fs-eyebrow)',
 				letterSpacing: 'var(--ls-button)',
 				textTransform: 'uppercase',
