@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useProject } from '../../context/ProjectContext.js';
 import { useSearch } from '../../api/queries.js';
@@ -12,6 +12,7 @@ export function TopHeader(): JSX.Element {
 	const { config } = useProject();
 	const queryClient = useQueryClient();
 	const navigate = useNavigate();
+	const location = useLocation();
 	const [syncing, setSyncing] = useState(false);
 
 	const [query, setQuery] = useState('');
@@ -24,9 +25,15 @@ export function TopHeader(): JSX.Element {
 	const { data: results } = useSearch(query);
 	const items = results || [];
 
+	// The Grand Index has its own in-place search and tag filter; showing the
+	// header's global search there too is a duplicate affordance. Hide it on
+	// /index so each route has exactly one search box.
+	const showSearch = location.pathname !== '/index';
+
 	// Global shortcut '/'
 	useEffect(() => {
 		const handleGlobalKeyDown = (e: KeyboardEvent) => {
+			if (!showSearch) return;
 			if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
 				e.preventDefault();
 				inputRef.current?.focus();
@@ -34,7 +41,7 @@ export function TopHeader(): JSX.Element {
 		};
 		window.addEventListener('keydown', handleGlobalKeyDown);
 		return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-	}, []);
+	}, [showSearch]);
 
 	// Click outside
 	useEffect(() => {
@@ -112,53 +119,55 @@ export function TopHeader(): JSX.Element {
 				>
 					<Icon name="refresh-cw" size={14} className={syncing ? styles.spinning : undefined} />
 				</button>
-				<div ref={searchRef} className={styles.searchBox} style={{ position: 'relative' }}>
-					<Icon name="search" size={14} className={styles.searchIcon} />
-					<input
-						ref={inputRef}
-						type="text"
-						placeholder="Search the index..."
-						className={styles.searchInput}
-						value={query}
-						onChange={(e) => {
-							setQuery(e.target.value);
-							setOpen(true);
-						}}
-						onFocus={() => setOpen(true)}
-						onKeyDown={handleKeyDown}
-					/>
-					{query && (
-						<button
-							className={styles.clearBtn}
-							onClick={() => {
-								setQuery('');
-								inputRef.current?.focus();
+				{showSearch && (
+					<div ref={searchRef} className={styles.searchBox} style={{ position: 'relative' }}>
+						<Icon name="search" size={14} className={styles.searchIcon} />
+						<input
+							ref={inputRef}
+							type="text"
+							placeholder="Search the index..."
+							className={styles.searchInput}
+							value={query}
+							onChange={(e) => {
+								setQuery(e.target.value);
+								setOpen(true);
 							}}
-							title="Clear search"
-						>
-							<Icon name="x" size={14} />
-						</button>
-					)}
-					
-					{open && query.trim() !== '' && (
-						<div className={styles.searchDropdown}>
-							{items.length === 0 ? (
-								<div className={styles.searchEmpty}>No results found.</div>
-							) : (
-								items.map((item, idx) => (
-									<div
-										key={`${item.folder}/${item.name}`}
-										className={`${styles.searchItem} ${idx === highlightIdx ? styles.searchItemHighlight : ''}`}
-										onMouseEnter={() => setHighlightIdx(idx)}
-										onClick={() => navigateTo(item.folder, item.name)}
-									>
-										<EntryContent folio={item} variant="card" />
-									</div>
-								))
-							)}
-						</div>
-					)}
-				</div>
+							onFocus={() => setOpen(true)}
+							onKeyDown={handleKeyDown}
+						/>
+						{query && (
+							<button
+								className={styles.clearBtn}
+								onClick={() => {
+									setQuery('');
+									inputRef.current?.focus();
+								}}
+								title="Clear search"
+							>
+								<Icon name="x" size={14} />
+							</button>
+						)}
+
+						{open && query.trim() !== '' && (
+							<div className={styles.searchDropdown}>
+								{items.length === 0 ? (
+									<div className={styles.searchEmpty}>No results found.</div>
+								) : (
+									items.map((item, idx) => (
+										<div
+											key={`${item.folder}/${item.name}`}
+											className={`${styles.searchItem} ${idx === highlightIdx ? styles.searchItemHighlight : ''}`}
+											onMouseEnter={() => setHighlightIdx(idx)}
+											onClick={() => navigateTo(item.folder, item.name)}
+										>
+											<EntryContent folio={item} variant="card" />
+										</div>
+									))
+								)}
+							</div>
+						)}
+					</div>
+				)}
 			</div>
 		</header>
 	);
