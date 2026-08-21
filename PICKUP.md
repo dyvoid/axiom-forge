@@ -6,7 +6,7 @@ session did, read git log.
 
 ## In Progress
 
-Nothing. Design review (two rounds, 13 fixes) is done and merged.
+Nothing. Responsive adaptation is done and merged.
 
 ## Next Up
 
@@ -29,11 +29,11 @@ Recommended order, with the reasoning so it does not need re-deriving:
 
 Remaining from the impeccable design review, deferred deliberately:
 
-- **Responsive breakpoints.** Zero `@media` queries in the client. The 88px folio
-  title, fixed 240px sidebar, and fixed 280px meta column break under ~1100px. Needs
-  a breakpoint strategy, not a one-off fix.
 - **Italic overuse.** Placeholders, buttons, tags, aliases, snippets, and the
   landing title are all italic. Needs a deliberate pass deciding what italic means
   in this design and routing the rest to upright.
 - **WebGL smoke on the landing.** Reads as flat parchment in the screenshot. Either
   dial it up until it registers or cut it.
+- **Accessibility (from audit).** Comboboxes and dialogs have no ARIA; no
+  `prefers-reduced-motion`; edit-view inputs have no labels; no skip link; no
+  `:focus-visible`. A single `harden` pass addresses most of it.
