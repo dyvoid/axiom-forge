@@ -276,8 +276,8 @@ Borders are the primary shape device: 1px solid (`--border` for strong, `--borde
 - **CxSelect** (custom dropdown): The trigger shares the text input treatment. The menu is Parchment-grounded, `1px solid --ink-muted` border, `box-shadow: 0 8px 28px rgba(40, 30, 20, 0.18)`. Items are 8px/12px padded with a `--border-soft` bottom rule; hover and selected tint the ground `rgba(138, 53, 34, 0.05–0.08)`. Native `<select>` is never used — it would break the parchment typography.
 
 ### Navigation
-- **Sidebar Type Row:** Transparent, `padding: 8px 32px`, Spectral body-large, Ink text, Antique Gold icon at `gap: 12px`. Hover grounds `--bg-hover`. Active state adds a Deep Rust bottom rule and turns both label and icon rust.
-- **Sidebar Folio Link:** Transparent, `padding: 2px 32px`, Spectral body, Ink Muted text, `2px transparent` left rule. Hover deepens text to Ink. Active state turns text and left rule Deep Rust, grounds `rgba(138, 53, 34, 0.07)`, weight 600.
+- **Sidebar Type Row:** Transparent, `padding: 8px 32px`, Spectral body-large, Ink text, Antique Gold icon at `gap: 12px`, `3px transparent` left rule. Hover grounds `--bg-hover`. Active state turns text, icon, and left rule Deep Rust, weight 600.
+- **Sidebar Folio Link:** Transparent, `padding: 2px 32px`, Spectral body, Ink Muted text, `3px transparent` left rule. Hover deepens text to Ink. Active state turns text and left rule Deep Rust, weight 600.
 - **Sidebar Group Title:** Spectral 500, `--fs-eyebrow`, tracked 0.22em, uppercase, Ink Muted, `padding: 0 32px`. The eyebrow voice, applied to navigation.
 - **Top Header:** 48px tall, Vellum ground, `1px --border` bottom rule. Logo is the eyebrow voice; project title is italic Spectral subtitle. The Sync button is the small-outline treatment with a spin state (0.7s linear).
 

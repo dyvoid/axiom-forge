@@ -36,9 +36,9 @@
 	align-items: center;
 	justify-content: space-between;
 	background: transparent;
-	border-bottom: 1px solid transparent;
+	border-left: 3px solid transparent;
 	cursor: pointer;
-	transition: background-color 0.2s;
+	transition: background-color 0.2s, border-color 0.2s;
 }
 
 .typeRow:hover {
@@ -46,11 +46,12 @@
 }
 
 .typeRow.activeTypeRow {
-	border-bottom-color: var(--accent-rust);
+	border-left-color: var(--accent-rust);
 }
 
 .typeRow.activeTypeRow .typeLabel {
 	color: var(--accent-rust);
+	font-weight: 600;
 }
 
 .typeRow.activeTypeRow .typeLabel svg {
@@ -94,7 +95,7 @@
 	font-family: var(--ff-body);
 	font-size: var(--fs-body);
 	color: var(--text-muted);
-	border-left: 2px solid transparent;
+	border-left: 3px solid transparent;
 	display: block;
 	transition: color 0.15s, border-color 0.15s;
 }
@@ -106,7 +107,6 @@
 .folioLink.active {
 	color: var(--accent-rust);
 	border-left-color: var(--accent-rust);
-	background: rgba(138, 53, 34, 0.07);
 	font-weight: 600;
 }
 
