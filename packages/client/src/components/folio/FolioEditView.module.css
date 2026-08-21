@@ -2,17 +2,17 @@
 	width: 100%;
 	max-width: var(--content-max-width);
 	margin: 0 auto;
-	padding: var(--sp-6) var(--sp-8);
+	padding: var(--page-padding-y) var(--page-padding-x);
 }
 
 /* ── Sticky toolbar ───────────────────────────────── */
 
 .toolbar {
 	position: sticky;
-	top: calc(-1 * var(--sp-6));
+	top: calc(-1 * var(--page-padding-y));
 	z-index: 5;
-	margin: calc(-1 * var(--sp-6)) calc(-1 * var(--sp-8)) var(--sp-5);
-	padding: var(--sp-3) var(--sp-8);
+	margin: calc(-1 * var(--page-padding-y)) calc(-1 * var(--page-padding-x)) var(--sp-5);
+	padding: var(--sp-3) var(--page-padding-x);
 	background: var(--bg-page);
 	border-bottom: 1px solid var(--border-soft);
 	display: flex;
@@ -312,16 +312,12 @@
 }
 
 @media (max-width: 600px) {
-	.container {
-		padding: var(--sp-5) var(--sp-4);
-	}
-
 	/* The toolbar stretches to the negative margins of the container.
 	   On narrow screens, reduce the margins so the toolbar doesn't
 	   overflow. */
 	.toolbar {
-		margin: calc(-1 * var(--sp-5)) calc(-1 * var(--sp-4)) var(--sp-5);
-		padding: var(--sp-3) var(--sp-4);
+		margin: calc(-1 * var(--page-padding-y)) calc(-1 * var(--page-padding-x)) var(--sp-5);
+		padding: var(--sp-3) var(--page-padding-x);
 		gap: var(--sp-3);
 	}
 

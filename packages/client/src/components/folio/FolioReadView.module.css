@@ -1,6 +1,6 @@
 .container {
 	width: 100%;
-	padding: var(--sp-6) var(--sp-8);
+	padding: var(--page-padding-y) var(--page-padding-x);
 	max-width: var(--content-max-width);
 	margin: 0 auto;
 }
@@ -109,10 +109,6 @@
 
 /* ── Narrow screens: tighten the page padding ──────────────── */
 @media (max-width: 600px) {
-	.container {
-		padding: var(--sp-5) var(--sp-4);
-	}
-
 	.topBlock {
 		margin-top: var(--sp-5);
 	}

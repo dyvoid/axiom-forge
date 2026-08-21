@@ -94,6 +94,15 @@
 	--meta-col-width: 280px;
 	--two-col-gap: 48px;
 
+	/* Single source of truth for the "page container" grid -- every top-level
+	   route view (FolioReadView, FolioEditView, CategoryIndexView,
+	   GrandIndexView) pads its `max-width: var(--content-max-width)` container
+	   with these, so breadcrumbs and headers land at the same x/y across
+	   routes instead of drifting per-file. Redefined at the compact breakpoint
+	   below so every container tightens in lockstep. */
+	--page-padding-y: var(--sp-7);
+	--page-padding-x: var(--sp-8);
+
 	/* ── Icons ────────────────────────────────────────── */
 	--icon-size: 14px;
 	--icon-stroke: 1.25;
@@ -113,4 +122,11 @@
 
 	/* ── Touch target minimum ─────────────────────────────── */
 	--touch-target: 44px;
+}
+
+@media (max-width: 600px) {
+	:root {
+		--page-padding-y: var(--sp-5);
+		--page-padding-x: var(--sp-4);
+	}
 }

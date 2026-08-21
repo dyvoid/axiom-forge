@@ -2,7 +2,7 @@
 	width: 100%;
 	max-width: var(--content-max-width);
 	margin: 0 auto;
-	padding: var(--sp-7);
+	padding: var(--page-padding-y) var(--page-padding-x);
 	height: 100%;
 	display: flex;
 	flex-direction: column;
@@ -15,7 +15,10 @@
 .headerTop {
 	display: flex;
 	justify-content: space-between;
-	align-items: baseline;
+	/* flex-start: matches FolioHeader.topRow, so the breadcrumb's top edge
+	   lands at the same y whether the row's other side holds a small Edit
+	   link or this taller "+ ADD ENTRY" button. */
+	align-items: flex-start;
 	margin-bottom: var(--sp-4);
 }
 
@@ -180,10 +183,6 @@
    is still fine — it's content-relative. But the page padding and
    filter row need to tighten. */
 @media (max-width: 600px) {
-	.container {
-		padding: var(--sp-5) var(--sp-4);
-	}
-
 	.header {
 		margin-bottom: var(--sp-5);
 	}
