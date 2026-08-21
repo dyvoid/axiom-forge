@@ -133,5 +133,11 @@ Unresolved, and to be settled before this is built:
 - **Dangling targets.** Odysseus' `Spouse` names `Penelope`, and Athena's champions include
   `Diomedes`; neither file exists. Implied values and write offers must skip targets with no
   folio, rather than offering to write a link into a file that isn't there.
-- **Push-prompt scope.** Whether the save-time offer covers links *removed* from an annotated
-  field (offering to clear the inverse), or additions only.
+- ~~**Push-prompt scope.**~~ **Resolved 2026-08-21:** the save-time offer covers both
+  directions. Adding a link offers to write the inverse ("Also set Penelope's Spouse to
+  Odysseus?"); removing one offers to clear it ("Penelope's Spouse still says Odysseus — clear
+  it?"). Same non-destructive, explicit-consent, skippable prompt pattern either way, never an
+  automatic write. Rationale: leaving removals unhandled would let a corrected relationship go
+  stale on the other end, which the display-first contradiction-surfacing this ADR introduces
+  would later flag as a conflicting claim — a problem worth offering to fix at the moment it's
+  created rather than surfacing as an unexplained contradiction afterward.
