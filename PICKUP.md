@@ -6,7 +6,7 @@ session did, read git log.
 
 ## In Progress
 
-Nothing. Accessibility hardening is done and merged.
+Nothing. The impeccable design passes are done and merged.
 
 ## Next Up
 
@@ -27,12 +27,7 @@ Recommended order, with the reasoning so it does not need re-deriving:
 
 ## Design Backlog
 
-Remaining from the impeccable design review, deferred deliberately:
+Remaining from the impeccable design review:
 
-- **Italic overuse.** Placeholders, buttons, tags, aliases, snippets, and the
-  landing title are all italic. Needs a deliberate pass deciding what italic means
-  in this design and routing the rest to upright.
 - **WebGL smoke on the landing.** Reads as flat parchment in the screenshot. Either
   dial it up until it registers or cut it.
-- **`window.confirm` for unsaved-changes guard.** Native browser dialog breaks the
-  print aesthetic; should route through `ConfirmDialog`. (From audit P3.)

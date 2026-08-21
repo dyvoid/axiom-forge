@@ -42,4 +42,9 @@ Agreed-upon cleanups that don't warrant an ADR. Check them off when done.
 - [x] Add integration tests for the `config` and `schema` routes
 - [x] Return real parse warnings from PUT/POST save responses (was hardcoded `[]`) via a serialize→parse round-trip
 - [x] Responsive breakpoints — drawer sidebar below 900px, stacked folio columns below 1100px, compact header below 600px, fluid display type via `clamp()`, touch targets under `pointer: coarse`
+- [x] Tokenize edit-view hardcoded values — added `--fs-control` (14px) and `--fs-button` (12px) to the type ramp; routed all hardcoded font sizes, letter-spacing, and off-grid spacing through tokens
+- [x] Accessibility hardening — skip-to-main link, dialog focus traps + ARIA, combobox ARIA on search/select/picker, form labels on all edit fields, icon-only button aria-labels, dead wikilink chip focusable, `prefers-reduced-motion` (WebGL + global CSS), `--accent-gold-text` for AA contrast
+- [x] Performance — replaced `backdrop-filter: blur(6px)` on edit toolbar with opaque background; memoized folio lookup map for O(1) wikilink chip resolution
+- [x] Route unsaved-changes guard through `ConfirmDialog` — replaces native `window.confirm` with the app's own dialog
+- [x] Italic cleanup — removed italic from action labels and structural elements per the italic-is-secondary rule; landing hero italic kept as editorial register
 - [ ] Replace `ProjectStore` linear array scans (`.find`/`.filter`) with `Map` lookups — was parked pending ADR-0003; unparked by [ADR-0010](adr/0010-multi-file-write-safety.md), which declines the document-model rewrite. Independent and low priority: the scans are over tens of records
