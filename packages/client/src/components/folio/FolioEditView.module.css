@@ -114,7 +114,6 @@
 	font-family: var(--ff-body);
 	font-size: var(--fs-button);
 	color: var(--text-muted);
-	font-style: italic;
 }
 
 .tagsSlot {
@@ -161,7 +160,6 @@
 	font-family: var(--ff-body);
 	font-size: var(--fs-eyebrow);
 	color: var(--text-muted);
-	font-style: italic;
 	margin-top: var(--sp-1);
 	text-align: right;
 }
@@ -200,7 +198,6 @@
 .footerStatus {
 	font-family: var(--ff-body);
 	font-size: var(--fs-button);
-	font-style: italic;
 	color: var(--text-muted);
 	margin-right: auto;
 }

@@ -34,7 +34,6 @@
 .label {
 	font-family: var(--ff-body);
 	font-size: var(--fs-label);
-	font-style: italic;
 	color: var(--text-muted);
 }
 
