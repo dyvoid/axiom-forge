@@ -14,10 +14,10 @@
 	margin: calc(-1 * var(--sp-6)) calc(-1 * var(--sp-8)) var(--sp-5);
 	padding: var(--sp-3) var(--sp-8);
 	background: var(--bg-page);
-	border-bottom: 1px solid var(--border);
+	border-bottom: 1px solid var(--border-soft);
 	display: flex;
 	align-items: center;
-	gap: var(--sp-4);
+	gap: var(--sp-3);
 }
 
 .toolbarSpacer {
@@ -26,14 +26,17 @@
 
 .btnGhost {
 	background: transparent;
-	border: 1px solid var(--border);
+	border: 1px solid var(--border-soft);
+	border-radius: 2px;
 	font-family: var(--ff-body);
-	font-size: var(--fs-button);
-	letter-spacing: var(--ls-button);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
 	text-transform: uppercase;
 	color: var(--text-muted);
-	padding: var(--sp-2) var(--sp-4);
+	padding: 3px 10px;
 	cursor: pointer;
+	transition: color 0.2s, border-color 0.2s;
 }
 
 .btnGhost:hover {
@@ -42,19 +45,27 @@
 }
 
 .btnPrimary {
-	background: var(--text-primary);
-	color: var(--bg-page);
+	background: transparent;
 	border: 1px solid var(--text-primary);
+	border-radius: 2px;
 	font-family: var(--ff-body);
-	font-size: var(--fs-button);
-	letter-spacing: var(--ls-button);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
 	text-transform: uppercase;
-	padding: var(--sp-2) var(--sp-5);
+	color: var(--text-primary);
+	padding: 3px 14px;
 	cursor: pointer;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.btnPrimary:hover:not(:disabled) {
+	background-color: var(--text-primary);
+	color: var(--bg-page);
 }
 
 .btnPrimary:disabled {
-	opacity: 0.5;
+	opacity: 0.4;
 	cursor: default;
 }
 
@@ -197,7 +208,8 @@
 
 .footerStatus {
 	font-family: var(--ff-body);
-	font-size: var(--fs-button);
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
 	color: var(--text-muted);
 	margin-right: auto;
 }
@@ -266,17 +278,17 @@
 	color: var(--accent-gold);
 	font-family: var(--ff-body);
 	font-size: var(--fs-tiny);
-	letter-spacing: 0.1em;
+	letter-spacing: var(--ls-eyebrow);
 	text-transform: uppercase;
 	padding: 2px 6px;
 	cursor: pointer;
 	opacity: 0.7;
-	transition: all 0.2s;
+	transition: opacity 0.2s, background-color 0.2s;
 }
 
 .btnStub:hover {
 	opacity: 1;
-	background: rgba(154, 122, 44, 0.1);
+	background: color-mix(in srgb, var(--accent-gold) 10%, transparent);
 }
 
 .btnStub:disabled {
@@ -316,7 +328,6 @@
 	.toolbar .btnGhost,
 	.toolbar .btnPrimary {
 		padding: var(--sp-2) var(--sp-3);
-		font-size: var(--fs-eyebrow);
 	}
 
 	.metaRow {
@@ -339,5 +350,16 @@
 		width: 100%;
 		margin-right: 0;
 		order: -1;
+	}
+}
+
+/* ── Touch targets (coarse pointer) ─────────────────────── */
+@media (pointer: coarse) {
+	.toolbar .btnGhost,
+	.toolbar .btnPrimary,
+	.footer .btnGhost,
+	.footer .btnPrimary {
+		min-height: var(--touch-target);
+		padding: 8px 14px;
 	}
 }
