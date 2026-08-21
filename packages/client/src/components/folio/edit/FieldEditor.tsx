@@ -12,19 +12,21 @@ interface Props {
 	fieldDef: FieldDef;
 	value: FieldValue;
 	onChange: (next: FieldValue) => void;
+	label?: string;
 }
 
 function optionStrings(fieldDef: FieldDef): string[] {
 	return (fieldDef.options ?? []).map((o) => (typeof o === 'string' ? o : o.value));
 }
 
-export function FieldEditor({ fieldDef, value, onChange }: Props): JSX.Element {
+export function FieldEditor({ fieldDef, value, onChange, label }: Props): JSX.Element {
 	switch (fieldDef.type) {
 		case 'text':
 			return (
 				<TextField
 					value={typeof value === 'string' ? value : ''}
 					onChange={(v) => onChange(v || null)}
+					ariaLabel={label}
 				/>
 			);
 		case 'date':
@@ -32,6 +34,7 @@ export function FieldEditor({ fieldDef, value, onChange }: Props): JSX.Element {
 				<DateField
 					value={typeof value === 'string' ? value : ''}
 					onChange={(v) => onChange(v || null)}
+					ariaLabel={label}
 				/>
 			);
 		case 'textarea':
@@ -39,6 +42,7 @@ export function FieldEditor({ fieldDef, value, onChange }: Props): JSX.Element {
 				<TextareaField
 					value={typeof value === 'string' ? value : ''}
 					onChange={(v) => onChange(v || null)}
+					ariaLabel={label}
 				/>
 			);
 		case 'select':
@@ -47,6 +51,7 @@ export function FieldEditor({ fieldDef, value, onChange }: Props): JSX.Element {
 					value={typeof value === 'string' ? value : ''}
 					options={optionStrings(fieldDef)}
 					onChange={(v) => onChange(v || null)}
+					label={label}
 				/>
 			);
 		case 'multiselect':
@@ -55,6 +60,7 @@ export function FieldEditor({ fieldDef, value, onChange }: Props): JSX.Element {
 					value={Array.isArray(value) ? (value as string[]) : []}
 					options={optionStrings(fieldDef)}
 					onChange={(v) => onChange(v.length ? v : null)}
+					ariaLabel={label}
 				/>
 			);
 		case 'text-list':
@@ -62,6 +68,7 @@ export function FieldEditor({ fieldDef, value, onChange }: Props): JSX.Element {
 				<TextListField
 					value={Array.isArray(value) ? (value as string[]) : []}
 					onChange={(v) => onChange(v.length ? v : null)}
+					ariaLabel={label}
 				/>
 			);
 		case 'wikilink': {
@@ -71,6 +78,7 @@ export function FieldEditor({ fieldDef, value, onChange }: Props): JSX.Element {
 					value={link}
 					target={fieldDef.target}
 					onChange={(v) => onChange(v)}
+					ariaLabel={label}
 				/>
 			);
 		}
@@ -83,10 +91,11 @@ export function FieldEditor({ fieldDef, value, onChange }: Props): JSX.Element {
 					value={links}
 					target={fieldDef.target}
 					onChange={(v) => onChange(v.length ? v : null)}
+					ariaLabel={label}
 				/>
 			);
 		}
 		default:
-			return <TextField value={String(value ?? '')} onChange={(v) => onChange(v || null)} />;
+			return <TextField value={String(value ?? '')} onChange={(v) => onChange(v || null)} ariaLabel={label} />;
 	}
 }

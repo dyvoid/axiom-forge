@@ -193,6 +193,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 							className={styles.newEntryConfirm}
 							onClick={handleCreateSubmit}
 							disabled={!newName.trim() || createFolio.isPending}
+							aria-label="Create entry"
 						>
 							↵
 						</button>

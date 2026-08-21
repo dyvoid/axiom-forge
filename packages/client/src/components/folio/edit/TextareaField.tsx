@@ -8,9 +8,10 @@ interface Props {
 	value: string;
 	onChange: (next: string) => void;
 	placeholder?: string;
+	ariaLabel?: string;
 }
 
-export function TextareaField({ value, onChange, placeholder }: Props): JSX.Element {
+export function TextareaField({ value, onChange, placeholder, ariaLabel }: Props): JSX.Element {
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const [pickerState, setPickerState] = useState<{
 		top: number;
@@ -98,6 +99,7 @@ export function TextareaField({ value, onChange, placeholder }: Props): JSX.Elem
 				className={styles.textarea}
 				value={value}
 				placeholder={placeholder}
+				aria-label={ariaLabel}
 				onChange={handleChange}
 			/>
 			{pickerState && (

@@ -261,6 +261,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 			{/* Editable title */}
 			<input
 				className={styles.titleInput}
+				aria-label="Folio title"
 				value={draft.title}
 				onChange={(e) => mutateDraft((d) => ({ ...d, title: e.target.value }))}
 			/>
@@ -273,6 +274,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 						value={draft.tags}
 						onChange={(v) => mutateDraft((d) => ({ ...d, tags: v }))}
 						suggestions={allTags}
+						ariaLabel="Tags"
 					/>
 				</div>
 			</div>
@@ -336,9 +338,9 @@ function SectionBlock({
 	onUpdateSection,
 }: SectionBlockProps): JSX.Element {
 	const header = (
-		<div className={styles.sectionHeader}>
+		<h2 className={styles.sectionHeader}>
 			<span>{ordinal.toUpperCase()}. {sectionName}</span>
-		</div>
+		</h2>
 	);
 
 	// Section-level textarea (prose or plain textarea section)
@@ -396,7 +398,8 @@ function SectionBlock({
 									fieldDef={fieldDef}
 									value={data?.fields?.[fieldName] ?? null}
 									onChange={(v) => onUpdateField(fieldName, v)}
-								/>
+								label={fieldName}
+							/>
 							</div>
 						</div>
 					))}

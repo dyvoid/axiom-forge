@@ -48,6 +48,11 @@
 
 	--accent-rust: #8a3522;
 	--accent-gold: #9a7a2c;
+	/* Text-safe variant of Antique Gold. The base --accent-gold (#9a7a2c) reads
+	   at 3.38:1 on Parchment — fine for icons and decorative elements (AA-large),
+	   but below the 4.5:1 AA threshold for normal text. This darker shade hits
+	   ~5:1 and is used wherever gold appears as text. */
+	--accent-gold-text: #7a5e1a;
 
 	/* ── Typography Colors ───────────────────────────────────── */
 
