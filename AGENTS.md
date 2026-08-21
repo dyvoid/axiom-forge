@@ -48,6 +48,8 @@ for the reasoning behind specific decisions.
 
 ### Do not do these
 - Commit directly to `main`
+- Merge to `main` without explicit instruction — the decision to merge is the user's
+  call, not the agent's. Finishing work on a branch does not imply merging it.
 - Delete or rename files without being asked
 - Change architecture without recording an ADR in `docs/adr/`
 - Rename or move public API endpoints without explicit instruction — these are a public contract
@@ -181,6 +183,28 @@ or field values from the sample project. See `schema.test.ts` for the establishe
   is next, because `rewriteProjectLinks` writes every linking file with no mtime check" stays true
   regardless of what has merged.
 
+### PICKUP.md scope
+
+PICKUP.md is a slim handoff file, not a session diary. It exists so the next session starts
+with context and next steps in under a minute. Three things go in it:
+
+- **In Progress** — what's half-done, if anything (branch name, what remains)
+- **Next Up** — the recommended next work, with enough reasoning that it doesn't need
+  re-deriving
+- **Open Decisions** — anything that needs the user's input before work can proceed
+
+What does **not** go in PICKUP.md:
+
+- **Completed work that's merged.** Git log is the record. If it's done and on `main`,
+  it's history — PICKUP.md is for the future, not the past.
+- **Implementation details.** Commit messages and ADRs own the "why" and "how". PICKUP
+  owns "what's next".
+- **Session transcripts.** Do not write a narrative of what the session did. The next
+  session needs to know where to start, not what the last one did.
+
+If PICKUP.md is longer than ~50 lines, you're writing too much. When you update it, remove
+entries for work that's been completed and merged — do not accumulate.
+
 ## End-of-Task Checklist
 
 Before closing any feature or architecture task, answer each question explicitly:
@@ -194,6 +218,8 @@ Before closing any feature or architecture task, answer each question explicitly
 Then, at the end of **every** session (not just feature/architecture work), always:
 
 - **Update [PICKUP.md](PICKUP.md)** so the next session starts with context, not archaeology.
+  Follow the [PICKUP.md scope](#pickupmd-scope) rules: what's in progress, what's next, open
+  decisions. Remove completed work — do not accumulate.
 - **Update [docs/ROADMAP.md](docs/ROADMAP.md)** if any backlog or housekeeping item was started,
   finished, or re-scoped.
 - **Re-check the [ADR log](docs/adr/) for correctness** against the work just done — not just the
@@ -221,4 +247,4 @@ Then, at the end of **every** session (not just feature/architecture work), alwa
 | [Design System](docs/design-system.md) | Typography, color tokens, layout conventions |
 | [ADR Log](docs/adr/) | Architecture decisions and their rationale |
 | [Git Strategy](docs/git-strategy.md) | Branching, merging, commit rules |
-| [PICKUP](PICKUP.md) | Where the last session left off |
+| [PICKUP](PICKUP.md) | Slim handoff: what's in progress, what's next, open decisions |
