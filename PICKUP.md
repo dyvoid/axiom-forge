@@ -6,7 +6,13 @@ session did, read git log.
 
 ## In Progress
 
-Nothing. The Grand Index `bolder` pass is done and on `main`.
+Folio read view layout refinement (`/impeccable layout`, uncommitted on the
+working tree). Five changes to spacing rhythm, separator vocabulary, and label
+consistency in `packages/client/src/components/folio/` — single hairline
+dividers replace the double-rule + dashed mix; title→aliases gap widened to
+`--sp-4`; FieldSection labels unified to the eyebrow voice; backlinks
+over-separation reduced. DESIGN.md line 215 updated to match. Detector and
+`check-repo.mjs` clean. Not yet committed.
 
 ## Next Up
 

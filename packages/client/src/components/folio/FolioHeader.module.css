@@ -78,7 +78,10 @@
 	font-size: var(--fs-hero);
 	line-height: var(--lh-h1);
 	color: var(--text-primary);
-	margin-bottom: var(--sp-2);
+	/* Spacing should scale with the element's visual mass. The hero title is
+	   up to 88px tall; 8px (sp-2) under it read as glued-on. 16px lets the
+	   nameplate breathe without breaking the title cluster. */
+	margin-bottom: var(--sp-4);
 }
 
 .subtitle {
