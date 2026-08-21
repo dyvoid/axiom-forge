@@ -32,25 +32,18 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 			<h1 className={styles.title}>{folio.title}</h1>
 
 			{folio.aliases && folio.aliases.length > 0 && (
-				<div className={styles.aliases}>
-					<span className={styles.aliasLabel}>also known as</span>
-					{folio.aliases.map((alias) => (
-						<span key={alias} className={styles.alias}>{alias}</span>
-					))}
-				</div>
+				<p className={styles.aliases}>aka {folio.aliases.join(' · ')}</p>
 			)}
 
-			<div className={styles.metaRow}>
-				{folio.tags && folio.tags.length > 0 && (
-					<div className={styles.tags}>
-						{folio.tags.map((tag) => (
-							<Link key={tag} to={`/index?tags=${encodeURIComponent(tag)}`} className={styles.tag}>
-								{tag}
-							</Link>
-						))}
-					</div>
-				)}
-			</div>
+			{folio.tags && folio.tags.length > 0 && (
+				<nav className={styles.tags} aria-label="Tags">
+					{folio.tags.map((tag) => (
+						<Link key={tag} to={`/index?tags=${encodeURIComponent(tag)}`} className={styles.tag}>
+							{tag}
+						</Link>
+					))}
+				</nav>
+			)}
 		</header>
 	);
 }

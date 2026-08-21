@@ -86,17 +86,35 @@
 	margin-right: var(--sp-3);
 }
 
+/* Aliases ride as a single italic byline under the title -- the same `aka …`
+   preposition and middot separator used by the EntryContent card variant, just
+   scaled up to the folio page. The card and the meta panel both use this idiom;
+   the folio header is the name-plate context, so `aka` is the right preposition. */
+.aliases {
+	margin: 0 0 var(--sp-3);
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: var(--fs-subtitle);
+	color: var(--text-secondary);
+}
+
+/* Tags align with the EntryContent row tag style -- italic, meta-sized, muted
+   -- and stay links with a gold hover, since the folio page is where you
+   navigate from an entry to its tag's index. */
 .tags {
 	display: flex;
-	align-items: center;
+	align-items: baseline;
+	flex-wrap: wrap;
 	gap: var(--sp-3);
+	font-family: var(--ff-body);
+	font-size: var(--fs-meta);
+	font-style: italic;
+	color: var(--text-muted);
 }
 
 .tag {
-	font-family: var(--ff-body);
-	font-style: italic;
-	font-size: var(--fs-body);
-	color: var(--text-secondary);
+	color: var(--text-muted);
+	text-decoration: none;
 	transition: color 0.2s;
 }
 
@@ -105,36 +123,6 @@
 }
 
 .tag + .tag::before {
-	content: '·';
-	margin-right: var(--sp-3);
-	color: var(--border-soft);
-}
-
-.aliases {
-	display: flex;
-	align-items: baseline;
-	flex-wrap: wrap;
-	gap: var(--sp-3);
-	margin-top: calc(var(--sp-2) * -1);
-	margin-bottom: var(--sp-3);
-}
-
-.aliasLabel {
-	font-family: var(--ff-body);
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-eyebrow);
-	text-transform: uppercase;
-	color: var(--text-muted);
-}
-
-.alias {
-	font-family: var(--ff-body);
-	font-style: italic;
-	font-size: var(--fs-body);
-	color: var(--text-secondary);
-}
-
-.alias + .alias::before {
 	content: '·';
 	margin-right: var(--sp-3);
 	color: var(--border-soft);
