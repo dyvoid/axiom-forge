@@ -34,7 +34,7 @@
 	letter-spacing: var(--ls-eyebrow);
 	text-transform: uppercase;
 	color: var(--text-muted);
-	padding: 3px 10px;
+	padding: var(--btn-compact-padding);
 	cursor: pointer;
 	transition: color 0.2s, border-color 0.2s;
 }
@@ -188,7 +188,7 @@
 	gap: var(--sp-4);
 	align-items: flex-start;
 	padding: var(--sp-2) 0;
-	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
+	border-bottom: 1px dotted var(--border-dotted);
 }
 
 .fieldLabel {
@@ -261,7 +261,7 @@
 	padding-left: var(--sp-4);
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--sp-0-5);
 }
 
 .brokenLinksList code {
@@ -365,6 +365,6 @@
 	.footer .btnGhost,
 	.footer .btnPrimary {
 		min-height: var(--touch-target);
-		padding: 8px 14px;
+		padding: var(--btn-compact-padding-touch);
 	}
 }

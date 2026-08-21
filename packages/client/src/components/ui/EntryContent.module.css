@@ -136,7 +136,7 @@
 
 .iconWrapper {
 	color: var(--accent-gold);
-	margin-right: 6px;
+	margin-right: var(--sp-1-5);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;

@@ -1,5 +1,5 @@
 .header {
-	height: 48px;
+	height: var(--header-height);
 	border-bottom: 1px solid var(--border);
 	background: var(--bg-panel);
 	display: flex;
@@ -150,7 +150,7 @@
 	background: var(--bg-panel);
 	border: 1px solid var(--border);
 	border-radius: 4px;
-	box-shadow: 0 4px 20px rgba(34, 27, 19, 0.25);
+	box-shadow: 0 4px 20px color-mix(in srgb, var(--text-primary) 25%, transparent);
 	overflow-y: auto;
 	z-index: 100;
 	display: flex;

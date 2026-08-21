@@ -21,7 +21,7 @@
 	background: var(--bg-panel);
 	border: 1px solid var(--border);
 	border-radius: 2px;
-	padding: 2px var(--sp-2);
+	padding: var(--sp-0-5) var(--sp-2);
 	font-family: var(--ff-body);
 	font-size: var(--fs-meta);
 	color: var(--text-primary);
@@ -54,13 +54,13 @@
 	max-height: 240px;
 	background: var(--bg-page);
 	border: 1px solid var(--text-muted);
-	box-shadow: 0 8px 28px rgba(40, 30, 20, 0.18);
+	box-shadow: var(--shadow-elevated);
 	overflow-y: auto;
 	z-index: 100;
 }
 
 .item {
-	padding: 8px 12px;
+	padding: var(--sp-2) var(--sp-3);
 	cursor: pointer;
 	font-family: var(--ff-body);
 	font-size: var(--fs-control);
@@ -75,5 +75,5 @@
 
 .item:hover,
 .itemHighlight {
-	background: rgba(138, 53, 34, 0.08);
+	background: color-mix(in srgb, var(--accent-rust) 8%, transparent);
 }
