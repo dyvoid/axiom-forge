@@ -143,7 +143,6 @@
 	cursor: pointer;
 	font-family: var(--ff-body);
 	font-size: var(--fs-label);
-	font-style: italic;
 	padding: 3px 10px;
 }
 
