@@ -36,6 +36,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	const [draft, setDraft] = useState<ParsedFolio>(() => structuredClone(folio));
 	const [dirty, setDirty] = useState(false);
 	const [confirmDelete, setConfirmDelete] = useState(false);
+	const [confirmNavigate, setConfirmNavigate] = useState(false);
 	const [createError, setCreateError] = useState<string | null>(null);
 
 	// Wrap setDraft so any mutation flips the dirty flag. Avoids the
@@ -63,11 +64,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 
 	useEffect(() => {
 		if (blocker.state === 'blocked') {
-			if (window.confirm('You have unsaved changes. Discard them and navigate?')) {
-				blocker.proceed();
-			} else {
-				blocker.reset();
-			}
+			setConfirmNavigate(true);
 		}
 	}, [blocker]);
 
@@ -244,6 +241,22 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 				onConfirm={() => {
 					setConfirmDelete(false);
 					onDelete();
+				}}
+			/>
+
+			<ConfirmDialog
+				open={confirmNavigate}
+				title="Unsaved changes"
+				message="You have unsaved changes. Discard them?"
+				confirmLabel="Discard"
+				danger
+				onCancel={() => {
+					setConfirmNavigate(false);
+					blocker.reset();
+				}}
+				onConfirm={() => {
+					setConfirmNavigate(false);
+					blocker.proceed();
 				}}
 			/>
 
