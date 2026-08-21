@@ -205,7 +205,7 @@
 	padding: 7px 10px;
 	font-family: var(--ff-body);
 	font-size: var(--fs-body-sm);
-	color: var(--accent-gold);
+	color: var(--accent-gold-text);
 	flex: 1;
 	cursor: text;
 }

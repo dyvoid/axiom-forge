@@ -6,9 +6,10 @@ interface Props {
 	onChange: (next: string[]) => void;
 	placeholder?: string;
 	suggestions?: string[];
+	ariaLabel?: string;
 }
 
-export function TextListField({ value, onChange, placeholder, suggestions }: Props): JSX.Element {
+export function TextListField({ value, onChange, placeholder, suggestions, ariaLabel }: Props): JSX.Element {
 	const [draft, setDraft] = useState('');
 	const [open, setOpen] = useState(false);
 	const [highlightIdx, setHighlightIdx] = useState(0);
@@ -69,6 +70,7 @@ export function TextListField({ value, onChange, placeholder, suggestions }: Pro
 						<button
 							type="button"
 							className={styles.chipRemove}
+							aria-label={`Remove ${item}`}
 							onClick={(e) => {
 								e.stopPropagation();
 								onChange(value.filter((_, x) => x !== i));
@@ -82,6 +84,7 @@ export function TextListField({ value, onChange, placeholder, suggestions }: Pro
 					ref={inputRef}
 					className={styles.tagInput}
 					value={draft}
+					aria-label={ariaLabel}
 					placeholder={placeholder ?? (value.length === 0 ? 'add value, press ↵' : 'add…')}
 					onChange={(e) => {
 						setDraft(e.target.value);
@@ -115,7 +118,7 @@ export function TextListField({ value, onChange, placeholder, suggestions }: Pro
 									return;
 							}
 						}
-						
+
 						if (e.key === 'Enter' || e.key === ',') {
 							e.preventDefault();
 							commit();
@@ -124,7 +127,7 @@ export function TextListField({ value, onChange, placeholder, suggestions }: Pro
 						}
 					}}
 					onBlur={() => {
-						// If we have a dropdown, don't commit on blur immediately, 
+						// If we have a dropdown, don't commit on blur immediately,
 						// let the click outside handler or mousedown handle it.
 						if (!suggestions) {
 							commit();
@@ -133,10 +136,12 @@ export function TextListField({ value, onChange, placeholder, suggestions }: Pro
 				/>
 			</div>
 			{open && filteredSuggestions.length > 0 && (
-				<div className={styles.menu} ref={menuRef}>
+				<div className={styles.menu} ref={menuRef} role="listbox">
 					{filteredSuggestions.map((item, idx) => (
 						<div
 							key={item}
+							role="option"
+							aria-selected={idx === highlightIdx}
 							className={`${styles.menuItem} ${idx === highlightIdx ? styles.menuItemHighlight : ''}`}
 							onMouseEnter={() => setHighlightIdx(idx)}
 							onMouseDown={(e) => {

@@ -8,6 +8,26 @@
 	overflow: hidden;
 }
 
+.skipLink {
+	position: absolute;
+	top: -100px;
+	left: 0;
+	z-index: 100;
+	background: var(--text-primary);
+	color: var(--bg-page);
+	padding: var(--sp-2) var(--sp-4);
+	font-family: var(--ff-body);
+	font-size: var(--fs-button);
+	letter-spacing: var(--ls-button);
+	text-transform: uppercase;
+	text-decoration: none;
+	transition: top 0.15s;
+}
+
+.skipLink:focus {
+	top: 0;
+}
+
 .body {
 	display: flex;
 	flex: 1;

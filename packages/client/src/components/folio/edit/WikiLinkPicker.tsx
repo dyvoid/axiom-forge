@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { WikiLink } from '@axiom-forge/shared';
 import { useFolios } from '../../../api/queries.js';
 import { useProject } from '../../../context/ProjectContext.js';
@@ -40,6 +40,7 @@ export function WikiLinkPicker({
 	const wrapRef = useRef<HTMLDivElement | null>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const menuRef = useRef<HTMLDivElement | null>(null);
+	const listboxId = useId();
 
 	// Click-outside handler
 	useEffect(() => {
@@ -214,7 +215,7 @@ export function WikiLinkPicker({
 							<Icon name={folderIcon(value.folder)} size={12} />
 							<span>{displayName}</span>
 						</div>
-						<button type="button" className={styles.pickerClear} onClick={handleClear}>
+						<button type="button" className={styles.pickerClear} onClick={handleClear} aria-label="Clear selection">
 							×
 						</button>
 					</>
@@ -225,6 +226,12 @@ export function WikiLinkPicker({
 						className={inline ? styles.tagPickerInput : styles.pickerInput}
 						value={query}
 						placeholder={placeholder || (targetDisplay ? `Search ${targetDisplay}…` : 'Search folios…')}
+						role="combobox"
+						aria-expanded={open}
+						aria-autocomplete="list"
+						aria-controls={listboxId}
+						aria-activedescendant={open && candidates[highlightIdx] ? `picker-option-${highlightIdx}` : undefined}
+						aria-label={placeholder || (targetDisplay ? `Search ${targetDisplay}` : 'Search folios')}
 						onChange={(e) => {
 							setQuery(e.target.value);
 							if (!open) setOpen(true);
@@ -236,7 +243,7 @@ export function WikiLinkPicker({
 			</div>
 
 			{open && (
-				<div ref={menuRef} className={styles.menu}>
+				<div ref={menuRef} className={styles.menu} id={listboxId} role="listbox">
 					{candidates.length === 0 ? (
 						<div className={styles.menuEmpty}>
 							{query.trim() ? `Press ↵ to add "${query.trim()}"` : 'No matches'}
@@ -245,6 +252,9 @@ export function WikiLinkPicker({
 						candidates.map((f, i) => (
 							<div
 								key={`${f.folder}/${f.name}`}
+								id={`picker-option-${i}`}
+								role="option"
+								aria-selected={i === highlightIdx}
 								className={`${styles.menuItem} ${i === highlightIdx ? styles.menuItemHighlight : ''}`}
 								onMouseEnter={() => setHighlightIdx(i)}
 								onClick={() => handleSelect(f.folder, f.name)}

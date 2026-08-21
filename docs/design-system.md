@@ -23,7 +23,7 @@ The app ships with a canonical "Parchment" theme defined via CSS variables in `t
 | `--color-surface` | `#ebe0c8` | Sidebar / top header background (`--bg-panel`) |
 | `--color-border-subtle` | `#d9c8a4` | Sidebar dividers, subtle separators |
 | `--color-border` | `#cdb98e` | Card borders, input borders, button outlines |
-| `--color-accent` | `#9a7a2c` | `--accent-gold`: Folio-type chips, active link text |
+| `--color-accent` | `#9a7a2c` | `--accent-gold`: Folio-type chips, active link text. For gold used as text (e.g. selected wikilink display), use `--accent-gold-text` (`#7a5e1a`) which meets AA contrast |
 | `--color-danger` | `#8a3522` | `--accent-rust`: Active sidebar item, "EDITING" banners, warnings |
 | `--color-fg-muted` | `#6c5e46` | Labels, secondary text, eyebrow text |
 | `--color-fg-secondary` | `#4a3f2e` | Sidebar item text, field values |

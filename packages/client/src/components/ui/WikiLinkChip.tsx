@@ -21,6 +21,10 @@ export function WikiLinkChip({ link }: { link: WikiLink }): JSX.Element {
 		return (
 			<span
 				className={`${styles.chip} ${styles.dead}`}
+				tabIndex={0}
+				role="link"
+				aria-disabled="true"
+				aria-label={`${display} — broken link: no folio at ${link.folder}/${link.name}`}
 				title={`No folio at ${link.folder}/${link.name}`}
 			>
 				<Icon name={iconName} size={10} className={styles.icon} /> {display}

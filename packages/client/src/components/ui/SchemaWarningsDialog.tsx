@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
+import { useFocusTrap } from '../../hooks/useFocusTrap.js';
 import styles from './SchemaWarningsDialog.module.css';
 
 interface WarningEntry {
@@ -14,6 +15,8 @@ interface Props {
 
 export function SchemaWarningsDialog({ warnings, onClose }: Props): JSX.Element {
 	const [copied, setCopied] = useState(false);
+	const titleId = useId();
+	const containerRef = useFocusTrap<HTMLDivElement>(onClose);
 
 	const totalCount = warnings.reduce((n, e) => n + e.warnings.length, 0);
 
@@ -36,9 +39,16 @@ export function SchemaWarningsDialog({ warnings, onClose }: Props): JSX.Element 
 
 	return (
 		<div className={styles.overlay} onClick={onClose}>
-			<div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
+			<div
+				ref={containerRef}
+				className={styles.dialog}
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby={titleId}
+				onClick={(e) => e.stopPropagation()}
+			>
 				<div className={styles.header}>
-					<span className={styles.title}>Schema Warnings</span>
+					<span className={styles.title} id={titleId}>Schema Warnings</span>
 					<span className={styles.count}>
 						{totalCount} {totalCount === 1 ? 'warning' : 'warnings'} across {warnings.length} {warnings.length === 1 ? 'file' : 'files'}
 					</span>

@@ -91,21 +91,28 @@ export function WebGLHero({ variant = 'codex', className }: WebGLHeroProps): JSX
 			}
 		}
 
+		// Respect prefers-reduced-motion: render a single static frame
+		// instead of an infinite animation loop.
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 		let raf = 0;
 		let alive = true;
 		const prewarmSeconds = 60;
 		const start = performance.now() - prewarmSeconds * 1000;
 
-		function frame() {
-			if (!alive) return;
+		function drawFrame() {
 			resize();
 			gl?.uniform2f(uRes, canvas!.width, canvas!.height);
 			gl?.uniform1f(uTime, (performance.now() - start) / 1000);
 			gl?.uniform2f(uMouse, mouse[0]!, mouse[1]!);
 			gl?.drawArrays(gl.TRIANGLES, 0, 3);
+		}
+
+		function frame() {
+			if (!alive) return;
+			drawFrame();
 			raf = requestAnimationFrame(frame);
 		}
-		frame();
 
 		function onVisibilityChange() {
 			if (document.hidden) {
@@ -114,13 +121,26 @@ export function WebGLHero({ variant = 'codex', className }: WebGLHeroProps): JSX
 				raf = requestAnimationFrame(frame);
 			}
 		}
-		document.addEventListener('visibilitychange', onVisibilityChange);
+
+		if (reduceMotion) {
+			// Single static draw — no rAF loop, no mouse listener.
+			drawFrame();
+		} else {
+			frame();
+			document.addEventListener('visibilitychange', onVisibilityChange);
+
+			return () => {
+				alive = false;
+				cancelAnimationFrame(raf);
+				window.removeEventListener('mousemove', onMove);
+				document.removeEventListener('visibilitychange', onVisibilityChange);
+			};
+		}
 
 		return () => {
 			alive = false;
 			cancelAnimationFrame(raf);
 			window.removeEventListener('mousemove', onMove);
-			document.removeEventListener('visibilitychange', onVisibilityChange);
 		};
 	}, [variant]);
 

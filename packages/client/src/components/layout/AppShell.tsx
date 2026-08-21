@@ -37,6 +37,7 @@ export function AppShell(): JSX.Element {
 
 	return (
 		<div className={styles.shell}>
+			<a href="#main-content" className={styles.skipLink}>Skip to content</a>
 			<TopHeader onToggleDrawer={() => setDrawerOpen((o) => !o)} />
 			<div className={styles.body}>
 				{/* Scrim: visible only when the drawer is open below --bp-drawer.
@@ -53,7 +54,7 @@ export function AppShell(): JSX.Element {
 				>
 					<Sidebar onNavigate={() => setDrawerOpen(false)} />
 				</aside>
-				<main className={styles.main}>
+				<main className={styles.main} id="main-content">
 					<Outlet />
 				</main>
 			</div>

@@ -5,9 +5,10 @@ interface Props {
 	value: string[];
 	options: string[];
 	onChange: (next: string[]) => void;
+	ariaLabel?: string;
 }
 
-export function MultiselectField({ value, options, onChange }: Props): JSX.Element {
+export function MultiselectField({ value, options, onChange, ariaLabel }: Props): JSX.Element {
 	const [open, setOpen] = useState(false);
 	const ref = useRef<HTMLDivElement | null>(null);
 
@@ -23,13 +24,14 @@ export function MultiselectField({ value, options, onChange }: Props): JSX.Eleme
 
 	return (
 		<div ref={ref} className={styles.selectWrap}>
-			<div className={styles.tagBox}>
+			<div className={styles.tagBox} role="group" aria-label={ariaLabel}>
 				{value.map((item, i) => (
 					<span key={item} className={styles.chip}>
 						{item}
 						<button
 							type="button"
 							className={styles.chipRemove}
+							aria-label={`Remove ${item}`}
 							onClick={() => onChange(value.filter((_, x) => x !== i))}
 						>
 							×
@@ -40,6 +42,8 @@ export function MultiselectField({ value, options, onChange }: Props): JSX.Eleme
 					<button
 						type="button"
 						className={styles.addBtn}
+						aria-expanded={open}
+						aria-haspopup="listbox"
 						onClick={() => setOpen((o) => !o)}
 					>
 						+ add
@@ -47,10 +51,12 @@ export function MultiselectField({ value, options, onChange }: Props): JSX.Eleme
 				)}
 			</div>
 			{open && remaining.length > 0 && (
-				<div className={styles.menu}>
+				<div className={styles.menu} role="listbox">
 					{remaining.map((o) => (
 						<div
 							key={o}
+							role="option"
+							aria-selected={false}
 							className={styles.menuItem}
 							onClick={() => {
 								onChange([...value, o]);

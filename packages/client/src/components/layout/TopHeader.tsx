@@ -126,6 +126,7 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 					onClick={handleSync}
 					disabled={syncing}
 					title="Reload project from disk"
+					aria-label="Reload project from disk"
 				>
 					<Icon name="refresh-cw" size={14} className={syncing ? styles.spinning : undefined} />
 				</button>
@@ -137,6 +138,12 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 							type="text"
 							placeholder="Search the index..."
 							className={styles.searchInput}
+							aria-label="Search the index"
+							aria-expanded={open}
+							aria-autocomplete="list"
+							aria-controls="search-listbox"
+							aria-activedescendant={open && items[highlightIdx] ? `search-option-${highlightIdx}` : undefined}
+							role="combobox"
 							value={query}
 							onChange={(e) => {
 								setQuery(e.target.value);
@@ -152,20 +159,23 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 									setQuery('');
 									inputRef.current?.focus();
 								}}
-								title="Clear search"
+								aria-label="Clear search"
 							>
 								<Icon name="x" size={14} />
 							</button>
 						)}
 
 						{open && query.trim() !== '' && (
-							<div className={styles.searchDropdown}>
+							<div className={styles.searchDropdown} id="search-listbox" role="listbox">
 								{items.length === 0 ? (
 									<div className={styles.searchEmpty}>No results found.</div>
 								) : (
 									items.map((item, idx) => (
 										<div
 											key={`${item.folder}/${item.name}`}
+											id={`search-option-${idx}`}
+											role="option"
+											aria-selected={idx === highlightIdx}
 											className={`${styles.searchItem} ${idx === highlightIdx ? styles.searchItemHighlight : ''}`}
 											onMouseEnter={() => setHighlightIdx(idx)}
 											onClick={() => navigateTo(item.folder, item.name)}

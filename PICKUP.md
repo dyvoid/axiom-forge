@@ -6,7 +6,7 @@ session did, read git log.
 
 ## In Progress
 
-Nothing. Responsive adaptation is done and merged.
+Nothing. Accessibility hardening is done and merged.
 
 ## Next Up
 
@@ -34,6 +34,5 @@ Remaining from the impeccable design review, deferred deliberately:
   in this design and routing the rest to upright.
 - **WebGL smoke on the landing.** Reads as flat parchment in the screenshot. Either
   dial it up until it registers or cut it.
-- **Accessibility (from audit).** Comboboxes and dialogs have no ARIA; no
-  `prefers-reduced-motion`; edit-view inputs have no labels; no skip link; no
-  `:focus-visible`. A single `harden` pass addresses most of it.
+- **`window.confirm` for unsaved-changes guard.** Native browser dialog breaks the
+  print aesthetic; should route through `ConfirmDialog`. (From audit P3.)
