@@ -12,13 +12,21 @@ export function FolioHeader({ folio, icon }: FolioHeaderProps): JSX.Element {
 	return (
 		<header className={styles.header}>
 			<div className={styles.topRow}>
-				<div className={styles.eyebrow}>
-					<Icon name={icon} size={14} />
-					<span className={styles.separator}>·</span>
-					<span>{folio.type}</span>
-					<span className={styles.separator}>·</span>
-					<span>Folio {toRoman(folio.id)}</span>
-				</div>
+				<nav className={styles.eyebrow} aria-label="Breadcrumb">
+					<Link to="/index" className={styles.crumb}>Index</Link>
+					<span className={styles.separator}>→</span>
+					<Link
+						className={styles.crumb}
+						to={`/folio/${encodeURIComponent(folio.folder)}`}
+					>
+						<Icon name={icon} size={12} />
+						{folio.type}
+					</Link>
+					<span className={styles.separator}>→</span>
+					<span className={styles.crumbCurrent} aria-current="page">
+						Folio {toRoman(folio.id)}
+					</span>
+				</nav>
 				<div className={styles.actions}>
 					<Link
 						className={styles.editBtn}
