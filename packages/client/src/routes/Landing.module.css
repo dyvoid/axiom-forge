@@ -92,7 +92,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	height: 64px;
+	min-height: var(--sp-8);
 	padding: 0 var(--sp-7);
 	border-top: 1px solid var(--border-soft);
 	background: rgba(235, 224, 200, 0.5); /* semi-transparent to show WebGL */
