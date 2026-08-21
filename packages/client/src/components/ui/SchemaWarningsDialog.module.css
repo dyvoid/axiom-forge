@@ -124,3 +124,35 @@
 	padding: 8px 24px;
 	cursor: pointer;
 }
+
+/* ── Responsive: full-width dialog on narrow screens ─────── */
+@media (max-width: 600px) {
+	.overlay {
+		padding: var(--sp-4);
+	}
+
+	.dialog {
+		width: 100%;
+		max-height: 85vh;
+	}
+
+	.header {
+		padding: 16px var(--sp-5) 12px;
+	}
+
+	.body {
+		padding: 12px var(--sp-5);
+	}
+
+	.footer {
+		padding: 12px var(--sp-5);
+		flex-direction: column-reverse;
+		gap: var(--sp-2);
+	}
+
+	.btnCopy,
+	.btnClose {
+		width: 100%;
+		text-align: center;
+	}
+}

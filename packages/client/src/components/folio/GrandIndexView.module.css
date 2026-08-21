@@ -83,3 +83,25 @@
 	color: var(--accent-rust);
 }
 
+/* ── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+	.container {
+		padding: var(--sp-5) var(--sp-4);
+	}
+
+	.header {
+		margin-bottom: var(--sp-6);
+	}
+
+	.indexColumns {
+		column-width: 200px;
+		column-gap: var(--sp-6);
+	}
+
+	.filterRow {
+		flex-direction: column;
+		gap: var(--sp-3);
+	}
+}
+

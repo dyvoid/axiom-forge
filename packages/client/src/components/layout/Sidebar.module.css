@@ -171,3 +171,24 @@
 	opacity: 0.3;
 	cursor: default;
 }
+
+/* ── Touch targets (coarse pointer) ─────────────────────── */
+@media (pointer: coarse) {
+	.typeRow {
+		min-height: var(--touch-target);
+	}
+
+	.folioLink {
+		min-height: var(--touch-target);
+		display: flex;
+		align-items: center;
+		padding-top: var(--sp-2);
+		padding-bottom: var(--sp-2);
+	}
+
+	.newBtn {
+		min-height: var(--touch-target);
+		display: flex;
+		align-items: center;
+	}
+}

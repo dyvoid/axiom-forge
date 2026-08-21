@@ -77,3 +77,11 @@
 	margin-right: 6px;
 	color: var(--border-soft);
 }
+
+/* ── Responsive: stack label above value on narrow screens ── */
+@media (max-width: 600px) {
+	.field {
+		grid-template-columns: 1fr;
+		gap: var(--sp-1);
+	}
+}

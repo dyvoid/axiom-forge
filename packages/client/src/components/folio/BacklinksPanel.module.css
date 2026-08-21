@@ -35,3 +35,10 @@
 	background: var(--bg-hover);
 }
 
+/* ── Responsive: single-column grid on narrow screens ────── */
+@media (max-width: 600px) {
+	.grid {
+		grid-template-columns: 1fr;
+	}
+}
+
