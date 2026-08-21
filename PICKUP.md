@@ -6,7 +6,7 @@ session did, read git log.
 
 ## In Progress
 
-Nothing. The impeccable design passes are done and merged.
+Nothing. The impeccable design passes and critique follow-ups are done and merged.
 
 ## Next Up
 
@@ -27,7 +27,5 @@ Recommended order, with the reasoning so it does not need re-deriving:
 
 ## Design Backlog
 
-Remaining from the impeccable design review:
-
-- **WebGL smoke on the landing.** Reads as flat parchment in the screenshot. Either
-  dial it up until it registers or cut it.
+Empty. The WebGL smoke, italic overuse, `window.confirm` guard, and critique
+findings (breadcrumbs, edit toolbar, token cleanup) are all done.
