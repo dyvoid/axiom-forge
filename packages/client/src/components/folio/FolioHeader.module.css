@@ -67,7 +67,7 @@
 .subtitle {
 	font-family: var(--ff-body);
 	font-style: italic;
-	font-size: 24px;
+	font-size: var(--fs-subtitle-lg);
 	color: var(--text-secondary);
 	margin-bottom: var(--sp-4);
 }

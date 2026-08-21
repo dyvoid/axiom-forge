@@ -5,9 +5,11 @@
 
 :root {
 	/* ── Typography Size ───────────────────────────────────── */
+	--fs-hero-xl: 112px;
 	--fs-hero: 88px;
 	--fs-h1: 64px;
 	--fs-h2: 22px;
+	--fs-subtitle-lg: 24px;
 	--fs-subtitle: 18px;
 	--fs-body-lg: 17px;
 	--fs-body: 16px;
