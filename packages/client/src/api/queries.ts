@@ -2,9 +2,10 @@
  * TanStack Query hooks for Axiom Forge data fetching.
  */
 
+import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import type { ParsedFolio } from '@axiom-forge/shared';
+import type { ParsedFolio, FolioIndexRecord } from '@axiom-forge/shared';
 import { fetchFolios, fetchFolio, putFolio, postFolio, deleteFolio, fetchWarnings, fetchSearch, fetchBacklinks } from './client.js';
 
 /** Schema parse warnings across all project files — fetched once at startup. */
@@ -23,6 +24,20 @@ export function useFolios() {
 		queryFn: fetchFolios,
 		staleTime: 30_000,
 	});
+}
+
+/** Memoized lookup map keyed by `folder/name` — O(1) resolution for chips and backlinks. */
+export function useFolioMap(): Map<string, FolioIndexRecord> {
+	const { data: folios } = useFolios();
+	return useMemo(() => {
+		const map = new Map<string, FolioIndexRecord>();
+		if (folios) {
+			for (const f of folios) {
+				map.set(`${f.folder}/${f.name}`, f);
+			}
+		}
+		return map;
+	}, [folios]);
 }
 
 /** Search folios by query string. */
