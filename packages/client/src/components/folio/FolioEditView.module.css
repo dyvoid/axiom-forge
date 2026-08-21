@@ -13,9 +13,7 @@
 	z-index: 5;
 	margin: calc(-1 * var(--sp-6)) calc(-1 * var(--sp-8)) var(--sp-5);
 	padding: var(--sp-3) var(--sp-8);
-	background: rgba(243, 234, 216, 0.94);
-	backdrop-filter: blur(6px);
-	-webkit-backdrop-filter: blur(6px);
+	background: var(--bg-page);
 	border-bottom: 1px solid var(--border);
 	display: flex;
 	align-items: center;
