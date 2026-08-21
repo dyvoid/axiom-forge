@@ -63,7 +63,7 @@
 	padding: 8px 12px;
 	cursor: pointer;
 	font-family: var(--ff-body);
-	font-size: 14px;
+	font-size: var(--fs-control);
 	color: var(--text-primary);
 	border-bottom: 1px solid var(--border-soft);
 	text-align: left;
