@@ -6,7 +6,7 @@ session did, read git log.
 
 ## In Progress
 
-Nothing. The impeccable design passes and critique follow-ups are done and merged.
+Nothing. The Grand Index `bolder` pass is done and on `main`.
 
 ## Next Up
 
