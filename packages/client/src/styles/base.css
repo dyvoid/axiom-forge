@@ -59,6 +59,17 @@ input, textarea, select {
 	color: inherit;
 }
 
+/* ── Keyboard Focus ──────────────────────────────────── */
+/* :focus-visible shows an outline only for keyboard navigation, not mouse
+   clicks. Individual CSS modules set outline: none on inputs to suppress
+   the default browser outline on mouse focus; this rule overrides that for
+   keyboard focus via !important, since a visible focus indicator is an
+   accessibility requirement that should never be suppressed. */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+	outline: 2px solid var(--accent-rust) !important;
+	outline-offset: 2px !important;
+}
+
 /* ── Utility: Eyebrow Labels ─────────────────────────── */
 
 .eyebrow {
