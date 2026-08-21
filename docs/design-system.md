@@ -74,6 +74,12 @@ size and the percentage tracks the viewport, so the column holds up across proje
 levels. Because the width does not depend on content, rows align by construction — no subgrid and
 no measurement pass.
 
+The Grand Index's letter groups flow **column-major**: A top-to-bottom, then the next column.
+An alphabetical index is scanned down a column, not across rows, so `GrandIndexView` uses CSS
+multi-column (`column-width` + `break-inside: avoid` per group) rather than `flex-wrap`, which
+laid groups out row-major and made the alphabetical spine zigzag. `column-fill: balance`
+equalizes the column heights so the eye runs column 1 then column 2.
+
 ### Undefined tokens fail the build
 
 `var(--token)` naming a property that `tokens.css` never defines is **invalid at computed-value
