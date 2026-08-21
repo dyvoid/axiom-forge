@@ -92,7 +92,7 @@
 .folioLink {
 	padding: 2px var(--sp-6);
 	font-family: var(--ff-body);
-	font-size: var(--fs-subtitle);
+	font-size: var(--fs-body);
 	color: var(--text-muted);
 	border-left: 2px solid transparent;
 	display: block;
