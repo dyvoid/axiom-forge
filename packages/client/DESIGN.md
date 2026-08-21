@@ -212,7 +212,7 @@ The palette is a narrow warm-parchment band with two accents. Antique Gold is th
 
 The application shell is a fixed 240px sidebar (`--sidebar-width`) and a flex-1 main column, under a 48px top header. The whole shell is `100vh` with `overflow: hidden`; the main column scrolls. The page max-width is 1280px (`--page-max-width`); content is capped at 968px (`--content-max-width`) and centered.
 
-The folio read view is a two-column top block — prose column (flex 1, capped at `--prose-max-width` 640px, right-bordered with a hairline) and a fixed 280px meta column (`--meta-col-width`), separated by a 48px gap (`--two-col-gap`). Remaining sections stack below at 48px (`--sp-7`) rhythm. A double-rule divider (top + bottom border, 3px tall) separates the top block from the remaining sections.
+The folio read view is a two-column top block — prose column (flex 1, capped at `--prose-max-width` 640px, right-bordered with a hairline) and a fixed 280px meta column (`--meta-col-width`), separated by a 48px gap (`--two-col-gap`). Remaining sections stack below at 48px (`--sp-7`) rhythm. A single 1px hairline (`--border`) is the folio's one separator vocabulary: it brackets the top block (above and below), separates each remaining section (`--border-soft` between siblings), and closes the page above the Linked Mentions panel. The title cluster breathes at 16px (`--sp-4`) between the hero title and the alias byline — spacing scales with the title's visual mass, not a fixed 8px.
 
 The Grand Index flows **column-major**: CSS multi-column with `column-width: 260px` and `column-gap: 64px`, `break-inside: avoid` per letter group, `column-fill: balance`. An alphabetical index is scanned down a column, then to the next — never across rows. The Category Index is a single stacked list; each entry is one `nowrap` line with a content-relative name column `clamp(9ch, 22%, 24ch)` so rows align by construction without subgrid.
 
@@ -220,7 +220,7 @@ The edit view mirrors the read layout but adds a sticky toolbar (semi-transparen
 
 The spacing rhythm is a 4px base scale: 4, 8, 12, 16, 24, 32, 48, 64 (`--sp-1` through `--sp-8`). Section gaps run at 32–48px; field gaps at 12–16px; chip and tag gaps at 4–8px.
 
-**Responsive behavior is not yet implemented** — there are zero `@media` queries in the client, and the 88px folio title, fixed 240px sidebar, and fixed 280px meta column break under ~1100px. This is a known gap (PICKUP.md design backlog), not a design decision. A breakpoint strategy is pending.
+**Responsive behavior** is implemented across three content-driven breakpoints (defined as tokens in `tokens.css`): the folio two-column (prose + meta) stacks below `--bp-stack` (1100px), the sidebar becomes an overlay drawer below `--bp-drawer` (900px), and the header compacts below `--bp-compact` (600px). Display type is fluid via `clamp()` so the 88px folio title scales with the viewport instead of overflowing. Touch targets expand to `--touch-target` (44px) under `pointer: coarse`. Narrow screens (`max-width: 600px`) additionally tighten page padding and section gaps.
 
 ## Elevation & Depth
 

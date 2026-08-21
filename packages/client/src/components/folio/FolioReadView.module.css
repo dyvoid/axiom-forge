@@ -9,7 +9,7 @@
 	display: flex;
 	gap: var(--sp-6);
 	align-items: flex-start;
-	margin-top: var(--sp-6);
+	margin-top: var(--sp-7);
 }
 
 .proseCol {
@@ -23,10 +23,12 @@
 	flex: 0 0 var(--meta-col-width);
 }
 
+/* One separator vocabulary across the whole folio: a single 1px hairline.
+   The previous double-rule (3px, top+bottom) boxed the top block like a
+   framed excerpt; the remaining sections had no separator at all; backlinks
+   used a dashed rule. Three vocabularies in one scroll. Now one. */
 .divider {
 	border-top: 1px solid var(--border);
-	border-bottom: 1px solid var(--border);
-	height: 3px;
 	margin: var(--sp-7) 0;
 	width: 100%;
 }
@@ -35,6 +37,15 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--sp-7);
+}
+
+/* A hairline above each remaining section matches the dividers bracketing the
+   top block, so the whole page reads as one cadence rather than three. The
+   first section gets no top rule — the divider above the remaining block
+   already separates it from the top block. */
+.remaining > section + section {
+	border-top: 1px solid var(--border-soft);
+	padding-top: var(--sp-7);
 }
 
 .warnings {

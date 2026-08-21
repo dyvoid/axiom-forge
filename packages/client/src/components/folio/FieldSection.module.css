@@ -31,10 +31,18 @@
 	gap: var(--sp-1);
 }
 
+/* Eyebrow voice — the single structural label voice across the folio
+   (DESIGN.md). Previously this was 13px plain text-muted, one step lighter
+   than MetaSection's 11px uppercase tracked text-secondary, which inverted
+   the expected relationship: the meta sidebar labels read stronger than the
+   full-width section labels. Now both share one voice and one color step. */
 .label {
 	font-family: var(--ff-body);
-	font-size: var(--fs-label);
-	color: var(--text-muted);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--text-secondary);
 }
 
 .value {
