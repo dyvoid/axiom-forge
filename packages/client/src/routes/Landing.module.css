@@ -86,37 +86,39 @@
 	background-color: rgba(34, 27, 19, 0.05);
 }
 
-/* ── Footer ──────────────────────────────────────── */
+/* ── Footer: colophon-style type index ──────────────── */
 
 .footer {
 	display: flex;
-	align-items: center;
+	align-items: stretch;
 	justify-content: center;
-	min-height: var(--sp-8);
-	padding: 0 var(--sp-7);
+	padding: var(--sp-5) var(--sp-7);
 	border-top: 1px solid var(--border-soft);
-	background: rgba(235, 224, 200, 0.5); /* semi-transparent to show WebGL */
+	background: color-mix(in srgb, var(--bg-page) 92%, transparent);
 }
 
 .typeCounts {
 	display: flex;
-	gap: var(--sp-6);
-	align-items: center;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0;
 }
 
 .typeEntry {
-	font-family: var(--ff-body);
+	font-family: var(--ff-display);
 	font-weight: 400;
-	font-size: var(--fs-body);
+	font-size: var(--fs-subtitle);
 	color: var(--text-secondary);
 	display: flex;
-	align-items: center;
+	align-items: baseline;
 	gap: var(--sp-2);
 	background: none;
 	border: none;
-	padding: 0;
+	border-left: 1px solid var(--border-soft);
+	padding: var(--sp-2) var(--sp-5);
 	cursor: pointer;
 	transition: color 0.2s;
+	text-decoration: none;
 }
 
 .typeEntry:hover:not(:disabled) {
@@ -124,15 +126,25 @@
 }
 
 .typeEntry:disabled {
-	opacity: 0.5;
+	opacity: 0.4;
 	cursor: default;
+}
+
+.typeEntry:first-child {
+	border-left: none;
 }
 
 .typeIcon {
 	color: var(--accent-gold);
+	flex-shrink: 0;
 }
 
 .count {
+	font-family: var(--ff-body);
+	font-size: var(--fs-eyebrow);
+	font-weight: 500;
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
 	color: var(--text-muted);
 }
 
@@ -166,16 +178,20 @@
 	}
 
 	.footer {
-		height: auto;
-		min-height: 64px;
 		padding: var(--sp-4);
-		flex-direction: column;
-		gap: var(--sp-3);
 	}
 
 	.typeCounts {
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: var(--sp-3) var(--sp-5);
+		flex-direction: column;
+	}
+
+	.typeEntry {
+		border-left: none;
+		border-top: 1px solid var(--border-soft);
+		padding: var(--sp-2) 0;
+	}
+
+	.typeEntry:first-child {
+		border-top: none;
 	}
 }
