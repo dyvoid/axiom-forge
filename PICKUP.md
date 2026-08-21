@@ -3,7 +3,76 @@
 Where the last session left off. Update this when you stop, so the next session starts with context
 instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROADMAP.md).
 
-## Design review — four polish fixes shipped
+## Design review — round 2: nine polish fixes shipped
+
+Continuation of the impeccable-skill design review. Round 1 shipped four mechanical
+fixes (faux-bold index titles, dead Cinzel, Grand Index column-major flow, meta value
+column width) and is merged to `main`. Round 2 addresses the remaining findings from
+the review, one commit each, on branch `fix/design-polish-round-2`:
+
+1. **Grand Index title italic → upright.** The Grand Index title was the only one of
+   three display titles (folio, category, grand index) that slanted. Now all three are
+   upright Cormorant — italic can resume meaning editorial voice.
+2. **Folio double rule made visible.** `FolioReadView.divider` (a signature print-idiom
+   double rule) used `--border-soft` which is too close to the parchment background to
+   register. Switched to `--border`.
+3. **Gold eyebrow contrast fixed.** Folio header and category index eyebrows used
+   `--accent-gold` (#9a7a2c, ~3.1:1 on parchment — below WCAG AA for 11px text). Changed
+   to `--text-muted` (#6c5e46, ~5.0:1), which the design doc already assigns to eyebrow
+   text. Gold is kept for type icons (large enough not to need AA).
+4. **Keyboard focus-visible indicator.** No `:focus-visible` existed anywhere; inputs
+   had `outline: none` with only a border-color shift, and links/buttons had no focus
+   styling at all. Added a global `:where(...):focus-visible` rule in `base.css` with a
+   2px `--accent-rust` outline and `!important` to override module-level `outline: none`.
+5. **Cool-gray overlays → warm tints.** Five spots used `rgba(0,0,0,...)` (neutral black)
+   on the warm parchment palette, where it reads as grime. Replaced with warm
+   equivalents: `--bg-hover` for sidebar hover, `rgba(34,27,19,...)` for shadows and
+   dialog overlays, `rgba(138,53,34,0.05)` for the CxSelect menu hover.
+6. **Hardcoded font sizes → tokens.** Six CSS modules hardcoded pixel sizes instead of
+   referencing tokens. Replaced exact matches (`20px`→`--fs-body-lg`, `18px`→
+   `--fs-subtitle`, `16px`→`--fs-body`, `13px`→`--fs-eyebrow`, `14px`→`--fs-label`,
+   `0.3em`→`--ls-sidebar-group`). Added two new tokens for genuinely distinct scales the
+   system lacked: `--fs-subtitle-lg` (24px, folio subtitle) and `--fs-hero-xl` (112px,
+   landing hero title).
+7. **Epithet chips → print-style italic run.** `MetaSection.textChip` rendered text-list
+   values as rounded gray lozenges (`border-radius: 4px`, black-alpha fill) — dashboard
+   vocabulary. Replaced with `.textItem`: inline italic Spectral with middot separators,
+   matching the folio header's alias/tag idiom. Also removes the last
+   `rgba(0,0,0,...)` overlay in the client.
+8. **Duplicate search on Grand Index.** The header's global search was always visible,
+   duplicating the Grand Index's own search + tag filter. Header search now hides on
+   `/index` via `useLocation`. The global `/` keyboard shortcut is also gated so it
+   doesn't swallow `/` on the Grand Index page.
+9. **Inverted font token names corrected.** `--ff-display` pointed to Spectral (the body
+   face) and `--ff-serif` pointed to Cormorant (the actual display face) — the names
+   were backwards. Fixed: `--ff-display` is now Cormorant, `--ff-body` stays Spectral,
+   `--ff-serif` is removed. All 31 references across 19 files updated. Zero visual
+   change — the same font loads at every site. `docs/design-system.md` updated to
+   document the token mapping.
+
+130 tests pass, lint clean, build succeeds. ADR-0011 re-checked: it doesn't reference
+font token names, so the rename doesn't affect its content.
+
+### Still open from the design review
+
+- **Zero `@media` queries.** The entire client has no responsive behavior. An 88px folio
+  title, a fixed 240px sidebar, and a fixed 280px meta column break any window under
+  ~1100px. This is a larger piece of work — a responsive breakpoint strategy — and was
+  deliberately deferred from this batch.
+- **Italic overuse.** Placeholders, buttons, tags, aliases, snippets, and the landing
+  title are all italic. The Grand Index title was fixed (round 2, fix 1), but italic
+  still does too many jobs elsewhere. Needs a deliberate pass deciding what italic means
+  in this design (editorial voice? placeholder hint? secondary metadata?) and routing
+  the rest to upright.
+- **WebGL smoke on the landing.** The one expressive gesture reads as flat parchment in
+  the screenshot. Deferred per user instruction — either dial it up until it registers
+  or cut it.
+
+The `TagFilter.module.css` `--fs-small` bug mentioned in the previous session was
+already fixed — the only remaining reference is in a comment in `EntryContent.module.css`
+explaining the history.
+
+## Design review — round 1: four polish fixes shipped
 
 An impeccable-skill design review ran on the client: file scan (the 59 deterministic rules found
 nothing — a clean scan, not a clean bill of health), source reading of every CSS module, and
@@ -11,7 +80,7 @@ evaluation of the three tracked screenshots in `docs/screenshots/`. The aestheti
 committed and coherent (parchment, Spectral/Cormorant, double rules, drop caps) — this is not a
 "bolder" candidate. The problems were in typographic execution and craft discipline.
 
-**Four mechanical fixes shipped**, one commit each, on branch `fix/design-review-fixes`:
+**Four mechanical fixes shipped**, one commit each, merged to `main`:
 
 1. **Faux-bold index row titles.** `EntryContent.rowTitle` used `font-weight: 700` on Cormorant
    Garamond, but `index.html` only loads 400/500/600 — every category-index row got a synthesized
@@ -27,43 +96,11 @@ committed and coherent (parchment, Spectral/Cormorant, double rules, drop caps) 
    Label column is now `minmax(0, max-content)`, sizing to actual labels and giving the value the
    remainder (~160px).
 
-130 tests pass, lint clean. ADR-0011 re-checked: its content remains accurate (the font-weight was
-never mentioned in the ADR; column-major flow realises the ADR's stated A–Z scanability intent).
-
 **Screenshot discrepancy found.** `docs/screenshots/folio.jpg` shows meta values right-aligned and
 ragged-left, but no `text-align: right` exists anywhere in `MetaSection.module.css` history (verified
 via `git log` on that file). The screenshot was likely captured from a state with uncommitted local
 changes that never landed. Fix 4 targets the cramped-wrap reality that actually ships, not the
 stale symptom in the screenshot.
-
-### Remaining design findings (not yet addressed)
-
-The review produced more findings than the four approved. These are the unaddressed ones, grouped
-by playbook for the next session:
-
-- **typeset** — italic is doing too many jobs (placeholders, buttons, tags, aliases, snippets,
-  subtitles are all italic; when everything slants, slant stops meaning anything). Token names
-  are inverted: `--ff-display` is Spectral (the body face) and `--ff-serif` is Cormorant (the
-  actual display face) — every future contributor will pick the wrong one. Hardcoded sizes bypass
-  the token system the docs promise (sidebar 20/18/16px, field titles 13/14px, folio subtitle 24px,
-  landing title 112px; the lint guard catches undefined tokens but not un-tokened values).
-- **audit** — keyboard focus is invisible (no `:focus-visible` anywhere; search and new-entry
-  inputs use `outline: none` with only a border-color shift). `--accent-gold` (#9a7a2c) on parchment
-  measures ~3.1:1, below WCAG AA for the 11px uppercase eyebrows that use it. The entire client has
-  zero `@media` queries — an 88px folio title and a fixed 240px sidebar break any window under
-  ~1100px.
-- **polish** — the folio's double rule under the tag row is nearly invisible at `--border-soft` 1px
-  (it's a signature move of the print idiom and it vanishes). Hovers use `rgba(0,0,0,0.03)` in some
-  places and `var(--bg-hover)` in others; the search dropdown shadow is `rgba(0,0,0,0.4)` — cool
-  gray on warm parchment reads as grime. Epithet chips (rounded gray lozenges with `border-radius:
-  4px` and black-alpha fill) are dashboard vocabulary in a world of hairlines and small caps.
-- **layout** — two search boxes on the Grand Index screen (the header's and the page's own); the
-  header search should probably scope itself out on that route. The WebGL smoke on the landing is
-  the one expressive gesture and it reads as flat parchment in the screenshot — either dial it up
-  until it registers or cut it.
-
-Also still open from the previous session: `TagFilter.module.css` still uses the undefined
-`--fs-small` token (same defect that flattened the card type scale). One word to fix.
 
 ## Repo checks + six shipped token bugs
 
