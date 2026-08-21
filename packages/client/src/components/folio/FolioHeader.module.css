@@ -127,3 +127,31 @@
 	margin-right: var(--sp-3);
 	color: var(--border-soft);
 }
+
+/* ── Responsive: tighten spacing on narrow screens ───────── */
+@media (max-width: 600px) {
+	.header {
+		margin-bottom: var(--sp-5);
+	}
+
+	.topRow {
+		margin-bottom: var(--sp-4);
+	}
+
+	.actions {
+		gap: var(--sp-2);
+	}
+
+	.metaRow {
+		gap: var(--sp-3);
+		flex-wrap: wrap;
+	}
+}
+
+/* ── Touch targets (coarse pointer) ─────────────────────── */
+@media (pointer: coarse) {
+	.editBtn {
+		min-height: var(--touch-target);
+		padding: 8px 14px;
+	}
+}

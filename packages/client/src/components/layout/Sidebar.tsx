@@ -5,7 +5,7 @@ import { useFolios, useCreateFolio } from '../../api/queries.js';
 import styles from './Sidebar.module.css';
 import { Icon } from '../ui/Icon.js';
 
-export function Sidebar(): JSX.Element {
+export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Element {
 	const { schema } = useProject();
 	const { data: folios } = useFolios();
 	const { folder: routeFolder, name: routeName } = useParams<{ folder?: string, name?: string }>();
@@ -140,6 +140,7 @@ export function Sidebar(): JSX.Element {
 								className={`${styles.typeRow} ${isActive ? styles.activeTypeRow : ''}`}
 								onClick={() => {
 									navigate(`/folio/${typeDef.folder}`);
+									onNavigate?.();
 								}}
 							>
 								<div className={styles.typeLabel}>
@@ -165,6 +166,7 @@ export function Sidebar(): JSX.Element {
 									className={({ isActive }) =>
 										`${styles.folioLink} ${isActive ? styles.active : ''}`
 									}
+									onClick={() => onNavigate?.()}
 								>
 									{f.title}
 								</NavLink>

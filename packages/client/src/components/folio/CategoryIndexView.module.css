@@ -155,3 +155,34 @@
 	opacity: 0.7;
 }
 
+/* ── Responsive ─────────────────────────────────────────── */
+
+/* Below the stack breakpoint, the name column clamp(9ch, 22%, 24ch)
+   is still fine — it's content-relative. But the page padding and
+   filter row need to tighten. */
+@media (max-width: 600px) {
+	.container {
+		padding: var(--sp-5) var(--sp-4);
+	}
+
+	.header {
+		margin-bottom: var(--sp-5);
+	}
+
+	.headerTop {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: var(--sp-3);
+	}
+
+	.filterRow {
+		flex-direction: column;
+		gap: var(--sp-3);
+	}
+
+	.entry {
+		gap: var(--sp-3);
+		padding: var(--sp-3) 0;
+	}
+}
+

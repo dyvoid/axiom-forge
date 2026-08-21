@@ -265,3 +265,49 @@
 	border: 1px solid var(--accent-rust);
 	box-shadow: 0 4px 16px rgba(138, 53, 34, 0.2);
 }
+
+/* ── Responsive: fluid popover + menu on narrow screens ──── */
+@media (max-width: 600px) {
+	.menu {
+		max-height: 200px;
+	}
+
+	.inlinePickerPopover {
+		width: min(260px, 90vw);
+	}
+}
+
+/* ── Touch targets (coarse pointer) ─────────────────────── */
+@media (pointer: coarse) {
+	.input {
+		padding: 10px 12px;
+	}
+
+	.menuItem {
+		padding: 12px;
+		min-height: var(--touch-target);
+		display: flex;
+		align-items: center;
+	}
+
+	.chip {
+		padding: 6px 8px 6px 10px;
+	}
+
+	.chipRemove {
+		min-width: var(--touch-target);
+		min-height: var(--touch-target);
+		padding: 0 8px;
+	}
+
+	.pickerClear {
+		min-width: var(--touch-target);
+		min-height: var(--touch-target);
+		padding: 0 10px;
+	}
+
+	.addBtn {
+		min-height: var(--touch-target);
+		padding: 6px 12px;
+	}
+}

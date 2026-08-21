@@ -8,7 +8,7 @@ import { EntryContent } from '../ui/EntryContent.js';
 import { reloadProject } from '../../api/client.js';
 import styles from './TopHeader.module.css';
 
-export function TopHeader(): JSX.Element {
+export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): JSX.Element {
 	const { config } = useProject();
 	const queryClient = useQueryClient();
 	const navigate = useNavigate();
@@ -105,11 +105,21 @@ export function TopHeader(): JSX.Element {
 
 	return (
 		<header className={styles.header}>
-			<Link to="/index" className={styles.left}>
-				<span className={styles.logo}>AXIOM · FORGE</span>
-				<div className={styles.separator} />
-				<span className={styles.projectTitle}>{config.name}</span>
-			</Link>
+			<div className={styles.leftGroup}>
+				<button
+					type="button"
+					className={styles.menuBtn}
+					onClick={onToggleDrawer}
+					aria-label="Toggle navigation"
+				>
+					<Icon name="menu" size={18} />
+				</button>
+				<Link to="/index" className={styles.left}>
+					<span className={styles.logo}>AXIOM · FORGE</span>
+					<div className={styles.separator} />
+					<span className={styles.projectTitle}>{config.name}</span>
+				</Link>
+			</div>
 			<div className={styles.right}>
 				<button
 					className={styles.syncButton}

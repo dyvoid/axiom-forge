@@ -73,3 +73,27 @@
 	background: var(--accent-rust);
 	border-color: var(--accent-rust);
 }
+
+/* ── Responsive: full-width dialog on narrow screens ─────── */
+@media (max-width: 600px) {
+	.overlay {
+		padding: var(--sp-4);
+	}
+
+	.dialog {
+		max-width: none;
+		width: 100%;
+		padding: 20px var(--sp-5);
+	}
+
+	.actions {
+		flex-direction: column-reverse;
+		gap: var(--sp-2);
+	}
+
+	.btnCancel,
+	.btnConfirm {
+		width: 100%;
+		text-align: center;
+	}
+}

@@ -69,3 +69,48 @@
 	color: var(--text-secondary);
 	font-family: var(--ff-body);
 }
+
+/* ── Responsive: stack the two-column folio below --bp-stack ── */
+@media (max-width: 1100px) {
+	.topBlock {
+		flex-direction: column;
+		gap: var(--sp-7);
+	}
+
+	/* On narrow screens the meta column precedes the prose — the quick
+	   facts (sex, origin, allegiance) orient the reader before the long
+	   form history. On desktop the two sit side by side so order is moot. */
+	.metaCol {
+		flex: 1 1 auto;
+		width: 100%;
+		order: 1;
+	}
+
+	.proseCol {
+		max-width: none;
+		border-right: none;
+		padding-right: 0;
+		border-top: 1px solid var(--border-soft);
+		padding-top: var(--sp-6);
+		order: 2;
+	}
+}
+
+/* ── Narrow screens: tighten the page padding ──────────────── */
+@media (max-width: 600px) {
+	.container {
+		padding: var(--sp-5) var(--sp-4);
+	}
+
+	.topBlock {
+		margin-top: var(--sp-5);
+	}
+
+	.remaining {
+		gap: var(--sp-6);
+	}
+
+	.divider {
+		margin: var(--sp-6) 0;
+	}
+}

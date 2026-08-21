@@ -288,3 +288,61 @@
 	opacity: 0.3;
 	cursor: default;
 }
+
+/* ── Responsive: stack field rows + fluid toolbar ─────────── */
+
+/* Below the stack breakpoint, the 170px label column eats too much
+   of a narrow main column. Stack label above value. */
+@media (max-width: 1100px) {
+	.fieldRow {
+		grid-template-columns: 1fr;
+		gap: var(--sp-2);
+	}
+
+	.fieldLabel {
+		padding-top: 0;
+	}
+}
+
+@media (max-width: 600px) {
+	.container {
+		padding: var(--sp-5) var(--sp-4);
+	}
+
+	/* The toolbar stretches to the negative margins of the container.
+	   On narrow screens, reduce the margins so the toolbar doesn't
+	   overflow. */
+	.toolbar {
+		margin: calc(-1 * var(--sp-5)) calc(-1 * var(--sp-4)) 24px;
+		padding: 12px var(--sp-4);
+		gap: 12px;
+	}
+
+	.toolbar .btnGhost,
+	.toolbar .btnPrimary {
+		padding: 8px 14px;
+		font-size: 11px;
+	}
+
+	.metaRow {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: var(--sp-2);
+	}
+
+	.tagsSlot {
+		min-width: 0;
+		width: 100%;
+	}
+
+	.footer {
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.footerStatus {
+		width: 100%;
+		margin-right: 0;
+		order: -1;
+	}
+}
