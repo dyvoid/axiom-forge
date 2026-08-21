@@ -25,7 +25,7 @@
 	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-eyebrow);
 	text-transform: uppercase;
-	color: var(--accent-gold);
+	color: var(--text-muted);
 	display: flex;
 	align-items: center;
 	gap: 4px;
