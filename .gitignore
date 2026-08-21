@@ -36,7 +36,7 @@ dist/
 .DS_Store
 
 # --- AI tool artifacts ---
-# Caches and scratch output from AI coding tools. Keep .prompts/ tracked — those are intentional.
+# Caches and scratch output from AI coding tools.
 .aider*
 .cursor/
 coverage/
