@@ -263,7 +263,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 			{/* Folio eyebrow */}
 			<div className={styles.eyebrowRow}>
 				<div className={styles.eyebrow}>
-					<Icon name={typeDef.icon} size={14} />
+					<Icon name={typeDef.icon} size={12} />
 					<span>·</span>
 					<span>{folio.type}</span>
 					<span>·</span>

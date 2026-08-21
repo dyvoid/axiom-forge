@@ -132,10 +132,15 @@
 	min-width: var(--meta-col-width);
 }
 
+/* Same hairline vocabulary as FolioReadView.module.css's .divider (which
+   separates its header from the top block): border-top, var(--sp-7) both
+   sides. This is the title/meta -> sections divider, the edit-view
+   counterpart of that same seam, so it shouldn't have its own smaller
+   bottom-only rhythm. */
 .divider {
-	height: 1px;
-	background: var(--border);
-	margin: 0 0 var(--sp-5);
+	border-top: 1px solid var(--border);
+	margin: var(--sp-7) 0;
+	width: 100%;
 }
 
 .dividerSoft {
@@ -218,10 +223,14 @@
 	color: var(--accent-rust);
 }
 
+/* Same "warning callout" vocabulary as FolioReadView.module.css's
+   .warnings/.warningsLabel: a left rust stripe + tinted fill, not a full
+   border box. That view shows schema warnings, this one shows save/create
+   errors and broken links, but it's the same UI role and should look it. */
 .warnings {
-	border: 1px solid var(--accent-rust);
-	background: rgba(138, 53, 34, 0.05);
-	padding: var(--sp-3) var(--sp-3);
+	border-left: 2px solid var(--accent-rust);
+	background: color-mix(in srgb, var(--accent-rust) 6%, var(--bg-page));
+	padding: var(--sp-3) var(--sp-4);
 	margin-bottom: var(--sp-5);
 	font-family: var(--ff-body);
 	font-size: var(--fs-label);
@@ -234,13 +243,13 @@
 	text-transform: uppercase;
 	color: var(--accent-rust);
 	font-weight: 500;
-	margin-bottom: 6px;
+	margin-bottom: var(--sp-2);
 }
 
 /* Gold-toned variant: not an error, just an integrity warning. */
 .brokenLinks {
-	border-color: var(--accent-gold);
-	background: rgba(154, 122, 44, 0.06);
+	border-left-color: var(--accent-gold);
+	background: color-mix(in srgb, var(--accent-gold) 6%, var(--bg-page));
 }
 
 .brokenLinks .warningsLabel {

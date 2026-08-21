@@ -5,6 +5,8 @@ import { useFolio, useSaveFolio, useDeleteFolio } from '../api/queries.js';
 import { ConflictError } from '../api/client.js';
 import { useProject } from '../context/ProjectContext.js';
 import { FolioEditView } from '../components/folio/FolioEditView.js';
+import { FolioEmptyState } from '../components/folio/FolioEmptyState.js';
+import editStyles from '../components/folio/FolioEditView.module.css';
 
 export function FolioEdit(): JSX.Element {
 	const { folder, name } = useParams<{ folder: string; name: string }>();
@@ -17,25 +19,21 @@ export function FolioEdit(): JSX.Element {
 
 	if (isLoading) {
 		return (
-			<div style={{ padding: '2rem', color: 'var(--text-muted)' }}>
-				Loading folio…
+			<div className={editStyles.container}>
+				<p className={editStyles.footerStatus}>Loading folio…</p>
 			</div>
 		);
 	}
 
 	if (error || !folio) {
-		return (
-			<div style={{ padding: '2rem', color: 'var(--accent-rust)' }}>
-				Folio not found.
-			</div>
-		);
+		return <FolioEmptyState />;
 	}
 
 	const typeDef = schema.types[folio.type];
 	if (!typeDef) {
 		return (
-			<div style={{ padding: '2rem', color: 'var(--accent-rust)' }}>
-				Unknown type: {folio.type}
+			<div className={editStyles.container}>
+				<p className={`${editStyles.footerStatus} ${editStyles.dirty}`}>Unknown type: {folio.type}</p>
 			</div>
 		);
 	}

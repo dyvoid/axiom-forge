@@ -5,10 +5,11 @@ export type IconName = keyof typeof icons;
 interface IconProps {
 	name: string;
 	size?: number | string;
+	strokeWidth?: number | string;
 	className?: string;
 }
 
-export function Icon({ name, size = 'var(--icon-size)', className }: IconProps): JSX.Element {
+export function Icon({ name, size = 'var(--icon-size)', strokeWidth = 'var(--icon-stroke)', className }: IconProps): JSX.Element {
 	// Transform schema icon names (e.g., 'map-pin' to 'MapPin')
 	const pascalName = name
 		.split('-')
@@ -20,7 +21,7 @@ export function Icon({ name, size = 'var(--icon-size)', className }: IconProps):
 	return (
 		<LucideIcon
 			size={size}
-			strokeWidth="var(--icon-stroke)"
+			strokeWidth={strokeWidth}
 			className={className}
 			style={{ flexShrink: 0 }}
 		/>

@@ -1,0 +1,21 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	height: 100dvh;
+	padding: var(--sp-8) var(--sp-4);
+	text-align: center;
+	background: var(--bg-page);
+}
+
+.code {
+	font-family: var(--ff-body);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--text-muted);
+	margin-bottom: var(--sp-3);
+}
