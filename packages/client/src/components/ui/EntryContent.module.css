@@ -99,7 +99,10 @@
 	min-width: 0;
 	font-family: var(--ff-serif);
 	font-size: var(--fs-subtitle);
-	font-weight: 700;
+	/* 600 is the heaviest weight Cormorant Garamond is loaded at (index.html).
+	   700 made the browser synthesize a faux bold — the letters smeared on
+	   every category-index row. */
+	font-weight: 600;
 	color: var(--text-primary);
 	white-space: nowrap;
 	overflow: hidden;
