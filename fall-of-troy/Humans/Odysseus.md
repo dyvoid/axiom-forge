@@ -7,12 +7,12 @@ tags:
   - king
 aliases:
   - Ulysses
+  - Sacker of Cities
 ---
 
 # Odysseus
 
 ## Basic Information
-- **Epithets:** The Cunning, Man of Many Devices, Sacker of Cities
 - **Sex:** Male
 - **Allegiance:** [[Factions/Greeks]]
 - **Divine Patron:** [[Gods/Athena]]

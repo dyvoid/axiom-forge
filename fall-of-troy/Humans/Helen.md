@@ -6,12 +6,12 @@ tags:
   - divine-born
 aliases:
   - Helen of Troy
+  - Helen of Sparta
 ---
 
 # Helen
 
 ## Basic Information
-- **Epithets:** Helen of Troy, Helen of Sparta, Face That Launched a Thousand Ships
 - **Sex:** Female
 - **Allegiance:** [[Factions/Trojans]]
 - **Spouse:** [[Humans/Paris]]

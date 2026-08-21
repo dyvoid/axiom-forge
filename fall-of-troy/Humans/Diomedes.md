@@ -12,7 +12,6 @@ aliases:
 # Diomedes
 
 ## Basic Information
-- **Epithets:** Lord of the War Cry, King of Argos, Tamer of Horses
 - **Sex:** Male
 - **Born:** c. 1242 BCE
 - **Allegiance:** [[Factions/Greeks]]

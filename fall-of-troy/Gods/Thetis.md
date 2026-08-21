@@ -13,7 +13,6 @@ aliases:
 ## Basic Information
 - **Domains:** Sea, Fate
 - **Allegiance:** [[Factions/Greeks]]
-- **Epithets:** Silver-Footed, Daughter of the Old Man of the Sea
 
 ## Description
 A sea-nymph of the Nereids, Thetis was fated to bear a son greater than his father — a prophecy that prompted Zeus and Poseidon to abandon their pursuit of her and marry her off to the mortal king Peleus instead. Her son was Achilles, the greatest warrior of his age, and her relationship with him defines her presence in the Iliad.

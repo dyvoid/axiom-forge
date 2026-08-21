@@ -9,7 +9,6 @@ tags:
 # Andromache
 
 ## Basic Information
-- **Epithets:** Wife of Hector, Lady of Thebe
 - **Sex:** Female
 - **Born:** c. 1238 BCE
 - **Allegiance:** [[Factions/Trojans]]

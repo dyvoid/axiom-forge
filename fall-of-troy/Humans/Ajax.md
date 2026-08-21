@@ -12,7 +12,6 @@ aliases:
 # Ajax
 
 ## Basic Information
-- **Epithets:** Bulwark of the Achaeans, Bearer of the Tower Shield, Second Only to Achilles
 - **Sex:** Male
 - **Born:** c. 1245 BCE
 - **Died:** Year 10 of the Siege of Troy

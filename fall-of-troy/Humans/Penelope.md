@@ -6,12 +6,12 @@ tags:
   - ithaca
 aliases:
   - Weaver of the Shroud
+  - Queen of Ithaca
 ---
 
 # Penelope
 
 ## Basic Information
-- **Epithets:** The Constant, Weaver of the Shroud, Queen of Ithaca
 - **Sex:** Female
 - **Born:** c. 1248 BCE
 - **Allegiance:** [[Factions/Greeks]]

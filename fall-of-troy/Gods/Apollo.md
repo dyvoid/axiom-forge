@@ -14,7 +14,6 @@ aliases:
 ## Basic Information
 - **Domains:** Sun, Prophecy, War
 - **Allegiance:** [[Factions/Trojans]]
-- **Epithets:** Far-Shooter, Silver-Bowed, Lord of Light, Lord of Mice
 
 ## Description
 God of the sun, prophecy, and the silver bow, Apollo supported the Trojans throughout the war — in part because he had helped build the walls of Troy alongside Poseidon during an earlier age, and felt a proprietary attachment to the city. He was also the patron of Hector and the divine force behind several of Troy's most decisive moments.

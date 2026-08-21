@@ -14,7 +14,6 @@ aliases:
 ## Basic Information
 - **Domains:** Love, Trickery
 - **Allegiance:** [[Factions/Trojans]]
-- **Epithets:** Golden, Born of Sea-Foam, Laughter-Loving
 
 ## Description
 Goddess of love and desire, Aphrodite set the war in motion when she offered Paris the most beautiful woman in the world in exchange for the golden apple at the Judgment. She did not create [[Humans/Helen]]'s beauty; she promised Paris access to it. The distinction mattered to no one who subsequently died on the plain of Troy.
