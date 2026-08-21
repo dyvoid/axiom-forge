@@ -60,14 +60,20 @@
 	color: var(--text-primary);
 }
 
-.textChip {
-	display: inline-flex;
-	align-items: center;
-	padding: 2px var(--sp-2);
-	border-radius: 4px;
-	background: rgba(0, 0, 0, 0.03);
-	border: 1px solid var(--border-soft);
+/* Text-list values (epithets, aliases) render as an italic run with
+   middot separators, matching the folio header's alias idiom -- not as
+   rounded gray lozenges, which are dashboard vocabulary in a print
+   aesthetic. The wrapping flex container in MetaSection.tsx provides
+   the gap; the middot adds the separator. */
+.textItem {
 	font-family: var(--ff-body);
+	font-style: italic;
 	font-size: var(--fs-body-sm);
 	color: var(--text-secondary);
+}
+
+.textItem + .textItem::before {
+	content: '·';
+	margin-right: 6px;
+	color: var(--border-soft);
 }

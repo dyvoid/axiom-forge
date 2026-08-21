@@ -60,9 +60,9 @@ export function FieldValueRenderer({ value, type }: { value: unknown; type: stri
 	}
 	if (type === 'text-list' || type === 'multiselect') {
 		return (
-			<div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+			<div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
 				{(value as string[]).map((item, i) => (
-					<span key={i} className={styles.textChip}>{item}</span>
+					<span key={i} className={styles.textItem}>{item}</span>
 				))}
 			</div>
 		);
