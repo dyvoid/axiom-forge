@@ -144,3 +144,20 @@
 	flex: 0 0 auto;
 }
 
+/* The Grand Index is the encyclopedia's master alphabetical spine, so its
+   entries take the system's index-title treatment (Cormorant 600, --fs-subtitle)
+   — the same hierarchy the Category Index row uses — rather than body text. The
+   inline idiom is icon + title only (no gloss column): the column-major layout
+   scans down a letter group, so the name is the whole line. Color is inherited
+   from the wrapping link so the rust hover state still applies. */
+.inlineTitle {
+	font-family: var(--ff-display);
+	font-weight: 600;
+	font-size: var(--fs-subtitle);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+

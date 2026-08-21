@@ -56,17 +56,17 @@
 .letterHeader {
 	font-family: var(--ff-display);
 	font-weight: 400;
-	font-size: var(--fs-h2);
+	font-size: var(--fs-subtitle-lg);
 	color: var(--accent-rust);
-	border-bottom: 1px solid var(--border-soft);
+	border-bottom: 1px solid var(--border);
 	padding-bottom: var(--sp-2);
-	margin: 0 0 var(--sp-4);
+	margin: 0 0 var(--sp-5);
 }
 
 .letterList {
 	display: flex;
 	flex-direction: column;
-	gap: var(--sp-2);
+	gap: var(--sp-3);
 }
 
 .entryLink {

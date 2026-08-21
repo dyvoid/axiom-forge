@@ -46,10 +46,10 @@ export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.E
 			<>
 				{icon && (
 					<span className={styles.iconWrapper}>
-						<Icon name={icon} size={10} />
+						<Icon name={icon} size={12} />
 					</span>
 				)}
-				{folio.title}
+				<span className={styles.inlineTitle}>{folio.title}</span>
 			</>
 		);
 	}
