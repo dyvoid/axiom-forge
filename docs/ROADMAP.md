@@ -18,6 +18,7 @@ reasoning, and consequences. To start a feature: ensure its ADR is Accepted, the
 | Shared Folio Walker | Accepted | [ADR-0007](adr/0007-consolidate-folio-integrity.md) | Implemented 2026-07-12; de-dupes folio traversal (split from old 0007) |
 | YAML Frontmatter for Metadata | Accepted | [ADR-0008](adr/0008-yaml-frontmatter-metadata.md) | Breaking format change; replaces `## Meta` |
 | Consolidate Folio Validation Rules | Accepted | [ADR-0009](adr/0009-consolidate-folio-validation-rules.md) | Not yet built; keeps read/write severity split, unifies rule logic (split from old 0007) |
+| Markdown Source Edit Mode | Proposed | [ADR-0012](adr/0012-markdown-source-edit-mode.md) | Toggle between structured form editor and raw Markdown textarea; 4 open questions to settle before building |
 
 ## Completed
 
@@ -47,4 +48,8 @@ Agreed-upon cleanups that don't warrant an ADR. Check them off when done.
 - [x] Performance — replaced `backdrop-filter: blur(6px)` on edit toolbar with opaque background; memoized folio lookup map for O(1) wikilink chip resolution
 - [x] Route unsaved-changes guard through `ConfirmDialog` — replaces native `window.confirm` with the app's own dialog
 - [x] Italic cleanup — removed italic from action labels and structural elements per the italic-is-secondary rule; landing hero italic kept as editorial register
+- [x] WebGL smoke bolder — darker plumes, faster drift, center safe-zone, and colophon-style footer; legibility preserved with 92% opaque footer and lighter smoke color
+- [x] Folio breadcrumbs — `Index → Type → Folio` on read view, `Index → Type` on category index, `aria-current` on sidebar
+- [x] Edit toolbar polish — eyebrow-sized buttons with thin soft border and 2px radius, outline-style Save, touch targets, tokenized stub button
+- [x] Dialog token cleanup — hardcoded 12px/11px and fixed padding in `SchemaWarningsDialog` and `ConfirmDialog` routed through tokens
 - [ ] Replace `ProjectStore` linear array scans (`.find`/`.filter`) with `Map` lookups — was parked pending ADR-0003; unparked by [ADR-0010](adr/0010-multi-file-write-safety.md), which declines the document-model rewrite. Independent and low priority: the scans are over tens of records
