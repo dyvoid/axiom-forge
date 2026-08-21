@@ -43,20 +43,7 @@ Annotate AI-assisted commits in the body, not the subject:
 ```
 feat(client): add theme switching to settings panel
 
-ai-assisted: claude-sonnet-4-6 | prompt: .prompts/theme-switching.md
-```
-
----
-
-## Prompt Versioning
-
-Store prompts that generated significant code alongside the code:
-
-```
-.prompts/
-  theme-switching.md
-  multi-project-support.md
-  parser-rewrite.md
+ai-assisted: claude-sonnet-4-6
 ```
 
 ---

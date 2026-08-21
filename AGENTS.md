@@ -106,11 +106,8 @@ Put AI context in the body, not the subject:
 ```
 feat(scope): short imperative summary
 
-ai-assisted: claude-sonnet-4-6 | prompt: .prompts/<name>.md
+ai-assisted: claude-sonnet-4-6
 ```
-
-### Prompts
-Prompts that produced meaningful code live in `.prompts/`. Reference them from the commit body.
 
 ---
 
