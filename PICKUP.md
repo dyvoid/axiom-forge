@@ -28,4 +28,4 @@ Recommended order, with the reasoning so it does not need re-deriving:
 ## Design Backlog
 
 Empty. The WebGL smoke, italic overuse, `window.confirm` guard, and critique
-findings (breadcrumbs, edit toolbar, token cleanup) are all done.
+findings (breadcrumbs, edit toolbar, token cleanup, themed FolioSkeleton and FolioEmptyState) are all done.
