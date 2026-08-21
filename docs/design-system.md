@@ -6,10 +6,10 @@ Axiom Forge embraces a print-aesthetic design language. It uses pure CSS Modules
 
 Two free Google Fonts dictate the typographic hierarchy:
 
-| Role | Family | Weights | Notes |
-|---|---|---|---|
-| **Display / titles** | `Cormorant Garamond` | 400, 500 (italic) | Humanist serif. Used for folio H1, subtitles, and large drop caps. |
-| **Body / labels** | `Spectral` | 400, 500 (italic) | Clean serif. Default body text, smallcaps labels (eyebrows), field values. |
+| Role | Family | Token | Weights | Notes |
+|---|---|---|---|---|
+| **Display / titles** | `Cormorant Garamond` | `--ff-display` | 400, 500 (italic) | Humanist serif. Used for folio H1, subtitles, and large drop caps. |
+| **Body / labels** | `Spectral` | `--ff-body` | 400, 500 (italic) | Clean serif. Default body text, smallcaps labels (eyebrows), field values. |
 
 Spectral smallcaps labels use generous tracking (e.g. `letter-spacing: 0.18em` for section labels).
 

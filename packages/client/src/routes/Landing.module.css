@@ -14,7 +14,7 @@
 	right: var(--sp-7);
 	display: flex;
 	justify-content: space-between;
-	font-family: var(--ff-display);
+	font-family: var(--ff-body);
 	font-weight: 500;
 	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-sidebar-group);
@@ -60,7 +60,7 @@
 }
 
 .subtitle {
-	font-family: var(--ff-display);
+	font-family: var(--ff-body);
 	font-weight: 500;
 	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-sidebar-group);
@@ -69,7 +69,7 @@
 }
 
 .cta {
-	font-family: var(--ff-display);
+	font-family: var(--ff-body);
 	font-weight: 500;
 	font-size: var(--fs-label);
 	letter-spacing: var(--ls-button);

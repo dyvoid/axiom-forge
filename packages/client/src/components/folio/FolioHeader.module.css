@@ -12,7 +12,7 @@
 .eyebrow {
 	display: flex;
 	align-items: center;
-	font-family: var(--ff-display);
+	font-family: var(--ff-body);
 	font-weight: 500;
 	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-eyebrow);
@@ -28,7 +28,7 @@
 .actions {
 	display: flex;
 	align-items: center;
-	font-family: var(--ff-display);
+	font-family: var(--ff-body);
 	font-weight: 500;
 	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-eyebrow);
@@ -38,7 +38,7 @@
 
 .editBtn {
 	cursor: pointer;
-	font-family: var(--ff-display);
+	font-family: var(--ff-body);
 	font-weight: 500;
 	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-eyebrow);
@@ -56,7 +56,7 @@
 }
 
 .title {
-	font-family: var(--ff-serif);
+	font-family: var(--ff-display);
 	font-weight: 400;
 	font-size: var(--fs-hero);
 	line-height: var(--lh-h1);
@@ -79,7 +79,7 @@
 }
 
 .dateRange {
-	font-family: var(--ff-display);
+	font-family: var(--ff-body);
 	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-eyebrow);
 	color: var(--text-secondary);
@@ -120,7 +120,7 @@
 }
 
 .aliasLabel {
-	font-family: var(--ff-display);
+	font-family: var(--ff-body);
 	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-eyebrow);
 	text-transform: uppercase;
