@@ -24,8 +24,8 @@
 }
 
 .divider {
-	border-top: 1px solid var(--border-soft);
-	border-bottom: 1px solid var(--border-soft);
+	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
 	height: 3px;
 	margin: var(--sp-7) 0;
 	width: 100%;
