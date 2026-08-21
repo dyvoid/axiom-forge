@@ -41,4 +41,5 @@ Agreed-upon cleanups that don't warrant an ADR. Check them off when done.
 - [x] Memoize `Sidebar` `byType` grouping with `useMemo`
 - [x] Add integration tests for the `config` and `schema` routes
 - [x] Return real parse warnings from PUT/POST save responses (was hardcoded `[]`) via a serialize→parse round-trip
+- [x] Responsive breakpoints — drawer sidebar below 900px, stacked folio columns below 1100px, compact header below 600px, fluid display type via `clamp()`, touch targets under `pointer: coarse`
 - [ ] Replace `ProjectStore` linear array scans (`.find`/`.filter`) with `Map` lookups — was parked pending ADR-0003; unparked by [ADR-0010](adr/0010-multi-file-write-safety.md), which declines the document-model rewrite. Independent and low priority: the scans are over tens of records

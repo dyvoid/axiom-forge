@@ -105,3 +105,19 @@ Sizes come from `--fs-body-sm` (15px), `--fs-meta` (13.5px), `--fs-label` (13px)
 
 ### WebGL Integration
 The `/` Landing route features a WebGL fragment shader drifting warm-gray smoke over parchment (ported from `prototype/webgl-hero.js`). Read mode does not display this shader.
+
+### Responsive Behavior
+
+The layout adapts across three content-driven breakpoints, defined as tokens in `tokens.css`:
+
+| Token | Value | What happens below it |
+|---|---|---|
+| `--bp-stack` | `1100px` | The folio two-column (prose + meta) stacks vertically. Meta precedes prose — the quick-facts column orients the reader before the long-form history. Edit-view field rows stack label-above-value. |
+| `--bp-drawer` | `900px` | The fixed sidebar lifts off the flow and becomes an overlay drawer, slid in by a hamburger button in the header. A scrim dims the page behind it; clicking the scrim or navigating closes the drawer. |
+| `--bp-compact` | `600px` | The header hides the project title (logo alone is enough context). Search becomes fluid. Page padding tightens. Dialogs go full-width with stacked actions. |
+
+Display type sizes (`--fs-hero-xl`, `--fs-hero`, `--fs-h1`, `--fs-h2`, `--fs-subtitle-lg`) are fluid via `clamp()` — they scale with the viewport instead of overflowing. Body and label sizes stay fixed; they're small enough to fit at any viewport and the hierarchy depends on the display sizes doing the scaling work.
+
+Touch targets enlarge to `--touch-target` (44px) under `@media (pointer: coarse)`, applied to sidebar rows, icon-only buttons, chip remove buttons, and menu items. The print-aesthetic density is preserved on fine-pointer (mouse/trackpad) devices.
+
+The viewport meta tag includes `viewport-fit=cover` for safe-area handling on notched devices. The shell uses `100dvh` (with `100vh` fallback) so mobile browser chrome doesn't cover content.
