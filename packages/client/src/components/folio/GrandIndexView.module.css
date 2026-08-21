@@ -38,15 +38,19 @@
 	margin: 0 auto;
 }
 
+/* Column-major: an alphabetical index is scanned *down* a column, then to the
+   next column -- not across rows. flex-wrap put A and D on the top row, F and G
+   on the next, so the alphabetical spine zigzagged. CSS multi-column flows
+   top-to-bottom by default; `column-fill: balance` (the default) equalizes
+   column heights so the eye runs col 1 then col 2. `break-inside: avoid` keeps
+   each letter group atomic -- no group is split across a column break. */
 .indexColumns {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--sp-8);
-	justify-content: center;
+	column-width: 260px;
+	column-gap: var(--sp-8);
 }
 
 .letterGroup {
-	min-width: 240px;
+	break-inside: avoid;
 	margin-bottom: var(--sp-6);
 }
 
