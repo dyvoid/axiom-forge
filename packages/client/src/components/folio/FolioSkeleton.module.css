@@ -1,0 +1,66 @@
+.skeleton {
+	opacity: 0.7;
+}
+
+.eyebrow {
+	height: 12px;
+	width: 140px;
+	background-color: var(--bg-panel);
+	margin-bottom: var(--sp-4);
+}
+
+.title {
+	height: 64px;
+	width: 60%;
+	background-color: var(--bg-panel);
+	margin-bottom: var(--sp-4);
+}
+
+.aliases {
+	height: 20px;
+	width: 30%;
+	background-color: var(--bg-panel);
+	margin-bottom: var(--sp-4);
+}
+
+.textBlock {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-top: var(--sp-6);
+}
+
+.textLine {
+	height: 14px;
+	background-color: var(--bg-panel);
+	border-radius: 0;
+}
+
+.textLine:nth-child(1) { width: 100%; }
+.textLine:nth-child(2) { width: 95%; }
+.textLine:nth-child(3) { width: 98%; }
+.textLine:nth-child(4) { width: 85%; }
+
+.metaItem {
+	height: 32px;
+	width: 100%;
+	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
+	display: flex;
+	align-items: center;
+	margin-bottom: var(--sp-3);
+}
+
+.metaLabel {
+	height: 10px;
+	width: 60px;
+	background-color: var(--bg-panel);
+}
+
+.loadingText {
+	font-family: var(--ff-body);
+	font-style: italic;
+	color: var(--text-muted);
+	font-size: var(--fs-body);
+	text-align: center;
+	margin-top: var(--sp-8);
+}
