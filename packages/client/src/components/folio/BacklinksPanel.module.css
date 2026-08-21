@@ -9,7 +9,7 @@
 	font-size: var(--fs-eyebrow);
 	color: var(--text-muted);
 	text-transform: uppercase;
-	letter-spacing: 0.1em;
+	letter-spacing: var(--ls-eyebrow);
 	margin-bottom: var(--sp-4);
 }
 

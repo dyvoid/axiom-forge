@@ -26,17 +26,17 @@
 	   of Troy" wrapped into 3+ ragged lines. Now the value gets whatever the
 	   labels don't need. */
 	grid-template-columns: minmax(0, max-content) 1fr;
-	gap: 16px;
+	gap: var(--sp-4);
 	align-items: baseline;
-	padding: 6px 0;
+	padding: var(--sp-2) 0;
 	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
 }
 
 .fieldStacked {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
-	padding: 8px 0;
+	gap: var(--sp-2);
+	padding: var(--sp-2) 0;
 	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
 }
 

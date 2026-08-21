@@ -11,7 +11,7 @@
 .dialog {
 	background: var(--bg-page);
 	border: 1px solid var(--border);
-	padding: 28px 32px;
+	padding: var(--sp-7) var(--sp-8);
 	max-width: 420px;
 	width: 100%;
 }
@@ -23,32 +23,32 @@
 	text-transform: uppercase;
 	font-weight: 500;
 	color: var(--text-primary);
-	margin-bottom: 10px;
+	margin-bottom: var(--sp-3);
 }
 
 .message {
 	font-family: var(--ff-body);
 	font-size: var(--fs-body);
 	color: var(--text-secondary);
-	margin-bottom: 24px;
+	margin-bottom: var(--sp-6);
 	line-height: 1.5;
 }
 
 .actions {
 	display: flex;
 	justify-content: flex-end;
-	gap: 12px;
+	gap: var(--sp-3);
 }
 
 .btnCancel {
 	background: transparent;
 	border: 1px solid var(--border);
 	font-family: var(--ff-body);
-	font-size: 12px;
-	letter-spacing: 0.22em;
+	font-size: var(--fs-button);
+	letter-spacing: var(--ls-button);
 	text-transform: uppercase;
 	color: var(--text-muted);
-	padding: 8px 18px;
+	padding: var(--sp-2) var(--sp-4);
 	cursor: pointer;
 }
 
@@ -62,10 +62,10 @@
 	color: var(--bg-page);
 	border: 1px solid var(--text-primary);
 	font-family: var(--ff-body);
-	font-size: 12px;
-	letter-spacing: 0.22em;
+	font-size: var(--fs-button);
+	letter-spacing: var(--ls-button);
 	text-transform: uppercase;
-	padding: 8px 24px;
+	padding: var(--sp-2) var(--sp-5);
 	cursor: pointer;
 }
 
@@ -83,7 +83,7 @@
 	.dialog {
 		max-width: none;
 		width: 100%;
-		padding: 20px var(--sp-5);
+		padding: var(--sp-5) var(--sp-5);
 	}
 
 	.actions {
