@@ -1,24 +1,40 @@
 # Roadmap
 
-Candidate features in no required order. Each entry links to its ADR for full context, design
-reasoning, and consequences. To start a feature: ensure its ADR is Accepted, then build.
+Candidate features ordered by priority — what matters most to build, not just what's closest to
+buildable. ADR status (Proposed/Accepted) tracks design maturity, which is a separate axis: a
+high-priority item can still need scoping before it's ready to accept. Each entry links to its ADR
+for full context, design reasoning, and consequences. To start a feature: ensure its ADR is
+Accepted, then build.
 
 ## Candidate Features
 
+| # | Feature | Status | ADR | Notes |
+|---|---|---|---|---|
+| 1 | Multi-File Write Safety | Accepted | [ADR-0010](adr/0010-multi-file-write-safety.md) | Not yet built; closes the unguarded rename link-rewrite; supersedes ADR-0003. Quick win: live data-loss path, no open design questions |
+| 2 | Consolidate Folio Validation Rules | Accepted | [ADR-0009](adr/0009-consolidate-folio-validation-rules.md) | Not yet built; keeps read/write severity split, unifies rule logic. Quick win: self-contained, modest scope |
+| 3 | Bidirectional / Inverse Fields | Accepted | [ADR-0004](adr/0004-bidirectional-inverse-fields.md) | Not yet built; display-first (revised 2026-07-30). Push-prompt scope resolved 2026-08-21 (covers both add and remove); 2 remaining open items (deletion, dangling targets) are decidable at build time, no longer user-blocked |
+| 4 | Project Scaffolding / Schema Setup Wizard | Proposed — **needs scoping** | [ADR-0013](adr/0013-project-scaffolding.md) | Highest priority past the quick wins above. Pre-adoption blocker: no way to create a new project without hand-writing JSON schema. Skeleton ADR only — design not yet brainstormed, that's the next step, not a build |
+| 5 | Alternate Data Views (Table, Board, Saved Filters, Graph) | Proposed | [ADR-0016](adr/0016-alternate-data-views.md) | Fully designed. No schema changes needed for the table/board/saved-filter slice; graph view (same ADR) costs more, build last within it |
+| 6 | Structured Date Fields (Sort Key & Calendar Modes) | Proposed | [ADR-0015](adr/0015-structured-date-fields.md) | Fully designed. Adds `sortkey`/`calendar` modes to the `date` field type; keeps hand-editable flat YAML, no required nesting. Prerequisite for Timeline View |
+| 7 | Folio Cover Image | Proposed | [ADR-0018](adr/0018-folio-cover-image.md) | Fully designed. Optional, co-located image per folio (Wikipedia-infobox style); needs new static-file serving, none exists today. Inline images deferred |
+| 8 | Timeline View | Proposed | [ADR-0017](adr/0017-timeline-view.md) | Blocked on #6 (ADR-0015); lays out entries by sortable date value |
+| 9 | Visibility / Access Control (field & entry level) | Proposed — **needs scoping** | [ADR-0014](adr/0014-visibility-access-control.md) | Recurring want across GM/novelist/publisher/creator use cases; may be capped by no-auth server architecture. Skeleton ADR only |
+| 10 | Project Themes | Proposed | [ADR-0001](adr/0001-project-themes.md) | Persona-dependent, no strong consensus |
+| 11 | Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | Persona-dependent, no strong consensus |
+| 12 | Markdown Source Edit Mode | Proposed | [ADR-0012](adr/0012-markdown-source-edit-mode.md) | Toggle between structured form editor and raw Markdown textarea; 4 open questions to settle before building |
+| 13 | Desktop Packaging & Distribution | Proposed | [ADR-0005](adr/0005-desktop-packaging-distribution.md) | Uses Electron and electron-builder; value is platform-dependent per persona |
+
+## Implemented / Resolved
+
+Built already, or no longer applicable — kept for ADR history, not part of the active sequence.
+
 | Feature | Status | ADR | Notes |
 |---|---|---|---|
-| In-Memory Document Model | Superseded | [ADR-0003](adr/0003-in-memory-document-model.md) | Never built; replaced by ADR-0010 (content cache declined) |
-| Multi-File Write Safety | Accepted | [ADR-0010](adr/0010-multi-file-write-safety.md) | Not yet built; closes the unguarded rename link-rewrite; supersedes ADR-0003 |
-| Bidirectional / Inverse Fields | Accepted | [ADR-0004](adr/0004-bidirectional-inverse-fields.md) | Not yet built; display-first (revised 2026-07-30); 3 open items to settle first |
 | Unify Entry Cards & Ranking | Accepted | [ADR-0011](adr/0011-unify-entry-cards-and-ranking.md) | Implemented 2026-07-30; shared `scoreFolio`/`rankFolios` + `EntryContent` (sidebar excluded) |
-| Project Themes | Proposed | [ADR-0001](adr/0001-project-themes.md) | — |
-| Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | — |
-| Desktop Packaging & Distribution | Proposed | [ADR-0005](adr/0005-desktop-packaging-distribution.md) | Uses Electron and electron-builder |
 | Encapsulate Folio Mutations | Accepted | [ADR-0006](adr/0006-encapsulate-folio-mutations.md) | Implemented 2026-06-19; unblocks ADR-0010 |
 | Shared Folio Walker | Accepted | [ADR-0007](adr/0007-consolidate-folio-integrity.md) | Implemented 2026-07-12; de-dupes folio traversal (split from old 0007) |
 | YAML Frontmatter for Metadata | Accepted | [ADR-0008](adr/0008-yaml-frontmatter-metadata.md) | Breaking format change; replaces `## Meta` |
-| Consolidate Folio Validation Rules | Accepted | [ADR-0009](adr/0009-consolidate-folio-validation-rules.md) | Not yet built; keeps read/write severity split, unifies rule logic (split from old 0007) |
-| Markdown Source Edit Mode | Proposed | [ADR-0012](adr/0012-markdown-source-edit-mode.md) | Toggle between structured form editor and raw Markdown textarea; 4 open questions to settle before building |
+| In-Memory Document Model | Superseded | [ADR-0003](adr/0003-in-memory-document-model.md) | Never built; replaced by ADR-0010 (content cache declined) |
 
 ## Completed
 
