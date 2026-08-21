@@ -116,7 +116,6 @@
 
 .newBtn {
 	font-family: var(--ff-body);
-	font-style: italic;
 	font-size: var(--fs-body);
 	color: var(--text-muted);
 	transition: color 0.2s;
