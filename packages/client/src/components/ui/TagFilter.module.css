@@ -59,17 +59,6 @@
 	z-index: 100;
 }
 
-.dropdown::-webkit-scrollbar {
-	width: 6px;
-}
-.dropdown::-webkit-scrollbar-track {
-	background: transparent;
-}
-.dropdown::-webkit-scrollbar-thumb {
-	background: rgba(108, 94, 70, 0.3);
-	border-radius: 3px;
-}
-
 .item {
 	padding: 8px 12px;
 	cursor: pointer;
