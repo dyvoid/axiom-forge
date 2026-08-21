@@ -5,7 +5,12 @@
 .topRow {
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
+	/* flex-start, not center/baseline: the breadcrumb's top edge has to land
+	   at the same y regardless of how tall the row's other side is (an Edit
+	   link here, a bordered "+ ADD ENTRY" button in CategoryIndexView.headerTop).
+	   Baseline/center both let that sibling's box height push the breadcrumb
+	   down by a different amount per page; flex-start pins it. */
+	align-items: flex-start;
 	margin-bottom: var(--sp-5);
 }
 
