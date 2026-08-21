@@ -39,6 +39,7 @@ dist/
 # Caches and scratch output from AI coding tools.
 .aider*
 .cursor/
+.impeccable/
 coverage/
 .npm/
 
