@@ -3,6 +3,68 @@
 Where the last session left off. Update this when you stop, so the next session starts with context
 instead of archaeology. For the feature backlog, see [docs/ROADMAP.md](docs/ROADMAP.md).
 
+## Design review — four polish fixes shipped
+
+An impeccable-skill design review ran on the client: file scan (the 59 deterministic rules found
+nothing — a clean scan, not a clean bill of health), source reading of every CSS module, and
+evaluation of the three tracked screenshots in `docs/screenshots/`. The aesthetic direction is
+committed and coherent (parchment, Spectral/Cormorant, double rules, drop caps) — this is not a
+"bolder" candidate. The problems were in typographic execution and craft discipline.
+
+**Four mechanical fixes shipped**, one commit each, on branch `fix/design-review-fixes`:
+
+1. **Faux-bold index row titles.** `EntryContent.rowTitle` used `font-weight: 700` on Cormorant
+   Garamond, but `index.html` only loads 400/500/600 — every category-index row got a synthesized
+   faux bold. Dropped to 600.
+2. **Dead Cinzel payload.** `index.html` loaded three weights of Cinzel that no source file
+   references. Removed from the render-blocking font CSS.
+3. **Grand Index flowed row-major.** Letter groups laid out A/D across the top row, F/G on the
+   next — the alphabetical spine zigzagged. Switched `indexColumns` from `flex-wrap` to CSS
+   multi-column (`column-width` + `break-inside: avoid`) for column-major flow. Documented in
+   `docs/design-system.md`.
+4. **Meta field values had no room.** `MetaSection.field` reserved a fixed 170px for labels inside
+   the 280px meta column, leaving ~94px for values — long values wrapped into 3+ ragged lines.
+   Label column is now `minmax(0, max-content)`, sizing to actual labels and giving the value the
+   remainder (~160px).
+
+130 tests pass, lint clean. ADR-0011 re-checked: its content remains accurate (the font-weight was
+never mentioned in the ADR; column-major flow realises the ADR's stated A–Z scanability intent).
+
+**Screenshot discrepancy found.** `docs/screenshots/folio.jpg` shows meta values right-aligned and
+ragged-left, but no `text-align: right` exists anywhere in `MetaSection.module.css` history (verified
+via `git log` on that file). The screenshot was likely captured from a state with uncommitted local
+changes that never landed. Fix 4 targets the cramped-wrap reality that actually ships, not the
+stale symptom in the screenshot.
+
+### Remaining design findings (not yet addressed)
+
+The review produced more findings than the four approved. These are the unaddressed ones, grouped
+by playbook for the next session:
+
+- **typeset** — italic is doing too many jobs (placeholders, buttons, tags, aliases, snippets,
+  subtitles are all italic; when everything slants, slant stops meaning anything). Token names
+  are inverted: `--ff-display` is Spectral (the body face) and `--ff-serif` is Cormorant (the
+  actual display face) — every future contributor will pick the wrong one. Hardcoded sizes bypass
+  the token system the docs promise (sidebar 20/18/16px, field titles 13/14px, folio subtitle 24px,
+  landing title 112px; the lint guard catches undefined tokens but not un-tokened values).
+- **audit** — keyboard focus is invisible (no `:focus-visible` anywhere; search and new-entry
+  inputs use `outline: none` with only a border-color shift). `--accent-gold` (#9a7a2c) on parchment
+  measures ~3.1:1, below WCAG AA for the 11px uppercase eyebrows that use it. The entire client has
+  zero `@media` queries — an 88px folio title and a fixed 240px sidebar break any window under
+  ~1100px.
+- **polish** — the folio's double rule under the tag row is nearly invisible at `--border-soft` 1px
+  (it's a signature move of the print idiom and it vanishes). Hovers use `rgba(0,0,0,0.03)` in some
+  places and `var(--bg-hover)` in others; the search dropdown shadow is `rgba(0,0,0,0.4)` — cool
+  gray on warm parchment reads as grime. Epithet chips (rounded gray lozenges with `border-radius:
+  4px` and black-alpha fill) are dashboard vocabulary in a world of hairlines and small caps.
+- **layout** — two search boxes on the Grand Index screen (the header's and the page's own); the
+  header search should probably scope itself out on that route. The WebGL smoke on the landing is
+  the one expressive gesture and it reads as flat parchment in the screenshot — either dial it up
+  until it registers or cut it.
+
+Also still open from the previous session: `TagFilter.module.css` still uses the undefined
+`--fs-small` token (same defect that flattened the card type scale). One word to fix.
+
 ## Repo checks + six shipped token bugs
 
 `npm run lint` now also runs `scripts/check-repo.mjs`. It was written to answer "which GitHub
