@@ -72,13 +72,13 @@
 }
 
 .addBtn:hover {
-	background: rgba(138, 53, 34, 0.08);
+	background: color-mix(in srgb, var(--accent-rust) 8%, transparent);
 }
 
 .addForm {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--sp-1-5);
 }
 
 .addInput {
@@ -88,7 +88,7 @@
 	font-family: var(--ff-body);
 	font-size: var(--fs-body);
 	color: var(--text-primary);
-	padding: 2px 0;
+	padding: var(--sp-0-5) 0;
 	outline: none;
 	min-width: 200px;
 }
@@ -104,7 +104,7 @@
 	font-size: var(--fs-body);
 	color: var(--text-muted);
 	cursor: pointer;
-	padding: 2px 4px;
+	padding: var(--sp-0-5) var(--sp-1);
 	transition: color 0.15s;
 }
 
@@ -168,7 +168,7 @@
 	flex-wrap: nowrap;
 	gap: var(--sp-5);
 	padding: var(--sp-4) 0;
-	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
+	border-bottom: 1px dotted var(--border-dotted);
 	text-decoration: none;
 	transition: opacity 0.2s;
 }

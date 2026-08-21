@@ -44,7 +44,7 @@
 .metaItem {
 	height: 32px;
 	width: 100%;
-	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
+	border-bottom: 1px dotted var(--border-dotted);
 	display: flex;
 	align-items: center;
 	margin-bottom: var(--sp-3);

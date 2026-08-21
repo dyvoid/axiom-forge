@@ -67,7 +67,7 @@
 	text-transform: uppercase;
 	color: var(--text-muted);
 	border: 1px solid var(--border-soft);
-	padding: 3px 10px;
+	padding: var(--btn-compact-padding);
 	border-radius: 2px;
 	transition: color 0.2s, border-color 0.2s;
 }
@@ -177,6 +177,6 @@
 @media (pointer: coarse) {
 	.editBtn {
 		min-height: var(--touch-target);
-		padding: 8px 14px;
+		padding: var(--btn-compact-padding-touch);
 	}
 }

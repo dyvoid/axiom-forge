@@ -64,7 +64,7 @@
 @media (max-width: 900px) {
 	.sidebar {
 		position: fixed;
-		top: 48px;
+		top: var(--header-height);
 		left: 0;
 		bottom: 0;
 		z-index: 50;
@@ -72,7 +72,7 @@
 		max-width: 85vw;
 		transform: translateX(-100%);
 		transition: transform 0.2s ease-out;
-		box-shadow: 0 8px 28px rgba(40, 30, 20, 0.18);
+		box-shadow: var(--shadow-elevated);
 	}
 
 	.sidebar.drawerOpen {
@@ -82,11 +82,11 @@
 	.scrim {
 		display: block;
 		position: fixed;
-		top: 48px;
+		top: var(--header-height);
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background: rgba(34, 27, 19, 0.35);
+		background: var(--overlay-scrim);
 		z-index: 49;
 	}
 }

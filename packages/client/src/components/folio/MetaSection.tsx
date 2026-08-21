@@ -51,7 +51,7 @@ export function FieldValueRenderer({ value, type }: { value: unknown; type: stri
 	}
 	if (type === 'wikilink-list') {
 		return (
-			<div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+			<div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sp-2)' }}>
 				{(value as WikiLink[]).map((link, i) => (
 					<WikiLinkChip key={i} link={link} />
 				))}
@@ -60,7 +60,7 @@ export function FieldValueRenderer({ value, type }: { value: unknown; type: stri
 	}
 	if (type === 'text-list' || type === 'multiselect') {
 		return (
-			<div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+			<div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sp-1-5)' }}>
 				{(value as string[]).map((item, i) => (
 					<span key={i} className={styles.textItem}>{item}</span>
 				))}

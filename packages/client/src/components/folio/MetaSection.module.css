@@ -29,7 +29,7 @@
 	gap: var(--sp-4);
 	align-items: baseline;
 	padding: var(--sp-2) 0;
-	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
+	border-bottom: 1px dotted var(--border-dotted);
 }
 
 .fieldStacked {
@@ -37,7 +37,7 @@
 	flex-direction: column;
 	gap: var(--sp-2);
 	padding: var(--sp-2) 0;
-	border-bottom: 1px dotted rgba(108, 94, 70, 0.35);
+	border-bottom: 1px dotted var(--border-dotted);
 }
 
 .field:last-child,
@@ -74,7 +74,7 @@
 
 .textItem + .textItem::before {
 	content: '·';
-	margin-right: 6px;
+	margin-right: var(--sp-1-5);
 	color: var(--border-soft);
 }
 

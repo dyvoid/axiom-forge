@@ -72,7 +72,7 @@
 	padding-left: 1.2em;
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--sp-0-5);
 }
 
 .warnings li {

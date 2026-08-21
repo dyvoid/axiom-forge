@@ -41,8 +41,15 @@
 	/* Hover / keyboard-highlight surface. A shade past --bg-panel and well short
 	   of --border-soft, so it reads on both page and panel backgrounds. */
 	--bg-hover: #e4d8be;
+	/* Warm paper highlight for focused/active form-field backgrounds
+	   (edit-mode inputs, pickers). Its own surface, not a tint of an
+	   existing one -- deliberately near-white against the parchment page. */
+	--bg-input-highlight: #fffaeb;
 	--border: #cdb98e;
 	--border-soft: #d9c8a4;
+	/* The 1px-dotted field/list-row separator, found hardcoded as the exact
+	   same rgba() literal in 5+ files. It's --text-muted at 35% opacity. */
+	--border-dotted: color-mix(in srgb, var(--text-muted) 35%, transparent);
 
 	/* ── Accents ─────────────────────────────────────────────── */
 
@@ -59,6 +66,17 @@
 	--text-primary: #221b13;
 	--text-secondary: #4a3f2e;
 	--text-muted: #6c5e46;
+
+	/* ── Overlays & elevation ─────────────────────────────────── */
+
+	/* Modal/drawer backdrop dimmer. Was rgba(34,27,19, 0.35 or 0.4) --
+	   the same --text-primary tint at two slightly different opacities
+	   depending which dialog you opened. */
+	--overlay-scrim: color-mix(in srgb, var(--text-primary) 35%, transparent);
+	/* Dropdown/flyout elevation shadow -- found as the identical rgba()
+	   literal in three unrelated components (drawer, tag dropdown,
+	   wikilink picker menu). */
+	--shadow-elevated: 0 8px 28px rgba(40, 30, 20, 0.18);
 
 	/* ── Typography Roles ────────────────────────────────────── */
 
@@ -85,10 +103,24 @@
 	--sp-6: 32px;
 	--sp-7: 48px;
 	--sp-8: 64px;
+	/* Below the 4px base: not new rhythm, just naming values that were
+	   already reused identically (copy-pasted, not derived) across several
+	   components' tight chrome -- icon-button padding, list-row gaps. */
+	--sp-0-5: 2px;
+	--sp-1-5: 6px;
+
+	/* ── Control padding ──────────────────────────────── */
+	/* Form-control padding (text inputs, pickers, custom selects) and
+	   compact ghost-button padding, each found duplicated verbatim across
+	   3+ unrelated files. */
+	--control-padding: 7px 10px;
+	--btn-compact-padding: 3px 10px;
+	--btn-compact-padding-touch: 8px 14px;
 
 	/* ── Layout ───────────────────────────────────────── */
 	--page-max-width: 1280px;
 	--content-max-width: 968px;
+	--header-height: 48px;
 	--sidebar-width: 240px;
 	--prose-max-width: 640px;
 	--meta-col-width: 280px;
