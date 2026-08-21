@@ -100,8 +100,10 @@ no definition in `tokens.css`. When a token is missing, prefer an existing one â
 meant `--bg-panel`, `--text-danger` meant `--accent-rust` â€” and only add to `tokens.css` when the
 system genuinely lacks the concept, as it did for `--bg-hover` and `--ff-mono`.
 
-Sizes come from `--fs-body-sm` (15px), `--fs-meta` (13.5px), `--fs-label` (13px), `--fs-eyebrow`
-(11px) or `--fs-tiny` (10px).
+Sizes come from `--fs-body-sm` (15px), `--fs-control` (14px), `--fs-meta` (13.5px), `--fs-label`
+(13px), `--fs-button` (12px), `--fs-eyebrow` (11px) or `--fs-tiny` (10px). `--fs-control` is the
+edit-view control voice (menu items, chips, tag inputs); `--fs-button` is the tracked-uppercase
+button label size.
 
 ### WebGL Integration
 The `/` Landing route features a WebGL fragment shader drifting warm-gray smoke over parchment (ported from `prototype/webgl-hero.js`). Read mode does not display this shader.

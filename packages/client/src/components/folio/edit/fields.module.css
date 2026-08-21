@@ -55,7 +55,7 @@
 
 .selectArrow {
 	color: var(--text-muted);
-	font-size: 11px;
+	font-size: var(--fs-eyebrow);
 }
 
 .menu {
@@ -75,7 +75,7 @@
 	padding: 8px 12px;
 	cursor: pointer;
 	font-family: var(--ff-body);
-	font-size: 14px;
+	font-size: var(--fs-control);
 	color: var(--text-primary);
 	border-bottom: 1px solid var(--border-soft);
 }
@@ -106,7 +106,7 @@
 	align-items: center;
 	gap: 6px;
 	font-family: var(--ff-body);
-	font-size: 14px;
+	font-size: var(--fs-control);
 	color: var(--text-primary);
 	background: rgba(154, 122, 44, 0.12);
 	border: 1px solid rgba(154, 122, 44, 0.4);
@@ -118,7 +118,7 @@
 	border: 0;
 	color: var(--text-muted);
 	cursor: pointer;
-	font-size: 13px;
+	font-size: var(--fs-label);
 	line-height: 1;
 	padding: 0 4px;
 }
@@ -128,7 +128,7 @@
 	background: transparent;
 	outline: none;
 	font-family: var(--ff-body);
-	font-size: 14px;
+	font-size: var(--fs-control);
 	color: var(--text-primary);
 	padding: 4px 0;
 	min-width: 100px;
@@ -142,7 +142,7 @@
 	color: var(--text-muted);
 	cursor: pointer;
 	font-family: var(--ff-body);
-	font-size: 13px;
+	font-size: var(--fs-label);
 	font-style: italic;
 	padding: 3px 10px;
 }
@@ -189,7 +189,7 @@
 	border: 0;
 	color: var(--text-muted);
 	cursor: pointer;
-	font-size: 14px;
+	font-size: var(--fs-control);
 	padding: 0 10px;
 	line-height: 1;
 }
@@ -217,7 +217,7 @@
 }
 
 .menuItemFolder {
-	font-size: 11px;
+	font-size: var(--fs-eyebrow);
 	color: var(--text-muted);
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
@@ -231,7 +231,7 @@
 .menuEmpty {
 	padding: 12px;
 	font-family: var(--ff-body);
-	font-size: 13px;
+	font-size: var(--fs-label);
 	color: var(--text-muted);
 	font-style: italic;
 	text-align: center;
@@ -243,7 +243,7 @@
 	background: transparent;
 	outline: none;
 	font-family: var(--ff-body);
-	font-size: 14px;
+	font-size: var(--fs-control);
 	color: var(--text-primary);
 	padding: 4px 0;
 	min-width: 120px;
