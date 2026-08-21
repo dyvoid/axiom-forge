@@ -6,12 +6,12 @@ tags:
   - warrior
 aliases:
   - Red-haired Menelaus
+  - King of Sparta
 ---
 
 # Menelaus
 
 ## Basic Information
-- **Epithets:** King of Sparta, Red-haired, Master of the War Cry
 - **Sex:** Male
 - **Born:** c. 1252 BCE
 - **Allegiance:** [[Factions/Greeks]]

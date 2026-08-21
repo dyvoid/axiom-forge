@@ -14,7 +14,6 @@ aliases:
 
 ## Basic Information
 - **Domains:** Fate, War
-- **Epithets:** Cloud-gatherer, Father of Gods and Men, Aegis-bearer, The Thunderer
 
 ## Description
 Zeus is the only god in this war who is not on a side, and the effort of staying off one is most of what he does. Both his daughters and his wife are committed to Troy's destruction; his brother is committed to it independently; Apollo and Aphrodite are working the other way. He spends the war holding a coalition of immortals apart, which is the same job Agamemnon is failing at one level down, and he is markedly better at it.

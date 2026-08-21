@@ -147,12 +147,12 @@ tags:
 aliases:
   - Pelides
   - Swift-footed
+  - Son of Peleus
 ---
 
 # Achilles
 
 ## Basic Information
-- **Epithets:** Swift-footed, Lion-hearted, Son of Peleus
 - **Sex:** Male
 - **Born:** c. 1235 BCE
 - **Allegiance:** [[Factions/Greeks]]

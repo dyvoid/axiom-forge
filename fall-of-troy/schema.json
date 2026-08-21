@@ -8,7 +8,6 @@
 				"Basic Information": {
 					"role": "meta",
 					"fields": {
-						"Epithets": { "type": "text-list" },
 						"Sex": { "type": "select", "options": ["Male", "Female"] },
 						"Born": { "type": "date" },
 						"Died": { "type": "date" },
@@ -40,8 +39,7 @@
 					"role": "meta",
 					"fields": {
 						"Domains": { "type": "multiselect", "options": ["War", "Wisdom", "Love", "Sun", "Sea", "Fate", "Crafts", "Hunt", "Prophecy", "Trickery", "Death"] },
-						"Allegiance": { "type": "wikilink", "target": "Factions" },
-						"Epithets": { "type": "text-list" }
+						"Allegiance": { "type": "wikilink", "target": "Factions" }
 					}
 				},
 				"Description": { "role": "prose", "type": "textarea" },

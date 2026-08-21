@@ -10,7 +10,6 @@ tags:
 # Hector
 
 ## Basic Information
-- **Epithets:** Tamer of Horses, Bulwark of Troy, Prince of Troy
 - **Sex:** Male
 - **Born:** c. 1240 BCE
 - **Died:** Year 10 of the Siege of Troy

@@ -13,7 +13,6 @@ aliases:
 # Cassandra
 
 ## Basic Information
-- **Epithets:** The Unbelieved, Priestess of Apollo, Daughter of Priam
 - **Sex:** Female
 - **Born:** c. 1237 BCE
 - **Died:** Shortly after the fall of Troy

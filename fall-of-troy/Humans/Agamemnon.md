@@ -6,12 +6,12 @@ tags:
   - commander
 aliases:
   - Lord of Men
+  - King of Mycenae
 ---
 
 # Agamemnon
 
 ## Basic Information
-- **Epithets:** Lord of Men, King of Mycenae, Shepherd of the People
 - **Sex:** Male
 - **Born:** c. 1255 BCE
 - **Died:** Shortly after his return from Troy

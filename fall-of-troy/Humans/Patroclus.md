@@ -9,7 +9,6 @@ tags:
 # Patroclus
 
 ## Basic Information
-- **Epithets:** Companion of Achilles, Gentle Among the Greeks
 - **Sex:** Male
 - **Died:** Year 10 of the Siege of Troy
 - **Allegiance:** [[Factions/Greeks]]

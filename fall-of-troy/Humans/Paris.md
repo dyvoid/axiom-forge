@@ -11,7 +11,6 @@ aliases:
 # Paris
 
 ## Basic Information
-- **Epithets:** Alexander, Shepherd of the People, Breaker of Oaths
 - **Sex:** Male
 - **Born:** c. 1240 BCE
 - **Died:** Year 10 of the Siege of Troy

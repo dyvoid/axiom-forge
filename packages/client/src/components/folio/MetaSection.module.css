@@ -60,7 +60,7 @@
 	color: var(--text-primary);
 }
 
-/* Text-list values (epithets, aliases) render as an italic run with
+/* Text-list values such as aliases render as an italic run with
    middot separators, matching the folio header's alias idiom -- not as
    rounded gray lozenges, which are dashboard vocabulary in a print
    aesthetic. The wrapping flex container in MetaSection.tsx provides

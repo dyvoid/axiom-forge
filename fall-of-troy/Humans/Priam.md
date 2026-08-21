@@ -9,7 +9,6 @@ tags:
 # Priam
 
 ## Basic Information
-- **Epithets:** King of Troy, Father of Hector, Lord of Ilium
 - **Sex:** Male
 - **Allegiance:** [[Factions/Trojans]]
 
