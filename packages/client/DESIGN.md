@@ -206,7 +206,7 @@ The palette is a narrow warm-parchment band with two accents. Antique Gold is th
 ### Named Rules
 **The Two-Serif Rule.** Display is Cormorant Garamond; body and labels are Spectral. Never set body in Cormorant or titles in Spectral — the hierarchy depends on the family contrast.
 **The Eyebrow Voice Rule.** Section headers, field labels, and button text are Spectral 500, 11px, uppercase, tracked 0.18em–0.22em. This is the single structural voice of the system; do not introduce a second label style.
-**The Italic-Is-Secondary Rule.** Italic marks secondary, "also known as," or placeholder voice — the folio subtitle, alias bylines, tag runs, search/filter placeholders, empty-state copy. It is not a decorative switch. (The design backlog flags italic overuse; until that pass lands, treat this as the intended direction, not the fully realized one.)
+**The Italic-Is-Secondary Rule.** Italic marks secondary, "also known as," or placeholder voice — the folio subtitle, alias bylines, tag runs, search/filter placeholders, empty-state copy. It is not a decorative switch. Action labels (buttons) and structural labels (field section headers, tags labels, status text) are roman. The landing hero title is the one exception: italic serif at display size is an editorial register choice, not a secondary-voice marker.
 
 ## Layout
 
