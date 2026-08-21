@@ -135,7 +135,7 @@
 	font-family: var(--ff-body);
 	font-size: var(--fs-meta);
 	color: var(--text-muted);
-	letter-spacing: 0.1em;
+	letter-spacing: var(--ls-eyebrow);
 	margin-bottom: var(--sp-6);
 }
 

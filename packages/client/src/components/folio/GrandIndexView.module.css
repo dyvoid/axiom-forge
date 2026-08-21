@@ -23,7 +23,7 @@
 
 .meta {
 	font-family: var(--ff-body);
-	font-size: var(--fs-tiny);
+	font-size: var(--fs-meta);
 	letter-spacing: var(--ls-eyebrow);
 	color: var(--text-muted);
 	margin-bottom: var(--sp-6);
