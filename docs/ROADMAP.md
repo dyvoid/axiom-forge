@@ -69,4 +69,5 @@ Agreed-upon cleanups that don't warrant an ADR. Check them off when done.
 - [x] Edit toolbar polish — eyebrow-sized buttons with thin soft border and 2px radius, outline-style Save, touch targets, tokenized stub button
 - [x] Dialog token cleanup — hardcoded 12px/11px and fixed padding in `SchemaWarningsDialog` and `ConfirmDialog` routed through tokens
 - [ ] Replace `ProjectStore` linear array scans (`.find`/`.filter`) with `Map` lookups — was parked pending ADR-0003; unparked by [ADR-0010](adr/0010-multi-file-write-safety.md), which declines the document-model rewrite. Independent and low priority: the scans are over tens of records
+- [ ] Add `classifySection()` to `shared/schema.ts` and export `isFieldValueEmpty` from `shared` — section-kind dispatch (prose / links / fields) is currently re-derived independently in `FieldSection.tsx` (read) and `SectionBlock` in `FolioEditView.tsx` (edit), and the field-emptiness check is copy-pasted across `FieldSection.tsx`, `MetaSection.tsx`, and a third variant in `parser.ts`
 - [x] Loading/Error state immersion — replaced inline unstyled loading/error text with themed FolioSkeleton and FolioEmptyState in FolioRead.tsx
