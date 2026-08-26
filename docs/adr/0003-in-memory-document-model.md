@@ -1,20 +1,19 @@
 # 3. In-Memory Document Model
 
-**Date:** 2026-06-05  
-**Status:** Superseded by [ADR-0010](0010-multi-file-write-safety.md) (2026-07-30)
+**Date:** 2026-06-05
+**Status:** Superseded by [ADR-0010](0010-multi-file-write-safety.md)
 
-> **Note:** Never implemented. This ADR bundled two separable decisions: a safe multi-file
-> write path, and an in-memory content cache. [ADR-0010](0010-multi-file-write-safety.md)
-> takes the former and declines the latter — the cache's only named consumer was ADR-0004,
-> which was revised to a display-first design that needs no cached content. The Context
-> below remains an accurate statement of the problem; the Decision is what was replaced.
+> **Note:** Never implemented. This ADR bundled two separable decisions — a safe multi-file
+> write path and an in-memory content cache. [ADR-0010](0010-multi-file-write-safety.md) takes
+> the former and declines the latter: the cache's only named consumer was ADR-0004, which was
+> revised to a display-first design that needs no cached content. The Context below remains an
+> accurate statement of the problem; the Decision is what was replaced.
 
 ## Context
 
-`ProjectStore` currently maintains a metadata-only index (`InternalFolioRecord[]`) built at
-startup: titles, tags, snippets, outgoing links, and file paths. Full structured content
-(`sections`, field values) is not cached — `getFolio()` reads and re-parses the file from disk
-on every call.
+`ProjectStore` maintains a metadata-only index (`InternalFolioRecord[]`) built at startup:
+titles, tags, snippets, outgoing links, and file paths. Full structured content (`sections`,
+field values) is not cached — `getFolio()` reads and re-parses the file from disk on every call.
 
 This has two consequences:
 
@@ -28,40 +27,13 @@ This has two consequences:
 The rename/link-rewrite feature already performs batch multi-file writes but has no per-file
 mtime conflict detection on the files it rewrites — a latent hole in the current design.
 
-## Decision
+## Decision (superseded)
 
-Evolve `ProjectStore` to hold fully parsed folio content alongside its existing index metadata.
-Add dirty-tracking so the store knows which records have been mutated since load. On flush,
-re-serialize and write back only the dirty records.
+Evolve `ProjectStore` to hold fully parsed folio content alongside its index metadata, with
+dirty-tracking and a batched flush, replacing the "read fresh on every `getFolio` call" safety
+with mtime-based staleness detection at write-back time. A file watcher was considered and
+deferred; a stale-mtime flush was to fail hard rather than auto-merge.
 
-Replace the "read fresh on every `getFolio` call" safety with **mtime-based staleness detection
-at write-back time**: before flushing a dirty record, `stat()` the file and refuse if the
-on-disk mtime has advanced beyond the cached value.
-
-No new runtime dependency is introduced. This is an extension of the existing `ProjectStore`
-class, not a new subsystem.
-
-## Consequences
-
-- Content-level queries become possible directly against the in-memory model without reading
-  additional files.
-- Multi-file mutations (e.g. bidirectional field patching per ADR-0004) can be expressed as
-  in-memory mutations followed by a single batched flush with consistent mtime checks across
-  all touched files.
-- The "read fresh" guarantee is removed; staleness is enforced at write-back instead. External
-  edits made between load and flush will produce a conflict error rather than silent data loss.
-- A file watcher (e.g. `chokidar`) would improve live responsiveness to external edits but is
-  not required for correctness and would add a dependency — suitable as a follow-on decision.
-- Startup time is unchanged (the index already parses every file at load).
-
-## Resolved Open Questions (2026-07-12)
-
-- **File watcher: deferred, not bundled into this ADR.** Ship without one. External edits are
-  invisible to the in-memory model until write-back, where a stale mtime produces a conflict
-  error. A watcher can be added later as its own decision without changing the core model —
-  bundling it now would add scope (a new dependency, and live-reload semantics for in-memory
-  edits when the underlying file changes) without being required for correctness.
-- **Conflict UX: hard error, no auto-merge.** When a flush is rejected due to a stale mtime, the
-  save fails with an error; the user must reload the file and redo their edit. No diff/merge UI.
-  Simple and safe; a smarter reconciliation flow is out of scope and would need its own ADR
-  addendum if ever pursued.
+[ADR-0010](0010-multi-file-write-safety.md) closes the multi-file write hole without the cache,
+keeping read-freshness and making the deferred-watcher question moot. See its Consequences for
+what the trade cost and what it preserved.

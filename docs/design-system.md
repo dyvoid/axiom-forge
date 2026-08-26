@@ -84,21 +84,13 @@ equalizes the column heights so the eye runs column 1 then column 2.
 
 `var(--token)` naming a property that `tokens.css` never defines is **invalid at computed-value
 time**: the declaration is dropped, or the property silently inherits. No console error, nothing a
-linter or the type checker can see — the style simply does not apply.
+linter or the type checker can see — the style simply does not apply. A misspelled font-size token
+flattens a whole type scale to 16px and looks deliberate.
 
-Six of these had shipped before anyone noticed:
-
-| Token | Damage |
-|---|---|
-| `--fs-small` | Flattened the whole card type scale to 16px — title, alias, folder and snippet identical |
-| `--bg-hover` | Hover on Linked Mentions cards and the search-dropdown highlight did nothing at all |
-| `--ff-mono` | Monospace never applied in the edit view or the warnings dialog |
-| `--bg-subtle`, `--bg-surface`, `--text-danger` | Silent no-ops in dialogs and the tag filter |
-
-`npm run lint` now runs `scripts/check-repo.mjs`, which fails if any `var(--…)` in the client has
-no definition in `tokens.css`. When a token is missing, prefer an existing one — `--bg-surface`
-meant `--bg-panel`, `--text-danger` meant `--accent-rust` — and only add to `tokens.css` when the
-system genuinely lacks the concept, as it did for `--bg-hover` and `--ff-mono`.
+`npm run lint` runs `scripts/check-repo.mjs`, which fails if any `var(--…)` in the client has no
+definition in `tokens.css`. When a token is missing, prefer an existing one — a `--bg-surface`
+usually means `--bg-panel`, a `--text-danger` means `--accent-rust` — and only add to `tokens.css`
+when the system genuinely lacks the concept.
 
 Sizes come from `--fs-body-sm` (15px), `--fs-control` (14px), `--fs-meta` (13.5px), `--fs-label`
 (13px), `--fs-button` (12px), `--fs-eyebrow` (11px) or `--fs-tiny` (10px). `--fs-control` is the
@@ -106,7 +98,7 @@ edit-view control voice (menu items, chips, tag inputs); `--fs-button` is the tr
 button label size.
 
 ### WebGL Integration
-The `/` Landing route features a WebGL fragment shader drifting warm-gray smoke over parchment (ported from `prototype/webgl-hero.js`). Read mode does not display this shader.
+The `/` Landing route features a WebGL fragment shader drifting warm-gray smoke over parchment. Read mode does not display this shader.
 
 ### Responsive Behavior
 
