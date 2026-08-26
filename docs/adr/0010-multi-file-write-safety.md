@@ -1,7 +1,7 @@
 # 10. Multi-File Write Safety
 
 **Date:** 2026-07-30
-**Status:** Accepted — not yet implemented
+**Status:** Accepted — implemented 2026-08-26
 
 > **Note:** Supersedes [ADR-0003](0003-in-memory-document-model.md), which bundled two
 > separable decisions — an in-memory content cache and a safe multi-file write path. This
@@ -49,7 +49,10 @@ Close the multi-file write hole directly, and do not introduce a content cache.
   phases: read every candidate file and compute its rewritten content; verify each target's
   current on-disk `mtime` against the value cached in the index; only then write. A mismatch on
   any target aborts the whole batch before the first write, and the rename fails with a conflict
-  error naming the file that changed.
+  error naming the file that changed. Only files that actually contain a matching link are
+  planned, and so only those are checked — an unrelated file edited externally must not block a
+  rename it has no stake in. The plan runs *before* the primary file is written, so an abort
+  leaves the save entirely untouched, not just the batch.
 - **No in-memory content cache.** `getFolio` continues to read and parse from disk per call.
   Read-freshness is preserved, no file watcher is required, and the app cannot hold a view of a
   file that disagrees with disk.

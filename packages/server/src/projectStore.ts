@@ -1,5 +1,5 @@
 import { readFile, stat } from 'node:fs/promises';
-import { resolve, join } from 'node:path';
+import { resolve, join, relative } from 'node:path';
 import {
 	ConfigSchema,
 	ProjectSchemaSchema,
@@ -60,6 +60,13 @@ interface InternalFolioRecord extends FolioIndexRecord {
 	mtime: number;
 	warnings: string[];
 	links: WikiLink[];
+}
+
+/** One verified, not-yet-written file in a batched link rewrite (ADR-0010). */
+interface PlannedLinkRewrite {
+	filePath: string;
+	content: string;
+	rewrites: number;
 }
 
 export class ProjectStore {
@@ -304,6 +311,14 @@ export class ProjectStore {
 				throw new ConflictError({ kind: 'exists', name: newName });
 			}
 
+			// 0. On rename, plan the project-wide link rewrite *before* touching
+			//    anything: read each linking file, compute its new content, and
+			//    verify it is unchanged since indexing. A stale target throws
+			//    here, so the whole save aborts with nothing written (ADR-0010).
+			const linkRewritePlan = isRename
+				? await this.planProjectLinkRewrite(folder, oldName, newName, oldFilePath)
+				: [];
+
 			// 1. Write updated content to the *current* path atomically.
 			//    writeFolioFile uses tmp+rename internally; if it fails, the
 			//    old file is untouched.
@@ -329,11 +344,11 @@ export class ProjectStore {
 				}
 				this.renameFolioRecord(folder, oldName, newName, filePath, renamedMtime);
 
-				// 3. Best-effort project-wide link rewrite. If this fails partway
+				// 3. Commit the pre-verified link rewrite. If this fails partway
 				//    the index and primary file are already consistent — only
 				//    other files' wikilinks may be stale.
 				try {
-					linksRewritten = await this.rewriteProjectLinks(folder, oldName, newName, filePath);
+					linksRewritten = await this.commitProjectLinkRewrite(linkRewritePlan);
 				} catch (err) {
 					console.error(`Partial link rewrite after rename ${oldName} -> ${newName}:`, err);
 					throw new LinkRewriteFailedError(String(err), newName);
@@ -444,26 +459,64 @@ export class ProjectStore {
 	}
 
 	/**
-	 * Project-wide rewrite of `[[folder/oldName]]` (with or without `|alias`)
-	 * to `[[folder/newName]]` across every file except `skipFilePath`. Returns
-	 * the total number of link occurrences rewritten.
+	 * Phase 1 of the multi-file link rewrite (ADR-0010): read every candidate
+	 * file, compute its rewritten content, and verify it has not changed on
+	 * disk since it was indexed. Nothing is written here.
+	 *
+	 * Only files that actually contain a matching link are planned — and so
+	 * only those are staleness-checked. An unrelated file edited externally
+	 * must not block a rename it has no stake in.
+	 *
+	 * Throws `ConflictError` with kind `link-target-stale` on the first
+	 * mismatch, so the caller can abort before the first write.
 	 */
-	private async rewriteProjectLinks(
+	private async planProjectLinkRewrite(
 		folder: string,
 		oldName: string,
 		newName: string,
 		skipFilePath: string,
-	): Promise<number> {
-		let totalRewrites = 0;
+	): Promise<PlannedLinkRewrite[]> {
+		const plan: PlannedLinkRewrite[] = [];
 		for (const filePath of this.getAllFilePaths()) {
 			if (filePath === skipFilePath) continue;
 			const content = await readFile(filePath, 'utf-8');
 			const result = rewriteWikiLinks(content, { folder, name: oldName }, { name: newName });
-			if (result.rewrites > 0) {
-				const { mtime } = await writeFolioFile(filePath, result.content);
-				this.updateMtime(filePath, mtime);
-				totalRewrites += result.rewrites;
+			if (result.rewrites === 0) continue;
+
+			// Stat *after* the read: an edit landing either before the read or
+			// between read and stat leaves an advanced mtime, so both are caught.
+			const indexed = this.folios.find((f) => f.filePath === filePath);
+			const fileStat = await statFile(filePath);
+			// Same 5 ms slop as the primary-file check in saveFolio. A missing
+			// stat (deleted underneath us) counts as changed, as does a record
+			// that somehow left the index between the scan and here.
+			const changed = !indexed || !fileStat || Math.abs(fileStat.mtime - indexed.mtime) > 5;
+			if (changed) {
+				throw new ConflictError({
+					kind: 'link-target-stale',
+					file: relative(this.projectPath, filePath),
+				});
 			}
+
+			plan.push({ filePath, content: result.content, rewrites: result.rewrites });
+		}
+		return plan;
+	}
+
+	/**
+	 * Phase 2 of the multi-file link rewrite (ADR-0010): write the verified
+	 * plan. Returns the total number of link occurrences rewritten.
+	 *
+	 * A small check-to-write window remains, and is accepted: each write is
+	 * atomic (tmp+rename), so the failure mode is a torn *batch*, never a torn
+	 * file. Closing it fully would need file locking, out of scope here.
+	 */
+	private async commitProjectLinkRewrite(plan: PlannedLinkRewrite[]): Promise<number> {
+		let totalRewrites = 0;
+		for (const { filePath, content, rewrites } of plan) {
+			const { mtime } = await writeFolioFile(filePath, content);
+			this.updateMtime(filePath, mtime);
+			totalRewrites += rewrites;
 		}
 		return totalRewrites;
 	}

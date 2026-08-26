@@ -13,8 +13,20 @@ export class ApiError extends Error {
 }
 
 export class ConflictError extends Error {
-	constructor(public serverMtime: number) {
-		super('File changed externally on disk');
+	/**
+	 * `staleLinkFile` is set when a *rename* was aborted because another file
+	 * holding wikilinks to this folio changed on disk (ADR-0010). Nothing was
+	 * written in that case — unlike a plain stale-mtime conflict.
+	 */
+	constructor(
+		public serverMtime: number,
+		public staleLinkFile?: string,
+	) {
+		super(
+			staleLinkFile
+				? `Linking file changed externally on disk: ${staleLinkFile}`
+				: 'File changed externally on disk',
+		);
 		this.name = 'ConflictError';
 	}
 }
@@ -88,8 +100,14 @@ export async function putFolio(
 		},
 	);
 	if (res.status === 409) {
-		const data = (await res.json().catch(() => ({}))) as { serverMtime?: number };
-		throw new ConflictError(data.serverMtime ?? 0);
+		const data = (await res.json().catch(() => ({}))) as {
+			error?: string;
+			serverMtime?: number;
+			file?: string;
+		};
+		throw data.error === 'link-target-stale'
+			? new ConflictError(0, data.file ?? 'an unknown file')
+			: new ConflictError(data.serverMtime ?? 0);
 	}
 	if (!res.ok) {
 		const body = await res.text().catch(() => '');

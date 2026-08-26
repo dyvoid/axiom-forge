@@ -42,15 +42,18 @@ export class InvalidTitleError extends Error {
 }
 
 /**
- * A write could not proceed because of a collision: either the file changed on
- * disk since the client loaded it (`stale`), or the target filename is taken
- * (`exists`).
+ * A write could not proceed because of a collision: the file changed on disk
+ * since the client loaded it (`stale`), the target filename is taken
+ * (`exists`), or a file whose wikilinks a rename must rewrite changed on disk
+ * since it was indexed (`link-target-stale`, ADR-0010). The last aborts the
+ * save before anything is written.
  */
 export class ConflictError extends Error {
 	constructor(
 		public readonly detail:
 			| { kind: 'stale'; serverMtime: number }
-			| { kind: 'exists'; name: string },
+			| { kind: 'exists'; name: string }
+			| { kind: 'link-target-stale'; file: string },
 	) {
 		super(detail.kind);
 		this.name = 'ConflictError';

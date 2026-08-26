@@ -8,7 +8,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { mkdtemp, mkdir, rm, writeFile, readFile, access } from 'node:fs/promises';
+import { mkdtemp, mkdir, rm, writeFile, readFile, access, utimes } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import type { ParsedFolio } from '@axiom-forge/shared';
@@ -58,6 +58,16 @@ function folio(name: string, title: string, sections?: ParsedFolio['sections']):
 }
 
 const dirs: string[] = [];
+
+/**
+ * Push a file's mtime a second into the future, so the staleness check sees an
+ * unambiguous change regardless of filesystem timestamp granularity or the
+ * 5 ms slop the comparison allows.
+ */
+async function bumpMtime(filePath: string): Promise<void> {
+	const future = new Date(Date.now() + 1000);
+	await utimes(filePath, future, future);
+}
 
 async function makeStore(files: string[]): Promise<ProjectStore> {
 	const d = await mkdtemp(join(tmpdir(), 'axiom-forge-mut-'));
@@ -153,6 +163,78 @@ describe('ProjectStore.saveFolio', () => {
 		await access(join(store.projectPath, 'Alphas', 'Target_Renamed.md'));
 		const linker = await readFile(join(store.projectPath, 'Alphas', 'Linker.md'), 'utf-8');
 		expect(linker).toContain('[[Alphas/Target_Renamed]]');
+	});
+
+	// ── ADR-0010: multi-file write safety ──────────────────────
+
+	it('aborts the rename without writing when a linking file changed on disk', async () => {
+		const store = await makeStore(['Target']);
+		await store.createFolio('Alphas', folio('', 'Linker', { Vitals: { fields: { Ref: { folder: 'Alphas', name: 'Target' } } } }));
+
+		// Simulate the Obsidian round-trip: edit the linking file outside the
+		// app, so its on-disk mtime runs ahead of the indexed one.
+		const linkerPath = join(store.projectPath, 'Alphas', 'Linker.md');
+		const external = await readFile(linkerPath, 'utf-8') + '\nEdited externally.\n';
+		await writeFile(linkerPath, external, 'utf-8');
+		await bumpMtime(linkerPath);
+
+		const mtime = store.getRecord('Alphas', 'Target')!.mtime;
+		const err = await store
+			.saveFolio('Alphas', 'Target', folio('Target', 'Target Renamed'), mtime)
+			.then(() => null, (e: unknown) => e);
+
+		expect(err).toBeInstanceOf(ConflictError);
+		expect((err as ConflictError).detail).toEqual({
+			kind: 'link-target-stale',
+			file: join('Alphas', 'Linker.md'),
+		});
+
+		// Nothing was written: the external edit survives, the rename did not
+		// happen, and the primary file is untouched at its old name.
+		expect(await readFile(linkerPath, 'utf-8')).toBe(external);
+		await access(join(store.projectPath, 'Alphas', 'Target.md'));
+		await expect(access(join(store.projectPath, 'Alphas', 'Target_Renamed.md'))).rejects.toThrow();
+		expect(store.getRecord('Alphas', 'Target')).toBeDefined();
+		expect(store.getRecord('Alphas', 'Target_Renamed')).toBeUndefined();
+	});
+
+	it('lets the rename proceed when the changed file holds no link to the target', async () => {
+		const store = await makeStore(['Target', 'Bystander']);
+		await store.createFolio('Alphas', folio('', 'Linker', { Vitals: { fields: { Ref: { folder: 'Alphas', name: 'Target' } } } }));
+
+		// An unrelated file edited externally must not block a rename it has
+		// no stake in — only files actually being rewritten are checked.
+		const bystanderPath = join(store.projectPath, 'Alphas', 'Bystander.md');
+		await writeFile(bystanderPath, await readFile(bystanderPath, 'utf-8') + '\nUnrelated.\n', 'utf-8');
+		await bumpMtime(bystanderPath);
+
+		const mtime = store.getRecord('Alphas', 'Target')!.mtime;
+		const res = await store.saveFolio('Alphas', 'Target', folio('Target', 'Target Renamed'), mtime);
+
+		expect(res.renamedTo).toBe('Target_Renamed');
+		expect(res.linksRewritten).toBe(1);
+	});
+
+	it('aborts before writing when the first linking file is clean but a later one is stale', async () => {
+		const store = await makeStore(['Target']);
+		for (const title of ['Linker A', 'Linker B']) {
+			await store.createFolio('Alphas', folio('', title, { Vitals: { fields: { Ref: { folder: 'Alphas', name: 'Target' } } } }));
+		}
+
+		const stalePath = join(store.projectPath, 'Alphas', 'Linker_B.md');
+		await writeFile(stalePath, await readFile(stalePath, 'utf-8') + '\nExternal.\n', 'utf-8');
+		await bumpMtime(stalePath);
+
+		const mtime = store.getRecord('Alphas', 'Target')!.mtime;
+		await expect(
+			store.saveFolio('Alphas', 'Target', folio('Target', 'Target Renamed'), mtime),
+		).rejects.toBeInstanceOf(ConflictError);
+
+		// The clean earlier file must NOT have been rewritten — the batch is
+		// verified in full before the first write.
+		const cleanLinker = await readFile(join(store.projectPath, 'Alphas', 'Linker_A.md'), 'utf-8');
+		expect(cleanLinker).toContain('[[Alphas/Target]]');
+		expect(cleanLinker).not.toContain('Target_Renamed');
 	});
 });
 

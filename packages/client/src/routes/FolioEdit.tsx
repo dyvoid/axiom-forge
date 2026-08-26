@@ -50,7 +50,12 @@ export function FolioEdit(): JSX.Element {
 					navigate(`/folio/${encodeURIComponent(folio!.folder)}/${encodeURIComponent(targetName)}`);
 				},
 				onError: (err) => {
-					if (err instanceof ConflictError) {
+					if (err instanceof ConflictError && err.staleLinkFile) {
+						setSaveError(
+							`Rename cancelled: “${err.staleLinkFile}” links to this folio and changed on disk, ` +
+								'so its links were not rewritten. Nothing was saved — sync the project, then try again.',
+						);
+					} else if (err instanceof ConflictError) {
 						setSaveError(
 							'This file changed on disk since you opened it. Reload the folio to merge — your edits are still in the form.',
 						);
