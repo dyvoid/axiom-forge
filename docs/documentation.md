@@ -50,6 +50,24 @@ details (commit messages and ADRs own the "why" and "how"), and session transcri
 session needs to know where to start, not what the last one did. When you update it, remove
 entries for work that's been completed — do not accumulate.
 
+## Markdown linting
+
+`npm run lint` runs `markdownlint-cli2` across every `.md` file in the repo. `.markdownlint.json`
+disables thirteen rules, six of them structural (MD022, MD031, MD032, MD038, MD040, MD058), and
+that is deliberate rather than neglected.
+
+The linter points at two kinds of file with one config. Roughly three quarters of what those rules
+would flag lives in `fall-of-troy/`, whose Markdown is written by the app's own
+`serializeToMarkdown`, not by hand. Making that output rule-clean is a change to the on-disk
+format — governed by [ADR-0008](adr/0008-yaml-frontmatter-metadata.md) and guarded by the
+round-trip idempotency tests — not a lint fix. Most of the rest is in generated files under
+`packages/client/`. Only a small remainder is hand-written prose.
+
+So the loose rule set is the price of linting generated data and hand-written docs together. If
+the prose docs are worth tightening, the shape is a path-scoped override in
+`.markdownlint-cli2.jsonc` that applies the strict rules to `docs/**` and the root files while
+leaving the sample project on the loose set — not flipping rules on globally.
+
 ## ADR hygiene
 
 ADRs use a simplified Nygard format — Context, Decision, Consequences — described in
