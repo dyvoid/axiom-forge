@@ -71,7 +71,7 @@ for (const file of walk(join(repoRoot, 'packages/client/src'), ['.css', '.ts', '
 
 const docFiles = [
 	...walk(join(repoRoot, 'docs'), ['.md']),
-	...['README.md', 'AGENTS.md', 'PICKUP.md'].map((f) => join(repoRoot, f)).filter(existsSync),
+	...['README.md', 'AGENTS.md', 'PICKUP.md', 'CONTEXT.md'].map((f) => join(repoRoot, f)).filter(existsSync),
 ];
 
 for (const file of docFiles) {
