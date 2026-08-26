@@ -6,6 +6,10 @@ high-priority item can still need scoping before it's ready to accept. Each entr
 for full context, design reasoning, and consequences. To start a feature: ensure its ADR is
 Accepted, then build.
 
+Internal refactors are tracked separately under [Architecture Candidates](#architecture-candidates)
+— they compete for time with features but not on the same axis, so mixing them into one priority
+order would misrepresent both.
+
 ## Candidate Features
 
 | # | Feature | Status | ADR | Notes |
@@ -22,6 +26,17 @@ Accepted, then build.
 | 10 | Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | Persona-dependent, no strong consensus |
 | 11 | Markdown Source Edit Mode | Proposed | [ADR-0012](adr/0012-markdown-source-edit-mode.md) | Toggle between structured form editor and raw Markdown textarea; 4 open questions to settle before building |
 | 12 | Desktop Packaging & Distribution | Proposed | [ADR-0005](adr/0005-desktop-packaging-distribution.md) | Uses Electron and electron-builder; value is platform-dependent per persona |
+
+## Architecture Candidates
+
+Internal quality work: no user-visible feature, but each one lowers the cost of the features
+above. Same status axis as the table above — `Proposed` means the design is recorded, not agreed.
+
+| # | Change | Status | ADR | Notes |
+|---|---|---|---|---|
+| A1 | Schema Index | Proposed | [ADR-0019](adr/0019-schema-index.md) | Folder → type and role → section lookups are re-derived at 9 call sites across both packages. Do first: A2 wants it, and ADR-0004/0016/0018 each add another folder-keyed fact |
+| A2 | Extract the Folio Index from ProjectStore | Proposed | [ADR-0020](adr/0020-folio-index-module.md) | 7 public `ProjectStore` methods exist only to maintain the in-memory array and have no external callers. Absorbs the former `Map`-lookup housekeeping item |
+| A3 | Section Kind as a Discriminated Union | Proposed | [ADR-0021](adr/0021-section-kind-union.md) | The one item here with a real failure mode: the field-emptiness predicate has 3 copies split across the serializer and the read view. Supersedes the former `classifySection()` housekeeping item |
 
 ## Implemented / Resolved
 
@@ -42,10 +57,9 @@ part of the active sequence.
 Agreed-upon cleanups that don't warrant an ADR. Remove an item once it lands — git log is the
 record of what was done.
 
-- [ ] Replace `ProjectStore` linear array scans (`.find`/`.filter`) with `Map` lookups. Independent
-  and low priority: the scans are over tens of records
-- [ ] Add `classifySection()` to `shared/schema.ts` and export `isFieldValueEmpty` from `shared` —
-  section-kind dispatch (prose / links / fields) is currently re-derived independently in
-  `FieldSection.tsx` (read) and `SectionBlock` in `FolioEditView.tsx` (edit), and the
-  field-emptiness check is copy-pasted across `FieldSection.tsx`, `MetaSection.tsx`, and a third
-  variant in `parser.ts`
+- [ ] Extract index filtering from `GrandIndexView.tsx` and `CategoryIndexView.tsx` into a pure
+  `filterFolios({ folios, query, tags, order })` helper plus a `useTagFilterParams()` hook for the
+  `?tags=` round-trip. The two views apply tag filtering and ranking in different orders, and
+  neither order is tested because the logic sits inside components. Extracting it moves the logic
+  into the tier `packages/client` already tests. Leave the duplicated filter-bar markup alone
+  until ADR-0016 makes it a third caller

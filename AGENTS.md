@@ -106,6 +106,7 @@ scope and the ADR hygiene rules.
 
 | Document | What it covers |
 |---|---|
+| [Context](CONTEXT.md) | Domain vocabulary — the name for each concept, and where it lives |
 | [Roadmap](docs/ROADMAP.md) | Candidate features and their status |
 | [Architecture](docs/architecture.md) | System structure, API endpoints, data flow |
 | [Data Model](docs/data-model.md) | On-disk Markdown format, field types, serialization rules |

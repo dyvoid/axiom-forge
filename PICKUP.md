@@ -28,6 +28,15 @@ Recommended order, with the reasoning so it does not need re-deriving:
 3. **[ADR-0013] Project Scaffolding** — skeleton ADR only. The next step is a design
    brainstorm, not a build.
 
+Three architecture candidates were recorded on 2026-08-26 from a codebase review and sit in
+[ROADMAP](docs/ROADMAP.md#architecture-candidates) as `Proposed` — they are designs on paper, not
+agreed work, so they need a yes before anyone builds them. Order matters if they are taken up:
+ADR-0019 first (ADR-0020 wants its lookups), ADR-0021 independent. ADR-0021 is the only one with
+a failure mode behind it rather than tidiness — the field-emptiness predicate has three copies
+split across the serializer and the read view, so they can drift on what counts as empty. All
+three are refactors with no user-visible change.
+
 ## Open Decisions
 
-None.
+- **Accept or drop ADR-0019 / ADR-0020 / ADR-0021.** Recorded as `Proposed`; none is urgent, and
+  each competes with the feature backlog rather than blocking it.
