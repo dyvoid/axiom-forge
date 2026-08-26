@@ -117,8 +117,8 @@ export function WikiLinkPicker({
 		if (!str) return null;
 		
 		const parts = str.split('/');
-		let folder = '';
-		let name = '';
+		let folder: string;
+		let name: string;
 		
 		if (parts.length > 1) {
 			folder = parts[0]!;

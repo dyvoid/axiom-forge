@@ -3,7 +3,7 @@
 [![CI](https://github.com/dyvoid/axiom-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/dyvoid/axiom-forge/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Node](https://img.shields.io/badge/node-%E2%89%A518.17-green)](https://nodejs.org/)
+[![Node](https://img.shields.io/badge/node-%E2%89%A520.19-green)](https://nodejs.org/)
 
 A schema-driven, local-first encyclopedia and worldbuilding tool. Your world lives as a folder of plain Markdown files on disk; Axiom Forge reads them, parses structured fields out of standard Markdown headings and lists, and gives you a fast, beautiful, navigable web UI for reading, linking, and editing.
 
@@ -31,7 +31,7 @@ Most worldbuilding tools either (a) lock your content inside a proprietary datab
 
 ### Requirements
 
-- Node.js ≥ 18.17
+- Node.js ≥ 20.19
 - npm ≥ 9
 
 ### Install

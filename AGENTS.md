@@ -80,7 +80,7 @@ Each rule has a *why* so edge cases can be reasoned through, not just pattern-ma
 
 ## Conventions
 
-- **Package manager:** npm. Node ≥ 18.17. Do not switch.
+- **Package manager:** npm. Node ≥ 20.19. Do not switch.
 - **TypeScript** throughout all three packages. Do not loosen `tsconfig` strictness.
 - **Module system:** ESM. Do not mix CommonJS into the packages.
 - Commit the lockfile (`package-lock.json`). Do not commit `dist/` or build output.
