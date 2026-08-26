@@ -89,6 +89,8 @@ function openBrowser(url)
 }
 
 /** Vite prints its URL once it is actually listening, which is the cue to open. */
+// Matching the ESC control character is the point — this strips Vite's ANSI colour codes.
+// eslint-disable-next-line no-control-regex
 const ansi = /\x1b\[[0-9;]*m/g;
 const viteLocalUrl = /Local:\s+(https?:\/\/\S+?)\/?$/;
 

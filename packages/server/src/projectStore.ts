@@ -505,7 +505,7 @@ export class ProjectStore {
 			let tags: string[] = [];
 			let aliases: string[] | undefined;
 			let snippet: string | undefined;
-			let warnings: string[] = [];
+			let warnings: string[];
 			let links: WikiLink[] = [];
 			let title = filenameToDisplayName(file.name);
 			try {
@@ -555,12 +555,14 @@ export class ProjectStore {
 		try {
 			parsed = JSON.parse(raw);
 		} catch (err) {
-			throw new Error(`Invalid JSON in ${fullPath}: ${(err as Error).message}`);
+			throw new Error(`Invalid JSON in ${fullPath}: ${(err as Error).message}`, { cause: err });
 		}
 		try {
 			return validate(parsed);
 		} catch (err) {
-			throw new Error(`Schema validation failed for ${fullPath}:\n${(err as Error).message}`);
+			throw new Error(`Schema validation failed for ${fullPath}:\n${(err as Error).message}`, {
+				cause: err,
+			});
 		}
 	}
 }

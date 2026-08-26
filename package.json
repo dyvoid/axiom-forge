@@ -9,7 +9,7 @@
 		"packages/*"
 	],
 	"engines": {
-		"node": ">=18.17",
+		"node": ">=20.19.0",
 		"npm": ">=9"
 	},
 	"scripts": {
@@ -21,14 +21,15 @@
 		"lint": "eslint . && markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#**/.impeccable/**\" && node scripts/check-repo.mjs"
 	},
 	"devDependencies": {
+		"@eslint/js": "^10.0.1",
 		"@types/node": "^20.11.0",
-		"@typescript-eslint/eslint-plugin": "^7.0.0",
-		"@typescript-eslint/parser": "^7.0.0",
 		"concurrently": "^8.2.2",
-		"eslint": "^8.57.0",
+		"eslint": "^10.9.1",
+		"globals": "^17.11.0",
 		"markdownlint-cli2": "^0.13.0",
 		"tsx": "^4.7.0",
 		"typescript": "^5.4.0",
+		"typescript-eslint": "^8.68.0",
 		"vitest": "^1.4.0"
 	}
 }
