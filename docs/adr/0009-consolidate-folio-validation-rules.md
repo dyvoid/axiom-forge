@@ -3,11 +3,9 @@
 **Date:** 2026-06-19
 **Status:** Accepted
 
-> **Note:** Split out of [ADR-0007](0007-consolidate-folio-integrity.md), which
-> originally bundled this validation rule engine with a shared traversal walker.
-> The walker is a clear win and remains in ADR-0007; this rule engine is more
-> speculative and is tracked separately so it can be accepted, deferred, or
-> rejected on its own merits.
+> **Note:** Split out of [ADR-0007](0007-consolidate-folio-integrity.md), which originally
+> bundled this validation rule engine with a shared traversal walker. The walker remains in
+> ADR-0007; this rule engine is tracked separately so it can be judged on its own merits.
 
 ## Context
 
@@ -35,26 +33,17 @@ write).
 - **Single source of truth:** changes to validation logic happen in one place.
 - **Reduced duplication:** consolidates the rules currently split between
   `parser.ts` and `schema.ts`.
-- **Risk — possible over-abstraction:** unifying the severity models may add
-  unnecessary indirection *if* the read-lenience / write-strictness split was a
-  deliberate design choice rather than incidental duplication. This is the open
-  question that must be resolved before this ADR is accepted. The lower-risk
-  half of the original ADR-0007 (the walker) does not depend on resolving it.
+- **Narrower scope than it first appears.** `parser.ts` duplicates only two rule categories —
+  `unknown-type`/`unknown-section`/`unknown-field` and `invalid-select-value` — as warnings.
+  `schema.ts`'s `wrong-shape` check has no read-time counterpart at all; it is write-only and
+  stays that way.
 
-## Resolved Open Question (2026-07-12)
+## The read/write split is deliberate — do not flatten it
 
-Re-reading both call sites: the overlap is narrower than originally scoped. `parser.ts` only
-duplicates two rule categories — `unknown-type`/`unknown-section`/`unknown-field` and
-`invalid-select-value` — as warnings. `schema.ts`'s `wrong-shape` check (type/shape mismatches)
-has no read-time counterpart at all; it's write-only today and stays that way.
-
-The lenient-read/strict-write **behavior** is a deliberate, worth-keeping property: tolerate
-schema drift already on disk (e.g. a select option removed from the schema after files were
-written with it), enforce conformance strictly on anything the app itself writes. That split is
-not the duplication problem — it's intentional and this ADR does not remove it.
-
-The duplication problem is narrower: the *rule definitions* for those two categories are
-copy-pasted between the two files with a different severity hard-coded at each site. Proceeding
-as originally decided — one engine, severity passed as a parameter — deduplicates the rule logic
-without flattening the two severities. No scope change to the Decision above; this note exists so
-future readers don't re-litigate the read/write split as if unifying meant erasing it.
+Lenient read and strict write is a worth-keeping property: tolerate schema drift already on disk
+(e.g. a select option removed from the schema after files were written with it), enforce
+conformance strictly on anything the app itself writes. That split is not the duplication
+problem. The duplication is only that the *rule definitions* for those two categories are
+copy-pasted between the two files with a different severity hard-coded at each site. One engine
+with severity passed as a parameter deduplicates the rule logic without flattening the two
+severities.

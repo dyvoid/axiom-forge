@@ -16,6 +16,9 @@
  * 3. Sample project — `fall-of-troy` wikilinks resolve, except for an explicit
  *    allowlist of entries left broken on purpose (see README).
  * 4. ADR index — every ADR is listed in ROADMAP.md, which is the log's index.
+ * 5. Doc line caps — AGENTS.md and PICKUP.md stay under their stated limit. Both
+ *    are read first and read often by every agent and every new contributor, so
+ *    they carry the basics and link out. Without a check they only ever grow.
  */
 
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
@@ -114,6 +117,24 @@ for (const entry of readdirSync(join(repoRoot, 'docs/adr'))) {
 	if (!/^\d{4}-.*\.md$/.test(entry)) continue;
 	if (!roadmap.includes(entry)) {
 		fail('adr-index', `docs/adr/${entry} is not referenced from docs/ROADMAP.md`);
+	}
+}
+
+// ── 5. Doc line caps ────────────────────────────────────────────
+//
+// The cap is stated in each file itself, so it survives being read in isolation.
+// Going over means moving detail into docs/ and linking to it — never deleting
+// substance to fit.
+
+const LINE_CAP = 120;
+
+for (const name of ['AGENTS.md', 'PICKUP.md']) {
+	const file = join(repoRoot, name);
+	if (!existsSync(file)) continue;
+	const lines = readFileSync(file, 'utf-8').split('\n');
+	if (lines[lines.length - 1] === '') lines.pop();
+	if (lines.length > LINE_CAP) {
+		fail('doc-length', `${name} is ${lines.length} lines, over the ${LINE_CAP}-line cap — move detail into docs/ and link to it`);
 	}
 }
 

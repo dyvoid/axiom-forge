@@ -1,14 +1,12 @@
 # 4. Bidirectional / Inverse Fields
 
-**Date:** 2026-06-05 (revised 2026-07-30)
+**Date:** 2026-06-05
 **Status:** Accepted — not yet implemented. See Open Items below.
 
-> **Note:** Revised 2026-07-30 from *write-through* to *display-first*. The original decision
-> had every save silently patch the inverse field on all referenced folios, using the batched
-> flush from ADR-0003. That is replaced by: derive inverse relationships for display from the
-> link index, and write them only on explicit user confirmation, as ordinary single-file saves.
-> The dependency on ADR-0003 is removed — see [ADR-0010](0010-multi-file-write-safety.md), which
-> supersedes it.
+> **Note:** Revised from *write-through* to *display-first*. The original decision had every save
+> silently patch the inverse field on all referenced folios, using the batched flush from
+> ADR-0003. It is replaced by the decision below, and the ADR-0003 dependency is gone — see
+> [ADR-0010](0010-multi-file-write-safety.md), which supersedes it.
 
 ## Context
 
@@ -86,10 +84,14 @@ behind the user's back.
 
 **4. Explicit writes, two entry points, both ordinary single-file saves.**
 
-- **Push, at save time.** After saving a folio whose annotated field gained a link, offer to set
-  the inverse on the target: *"Also set Odysseus' Divine Patron to Athena?"* Confirming issues a
+- **Push, at save time.** After saving a folio whose annotated field changed, offer to update the
+  inverse on the target: *"Also set Odysseus' Divine Patron to Athena?"* on an added link,
+  *"Penelope's Spouse still says Odysseus — clear it?"* on a removed one. Confirming issues a
   second, normal `PUT` for that folio. Two sequential single-file saves, each with its own mtime
-  check — not an atomic multi-file transaction.
+  check — not an atomic multi-file transaction. Removals are covered because leaving them
+  unhandled would let a corrected relationship go stale on the other end, which the
+  contradiction-surfacing display above would later flag as a conflicting claim — better offered
+  at the moment it's created than surfaced as an unexplained contradiction afterward.
 - **Pull, on the target.** An affordance beside an implied value writes it into the stored field.
   A single-file save of the folio being viewed.
 
@@ -133,11 +135,3 @@ Unresolved, and to be settled before this is built:
 - **Dangling targets.** Odysseus' `Spouse` names `Penelope`, and Athena's champions include
   `Diomedes`; neither file exists. Implied values and write offers must skip targets with no
   folio, rather than offering to write a link into a file that isn't there.
-- ~~**Push-prompt scope.**~~ **Resolved 2026-08-21:** the save-time offer covers both
-  directions. Adding a link offers to write the inverse ("Also set Penelope's Spouse to
-  Odysseus?"); removing one offers to clear it ("Penelope's Spouse still says Odysseus — clear
-  it?"). Same non-destructive, explicit-consent, skippable prompt pattern either way, never an
-  automatic write. Rationale: leaving removals unhandled would let a corrected relationship go
-  stale on the other end, which the display-first contradiction-surfacing this ADR introduces
-  would later flag as a conflicting claim — a problem worth offering to fix at the moment it's
-  created rather than surfacing as an unexplained contradiction afterward.

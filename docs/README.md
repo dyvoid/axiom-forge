@@ -1,12 +1,13 @@
 # Axiom Forge — System Manual
 
-Welcome to the Axiom Forge system documentation. This directory (`docs/`) contains the architectural truth of the application in its current, functional state.
-
-**Axiom Forge** is a local web application for writers and world-builders. It reads a folder of structured Markdown files as its database, renders them as a browsable encyclopedia, and allows in-app editing. The Markdown files are simultaneously valid Obsidian documents, so the same files can be opened and edited in Obsidian without any conversion.
+This directory describes the application as it is, not as it is planned to be. **Axiom Forge** is
+a local web application for writers and world-builders: it reads a folder of structured Markdown
+files as its database, renders them as a browsable encyclopedia, and allows in-app editing. The
+files are simultaneously valid Obsidian documents, openable and editable there without conversion.
 
 ## Documentation Map
 
-If you want to understand how the system is built, read these files in order:
+To understand how the system is built, read these in order:
 
 | File | Description |
 |---|---|
@@ -14,4 +15,12 @@ If you want to understand how the system is built, read these files in order:
 | [`data-model.md`](data-model.md) | The strict rules governing `.md` file parsing, `schema.json` layouts, and save validation logic. |
 | [`design-system.md`](design-system.md) | The print-aesthetic CSS Modules design tokens, typography, colors, and layout modifiers (like omitting empty sections). |
 
-*Note: For candidate features and architecture decisions, see [`ROADMAP.md`](ROADMAP.md) and [`adr/`](adr/).*
+Two more cover how the repository itself is worked in:
+
+| File | Description |
+|---|---|
+| [`testing.md`](testing.md) | Test tiers, the synthetic-schema rule, and what to test when adding code. |
+| [`documentation.md`](documentation.md) | Doc discipline, size limits, PICKUP scope, ADR hygiene, and the end-of-task checklist. |
+
+For candidate features and architecture decisions, see [`ROADMAP.md`](ROADMAP.md) and
+[`adr/`](adr/). For branching and commit rules, see [`git-strategy.md`](git-strategy.md).

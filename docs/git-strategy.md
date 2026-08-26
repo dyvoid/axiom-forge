@@ -59,14 +59,9 @@ Do not commit generated source files. They create noisy diffs and painful merge 
 
 Review diffs skeptically — AI code looks clean but can be subtly wrong.
 
-High-blast-radius files always get manual review:
-
-- `schema.json` in any project folder
-- `packages/shared/src/parser.ts` and `packages/shared/src/schema.ts`
-- `.gitignore` and `.gitattributes`
-- Anything touching secrets, auth, or permissions
-- CI/CD config (`.github/workflows/`)
-- Public API endpoints
+High-blast-radius changes always get manual review. `AGENTS.md` holds the canonical list;
+it additionally covers `packages/shared/src/parser.ts` and `schema.ts`, public API endpoints,
+and anything touching secrets, auth, or permissions.
 
 ---
 
@@ -94,5 +89,5 @@ Enforce the strategy at the repo level:
 
 ## Versioning
 
-Tag meaningful milestones with `v<major>.<minor>.<patch>`. Phase completions (Phase 5, Phase 6)
-and major feature landings are natural tag points.
+Tag meaningful milestones with `v<major>.<minor>.<patch>`. Major feature landings are the
+natural tag points.
