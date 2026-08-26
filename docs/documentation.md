@@ -18,8 +18,8 @@ change and stop being read once it lands.
 
 The test to apply before writing a sentence into a tracked file: **would an ordinary action —
 merging, pushing, cutting a release — make this false without anyone editing the file?** If
-yes, it goes in the PR or commit message instead. Prefer the durable half: "ADR-0010 is next,
-because `rewriteProjectLinks` writes every linking file with no mtime check" stays true
+yes, it goes in the PR or commit message instead. Prefer the durable half: "ADR-0009 is next,
+because folio validation rules are still spread across the parser and the store" stays true
 regardless of what has merged.
 
 The same rule bans project history from tracked docs. Git log is the record of what changed and

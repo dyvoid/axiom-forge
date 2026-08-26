@@ -17,19 +17,16 @@ Nothing.
 
 Recommended order, with the reasoning so it does not need re-deriving:
 
-1. **[ADR-0010] Multi-File Write Safety** — the only open item that closes a *live
-   data-loss path*. `rewriteProjectLinks` writes every linking file with no mtime
-   check, so an external edit to any linking file is silently overwritten on rename.
-   Server-only, Accepted, no pending design decisions, fits the existing
-   integration-test pattern.
-2. **[ADR-0009] Consolidate Folio Validation Rules** — Accepted and self-contained,
+1. **[ADR-0009] Consolidate Folio Validation Rules** — Accepted and self-contained,
    but modest payoff. Changes user-visible warning wording, so the four parser tests
    asserting those strings need updating.
-3. **[ADR-0004] Bidirectional / Inverse Fields** — Accepted. The one open product
+2. **[ADR-0004] Bidirectional / Inverse Fields** — Accepted. The one open product
    call (push-prompt scope) was decided 2026-08-21: the save-time prompt covers both
    additions and removals, same non-destructive pattern either way. No longer
    user-blocked; the two remaining open items (deletion, dangling targets) are
    decidable without the user.
+3. **[ADR-0013] Project Scaffolding** — skeleton ADR only. The next step is a design
+   brainstorm, not a build.
 
 ## Open Decisions
 

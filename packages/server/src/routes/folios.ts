@@ -11,6 +11,18 @@ import {
 	LinkRewriteFailedError,
 } from '../storeErrors.js';
 
+/** Response body for a 409, one shape per conflict kind. */
+function conflictBody(detail: ConflictError['detail']): Record<string, unknown> {
+	switch (detail.kind) {
+		case 'stale':
+			return { error: 'conflict', serverMtime: detail.serverMtime };
+		case 'exists':
+			return { error: 'exists', name: detail.name };
+		case 'link-target-stale':
+			return { error: 'link-target-stale', file: detail.file };
+	}
+}
+
 /**
  * Map a ProjectStore domain error to an HTTP response. Returns true if the
  * error was a known domain error and a response was sent; false otherwise (the
@@ -34,11 +46,7 @@ function sendDomainError(err: unknown, res: Response): boolean {
 		return true;
 	}
 	if (err instanceof ConflictError) {
-		res.status(409).json(
-			err.detail.kind === 'stale'
-				? { error: 'conflict', serverMtime: err.detail.serverMtime }
-				: { error: 'exists', name: err.detail.name },
-		);
+		res.status(409).json(conflictBody(err.detail));
 		return true;
 	}
 	if (err instanceof RenameFailedError) {
