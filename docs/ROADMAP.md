@@ -36,7 +36,6 @@ above. Same status axis as the table above — `Proposed` means the design is re
 |---|---|---|---|---|
 | A1 | Schema Index | Proposed | [ADR-0019](adr/0019-schema-index.md) | Folder → type and role → section lookups are re-derived at 9 call sites across both packages. Do first: A2 wants it, and ADR-0004/0016/0018 each add another folder-keyed fact |
 | A2 | Extract the Folio Index from ProjectStore | Proposed | [ADR-0020](adr/0020-folio-index-module.md) | 7 public `ProjectStore` methods exist only to maintain the in-memory array and have no external callers. Absorbs the former `Map`-lookup housekeeping item |
-| A3 | Section Kind as a Discriminated Union | Proposed | [ADR-0021](adr/0021-section-kind-union.md) | The one item here with a real failure mode: the field-emptiness predicate has 3 copies split across the serializer and the read view. Supersedes the former `classifySection()` housekeeping item |
 
 ## Implemented / Resolved
 
@@ -45,6 +44,7 @@ part of the active sequence.
 
 | Feature | Status | ADR | Notes |
 |---|---|---|---|
+| Section Kind as a Discriminated Union | Accepted | [ADR-0021](adr/0021-section-kind-union.md) | `classifySection` + shared `isFieldValueEmpty`; section-level `type` narrowed at the type level |
 | Multi-File Write Safety | Accepted | [ADR-0010](adr/0010-multi-file-write-safety.md) | Batched rename link-rewrite: all targets verified against indexed mtime before the first write; supersedes ADR-0003 |
 | Unify Entry Cards & Ranking | Accepted | [ADR-0011](adr/0011-unify-entry-cards-and-ranking.md) | Shared `scoreFolio`/`rankFolios` + `EntryContent` (sidebar excluded) |
 | Encapsulate Folio Mutations | Accepted | [ADR-0006](adr/0006-encapsulate-folio-mutations.md) | Unblocks ADR-0010 |

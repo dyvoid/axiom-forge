@@ -1,3 +1,4 @@
+import { classifySection, isFieldValueEmpty } from '@axiom-forge/shared';
 import type { SectionDef, ParsedSection, WikiLink } from '@axiom-forge/shared';
 import { FieldValueRenderer } from './MetaSection.js';
 import { ProseSection } from './ProseSection.js';
@@ -10,12 +11,13 @@ interface FieldSectionProps {
 }
 
 export function FieldSection({ name, schema, data }: FieldSectionProps): JSX.Element {
-	// If it's a section-level value (e.g. textarea, wikilink-list)
-	if (!schema.fields) {
-		if (schema.type === 'textarea') {
+	const classified = classifySection(schema);
+
+	switch (classified.kind) {
+		case 'prose':
 			return <ProseSection name={name} data={data} />;
-		}
-		if (schema.type === 'wikilink-list') {
+
+		case 'links': {
 			const links = (data.value as WikiLink[]) || [];
 			if (links.length === 0) return <></>;
 			return (
@@ -31,38 +33,35 @@ export function FieldSection({ name, schema, data }: FieldSectionProps): JSX.Ele
 				</section>
 			);
 		}
-		return <></>;
-	}
 
-	// Structured field section (like "Relationships")
-	if (!data.fields) return <></>;
+		case 'fields': {
+			if (!data.fields) return <></>;
 
-	const validFields = Object.entries(schema.fields).filter(([fName]) => {
-		const val = data.fields![fName];
-		if (val === undefined || val === null || val === '') return false;
-		if (Array.isArray(val) && val.length === 0) return false;
-		return true;
-	});
+			const validFields = Object.entries(classified.fields)
+				.filter(([fName]) => !isFieldValueEmpty(data.fields![fName]));
 
-	if (validFields.length === 0) return <></>;
+			if (validFields.length === 0) return <></>;
 
-	return (
-		<section className={styles.section}>
-			<h2 className={styles.title}>{name}</h2>
-			<div className={styles.wrap}>
-				{validFields.map(([fName, fDef]) => {
-					const val = data.fields![fName];
-
-					return (
-						<div key={fName} className={styles.field}>
-							<div className={styles.label}>{fName}</div>
-							<div className={styles.value}>
-								<FieldValueRenderer value={val} type={fDef.type} />
+			return (
+				<section className={styles.section}>
+					<h2 className={styles.title}>{name}</h2>
+					<div className={styles.wrap}>
+						{validFields.map(([fName, fDef]) => (
+							<div key={fName} className={styles.field}>
+								<div className={styles.label}>{fName}</div>
+								<div className={styles.value}>
+									<FieldValueRenderer value={data.fields![fName]} type={fDef.type} />
+								</div>
 							</div>
-						</div>
-					);
-				})}
-			</div>
-		</section>
-	);
+						))}
+					</div>
+				</section>
+			);
+		}
+
+		default: {
+			const unhandled: never = classified;
+			throw new Error(`Unhandled section kind: ${JSON.stringify(unhandled)}`);
+		}
+	}
 }

@@ -45,7 +45,10 @@ bijection is relied on throughout and is the subject of [ADR-0019](docs/adr/0019
 
 **Section** — a named block within a type, rendered from a `## Heading`. A section is one of
 three **kinds**: *prose* (free text), *links* (a section-level list of wiki-links), or *fields*
-(a map of named values). See [ADR-0021](docs/adr/0021-section-kind-union.md).
+(a map of named values). The kind is resolved from the section's schema definition by
+`classifySection`, which is the only place that reads the raw `type`/`fields` properties; every
+consumer switches on the `kind` it returns. See
+[ADR-0021](docs/adr/0021-section-kind-union.md).
 
 **Role** — an optional layout hint on a section, either `meta` or `prose`. The read view builds
 its two-column top block from whichever sections carry them. A role is a layout instruction, not
@@ -53,6 +56,8 @@ a section kind.
 
 **Field** — a single named value inside a fields-section, with one of eight **field types**
 (`text`, `text-list`, `select`, `multiselect`, `date`, `textarea`, `wikilink`, `wikilink-list`).
+A field is **empty** — omitted from both the file and the read view — per `isFieldValueEmpty`,
+the one predicate the serializer and the read view share.
 
 **Option** — an allowed value for a `select`/`multiselect` field. An option marked `inactive`
 still parses but is not offered for new input.
