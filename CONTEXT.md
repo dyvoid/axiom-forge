@@ -106,8 +106,11 @@ client's caches. The header button says Sync; the endpoint says reload.
 
 **Warning vs. error** — the severity split that runs through the whole system: reading is
 lenient and produces **warnings** (schema drift already on disk is tolerated and shown), writing
-is strict and produces **errors** (a save that violates the schema is rejected). Deliberate; see
-[ADR-0009](docs/adr/0009-consolidate-folio-validation-rules.md).
+is strict and produces **errors** (a save that violates the schema is rejected). One rule engine,
+`validateAgainstSchema`, defines both; its **validation mode** (`read` or `write`) selects the
+severity. Deliberate; see
+[ADR-0009](docs/adr/0009-consolidate-folio-validation-rules.md) and the rule table in
+[Data Model](docs/data-model.md#validation).
 
 **Stale save** — a save rejected because the file's `mtime` moved since the client loaded it,
 meaning something edited it outside the app. Returns `409`.

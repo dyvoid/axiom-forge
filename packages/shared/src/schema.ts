@@ -213,12 +213,37 @@ export const ParsedFolioSchema = z.object({
 // not errors — see `brokenLinks` in the server route.)
 // ────────────────────────────────────────────────────────────
 
+/**
+ * Which way a folio is moving through the system. The rules are the same in
+ * both directions; the severity, and one category, are not.
+ *
+ * - `read` — parsing a file already on disk. Lenient: schema drift that is
+ *   already written down is tolerated and surfaced as a **warning**.
+ * - `write` — a save the app itself is about to perform. Strict: anything
+ *   non-conforming is an **error** and the save is rejected.
+ *
+ * That split is deliberate and load-bearing, not an artifact of the rules
+ * having been written twice. See
+ * [ADR-0009](../../../docs/adr/0009-consolidate-folio-validation-rules.md).
+ */
+export type ValidationMode = 'read' | 'write';
+
+export type ValidationSeverity = 'warning' | 'error';
+
+export type SchemaIssueCode =
+	| 'unknown-type'
+	| 'unknown-section'
+	| 'unknown-field'
+	| 'invalid-select-value'
+	| 'wrong-shape';
+
 export interface SchemaConformanceIssue {
 	/** Dotted path to the offending element, e.g. 'sections.Vitals.fields.Mood'. */
 	path: string;
-	/** Machine code: 'unknown-type' | 'unknown-section' | 'unknown-field' | 'invalid-select-value' | 'wrong-shape'. */
-	code: string;
+	code: SchemaIssueCode;
 	message: string;
+	/** `warning` in `read` mode, `error` in `write` mode. */
+	severity: ValidationSeverity;
 }
 
 // Forward type-only import via duck typing — types.ts depends on this file
@@ -238,7 +263,15 @@ function selectOptionValue(option: string | { value: string; inactive?: boolean 
 
 /**
  * Validate a parsed folio's *contents* against the live project schema.
- * Returns an array of issues — empty array means OK to save.
+ *
+ * The single definition of every folio validation rule: both the read path
+ * (`parseMarkdown`, which turns the issues into warning strings) and the write
+ * path (`ProjectStore.validateForWrite`, which rejects the save) call this.
+ * `mode` decides the severity stamped on each issue, and which rules run at
+ * all — it does not change what any individual rule means.
+ *
+ * Returns an array of issues; empty means conforming. On the write path that
+ * is the go/no-go for a save.
  *
  * This is **schema-agnostic**: it only walks whatever types/sections/fields
  * the loaded schema declares. It never names any specific type.
@@ -246,14 +279,17 @@ function selectOptionValue(option: string | { value: string; inactive?: boolean 
 export function validateAgainstSchema(
 	folio: ValidationFolio,
 	schema: ProjectSchema,
+	mode: ValidationMode,
 ): SchemaConformanceIssue[] {
 	const issues: SchemaConformanceIssue[] = [];
+	const severity: ValidationSeverity = mode === 'read' ? 'warning' : 'error';
 
 	const typeDef = schema.types[folio.type];
 	if (!typeDef) {
 		issues.push({
 			path: 'type',
 			code: 'unknown-type',
+			severity,
 			message: `Unknown type "${folio.type}". Not declared in schema.`,
 		});
 		// Without a type def we can't validate sections meaningfully — stop here.
@@ -266,31 +302,56 @@ export function validateAgainstSchema(
 			issues.push({
 				path: `sections.${sectionName}`,
 				code: 'unknown-section',
+				severity,
 				message: `Unknown section "${sectionName}" for type "${folio.type}".`,
 			});
 			continue;
 		}
 
-		// Validate field-based sections
-		if (sectionDef.fields) {
-			if (section.fields) {
-				for (const [fieldName, fieldValue] of Object.entries(section.fields)) {
-					const fieldDef = sectionDef.fields[fieldName];
+		const classified = classifySection(sectionDef);
+		switch (classified.kind) {
+			case 'fields': {
+				for (const [fieldName, fieldValue] of Object.entries(section.fields ?? {})) {
+					const fieldDef = classified.fields[fieldName];
 					if (!fieldDef) {
 						issues.push({
 							path: `sections.${sectionName}.fields.${fieldName}`,
 							code: 'unknown-field',
+							severity,
 							message: `Unknown field "${fieldName}" in section "${sectionName}".`,
 						});
 						continue;
 					}
-					checkFieldValue(issues, `sections.${sectionName}.fields.${fieldName}`, fieldName, fieldDef, fieldValue);
+					checkFieldValue(
+						issues,
+						`sections.${sectionName}.fields.${fieldName}`,
+						`field "${fieldName}" in section "${sectionName}"`,
+						fieldDef,
+						fieldValue,
+						mode,
+						severity,
+					);
 				}
+				break;
 			}
-		} else if (sectionDef.type) {
-			// Section with a top-level type — validate its `value`.
-			const path = `sections.${sectionName}.value`;
-			checkFieldValue(issues, path, sectionName, { type: sectionDef.type, options: undefined, target: sectionDef.target }, section.value);
+			case 'prose':
+				// Free text — nothing to conform to.
+				break;
+			case 'links':
+				checkFieldValue(
+					issues,
+					`sections.${sectionName}.value`,
+					`section "${sectionName}"`,
+					{ type: 'wikilink-list', options: undefined, target: classified.target },
+					section.value,
+					mode,
+					severity,
+				);
+				break;
+			default: {
+				const unhandled: never = classified;
+				throw new Error(`Unhandled section kind: ${JSON.stringify(unhandled)}`);
+			}
 		}
 	}
 
@@ -310,6 +371,11 @@ function isPlainWikiLinkObject(v: unknown): boolean {
  *   - `invalid-select-value`: a select/multiselect value is not in the
  *     declared options.
  *
+ * `wrong-shape` is **write-only**. It asks whether a value the app is about to
+ * write is well-formed, which is a question about a save payload; a file on
+ * disk has already been coerced into shape by the parser, so on the read path
+ * the check has nothing to say and is skipped rather than downgraded.
+ *
  * Shape mismatches are reported once per field and short-circuit further
  * checks for that field.
  */
@@ -319,73 +385,73 @@ function checkFieldValue(
 	label: string,
 	fieldDef: FieldDef,
 	value: unknown,
+	mode: ValidationMode,
+	severity: ValidationSeverity,
 ): void {
 	if (value === null || value === undefined) return;
 
+	if (mode === 'write') {
+		const expectation = shapeExpectation(fieldDef.type, value);
+		if (expectation) {
+			issues.push({
+				path,
+				code: 'wrong-shape',
+				severity,
+				message: `${capitalize(label)} is declared ${fieldDef.type} and expects ${expectation}, got ${describeShape(value)}.`,
+			});
+			return;
+		}
+	}
+
+	// Select/multiselect option-set check. Applies in both modes: a value
+	// outside the declared options is drift on read and a rejection on write.
+	if (!fieldDef.options) return;
+	const allowed = fieldDef.options.map(selectOptionValue);
+
+	const offending = fieldDef.type === 'select' && typeof value === 'string'
+		? [value]
+		: fieldDef.type === 'multiselect' && Array.isArray(value)
+			? value.filter((v): v is string => typeof v === 'string')
+			: [];
+
+	for (const v of offending) {
+		if (allowed.includes(v)) continue;
+		issues.push({
+			path,
+			code: 'invalid-select-value',
+			severity,
+			message: `Invalid value "${v}" for ${label}. Allowed: ${allowed.join(', ')}.`,
+		});
+	}
+}
+
+/**
+ * Describe what a field type expects, or `null` when `value` already matches.
+ * One table so the shape rules read as a set rather than a chain of branches.
+ */
+function shapeExpectation(type: FieldType, value: unknown): string | null {
 	const stringTypes: FieldType[] = ['text', 'date', 'select', 'textarea'];
 	const stringListTypes: FieldType[] = ['text-list', 'multiselect'];
 
-	if (stringTypes.includes(fieldDef.type)) {
-		if (typeof value !== 'string') {
-			issues.push({
-				path,
-				code: 'wrong-shape',
-				message: `Field "${label}" of type ${fieldDef.type} expects a string, got ${describeShape(value)}.`,
-			});
-			return;
-		}
-	} else if (stringListTypes.includes(fieldDef.type)) {
-		if (!Array.isArray(value) || !value.every((v) => typeof v === 'string')) {
-			issues.push({
-				path,
-				code: 'wrong-shape',
-				message: `Field "${label}" of type ${fieldDef.type} expects string[], got ${describeShape(value)}.`,
-			});
-			return;
-		}
-	} else if (fieldDef.type === 'wikilink') {
-		if (!isPlainWikiLinkObject(value)) {
-			issues.push({
-				path,
-				code: 'wrong-shape',
-				message: `Field "${label}" of type wikilink expects a { folder, name } object, got ${describeShape(value)}.`,
-			});
-			return;
-		}
-	} else if (fieldDef.type === 'wikilink-list') {
-		if (!Array.isArray(value) || !value.every(isPlainWikiLinkObject)) {
-			issues.push({
-				path,
-				code: 'wrong-shape',
-				message: `Field "${label}" of type wikilink-list expects an array of { folder, name } objects, got ${describeShape(value)}.`,
-			});
-			return;
-		}
+	if (stringTypes.includes(type)) {
+		return typeof value === 'string' ? null : 'a string';
 	}
+	if (stringListTypes.includes(type)) {
+		const ok = Array.isArray(value) && value.every((v) => typeof v === 'string');
+		return ok ? null : 'string[]';
+	}
+	if (type === 'wikilink') {
+		return isPlainWikiLinkObject(value) ? null : 'a { folder, name } object';
+	}
+	if (type === 'wikilink-list') {
+		const ok = Array.isArray(value) && value.every(isPlainWikiLinkObject);
+		return ok ? null : 'an array of { folder, name } objects';
+	}
+	return null;
+}
 
-	// Select/multiselect option-set check.
-	if (fieldDef.type === 'select' && typeof value === 'string' && fieldDef.options) {
-		const allowed = fieldDef.options.map(selectOptionValue);
-		if (!allowed.includes(value)) {
-			issues.push({
-				path,
-				code: 'invalid-select-value',
-				message: `Invalid value "${value}" for "${label}". Allowed: ${allowed.join(', ')}.`,
-			});
-		}
-	}
-	if (fieldDef.type === 'multiselect' && Array.isArray(value) && fieldDef.options) {
-		const allowed = fieldDef.options.map(selectOptionValue);
-		for (const v of value) {
-			if (typeof v === 'string' && !allowed.includes(v)) {
-				issues.push({
-					path,
-					code: 'invalid-select-value',
-					message: `Invalid value "${v}" for "${label}". Allowed: ${allowed.join(', ')}.`,
-				});
-			}
-		}
-	}
+function capitalize(s: string): string {
+	return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function describeShape(v: unknown): string {

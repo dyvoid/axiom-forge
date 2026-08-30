@@ -47,3 +47,25 @@ problem. The duplication is only that the *rule definitions* for those two categ
 copy-pasted between the two files with a different severity hard-coded at each site. One engine
 with severity passed as a parameter deduplicates the rule logic without flattening the two
 severities.
+
+## Implementation
+
+`validateAgainstSchema(folio, schema, mode)` in `shared/schema.ts` is the engine. `parseMarkdown`
+calls it with `'read'` and flattens the issues into its `warnings` string array;
+`ProjectStore.validateForWrite` calls it with `'write'` and throws on any issue. Each issue now
+carries a `severity` (`'warning'` | `'error'`) alongside its existing `path` and `code`.
+
+Three things came out differently from the Decision as written:
+
+- **`wrong-shape` is skipped on read rather than downgraded to a warning.** The ADR called it
+  write-only; in practice that means the rule does not run at all in `read` mode. A file on disk
+  has already been coerced into shape by the parser, so the check has nothing to say there.
+- **Option checking narrowed to `select`/`multiselect`.** The parser previously checked options on
+  *any* field declaring them, including types where options are meaningless. The save path never
+  did. They now agree on the save path's behavior, which is the point of the consolidation.
+- **A file with an empty `type` is not validated at all.** This matches what the parser already
+  did — its unknown-type warning was guarded on a non-empty type — and is now stated rather than
+  implied. `ParsedFolioSchema` requires a non-empty type, so the write path cannot reach it.
+
+Read-path warning wording changed, since both paths now emit the engine's messages. The messages
+gained the section name for field-level issues, so no read warning lost context in the move.

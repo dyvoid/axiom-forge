@@ -161,6 +161,7 @@ describe('validateAgainstSchema wrong-shape detection', () => {
 		const issues = validateAgainstSchema(
 			{ type: 'Thing', sections: { Vitals: { fields: { Best: 'not-an-object' } } } },
 			schema,
+			'write',
 		);
 		expect(issues).toHaveLength(1);
 		expect(issues[0]!.code).toBe('wrong-shape');
@@ -170,6 +171,7 @@ describe('validateAgainstSchema wrong-shape detection', () => {
 		const issues = validateAgainstSchema(
 			{ type: 'Thing', sections: { Vitals: { fields: { Name: ['a', 'b'] } } } },
 			schema,
+			'write',
 		);
 		expect(issues).toHaveLength(1);
 		expect(issues[0]!.code).toBe('wrong-shape');
@@ -179,6 +181,7 @@ describe('validateAgainstSchema wrong-shape detection', () => {
 		const issues = validateAgainstSchema(
 			{ type: 'Thing', sections: { Vitals: { fields: { Friends: ['oops'] } } } },
 			schema,
+			'write',
 		);
 		expect(issues).toHaveLength(1);
 		expect(issues[0]!.code).toBe('wrong-shape');
@@ -199,6 +202,7 @@ describe('validateAgainstSchema wrong-shape detection', () => {
 				},
 			},
 			schema,
+			'write',
 		);
 		expect(issues).toEqual([]);
 	});
@@ -231,5 +235,47 @@ describe('classifySection', () => {
 
 	it('throws on a def declaring neither fields nor type', () => {
 		expect(() => classifySection({} as SectionDef)).toThrow(/must declare either/);
+	});
+});
+
+describe('validateAgainstSchema read vs. write mode', () => {
+	const schema: ProjectSchema = {
+		version: '1.0.0',
+		types: {
+			Thing: {
+				icon: 'x',
+				folder: 'Things',
+				sections: {
+					Vitals: { fields: { Name: { type: 'text' }, Mood: { type: 'select', options: ['Calm'] } } },
+				},
+			},
+		},
+	};
+
+	it('stamps warning severity on read and error severity on write', () => {
+		const folio = { type: 'Thing', sections: { Vitals: { fields: { Mood: 'Wrathful' } } } };
+		expect(validateAgainstSchema(folio, schema, 'read')[0]!.severity).toBe('warning');
+		expect(validateAgainstSchema(folio, schema, 'write')[0]!.severity).toBe('error');
+	});
+
+	it('applies the same option rule in both modes', () => {
+		const folio = { type: 'Thing', sections: { Vitals: { fields: { Mood: 'Wrathful' } } } };
+		const codes = (mode: 'read' | 'write'): string[] =>
+			validateAgainstSchema(folio, schema, mode).map((i) => i.code);
+		expect(codes('read')).toEqual(['invalid-select-value']);
+		expect(codes('write')).toEqual(['invalid-select-value']);
+	});
+
+	it('reports wrong-shape on write only — reading tolerates what is already on disk', () => {
+		const folio = { type: 'Thing', sections: { Vitals: { fields: { Name: ['a', 'b'] } } } };
+		expect(validateAgainstSchema(folio, schema, 'write').map((i) => i.code)).toEqual(['wrong-shape']);
+		expect(validateAgainstSchema(folio, schema, 'read')).toEqual([]);
+	});
+
+	it('reports unknown type and section in both modes', () => {
+		expect(validateAgainstSchema({ type: 'Nope', sections: {} }, schema, 'read').map((i) => i.code))
+			.toEqual(['unknown-type']);
+		expect(validateAgainstSchema({ type: 'Thing', sections: { Ghost: {} } }, schema, 'read').map((i) => i.code))
+			.toEqual(['unknown-section']);
 	});
 });
