@@ -97,7 +97,22 @@ export function WebGLHero({ variant = 'codex', className }: WebGLHeroProps): JSX
 
 		let raf = 0;
 		let alive = true;
-		const prewarmSeconds = 60;
+
+		// The shader starts mid-flow rather than from a cold, uniform field, and
+		// at a different point on every load so the hero is not the same image
+		// each visit. `u_time` only translates the noise domain — the smoke is
+		// fbm-driven and has no period — so any offset yields a different
+		// composition, and the drift rates (0.04-0.07 units/sec) mean a few tens
+		// of seconds already moves the field by a whole noise cell.
+		//
+		// The jitter is bounded rather than arbitrary: those same coordinates
+		// grow with time and `fbm` amplifies them by ~2.02^4 before hashing, so
+		// a large enough offset pushes the noise into float precision where it
+		// bands and repeats. 10 minutes is far more variation than the eye can
+		// track between visits while keeping the magnitudes small.
+		const PREWARM_SECONDS = 60;
+		const PREWARM_JITTER_SECONDS = 600;
+		const prewarmSeconds = PREWARM_SECONDS + Math.random() * PREWARM_JITTER_SECONDS;
 		const start = performance.now() - prewarmSeconds * 1000;
 
 		function drawFrame() {
