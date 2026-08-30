@@ -51,7 +51,7 @@ The frontend is a single-page React application powered by Vite. In development 
 ### Routing
 The UI handles routing entirely client-side using React Router:
 - `/` (`Landing`) - Project home with WebGL hero and type counts.
-- `/archive` (`GrandIndexView`) - Global search and tag filtering for all folios.
+- `/index` (`GrandIndexView`) - Global search and tag filtering for all folios.
 - `/folio/:folder` (`CategoryIndexView`) - Category-specific index with search/tags.
 - `/folio/:folder/:name` (`FolioRead`) - Read mode.
 - `/folio/:folder/:name/edit` (`FolioEdit`) - Edit mode (separate route, not a nested state, allowing distinct layouts).

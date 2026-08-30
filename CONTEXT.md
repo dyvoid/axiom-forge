@@ -123,5 +123,5 @@ aborts the whole save rather than tearing it; see
 ## Surfaces
 
 **Landing** — the project home at `/`. **Grand Index** — the searchable index of every folio, at
-`/archive`. **Category index** — the same for one type, at `/folio/:folder`. **Read mode** and
+`/index`. **Category index** — the same for one type, at `/folio/:folder`. **Read mode** and
 **edit mode** — the two folio views, separate routes rather than one route with a toggle.

@@ -1,7 +1,7 @@
 # 9. Consolidate Folio Validation Rules
 
 **Date:** 2026-06-19
-**Status:** Accepted
+**Status:** Accepted — implemented 2026-08-30
 
 > **Note:** Split out of [ADR-0007](0007-consolidate-folio-integrity.md), which originally
 > bundled this validation rule engine with a shared traversal walker. The walker remains in
