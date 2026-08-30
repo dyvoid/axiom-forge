@@ -112,6 +112,20 @@ against, and a typeless file is a different problem from a non-conforming one.
 Broken wiki-links (pointing to non-existent folios) are not part of this engine. They are allowed
 to save, and return a warning array so the UI can flag them.
 
+### A drifted file is readable but not saveable
+
+The asymmetry above has a consequence worth stating plainly. A file whose content has drifted
+from the schema — an unknown field, an unknown section, a `select` value no longer in the
+options — reads fine: the parser keeps the unrecognised content rather than dropping it, and the
+warnings surface in the UI. But every save of that folio is rejected `400 schema-violation`,
+because the same drift is an error on the write path. Nothing in the app repairs it, so the only
+routes are editing the file in another editor or changing `schema.json`.
+
+This is a known and accepted gap, not an oversight: it falls out of lenient-read/strict-write,
+which is deliberate. [ADR-0012](adr/0012-markdown-source-edit-mode.md) would close it by giving
+the app a raw-Markdown edit path, and is currently ranked below several larger features
+([Roadmap](ROADMAP.md)) — so expect the gap to persist for now.
+
 ## Frontmatter Parse Errors
 
 The parser treats frontmatter as a hard contract, not a forgiving hint:

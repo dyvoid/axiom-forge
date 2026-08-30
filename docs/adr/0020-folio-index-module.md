@@ -1,7 +1,7 @@
 # 20. Extract the Folio Index from ProjectStore
 
 **Date:** 2026-08-26
-**Status:** Proposed
+**Status:** Proposed — deferred until after [ADR-0013](0013-project-scaffolding.md)
 
 ## Context
 
@@ -48,6 +48,10 @@ API-facing set: `load`, `reload`, `getConfig`, `getSchema`, `getFolios`, `getFol
 time, not here.
 
 ## Sequencing
+
+Decided 2026-08-30: this stays `Proposed` and is revisited after
+[ADR-0013](0013-project-scaffolding.md) lands, rather than being taken up with
+[ADR-0019](0019-schema-index.md). The reasoning below is what that decision rests on.
 
 This is the least urgent of the recorded architecture candidates, and deliberately so. Nothing on
 the backlog is waiting on it: unlike [ADR-0019](0019-schema-index.md), which
