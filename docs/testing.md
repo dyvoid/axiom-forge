@@ -40,3 +40,18 @@ or field values from the sample project. See `schema.test.ts` for the establishe
 - React components → not tested today. Adding them requires a test renderer setup
   (e.g. jsdom + `@testing-library/react`). This is a deliberate omission, not an oversight;
   add the setup when the benefit justifies its cost.
+
+## What the checks do not cover
+
+`npm test` runs Vitest, which transpiles without typechecking, and `npm run lint` runs ESLint,
+markdownlint, and `check-repo.mjs`. Neither typechecks `packages/client` — that happens only in
+`npm run build`, via `vite build`, which does not typecheck either.
+
+So `npx tsc -p packages/client --noEmit` is not part of any check, and it currently reports eight
+errors across five files: six unchecked index or array accesses (`Sidebar.tsx` ×3,
+`EntryContent.tsx`, `TagFilter.tsx`, `caret.ts`) and two calls to the optional methods
+`useBlocker` returns (`FolioEditView.tsx`). `packages/shared` and `packages/server` are
+typechecked by their own `tsc` builds and are clean.
+
+Run that command before and after a client change and compare the counts, rather than reading a
+non-empty result as something the change introduced.

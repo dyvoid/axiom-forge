@@ -31,10 +31,14 @@ order would misrepresent both.
 Internal quality work: no user-visible feature, but each one lowers the cost of the features
 above. Same status axis as the table above — `Proposed` means the design is recorded, not agreed.
 
+These two are not one decision. A1 is a prerequisite for the top feature and worth taking first;
+A2 is unblocked tidiness that is better done after ADR-0013 than before it. Each ADR carries the
+reasoning.
+
 | # | Change | Status | ADR | Notes |
 |---|---|---|---|---|
-| A1 | Schema Index | Proposed | [ADR-0019](adr/0019-schema-index.md) | Folder → type and role → section lookups are re-derived at 9 call sites across both packages. Do first: A2 wants it, and ADR-0004/0016/0018 each add another folder-keyed fact |
-| A2 | Extract the Folio Index from ProjectStore | Proposed | [ADR-0020](adr/0020-folio-index-module.md) | 7 public `ProjectStore` methods exist only to maintain the in-memory array and have no external callers. Absorbs the former `Map`-lookup housekeeping item |
+| A1 | Schema Index | Proposed | [ADR-0019](adr/0019-schema-index.md) | Folder → type and role → section lookups are re-derived at 10 call sites across both packages, 2 of them standing type errors. Effectively a prerequisite for #1: ADR-0004's schema-load validation must resolve `target` folders to types to check an `inverse` path |
+| A2 | Extract the Folio Index from ProjectStore | Proposed | [ADR-0020](adr/0020-folio-index-module.md) | 7 public `ProjectStore` methods exist only to maintain the in-memory array and have no external callers. Absorbs the former `Map`-lookup housekeeping item. Nothing waits on it and no failure mode behind it; sequence it *after* ADR-0013, which reshapes the same `load`/`reload` surface |
 
 ## Implemented / Resolved
 

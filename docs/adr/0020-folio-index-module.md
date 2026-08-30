@@ -27,8 +27,9 @@ don't have to re-sort". The ID rule in particular is spread across three methods
 (`buildFolioIndex` assigns, `addFolioRecord` increments, `renameFolioRecord` preserves) with no
 single place that states it.
 
-Meanwhile the class writes `this.folios.find((f) => f.folder === folder && f.name === name)`
-inline five separate times instead of going through its own `getRecord`.
+Meanwhile the class asks its own index for a record by key inline rather than going through its
+own `getRecord`: three byte-identical `this.folios.find((f) => f.folder === folder && f.name ===
+name)` calls, plus a `findIndex` and a `filter` phrasing the same way.
 
 ## Decision
 
@@ -45,6 +46,20 @@ API-facing set: `load`, `reload`, `getConfig`, `getSchema`, `getFolios`, `getFol
 `deriveSnippet` moves with the index if it stays record-shaping, or to `shared` if
 [ADR-0019](0019-schema-index.md) lands first and gives it `proseSection()` — decide at build
 time, not here.
+
+## Sequencing
+
+This is the least urgent of the recorded architecture candidates, and deliberately so. Nothing on
+the backlog is waiting on it: unlike [ADR-0019](0019-schema-index.md), which
+[ADR-0004](0004-bidirectional-inverse-fields.md) needs at schema load, no feature wants a
+`FolioIndex`. Nor is there a failure mode behind it — the seven methods are unused from outside,
+not wrong.
+
+It should also come *after* [ADR-0013](0013-project-scaffolding.md), not before. Scaffolding
+creates a project — writing `schema.json`, creating type folders, loading the result — which
+lands on `ProjectStore.load()`/`reload()` and index construction, the exact surface this ADR
+reorganizes. Doing the extraction first risks drawing the boundary against assumptions
+scaffolding then invalidates. Let ADR-0013 show where the seam actually is.
 
 ## Consequences
 
