@@ -10,6 +10,14 @@ Internal refactors are tracked separately under [Architecture Candidates](#archi
 — they compete for time with features but not on the same axis, so mixing them into one priority
 order would misrepresent both.
 
+**Four entries specify the same onboarding surface, and none owns it.** ADR-0002 wants an "Add
+Project" UI that locates an existing folder; ADR-0005 wants an Electron `showOpenDialog` folder
+picker; ADR-0013 needs a "New Project" flow and lists "how does this relate to ADR-0002's Add
+Project UI" as an open question; ADR-0014 asks how it interacts with ADR-0002 too. These are one
+decision about how a user gets into a project, split across four ADRs by the mechanism each
+happened to assume. Whichever is built first settles the shape for the others, so the order is
+worth choosing deliberately rather than by whichever comes up.
+
 ## Candidate Features
 
 | # | Feature | Status | ADR | Notes |
@@ -20,10 +28,10 @@ order would misrepresent both.
 | 4 | Structured Date Fields (Sort Key & Calendar Modes) | Proposed | [ADR-0015](adr/0015-structured-date-fields.md) | Fully designed. Adds `sortkey`/`calendar` modes to the `date` field type; keeps hand-editable flat YAML, no required nesting. Prerequisite for Timeline View |
 | 5 | Folio Cover Image | Proposed | [ADR-0018](adr/0018-folio-cover-image.md) | Fully designed. Optional, co-located image per folio (Wikipedia-infobox style); needs new static-file serving, none exists today. Inline images deferred |
 | 6 | Timeline View | Proposed | [ADR-0017](adr/0017-timeline-view.md) | Blocked on #4 (ADR-0015); lays out entries by sortable date value |
-| 7 | Visibility / Access Control (field & entry level) | Proposed — **needs scoping** | [ADR-0014](adr/0014-visibility-access-control.md) | Recurring want across GM/novelist/publisher/creator use cases; may be capped by no-auth server architecture. Skeleton ADR only |
-| 8 | Project Themes | Proposed | [ADR-0001](adr/0001-project-themes.md) | Persona-dependent, no strong consensus |
+| 7 | Visibility / Access Control (field & entry level) | Proposed — **needs scoping** | [ADR-0014](adr/0014-visibility-access-control.md) | Recurring want across GM/novelist/publisher/creator use cases. Skeleton ADR only, and its own Consequences concede the no-auth deployment model may cap how far it can go. Candidate to drop, or to narrow to display-only |
+| 8 | Project Themes | Proposed | [ADR-0001](adr/0001-project-themes.md) | Persona-dependent, no strong consensus. Also in tension with the design system: AGENTS.md treats the print aesthetic as load-bearing, and there is no dark mode or `prefers-color-scheme` handling to build on. Candidate to drop |
 | 9 | Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | Persona-dependent, no strong consensus |
-| 10 | Markdown Source Edit Mode | Proposed | [ADR-0012](adr/0012-markdown-source-edit-mode.md) | Toggle between structured form editor and raw Markdown textarea; 4 open questions to settle before building |
+| 10 | Markdown Source Edit Mode | Proposed | [ADR-0012](adr/0012-markdown-source-edit-mode.md) | Toggle between structured form editor and raw Markdown textarea. **Undersold at this rank:** a file that has drifted from the schema can be read in the app but not saved from it (`400 schema-violation`), so source mode is the only in-app repair path. 2 of its 4 open questions are now settled by ADR-0009 |
 | 11 | Desktop Packaging & Distribution | Proposed | [ADR-0005](adr/0005-desktop-packaging-distribution.md) | Uses Electron and electron-builder; value is platform-dependent per persona |
 
 ## Architecture Candidates

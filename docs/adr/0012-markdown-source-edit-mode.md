@@ -47,16 +47,28 @@ switching to the other (same unsaved-changes guard).
    formatting). Is this acceptable, or does source mode need to preserve the exact bytes
    until the user explicitly switches to form mode?
 
-2. **Unknown fields.** If the Markdown contains fields or sections the schema doesn't
-   define, the parser currently tolerates them (they land in `sections` as unparsed
-   blocks or are silently dropped depending on the field type). Source mode would let
-   users write anything. Should source-mode saves warn on unknown fields, or pass them
-   through silently the way the parser already does?
+2. **Unknown fields.** Settled since this was written, and not in the direction assumed.
+   Reading is lossless: an unknown field is kept as its raw string, an unknown section as
+   raw prose, and both are reported as warnings
+   ([ADR-0009](0009-consolidate-folio-validation-rules.md)). Saving is not: a `PUT` carrying
+   either is rejected `400 schema-violation` before anything is written, and
+   `serializeToMarkdown` would drop both if it ran. So a file that has drifted from the
+   schema can be opened and read in the app but cannot be saved from it at all — the only
+   repair is to edit the file outside Axiom Forge or change `schema.json`.
+
+   That makes source mode the in-app repair path for schema drift, which is a stronger case
+   for this ADR than the bulk-edit and external-paste workflows it was written around. The
+   open question is therefore not "warn or pass through" but whether source-mode saves are
+   exempt from the unknown-field/unknown-section write rules that make the repair impossible
+   today — and if so, how that exemption stays consistent with strict-write.
 
 3. **Schema validation severity.** Form mode prevents some invalid inputs at the UI
    level (date pickers, select dropdowns). Source mode can't. Should source-mode saves
    run the same validation and block on errors, or save-and-warn the way broken links
-   already work?
+   already work? Since this was written, the read/write severity split has one
+   implementation with a `mode` parameter
+   ([ADR-0009](0009-consolidate-folio-validation-rules.md)), so the question is now
+   concretely "which mode does a source-mode save pass?" rather than a design to invent.
 
 4. **Editor features.** Is a plain textarea sufficient, or should source mode include
    syntax highlighting, line numbers, or a preview pane? A plain textarea is the simpler

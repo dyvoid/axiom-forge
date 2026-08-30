@@ -5,11 +5,20 @@
 
 ## Context
 
-The app currently offers two ways to look at data: the read view (one folio at a time)
-and the backlinks panel. The schema and link index already computed for every project
-support far more — table/database views, grouped boards, and network graphs are all
+The app already has two multi-entry views — the Grand Index at `/index` and the per-type
+Category Index at `/folio/:folder` — alongside the read view (one folio at a time) and the
+backlinks panel. Both index views already do search, tag filtering, and ranking, so the
+views below are a fourth and fifth surface onto the same data rather than the first way to
+see many entries at once. The schema and link index already computed for every project
+support more still — table/database views, grouped boards, and network graphs are all
 standard in comparable tools (Obsidian's own views, Notion databases) and were raised
 independently by multiple personas during roadmap review.
+
+That existing pair matters to the design here. The two index views apply tag filtering and
+ranking in different orders, in logic that lives inside the components; extracting it into
+a shared `filterFolios` helper is tracked as Housekeeping in the [Roadmap](../ROADMAP.md)
+and deliberately deferred until this ADR makes a third caller. Table and board views should
+be built on that extracted helper rather than each growing a third and fourth copy.
 
 Any view here must stay domain-agnostic: nothing may assume what kind of project a
 schema describes. A view is valid only if it works identically for a genealogy schema,
@@ -20,7 +29,9 @@ a campaign schema, or a show bible schema, with no special-casing per domain.
 Build four views, in priority order, each usable without any schema or storage change:
 
 1. **Table/grid view** — one row per entry of a chosen type, one column per schema
-   field, sortable and filterable. Needs nothing new; works on any project today.
+   field, sortable and filterable. Needs no schema or storage change and works on any
+   project today; it does want the shared filter helper noted above, since it is the
+   third consumer of the same filter-and-rank logic.
 2. **Board/kanban view** — groups entries of a type by the values of any existing
    `select` field the viewer picks at view time (not a fixed "status" concept — any
    select field the schema happens to have).

@@ -1,7 +1,7 @@
 # 21. Section Kind as a Discriminated Union
 
 **Date:** 2026-08-26
-**Status:** Accepted
+**Status:** Accepted — implemented 2026-08-30
 
 ## Context
 
