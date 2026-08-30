@@ -33,6 +33,11 @@ if [ ! -d node_modules ] || [ ! -e node_modules/@axiom-forge/shared ]
 then
 	echo "Axiom Forge: installing dependencies..."
 	npm install
+	# Vite caches pre-bundled dependencies keyed to the previous install's
+	# layout, and `npm install` does not clear it. After a reinstall that
+	# cache is stale by definition and can point at files that have moved or
+	# no longer exist, so drop it rather than let Vite fail reading them.
+	rm -rf node_modules/.vite packages/client/node_modules/.vite
 fi
 
 if [ ! -f packages/shared/dist/index.js ]

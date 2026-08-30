@@ -40,6 +40,12 @@ goto :afterinstall
 echo Axiom Forge: installing dependencies...
 call npm install
 if errorlevel 1 exit /b 1
+rem Vite caches pre-bundled dependencies keyed to the previous install's
+rem layout, and `npm install` does not clear it. After a reinstall that cache
+rem is stale by definition and can point at files that have moved or no
+rem longer exist, so drop it rather than let Vite fail reading them.
+if exist "node_modules\.vite" rd /s /q "node_modules\.vite"
+if exist "packages\client\node_modules\.vite" rd /s /q "packages\client\node_modules\.vite"
 
 :afterinstall
 if not exist "packages\shared\dist\index.js" (
