@@ -114,7 +114,12 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 				>
 					<Icon name="menu" size={18} />
 				</button>
-				<Link to="/index" className={styles.left}>
+				{/* The wordmark and project name read as one brand block, so they
+				    share one target: the landing page, which `architecture.md`
+				    defines as the project home. It was /index, which made this a
+				    dead self-link on the Grand Index and left the landing page
+				    unreachable from anywhere in the app. */}
+				<Link to="/" className={styles.left}>
 					<span className={styles.logo}>AXIOM · FORGE</span>
 					<div className={styles.separator} />
 					<span className={styles.projectTitle}>{config.name}</span>
