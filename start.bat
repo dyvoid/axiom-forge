@@ -1,9 +1,9 @@
 @echo off
 rem Axiom Forge launcher for Windows.
 rem
-rem Installs dependencies on first run, then starts both dev servers: the API on
-rem :3000 and the UI on :5173. `npm start` is deliberately not used here - it
-rem runs the compiled server alone, which exposes the REST API with no UI.
+rem Installs dependencies (on first run, or if a previous install looks broken), then starts
+rem both dev servers: the API on :3000 and the UI on :5173. `npm start` is deliberately not
+rem used here - it runs the compiled server alone, which exposes the REST API with no UI.
 rem
 rem Extra arguments are forwarded to the server:
 rem   start.bat --project "C:\path with spaces\my-world"
@@ -25,9 +25,30 @@ if errorlevel 1 (
 	exit /b 1
 )
 
-if not exist "node_modules" (
-	echo Axiom Forge: installing dependencies ^(first run only^)...
-	call npm install
+rem `node_modules` existing is not proof the install is usable: npm workspaces
+rem links each package\* into node_modules\@axiom-forge\*, and that link can be
+rem missing or broken (seen on network drives, or after switching branches)
+rem while node_modules itself is untouched. Check the actual thing the dev
+rem servers need - the shared package's workspace link and its build output -
+rem rather than the directory's mere existence, so a broken install self-heals
+rem instead of failing deep inside tsx/vite with a confusing error.
+if not exist "node_modules" goto :install
+if not exist "node_modules\@axiom-forge\shared" goto :install
+goto :afterinstall
+
+:install
+echo Axiom Forge: installing dependencies...
+call npm install
+if errorlevel 1 exit /b 1
+
+:afterinstall
+if not exist "packages\shared\dist\index.js" (
+	echo Axiom Forge: building @axiom-forge/shared...
+	rem tsc's incremental buildinfo can report success without emitting if it
+	rem still believes a prior (now-missing) dist\ is current - remove it so
+	rem this is always a real, from-scratch compile.
+	if exist "packages\shared\tsconfig.tsbuildinfo" del "packages\shared\tsconfig.tsbuildinfo"
+	call npm -w @axiom-forge/shared run build
 	if errorlevel 1 exit /b 1
 )
 
