@@ -8,7 +8,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { parseMarkdown, serializeToMarkdown } from './parser.js';
+import { isFieldValueEmpty, parseMarkdown, serializeToMarkdown } from './parser.js';
 import type { ProjectSchema } from './schema.js';
 import type { ParsedFolio } from './types.js';
 
@@ -511,5 +511,32 @@ describe('parser — schema warnings', () => {
 		expect(parsed.warnings ?? []).toEqual(
 			expect.arrayContaining([expect.stringContaining('Unknown type')]),
 		);
+	});
+});
+
+// The predicate the serializer and the read view now share. Pinned directly so
+// that a change to what counts as empty has to be a deliberate edit to these
+// cases, rather than a silent divergence between what is written to disk and
+// what is rendered. See ADR-0021.
+describe('isFieldValueEmpty', () => {
+	it('treats null, undefined, empty string and empty array as empty', () => {
+		expect(isFieldValueEmpty(null)).toBe(true);
+		expect(isFieldValueEmpty(undefined)).toBe(true);
+		expect(isFieldValueEmpty('')).toBe(true);
+		expect(isFieldValueEmpty([])).toBe(true);
+	});
+
+	it('treats any populated value as non-empty', () => {
+		expect(isFieldValueEmpty('x')).toBe(false);
+		expect(isFieldValueEmpty(['x'])).toBe(false);
+		expect(isFieldValueEmpty({ folder: 'Alphas', name: 'Arion' })).toBe(false);
+		expect(isFieldValueEmpty([{ folder: 'Alphas', name: 'Arion' }])).toBe(false);
+	});
+
+	it('does not treat whitespace or falsy-but-present values as empty', () => {
+		// Whitespace is content as far as the serializer is concerned; the read
+		// view must agree, which is the whole point of sharing this predicate.
+		expect(isFieldValueEmpty(' ')).toBe(false);
+		expect(isFieldValueEmpty('0')).toBe(false);
 	});
 });

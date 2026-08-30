@@ -10,7 +10,8 @@
  */
 
 import { load, dump } from 'js-yaml';
-import type { ProjectSchema, SectionDef, FieldDef, FieldType } from './schema.js';
+import { classifySection } from './schema.js';
+import type { ProjectSchema, FieldDef } from './schema.js';
 import type { ParsedFolio, ParsedSection, FieldValue, WikiLink } from './types.js';
 import { parseWikiLink, parseWikiLinks, serializeWikiLink, serializeWikiLinks } from './wikilink.js';
 
@@ -81,36 +82,25 @@ function parseFieldValue(raw: string, fieldDef: FieldDef): FieldValue {
 // ── Section-Level Value Parsing ─────────────────────────────
 
 /**
- * Parse a section that has a `type` at the section level (no `fields`).
- * For textarea: body is free prose.
- * For wikilink-list: each `- [[...]]` line is one link.
+ * Parse a section-level `links` body: each `- [[...]]` line is one link.
  */
-function parseSectionLevelValue(body: string, sectionDef: SectionDef): ParsedSection {
-	const type = sectionDef.type as FieldType;
-	if (type === 'textarea') {
-		return { content: body || undefined };
-	}
-	if (type === 'wikilink-list') {
-		const links: WikiLink[] = [];
-		for (const line of body.split(/\r?\n/)) {
-			const trimmed = line.trim();
-			if (trimmed.startsWith('- ')) {
-				const linkText = trimmed.slice(2).trim();
-				const parsed = parseWikiLinks(linkText);
-				links.push(...parsed);
-			}
+function parseLinksSection(body: string): ParsedSection {
+	const links: WikiLink[] = [];
+	for (const line of body.split(/\r?\n/)) {
+		const trimmed = line.trim();
+		if (trimmed.startsWith('- ')) {
+			const linkText = trimmed.slice(2).trim();
+			const parsed = parseWikiLinks(linkText);
+			links.push(...parsed);
 		}
-		return { value: links.length > 0 ? links : null };
 	}
-	// Fallback: treat as text content
-	return { content: body || undefined };
+	return { value: links.length > 0 ? links : null };
 }
 
 // ── Field Section Parsing ───────────────────────────────────
 
-function parseFieldSection(body: string, sectionDef: SectionDef, sectionName: string, warnings: string[]): ParsedSection {
+function parseFieldSection(body: string, fieldDefs: Record<string, FieldDef>, sectionName: string, warnings: string[]): ParsedSection {
 	const fields: Record<string, FieldValue> = {};
-	const fieldDefs = sectionDef.fields ?? {};
 
 	for (const line of body.split(/\r?\n/)) {
 		const parsed = parseBulletField(line);
@@ -238,10 +228,21 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 			continue;
 		}
 
-		if (sectionDef.fields) {
-			sections[sectionName] = parseFieldSection(body, sectionDef, sectionName, warnings);
-		} else {
-			sections[sectionName] = parseSectionLevelValue(body, sectionDef);
+		const classified = classifySection(sectionDef);
+		switch (classified.kind) {
+			case 'fields':
+				sections[sectionName] = parseFieldSection(body, classified.fields, sectionName, warnings);
+				break;
+			case 'prose':
+				sections[sectionName] = { content: body || undefined };
+				break;
+			case 'links':
+				sections[sectionName] = parseLinksSection(body);
+				break;
+			default: {
+				const unhandled: never = classified;
+				throw new Error(`Unhandled section kind: ${JSON.stringify(unhandled)}`);
+			}
 		}
 	}
 
@@ -283,7 +284,15 @@ function serializeFieldValue(value: FieldValue, fieldDef: FieldDef): string {
 	}
 }
 
-function isFieldValueEmpty(value: FieldValue | undefined): boolean {
+/**
+ * The single definition of "this field has nothing in it".
+ *
+ * Shared deliberately: the serializer uses it to decide what reaches disk and
+ * the read view uses it to decide what renders. Two copies could drift into
+ * omitting a field from the file while still showing it on screen, or the
+ * reverse. See [ADR-0021](../../../docs/adr/0021-section-kind-union.md).
+ */
+export function isFieldValueEmpty(value: FieldValue | undefined): boolean {
 	if (value === null || value === undefined || value === '') return true;
 	if (Array.isArray(value) && value.length === 0) return true;
 	return false;
@@ -334,32 +343,42 @@ export function serializeToMarkdown(folio: ParsedFolio, schema: ProjectSchema): 
 			const section = folio.sections[sectionName];
 			if (!section) continue;
 
-			if (sectionDef.fields) {
-				// Structured field section — only write if at least one field has content
-				const fieldEntries: string[] = [];
-				for (const [fieldName, fieldDef] of Object.entries(sectionDef.fields)) {
-					const value = section.fields?.[fieldName];
-					if (isFieldValueEmpty(value)) continue;
-					fieldEntries.push(`- **${fieldName}:** ${serializeFieldValue(value!, fieldDef)}`);
+			const classified = classifySection(sectionDef);
+			switch (classified.kind) {
+				case 'fields': {
+					// Structured field section — only write if at least one field has content
+					const fieldEntries: string[] = [];
+					for (const [fieldName, fieldDef] of Object.entries(classified.fields)) {
+						const value = section.fields?.[fieldName];
+						if (isFieldValueEmpty(value)) continue;
+						fieldEntries.push(`- **${fieldName}:** ${serializeFieldValue(value!, fieldDef)}`);
+					}
+					if (fieldEntries.length === 0) continue;
+					lines.push('');
+					lines.push(`## ${sectionName}`);
+					lines.push(...fieldEntries);
+					break;
 				}
-				if (fieldEntries.length === 0) continue;
-				lines.push('');
-				lines.push(`## ${sectionName}`);
-				lines.push(...fieldEntries);
-			} else if (sectionDef.type === 'textarea') {
-				// Textarea / prose section
-				if (!section.content) continue;
-				lines.push('');
-				lines.push(`## ${sectionName}`);
-				lines.push(section.content);
-			} else if (sectionDef.type === 'wikilink-list') {
-				// Section-level wikilink-list
-				const links = section.value as WikiLink[] | null;
-				if (!links || links.length === 0) continue;
-				lines.push('');
-				lines.push(`## ${sectionName}`);
-				for (const link of links) {
-					lines.push(`- ${serializeWikiLink(link)}`);
+				case 'prose': {
+					if (!section.content) continue;
+					lines.push('');
+					lines.push(`## ${sectionName}`);
+					lines.push(section.content);
+					break;
+				}
+				case 'links': {
+					const links = section.value as WikiLink[] | null;
+					if (!links || links.length === 0) continue;
+					lines.push('');
+					lines.push(`## ${sectionName}`);
+					for (const link of links) {
+						lines.push(`- ${serializeWikiLink(link)}`);
+					}
+					break;
+				}
+				default: {
+					const unhandled: never = classified;
+					throw new Error(`Unhandled section kind: ${JSON.stringify(unhandled)}`);
 				}
 			}
 		}

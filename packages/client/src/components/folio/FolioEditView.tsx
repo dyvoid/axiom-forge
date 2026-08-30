@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useBlocker } from 'react-router-dom';
 import {
+	classifySection,
 	toRoman,
 	type FieldDef,
 	type FieldValue,
@@ -356,70 +357,76 @@ function SectionBlock({
 		</h2>
 	);
 
-	// Section-level textarea (prose or plain textarea section)
-	if (sectionDef.type === 'textarea') {
-		const content = data?.content ?? '';
-		const wordCount = content.split(/\s+/).filter(Boolean).length;
-		return (
-			<>
-				{header}
-				<div className={styles.sectionProse}>
-					<TextareaField
-						value={content}
-						onChange={(v) => onUpdateSection({ content: v || undefined })}
-					/>
-					<div className={styles.proseFooter}>
-						{wordCount} words · markdown · {sectionDef.role === 'prose' ? 'prose' : 'free text'}
-					</div>
-				</div>
-			</>
-		);
-	}
+	const classified = classifySection(sectionDef);
 
-	// Section-level wikilink-list (e.g. "Connected Events")
-	if (sectionDef.type === 'wikilink-list') {
-		const synthDef: FieldDef = { type: 'wikilink-list', target: sectionDef.target };
-		return (
-			<>
-				{header}
-				<div className={styles.section}>
-					<FieldEditor
-						fieldDef={synthDef}
-						value={(data?.value as FieldValue) ?? null}
-						onChange={(v) => onUpdateSection({ value: v })}
-					/>
-				</div>
-			</>
-		);
-	}
-
-	// Structured field section
-	if (sectionDef.fields) {
-		const fields = Object.entries(sectionDef.fields);
-		return (
-			<>
-				{header}
-				<div className={styles.section}>
-					{fields.map(([fieldName, fieldDef]) => (
-						<div key={fieldName} className={styles.fieldRow}>
-							<div>
-								<div className={styles.fieldLabel}>{fieldName}</div>
-								<FieldTypeHint fieldDef={fieldDef} />
-							</div>
-							<div>
-								<FieldEditor
-									fieldDef={fieldDef}
-									value={data?.fields?.[fieldName] ?? null}
-									onChange={(v) => onUpdateField(fieldName, v)}
-								label={fieldName}
-							/>
-							</div>
+	switch (classified.kind) {
+		// Section-level textarea (prose or plain textarea section)
+		case 'prose': {
+			const content = data?.content ?? '';
+			const wordCount = content.split(/\s+/).filter(Boolean).length;
+			return (
+				<>
+					{header}
+					<div className={styles.sectionProse}>
+						<TextareaField
+							value={content}
+							onChange={(v) => onUpdateSection({ content: v || undefined })}
+						/>
+						<div className={styles.proseFooter}>
+							{wordCount} words · markdown · {sectionDef.role === 'prose' ? 'prose' : 'free text'}
 						</div>
-					))}
-				</div>
-			</>
-		);
-	}
+					</div>
+				</>
+			);
+		}
 
-	return <></>;
+		// Section-level wikilink-list (e.g. "Connected Events")
+		case 'links': {
+			const synthDef: FieldDef = { type: 'wikilink-list', target: classified.target };
+			return (
+				<>
+					{header}
+					<div className={styles.section}>
+						<FieldEditor
+							fieldDef={synthDef}
+							value={(data?.value as FieldValue) ?? null}
+							onChange={(v) => onUpdateSection({ value: v })}
+						/>
+					</div>
+				</>
+			);
+		}
+
+		// Structured field section
+		case 'fields': {
+			return (
+				<>
+					{header}
+					<div className={styles.section}>
+						{Object.entries(classified.fields).map(([fieldName, fieldDef]) => (
+							<div key={fieldName} className={styles.fieldRow}>
+								<div>
+									<div className={styles.fieldLabel}>{fieldName}</div>
+									<FieldTypeHint fieldDef={fieldDef} />
+								</div>
+								<div>
+									<FieldEditor
+										fieldDef={fieldDef}
+										value={data?.fields?.[fieldName] ?? null}
+										onChange={(v) => onUpdateField(fieldName, v)}
+										label={fieldName}
+									/>
+								</div>
+							</div>
+						))}
+					</div>
+				</>
+			);
+		}
+
+		default: {
+			const unhandled: never = classified;
+			throw new Error(`Unhandled section kind: ${JSON.stringify(unhandled)}`);
+		}
+	}
 }

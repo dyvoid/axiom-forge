@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { ConfigSchema, ProjectSchemaSchema, validateAgainstSchema, type ProjectSchema } from './schema.js';
+import { ConfigSchema, ProjectSchemaSchema, classifySection, validateAgainstSchema, type ProjectSchema, type SectionDef } from './schema.js';
 import { parseMarkdown, serializeToMarkdown } from './parser.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -201,5 +201,35 @@ describe('validateAgainstSchema wrong-shape detection', () => {
 			schema,
 		);
 		expect(issues).toEqual([]);
+	});
+});
+
+describe('classifySection', () => {
+	it('classifies a fields section and hands back its field map', () => {
+		const def: SectionDef = { role: 'meta', fields: { Name: { type: 'text' } } };
+		const classified = classifySection(def);
+		expect(classified.kind).toBe('fields');
+		if (classified.kind !== 'fields') throw new Error('expected fields');
+		expect(Object.keys(classified.fields)).toEqual(['Name']);
+	});
+
+	it('classifies a textarea section as prose', () => {
+		expect(classifySection({ role: 'prose', type: 'textarea' })).toEqual({ kind: 'prose' });
+	});
+
+	it('classifies a wikilink-list section as links and carries its target', () => {
+		expect(classifySection({ type: 'wikilink-list', target: 'Things' }))
+			.toEqual({ kind: 'links', target: 'Things' });
+	});
+
+	it('prefers fields when a malformed def carries both', () => {
+		// Zod rejects this shape, so it cannot arrive from a loaded schema — the
+		// assertion pins the precedence rather than blessing the shape.
+		const def = { type: 'textarea', fields: { Name: { type: 'text' } } } as SectionDef;
+		expect(classifySection(def).kind).toBe('fields');
+	});
+
+	it('throws on a def declaring neither fields nor type', () => {
+		expect(() => classifySection({} as SectionDef)).toThrow(/must declare either/);
 	});
 });

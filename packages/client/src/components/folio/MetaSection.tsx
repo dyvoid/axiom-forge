@@ -1,3 +1,4 @@
+import { isFieldValueEmpty } from '@axiom-forge/shared';
 import type { SectionDef, ParsedSection, WikiLink } from '@axiom-forge/shared';
 import { WikiLinkChip } from '../ui/WikiLinkChip.js';
 import styles from './MetaSection.module.css';
@@ -11,12 +12,8 @@ interface MetaSectionProps {
 export function MetaSection({ name, schema, data }: MetaSectionProps): JSX.Element {
 	if (!data.fields) return <></>;
 
-	const validFields = Object.entries(schema.fields || {}).filter(([fName]) => {
-		const val = data.fields![fName];
-		if (val === undefined || val === null || val === '') return false;
-		if (Array.isArray(val) && val.length === 0) return false;
-		return true;
-	});
+	const validFields = Object.entries(schema.fields || {})
+		.filter(([fName]) => !isFieldValueEmpty(data.fields![fName]));
 
 	if (validFields.length === 0) return <></>;
 

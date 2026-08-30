@@ -52,12 +52,21 @@ const SectionRoleSchema = z.enum(['meta', 'prose']);
  * Section-level `type` is restricted to value-bearing types that round-trip
  * cleanly through the parser/serializer pair. Per-field types (text, date,
  * select, etc.) only make sense inside a `fields` map.
+ *
+ * This is the *type-level* home of that restriction, not just a runtime check:
+ * because `SectionDefSchema` uses this enum rather than the full `FieldType`
+ * set, `SectionDef['type']` is narrowed to these two values and
+ * `classifySection` can be exhaustive over them.
  */
-const SectionLevelTypeSchema = z.enum(['textarea', 'wikilink-list']);
+const SectionLevelTypeSchema = z.enum(['textarea', 'wikilink-list'], {
+	errorMap: (_issue, ctx) => ({
+		message: `Section-level \`type\` must be "textarea" or "wikilink-list" (got ${JSON.stringify(ctx.data)}). Per-field types belong inside a \`fields\` map.`,
+	}),
+});
 
 const SectionDefSchema = z.object({
 	role: SectionRoleSchema.optional(),
-	type: FieldTypeSchema.optional(),
+	type: SectionLevelTypeSchema.optional(),
 	target: z.union([z.string(), z.array(z.string())]).optional(),
 	fields: z.record(z.string(), FieldDefSchema).optional(),
 }).superRefine((s, ctx) => {
@@ -83,13 +92,6 @@ const SectionDefSchema = z.object({
 			message: 'A section with `role: "prose"` must declare `type: "textarea"`.',
 		});
 	}
-	// 4. Section-level `type` is restricted to textarea / wikilink-list.
-	if (s.type && !SectionLevelTypeSchema.safeParse(s.type).success) {
-		ctx.addIssue({
-			code: z.ZodIssueCode.custom,
-			message: `Section-level \`type\` must be "textarea" or "wikilink-list" (got "${s.type}"). Per-field types belong inside a \`fields\` map.`,
-		});
-	}
 });
 
 const TypeDefSchema = z.object({
@@ -108,6 +110,54 @@ export type FieldDef = z.infer<typeof FieldDefSchema>;
 export type SectionDef = z.infer<typeof SectionDefSchema>;
 export type TypeDef = z.infer<typeof TypeDefSchema>;
 export type ProjectSchema = z.infer<typeof ProjectSchemaSchema>;
+
+// ────────────────────────────────────────────────────────────
+// Section kind — the one place that decides a section's shape
+// ────────────────────────────────────────────────────────────
+
+/**
+ * A section's shape, resolved from its schema definition.
+ *
+ * `SectionDef` models the three shapes as optional properties (`type`,
+ * `fields`), which the Zod refinements above keep mutually exclusive but the
+ * TypeScript type cannot express on its own. `classifySection` is the single
+ * place that reads those properties; every consumer switches on `kind` and
+ * gets an exhaustiveness check for free.
+ *
+ * Adding a fourth kind here is deliberately a compile error at every call
+ * site that must handle it, rather than a silent fallthrough at one.
+ */
+export type ClassifiedSection =
+	| { kind: 'prose' }
+	| { kind: 'links'; target?: string | string[] }
+	| { kind: 'fields'; fields: Record<string, FieldDef> };
+
+/**
+ * Resolve a section definition to its kind.
+ *
+ * @throws if the definition declares neither `fields` nor `type`. That shape is
+ * rejected by `SectionDefSchema` (refinement 1) and every schema reaching a
+ * consumer has been through `ProjectSchemaSchema.parse`, so reaching this is a
+ * bug in the caller's construction of the schema, not bad user data — and a
+ * throw is preferable to four consumers each inventing a fallback.
+ */
+export function classifySection(sectionDef: SectionDef): ClassifiedSection {
+	if (sectionDef.fields) {
+		return { kind: 'fields', fields: sectionDef.fields };
+	}
+	switch (sectionDef.type) {
+		case 'textarea':
+			return { kind: 'prose' };
+		case 'wikilink-list':
+			return { kind: 'links', target: sectionDef.target };
+		case undefined:
+			throw new Error('Invalid section definition: must declare either `fields` or `type`.');
+		default: {
+			const unhandled: never = sectionDef.type;
+			throw new Error(`Unhandled section-level type: ${String(unhandled)}`);
+		}
+	}
+}
 
 // ────────────────────────────────────────────────────────────
 // Save-shape validation (zod) — runs on PUT/POST request bodies
