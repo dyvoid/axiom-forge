@@ -10,7 +10,7 @@
  */
 
 import { load, dump } from 'js-yaml';
-import { classifySection } from './schema.js';
+import { classifySection, validateAgainstSchema } from './schema.js';
 import type { ProjectSchema, FieldDef } from './schema.js';
 import type { ParsedFolio, ParsedSection, FieldValue, WikiLink } from './types.js';
 import { parseWikiLink, parseWikiLinks, serializeWikiLink, serializeWikiLinks } from './wikilink.js';
@@ -99,7 +99,16 @@ function parseLinksSection(body: string): ParsedSection {
 
 // ── Field Section Parsing ───────────────────────────────────
 
-function parseFieldSection(body: string, fieldDefs: Record<string, FieldDef>, sectionName: string, warnings: string[]): ParsedSection {
+/**
+ * Parse a fields-section body into values.
+ *
+ * Purely structural: an unrecognised field is kept as its raw string rather
+ * than dropped, so that reading stays lossless and the section still shows
+ * what the file actually contains. Whether any of it *conforms* to the schema
+ * is not decided here — `validateAgainstSchema` owns that, for both this path
+ * and the save path. See ADR-0009.
+ */
+function parseFieldSection(body: string, fieldDefs: Record<string, FieldDef>): ParsedSection {
 	const fields: Record<string, FieldValue> = {};
 
 	for (const line of body.split(/\r?\n/)) {
@@ -107,23 +116,9 @@ function parseFieldSection(body: string, fieldDefs: Record<string, FieldDef>, se
 		if (!parsed) continue;
 		const [fieldName, rawValue] = parsed;
 		const fieldDef = fieldDefs[fieldName];
-		if (fieldDef) {
-			fields[fieldName] = parseFieldValue(rawValue, fieldDef);
-			if (rawValue && fieldDef.options) {
-				const optionValues = fieldDef.options.map(o => typeof o === 'string' ? o : o.value);
-				const values = (fieldDef.type === 'multiselect')
-					? rawValue.split(',').map(s => s.trim()).filter(Boolean)
-					: [rawValue];
-				for (const v of values) {
-					if (!optionValues.includes(v)) {
-						warnings.push(`Invalid value "${v}" for ${fieldDef.type} field "${fieldName}" in section "${sectionName}" (options: ${optionValues.join(', ')})`);
-					}
-				}
-			}
-		} else {
-			warnings.push(`Unknown field "${fieldName}" in section "${sectionName}"`);
-			fields[fieldName] = rawValue || null;
-		}
+		fields[fieldName] = fieldDef
+			? parseFieldValue(rawValue, fieldDef)
+			: rawValue || null;
 	}
 	return { fields };
 }
@@ -210,9 +205,6 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 	const warnings: string[] = [];
 
 	if (fmWarning) warnings.push(fmWarning);
-	if (type && !typeDef) {
-		warnings.push(`Unknown type "${type}" — no schema definition found`);
-	}
 
 	const sections: Record<string, ParsedSection> = {};
 
@@ -223,7 +215,8 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 		}
 		const sectionDef = typeDef.sections[sectionName];
 		if (!sectionDef) {
-			warnings.push(`Unknown section "${sectionName}"`);
+			// Kept, not dropped — reading is lossless. `validateAgainstSchema`
+			// below reports it.
 			sections[sectionName] = { content: body || undefined };
 			continue;
 		}
@@ -231,7 +224,7 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 		const classified = classifySection(sectionDef);
 		switch (classified.kind) {
 			case 'fields':
-				sections[sectionName] = parseFieldSection(body, classified.fields, sectionName, warnings);
+				sections[sectionName] = parseFieldSection(body, classified.fields);
 				break;
 			case 'prose':
 				sections[sectionName] = { content: body || undefined };
@@ -243,6 +236,16 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 				const unhandled: never = classified;
 				throw new Error(`Unhandled section kind: ${JSON.stringify(unhandled)}`);
 			}
+		}
+	}
+
+	// Schema conformance, in read mode: the same rule engine the save path runs,
+	// reporting warnings instead of errors. A file with no `type` at all is not
+	// held against the schema — there is nothing to hold it against, and a
+	// typeless file is a different problem from a non-conforming one.
+	if (type) {
+		for (const issue of validateAgainstSchema({ type, sections }, schema, 'read')) {
+			warnings.push(issue.message);
 		}
 	}
 

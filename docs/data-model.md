@@ -87,12 +87,30 @@ aliases:
 Warrior who died defending Kea during the Mycenaean invasion. Close friend of Arion.
 ```
 
-## Save Validation
+## Validation
 
-Before writing to disk, the server validates incoming data:
-- Unknown sections or fields trigger a `400` error.
-- Invalid `select` values trigger a `400` error.
-- Broken wiki-links (pointing to non-existent folios) are allowed to save, but return a warning array so the UI can flag them.
+One rule engine, `validateAgainstSchema` in `shared/schema.ts`, is the definition of every folio
+validation rule. Both directions call it; the `mode` argument decides the severity, and which
+rules run ([ADR-0009](adr/0009-consolidate-folio-validation-rules.md)):
+
+| Rule | Reading a file (`read`) | Saving a folio (`write`) |
+|---|---|---|
+| Unknown type | warning | `400` |
+| Unknown section | warning | `400` |
+| Unknown field | warning | `400` |
+| Invalid `select`/`multiselect` value | warning | `400` |
+| Wrong value shape for the declared type | not checked | `400` |
+
+Reading is lenient and writing is strict, deliberately: schema drift already written to disk is
+shown rather than suppressed, while anything the app itself writes must conform. `wrong-shape` is
+the one asymmetric rule — it asks whether a save payload is well-formed, and a file on disk has
+already been coerced into shape by the parser, so on the read path it has nothing to say.
+
+A file with no `type` at all is not checked against the schema; there is nothing to check it
+against, and a typeless file is a different problem from a non-conforming one.
+
+Broken wiki-links (pointing to non-existent folios) are not part of this engine. They are allowed
+to save, and return a warning array so the UI can flag them.
 
 ## Frontmatter Parse Errors
 
@@ -100,4 +118,4 @@ The parser treats frontmatter as a hard contract, not a forgiving hint:
 
 - **Malformed YAML (syntax error):** `parseMarkdown` throws. At index time the error is caught and surfaced as a per-folio warning; at read time it produces a `500`. A broken file should be visible, not silently treated as having an empty type.
 - **Valid YAML but not a mapping** (e.g. a bare list or scalar as the entire payload): the parser returns an empty `type` and emits a warning (`"Frontmatter is valid YAML but not a mapping"`). This is a semantic error, not a syntax one, so it degrades gracefully rather than throwing.
-- **Missing frontmatter:** treated as an empty mapping — `type` is `""`, which produces an "Unknown type" warning if the schema requires a type key.
+- **Missing frontmatter:** treated as an empty mapping — `type` is `""`. Schema conformance is skipped entirely for such a file (see [Validation](#validation)), so it produces no "Unknown type" warning; the sections are kept as raw prose.

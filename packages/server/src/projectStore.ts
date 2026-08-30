@@ -452,7 +452,7 @@ export class ProjectStore {
 		if (!parsed.success) {
 			throw new ValidationError('invalid-shape', parsed.error.issues);
 		}
-		const issues = validateAgainstSchema(parsed.data, schema);
+		const issues = validateAgainstSchema(parsed.data, schema, 'write');
 		if (issues.length > 0) {
 			throw new ValidationError('schema-violation', issues);
 		}
