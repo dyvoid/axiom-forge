@@ -1,7 +1,7 @@
 # 19. Schema Index
 
 **Date:** 2026-08-26
-**Status:** Proposed
+**Status:** Accepted — not yet implemented
 
 ## Context
 

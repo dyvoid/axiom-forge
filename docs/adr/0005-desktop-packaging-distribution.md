@@ -11,7 +11,7 @@ We will build a desktop distribution pipeline by wrapping Axiom Forge in **Elect
 - **Workspace Integration:** We will create a new package `packages/desktop` that isolates the Electron process code, preload scripts, and packaging dependencies.
 - **Server Refactoring:** We will refactor `packages/server` to export its startup logic as an importable library function (`startServer`), allowing the Electron main process to run the Express API internally.
 - **Frontend Delivery:** In production builds, the Express server will serve static client files (`packages/client/dist`) and handle React Router fallback routing, while the Electron window loads `http://127.0.0.1:<PORT>`.
-- **Project Folder Picker:** We will implement an IPC-based directory selection dialog utilizing Electron's native `dialog.showOpenDialog`. This will allow users to select their project directories inside the app interface.
+- **Project Folder Picker:** We will implement an IPC-based directory selection dialog utilizing Electron's native `dialog.showOpenDialog`. This will allow users to select their project directories inside the app interface. *(Scope note, 2026-08-30: the entry surface this serves is owned by [ADR-0013](0013-project-scaffolding.md). This ADR contributes the native dialog as one implementation of it under Electron, not a second design for it.)*
 - **Packaging:** We will configure `electron-builder` to package the workspace into both a portable `.exe` and a standard Windows installer (`.exe` Setup).
 
 ## Consequences

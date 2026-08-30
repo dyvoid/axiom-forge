@@ -15,32 +15,27 @@ Nothing.
 
 ## Next Up
 
-Recommended order, with the reasoning so it does not need re-deriving:
-
-1. **[ADR-0019] Schema Index** — `Proposed`, so it needs a yes first, but it is the recommended
-   next build rather than deferrable tidiness: ADR-0004 cannot validate an `inverse` path without
-   resolving `target` folders to types, which is what this index is. Small, unit-testable in an
-   existing tier, and retires two standing `packages/client` type errors.
-2. **[ADR-0004] Bidirectional / Inverse Fields** — Accepted; its two Open Items (deletion,
+1. **[ADR-0019] Schema Index** — Accepted 2026-08-30, not yet built. **This is the next build.**
+   ADR-0004 below cannot validate an `inverse` path without resolving `target` folders to types,
+   which is what this index is. Ten call sites collapse; two standing `packages/client` type
+   errors go with them. Unit-testable in the existing tier-1 `schema.test.ts`.
+2. **[ADR-0004] Bidirectional / Inverse Fields** — Accepted. Its two Open Items (deletion,
    dangling targets) are decidable at build time, not user-blocked.
-3. **[ADR-0013] Project Scaffolding** — the only backlog item that changes who can adopt the tool
-   at all. Skeleton ADR: next step is a design brainstorm, not a build.
+3. **[ADR-0013] Project Scaffolding** — the only backlog item that changes who can adopt the
+   tool, and as of 2026-08-30 it also owns the onboarding surface for ADR-0002 and ADR-0005.
+   Skeleton ADR: next step is a design brainstorm, not a build.
 
-**[ADR-0020]** should not be bundled with ADR-0019 — nothing waits on it, and it reorganizes the
-same `load`/`reload` surface ADR-0013 will reshape. Better after ADR-0013.
+**[ADR-0020]** is deferred until after ADR-0013 — it reorganizes the same `load`/`reload` surface
+scaffolding will reshape.
 
 ## Open Decisions
 
-An audit of every unfinished ADR (2026-08-30) checked each one's claims against the code. The
-staleness it found is already fixed in the ADRs; these product calls remain:
+None. The four raised by the 2026-08-30 ADR audit were answered that day and are recorded where
+they belong: ADR-0019 accepted and ADR-0020 deferred (their status lines), ADR-0013 given the
+onboarding surface (its Scope section), and ADR-0012 / ADR-0001 / ADR-0014 reviewed and held at
+their current rank and scope (their [ROADMAP](docs/ROADMAP.md) rows).
 
-- **Accept ADR-0019?** Recommended yes — see its Context for the ADR-0004 dependency.
-- **Accept or defer ADR-0020?** Recommended defer — see its Sequencing section.
-- **Who owns onboarding?** ADR-0002, ADR-0005, ADR-0013 and ADR-0014 each specify or depend on
-  the same "get into a project" surface. See the note above the
-  [Candidate Features](docs/ROADMAP.md#candidate-features) table.
-- **Drop ADR-0001 and/or ADR-0014?** Both persona-dependent with no consensus; each has a
-  structural objection in its ROADMAP row. Dropping means status `Rejected` with a reason.
-
-Separately, **ADR-0012 looks mis-ranked at #10**: schema drift is readable but unsaveable in the
-app today, and source mode is the only in-app repair.
+One accepted gap follows from holding ADR-0012 at #10: a schema-drifted file is readable in the
+app but cannot be saved from it. Documented in
+[Data Model](docs/data-model.md#a-drifted-file-is-readable-but-not-saveable) so it is not
+rediscovered as a bug.
