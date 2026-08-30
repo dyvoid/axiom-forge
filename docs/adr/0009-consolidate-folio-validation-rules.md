@@ -66,6 +66,15 @@ Three things came out differently from the Decision as written:
 - **A file with an empty `type` is not validated at all.** This matches what the parser already
   did — its unknown-type warning was guarded on a non-empty type — and is now stated rather than
   implied. `ParsedFolioSchema` requires a non-empty type, so the write path cannot reach it.
+- **Prose sections no longer have their `value` shape-checked on write.** The old dispatch
+  branched on `sectionDef.type` and so ran the `textarea` string check against `section.value`
+  for prose sections; a save payload carrying `{ content: "x", value: 123 }` was rejected and now
+  passes, with the stray `value` dropped at serialize time as it always was. `content` is still
+  typed by `ParsedSectionSchema`, and `value` is not part of a prose section's shape, so checking
+  it there was incidental to the untyped dispatch rather than a rule anyone chose. This is a real
+  loosening of the strict-write guarantee, small and reachable only by a hand-made API call.
+  Closing it properly means a new rule — *a prose section may not carry a `value` at all* — which
+  is a decision of its own rather than part of this consolidation.
 
 Read-path warning wording changed, since both paths now emit the engine's messages. The messages
 gained the section name for field-level issues, so no read warning lost context in the move.
