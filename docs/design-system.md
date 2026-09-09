@@ -8,8 +8,8 @@ Two free Google Fonts dictate the typographic hierarchy:
 
 | Role | Family | Token | Weights | Notes |
 |---|---|---|---|---|
-| **Display / titles** | `Cormorant Garamond` | `--ff-display` | 400, 500 (italic) | Humanist serif. Used for folio H1, subtitles, and large drop caps. |
-| **Body / labels** | `Spectral` | `--ff-body` | 400, 500 (italic) | Clean serif. Default body text, smallcaps labels (eyebrows), field values. |
+| **Display / titles** | `Cormorant Garamond` | `--ff-display` | 400, 500, 600 roman; 400, 500 italic | Humanist serif. Used for folio H1, subtitles, and large drop caps. 600 is the heaviest weight loaded — 700 triggers a faux-bold smear. |
+| **Body / labels** | `Spectral` | `--ff-body` | 300, 400, 500, 600 roman; 400 italic | Clean serif. Default body text, smallcaps labels (eyebrows), field values. |
 
 Spectral smallcaps labels use generous tracking (e.g. `letter-spacing: 0.18em` for section labels).
 
@@ -34,7 +34,7 @@ The app ships with a canonical "Parchment" theme defined via CSS variables in `t
 ### Form Controls vs Native Elements
 To preserve the print aesthetic, we eschew default browser chrome:
 - **`CxSelect`**: Custom dropdown components used instead of native `<select>` tags so the dropdown panel perfectly matches the parchment background and typography.
-- **Inputs**: Transparent backgrounds that darken/saturate slightly on focus, with a dashed or gold bottom border.
+- **Inputs**: Standard text inputs carry a solid `--border` outline that deepens to rust (`--accent-rust`) on focus, over a warm-translucent background that saturates further on focus. The folio title input is the one exception — no border, just a dashed bottom rule that solidifies to rust on focus.
 
 ### Empty States & Grid Modifiers
 The layout engine implements specific aesthetic rules based on content density:
