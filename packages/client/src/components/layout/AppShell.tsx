@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useWarnings } from '../../api/queries.js';
 import { SchemaWarningsDialog } from '../ui/SchemaWarningsDialog.js';
@@ -13,6 +13,7 @@ export function AppShell(): JSX.Element {
 	const location = useLocation();
 
 	const lastWarningsRef = useRef('');
+	const mainRef = useRef<HTMLElement>(null);
 
 	// Auto-show once when warnings first arrive or change content
 	useEffect(() => {
@@ -31,6 +32,10 @@ export function AppShell(): JSX.Element {
 	// user picked something, so the overlay should dismiss.
 	useEffect(() => {
 		setDrawerOpen(false);
+	}, [location.pathname]);
+
+	useLayoutEffect(() => {
+		if (mainRef.current) mainRef.current.scrollTop = 0;
 	}, [location.pathname]);
 
 	const showDialog = !dismissed && !!warnings && warnings.length > 0;
@@ -54,7 +59,7 @@ export function AppShell(): JSX.Element {
 				>
 					<Sidebar onNavigate={() => setDrawerOpen(false)} />
 				</aside>
-				<main className={styles.main} id="main-content">
+				<main ref={mainRef} className={styles.main} id="main-content">
 					<Outlet />
 				</main>
 			</div>
