@@ -1,4 +1,5 @@
 ---
+title: Ajax
 type: Human
 tags:
   - greek
@@ -8,8 +9,6 @@ aliases:
   - Ajax the Great
   - Telamonian Ajax
 ---
-
-# Ajax
 
 ## Basic Information
 - **Sex:** Male

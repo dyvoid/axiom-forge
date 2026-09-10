@@ -1,12 +1,11 @@
 ---
+title: Andromache
 type: Human
 tags:
   - trojan
   - royal
   - survivor
 ---
-
-# Andromache
 
 ## Basic Information
 - **Sex:** Female

@@ -1,4 +1,5 @@
 ---
+title: Mount Ida
 type: Location
 tags:
   - mountain
@@ -7,8 +8,6 @@ tags:
 aliases:
   - Gargarus
 ---
-
-# Mount Ida
 
 ## Basic Information
 - **Type:** Mountain

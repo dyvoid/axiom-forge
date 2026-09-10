@@ -1,4 +1,5 @@
 ---
+title: Trojan Horse
 type: Artifact
 tags:
   - deception
@@ -7,8 +8,6 @@ tags:
 aliases:
   - The Wooden Horse
 ---
-
-# Trojan Horse
 
 ## Basic Information
 - **Type:** Structure

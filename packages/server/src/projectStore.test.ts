@@ -30,7 +30,7 @@ const SYNTH_SCHEMA = {
 const SYNTH_CONFIG = { name: 'Search Unit', description: 'fixture', version: '1.0.0' };
 
 function alphaFile(title: string, opts?: { tags?: string[]; aliases?: string[]; body?: string }): string {
-	const data: Record<string, unknown> = { type: 'Alpha' };
+	const data: Record<string, unknown> = { title, type: 'Alpha' };
 	if (opts?.tags?.length) data.tags = opts.tags;
 	if (opts?.aliases?.length) data.aliases = opts.aliases;
 	const lines = ['---'];
@@ -42,7 +42,7 @@ function alphaFile(title: string, opts?: { tags?: string[]; aliases?: string[]; 
 			lines.push(`${k}: ${v}`);
 		}
 	}
-	lines.push('---', '', `# ${title}`, '', '## Vitals', '- **Label:** A label', '');
+	lines.push('---', '', '## Vitals', '- **Label:** A label', '');
 	if (opts?.body) lines.push('## Story', opts.body, '');
 	return lines.join('\n');
 }

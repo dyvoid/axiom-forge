@@ -1,4 +1,5 @@
 ---
+title: Helen
 type: Human
 tags:
   - spartan
@@ -8,8 +9,6 @@ aliases:
   - Helen of Troy
   - Helen of Sparta
 ---
-
-# Helen
 
 ## Basic Information
 - **Sex:** Female

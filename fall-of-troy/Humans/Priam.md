@@ -1,12 +1,11 @@
 ---
+title: Priam
 type: Human
 tags:
   - trojan
   - king
   - elder
 ---
-
-# Priam
 
 ## Basic Information
 - **Sex:** Male

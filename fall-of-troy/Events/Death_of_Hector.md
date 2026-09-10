@@ -1,12 +1,11 @@
 ---
+title: Death of Hector
 type: Event
 tags:
   - duel
   - achilles
   - mourning
 ---
-
-# Death of Hector
 
 ## Basic Information
 - **Type:** Battle, Personal

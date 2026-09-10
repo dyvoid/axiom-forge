@@ -43,7 +43,7 @@ const SYNTH_SCHEMA = {
 const SYNTH_CONFIG = { name: 'Mutations Unit', description: 'fixture', version: '1.0.0' };
 
 function alphaFile(title: string): string {
-	return ['---', 'type: Alpha', '---', '', `# ${title}`, '', '## Vitals', '- **Label:** original', ''].join('\n');
+	return ['---', `title: ${title}`, 'type: Alpha', '---', '', '## Vitals', '- **Label:** original', ''].join('\n');
 }
 
 function folio(name: string, title: string, sections?: ParsedFolio['sections']): ParsedFolio {

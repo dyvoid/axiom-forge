@@ -1,4 +1,5 @@
 ---
+title: Odysseus
 type: Human
 tags:
   - greek
@@ -9,8 +10,6 @@ aliases:
   - Ulysses
   - Sacker of Cities
 ---
-
-# Odysseus
 
 ## Basic Information
 - **Sex:** Male

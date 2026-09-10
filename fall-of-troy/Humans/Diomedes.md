@@ -1,4 +1,5 @@
 ---
+title: Diomedes
 type: Human
 tags:
   - greek
@@ -8,8 +9,6 @@ tags:
 aliases:
   - Lord of the War Cry
 ---
-
-# Diomedes
 
 ## Basic Information
 - **Sex:** Male

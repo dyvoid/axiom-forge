@@ -59,8 +59,8 @@ Wiki-links use the **folder name** of the target type, not the type key. For exa
 
 `shared/parser.ts` handles the Markdown ↔ JSON structured data round trip.
 
-1. **Filename vs Display Name:** The `# Heading` inside the file is the source of truth for display. The filename is derived from the H1 with spaces replaced by underscores (e.g., `Mycenaean_Invasion_of_Kea.md`).
-2. **Frontmatter metadata is always present:** A YAML frontmatter block (`---`…`---`) at the very top of the file identifies `type`, `tags`, and optionally `aliases`. These are native Obsidian Properties — `tags` and `aliases` are special-cased by Obsidian, while `type` is a custom property that maps to a key in `schema.json`.
+1. **Filename vs Display Name:** The frontmatter `title` is the source of truth for display. The filename is derived from the title with unsupported characters removed and word separators replaced by underscores (e.g., `Mycenaean_Invasion_of_Kea.md`). A legacy file without `title` may still supply it through a body `# H1`; saving that folio migrates it to frontmatter and removes the H1.
+2. **Frontmatter metadata is always present:** A YAML frontmatter block (`---`…`---`) at the very top of the file identifies `title`, `type`, `tags`, and optionally `aliases`. These are native Obsidian Properties — `tags` and `aliases` are special-cased by Obsidian, while `title` and `type` are custom properties.
 3. **Empty fields are omitted:** No placeholder dashes or empty values are ever written to disk.
 4. **Sections are omitted if empty:** A section is only written if it contains at least one non-empty field.
 5. **Prose fields:** Rendered as free text directly under the section header, with no bullet prefix.
@@ -68,7 +68,7 @@ Wiki-links use the **folder name** of the target type, not the type key. For exa
 
 ### Cover images
 
-The first image embed between the H1 and the first `##` section is the folio's optional cover.
+The first image embed after frontmatter and before the first `##` section is the folio's optional cover.
 Both Obsidian embeds (`![[Images/portrait.png]]`, including a preserved `|300` size suffix) and
 standard Markdown images (`![Portrait](Images/portrait.png)`) are recognized. The embed may use
 any vault-relative path; a bare filename resolves only when it uniquely identifies one image in
@@ -82,14 +82,13 @@ produces a folio warning rather than making the Markdown unreadable.
 **Example Minimal Folio:**
 ```markdown
 ---
+title: Telamonas
 type: Character
 tags:
   - warrior
 aliases:
   - The Red
 ---
-
-# Telamonas
 
 ## Basic Information
 - **Date of Death:** 1497 BCE

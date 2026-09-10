@@ -1,12 +1,11 @@
 ---
+title: Abduction of Helen
 type: Event
 tags:
   - cause-of-war
   - political
   - personal
 ---
-
-# Abduction of Helen
 
 ## Basic Information
 - **Type:** Personal, Political

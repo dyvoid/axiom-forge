@@ -60,7 +60,8 @@ part of the active sequence.
 | Unify Entry Cards & Ranking | Accepted | [ADR-0011](adr/0011-unify-entry-cards-and-ranking.md) | Shared `scoreFolio`/`rankFolios` + `EntryContent` (sidebar excluded) |
 | Encapsulate Folio Mutations | Accepted | [ADR-0006](adr/0006-encapsulate-folio-mutations.md) | Unblocks ADR-0010 |
 | Shared Folio Walker | Accepted | [ADR-0007](adr/0007-consolidate-folio-integrity.md) | De-dupes folio traversal (validation half split into ADR-0009) |
-| YAML Frontmatter for Metadata | Accepted | [ADR-0008](adr/0008-yaml-frontmatter-metadata.md) | Breaking format change; replaces `## Meta` |
+| Frontmatter Display Titles | Accepted | [ADR-0022](adr/0022-frontmatter-display-titles.md) | Obsidian-first format; title is a Property and the duplicate body H1 is omitted |
+| YAML Frontmatter for Metadata | Superseded | [ADR-0008](adr/0008-yaml-frontmatter-metadata.md) | Replaced `## Meta`; title-location decision superseded by ADR-0022 |
 | In-Memory Document Model | Superseded | [ADR-0003](adr/0003-in-memory-document-model.md) | Never built; replaced by ADR-0010 (content cache declined) |
 
 ## Housekeeping

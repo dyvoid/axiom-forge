@@ -1,12 +1,11 @@
 ---
+title: Judgment of Paris
 type: Event
 tags:
   - divine
   - origin
   - apple of discord
 ---
-
-# Judgment of Paris
 
 ## Basic Information
 - **Type:** Divine, Personal, Cosmic

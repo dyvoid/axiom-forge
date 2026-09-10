@@ -1,12 +1,11 @@
 ---
+title: Death of Patroclus
 type: Event
 tags:
   - turning-point
   - grief
   - hector
 ---
-
-# Death of Patroclus
 
 ## Basic Information
 - **Type:** Battle, Personal

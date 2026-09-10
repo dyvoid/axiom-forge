@@ -1,4 +1,5 @@
 ---
+title: Zeus
 type: God
 tags:
   - olympian
@@ -9,8 +10,6 @@ aliases:
   - Jupiter
   - Cloud-gatherer
 ---
-
-# Zeus
 
 ## Basic Information
 - **Domains:** Fate, War

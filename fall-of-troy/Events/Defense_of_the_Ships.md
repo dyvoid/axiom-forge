@@ -1,12 +1,11 @@
 ---
+title: Defense of the Ships
 type: Event
 tags:
   - battle
   - crisis
   - trojan-offensive
 ---
-
-# Defense of the Ships
 
 ## Basic Information
 - **Type:** Battle

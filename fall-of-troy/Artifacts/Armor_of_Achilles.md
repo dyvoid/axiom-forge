@@ -1,12 +1,11 @@
 ---
+title: Armor of Achilles
 type: Artifact
 tags:
   - divine
   - hephaestus
   - achilles
 ---
-
-# Armor of Achilles
 
 ## Basic Information
 - **Type:** Armor

@@ -1,4 +1,5 @@
 ---
+title: Agamemnon
 type: Human
 tags:
   - greek
@@ -8,8 +9,6 @@ aliases:
   - Lord of Men
   - King of Mycenae
 ---
-
-# Agamemnon
 
 ## Basic Information
 - **Sex:** Male

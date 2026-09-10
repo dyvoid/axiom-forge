@@ -41,7 +41,7 @@ The server exposes the following REST API:
 - `DELETE /api/folios/:folder/:name?deleteCoverImage=` - Deletes a folio and optionally its referenced cover image
 
 ### Rename & Link Rewriting
-If a folio's H1 title changes during an edit, the server computes the new filename. After renaming the file, it automatically rewrites any `[[Folder/Old_Name]]` wikilinks across the entire project to prevent dead links.
+If a folio's frontmatter `title` changes during an edit, the server computes the new filename. After renaming the file, it automatically rewrites any `[[Folder/Old_Name]]` wikilinks across the entire project to prevent dead links.
 
 ## Frontend Client (`packages/client`)
 

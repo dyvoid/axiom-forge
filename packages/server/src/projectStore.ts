@@ -310,7 +310,7 @@ export class ProjectStore {
 	// layer maps those to HTTP responses.
 
 	/**
-	 * Save an existing folio. If the H1 title changes, the file is renamed and
+	 * Save an existing folio. If the display title changes, the file is renamed and
 	 * every `[[folder/oldName]]` wikilink across the project is rewritten.
 	 */
 	async saveFolio(

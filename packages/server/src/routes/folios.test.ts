@@ -58,12 +58,11 @@ const SYNTH_CONFIG = {
 function alphaFile(title: string, pal?: string, body?: string): string {
 	const lines = [
 		'---',
+		`title: ${title}`,
 		'type: Alpha',
 		'tags:',
 		'  - sample',
 		'---',
-		'',
-		`# ${title}`,
 		'',
 		'## Vitals',
 		'- **Label:** A label',
@@ -81,10 +80,9 @@ function alphaFile(title: string, pal?: string, body?: string): string {
 function betaFile(title: string): string {
 	return [
 		'---',
+		`title: ${title}`,
 		'type: Beta',
 		'---',
-		'',
-		`# ${title}`,
 		'',
 		'## Vitals',
 		'- **Label:** A beta',
@@ -168,7 +166,7 @@ describe('folio cover images', () => {
 		await mkdir(join(tmpDir, 'Images'), { recursive: true });
 		await writeFile(join(tmpDir, 'Images', 'portrait.png'), imageBytes);
 		const markdown = alphaFile('One', 'Aleph', 'One has a story.')
-			.replace('# One\n', `# One\n\n${embed}\n`);
+			.replace('---\n\n', `---\n\n${embed}\n\n`);
 		await writeFile(join(tmpDir, 'Alphas', 'One.md'), markdown, 'utf-8');
 		app = await makeApp(tmpDir);
 	}
@@ -221,7 +219,7 @@ describe('folio cover images', () => {
 		await access(join(tmpDir, 'Images', 'portrait.png'));
 
 		await writeFile(join(tmpDir, 'Alphas', 'One.md'),
-			alphaFile('One').replace('# One\n', '# One\n\n![[Images/portrait.png]]\n'), 'utf-8');
+			alphaFile('One').replace('---\n\n', '---\n\n![[Images/portrait.png]]\n\n'), 'utf-8');
 		app = await makeApp(tmpDir);
 		const remove = await request(app).delete('/api/folios/Alphas/One?deleteCoverImage=true');
 		expect(remove.status).toBe(200);
@@ -332,7 +330,8 @@ describe('PUT /api/folios/:folder/:name — rename', () => {
 		// Old file gone, new file present
 		await expect(access(join(tmpDir, 'Betas', 'Aleph.md'))).rejects.toThrow();
 		const renamed = await readFile(join(tmpDir, 'Betas', 'Aleph_Renamed.md'), 'utf-8');
-		expect(renamed).toContain('# Aleph_Renamed');
+		expect(renamed).toMatch(/^title: Aleph_Renamed$/m);
+		expect(renamed).not.toMatch(/^# /m);
 
 		// Other files rewritten
 		const one = await readFile(join(tmpDir, 'Alphas', 'One.md'), 'utf-8');

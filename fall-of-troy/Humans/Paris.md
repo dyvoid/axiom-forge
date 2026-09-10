@@ -1,4 +1,5 @@
 ---
+title: Paris
 type: Human
 tags:
   - trojan
@@ -7,8 +8,6 @@ tags:
 aliases:
   - Alexander
 ---
-
-# Paris
 
 ## Basic Information
 - **Sex:** Male

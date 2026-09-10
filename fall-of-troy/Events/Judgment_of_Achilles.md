@@ -1,4 +1,5 @@
 ---
+title: Judgment of Achilles
 type: Event
 tags:
   - dispute
@@ -6,8 +7,6 @@ tags:
   - withdrawal
   - agamemnon
 ---
-
-# Judgment of Achilles
 
 ## Basic Information
 - **Type:** Personal, Political

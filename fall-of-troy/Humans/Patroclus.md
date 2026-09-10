@@ -1,12 +1,11 @@
 ---
+title: Patroclus
 type: Human
 tags:
   - greek
   - hero
   - companion
 ---
-
-# Patroclus
 
 ## Basic Information
 - **Sex:** Male

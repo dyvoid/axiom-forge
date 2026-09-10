@@ -1,4 +1,5 @@
 ---
+title: Trojans
 type: Faction
 tags:
   - ilians
@@ -7,8 +8,6 @@ tags:
 aliases:
   - Dardanians
 ---
-
-# Trojans
 
 ## Basic Information
 - **Type:** Military, Political, Royal

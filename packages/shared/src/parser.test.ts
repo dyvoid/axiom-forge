@@ -123,7 +123,8 @@ describe('folio cover images', () => {
 		};
 		const { second, markdown } = roundTrip(folio);
 		expectStructurallyEqual(folio, second);
-		expect(markdown).toContain('# Illustrated\n\n![[Images/portrait.jpeg|420]]\n\nOpening note.');
+		expect(markdown).toContain('---\n\n![[Images/portrait.jpeg|420]]\n\nOpening note.');
+		expect(markdown).not.toMatch(/^# /m);
 	});
 });
 
@@ -364,7 +365,7 @@ describe('parser — empty-field omission', () => {
 // ── YAML frontmatter ─────────────────────────────────────────
 
 describe('parser — YAML frontmatter', () => {
-	it('emits metadata as a leading YAML frontmatter block, not a Meta section', () => {
+	it('emits the display title and metadata in leading YAML frontmatter', () => {
 		const folio: ParsedFolio = {
 			name: 'Fronted',
 			title: 'Fronted',
@@ -377,12 +378,39 @@ describe('parser — YAML frontmatter', () => {
 		const markdown = serializeToMarkdown(folio, synthSchema);
 		// Document opens with a frontmatter fence containing the metadata keys.
 		expect(markdown.startsWith('---\n')).toBe(true);
+		expect(markdown).toMatch(/^title: Fronted$/m);
 		expect(markdown).toMatch(/^type: Alpha$/m);
 		expect(markdown).toMatch(/^tags:$/m);
 		expect(markdown).toMatch(/^aliases:$/m);
-		// The H1 follows the closing fence; the old "## Meta" section is gone.
 		expect(markdown).not.toContain('## Meta');
-		expect(markdown).toMatch(/---\n\n# Fronted/);
+		expect(markdown).not.toMatch(/^# /m);
+		expect(markdown).toMatch(/---\n\n## Vitals/);
+	});
+
+	it('reads the display title from frontmatter', () => {
+		const raw = [
+			'---',
+			'title: The Readable Name',
+			'type: Alpha',
+			'---',
+			'',
+			'## Vitals',
+			'- **Label:** x',
+			'',
+		].join('\n');
+		const parsed = parseMarkdown(raw, synthSchema);
+		expect(parsed.title).toBe('The Readable Name');
+	});
+
+	it('falls back to a legacy H1 title and prefers frontmatter when both exist', () => {
+		const legacy = parseMarkdown([
+			'---', 'type: Alpha', '---', '', '# Legacy Title', '', '## Vitals', '- **Label:** x', '',
+		].join('\n'), synthSchema);
+		const transitional = parseMarkdown([
+			'---', 'title: Frontmatter Title', 'type: Alpha', '---', '', '# Legacy Title', '',
+		].join('\n'), synthSchema);
+		expect(legacy.title).toBe('Legacy Title');
+		expect(transitional.title).toBe('Frontmatter Title');
 	});
 
 	it('round-trips aliases through parse → serialize → parse', () => {

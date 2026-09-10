@@ -59,7 +59,7 @@ that is deliberate rather than neglected.
 The linter points at two kinds of file with one config. Roughly three quarters of what those rules
 would flag lives in `fall-of-troy/`, whose Markdown is written by the app's own
 `serializeToMarkdown`, not by hand. Making that output rule-clean is a change to the on-disk
-format — governed by [ADR-0008](adr/0008-yaml-frontmatter-metadata.md) and guarded by the
+format — governed by [ADR-0022](adr/0022-frontmatter-display-titles.md) and guarded by the
 round-trip idempotency tests — not a lint fix. Most of the rest is in generated files under
 `packages/client/`. Only a small remainder is hand-written prose.
 

@@ -1,7 +1,7 @@
 # 8. YAML Frontmatter for Entry Metadata
 
 **Date:** 2026-06-17  
-**Status:** Accepted
+**Status:** Superseded by [ADR-0022](0022-frontmatter-display-titles.md)
 
 ## Context
 

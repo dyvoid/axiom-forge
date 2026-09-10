@@ -1,4 +1,5 @@
 ---
+title: Apollo
 type: God
 tags:
   - olympian
@@ -8,8 +9,6 @@ tags:
 aliases:
   - Phoebus
 ---
-
-# Apollo
 
 ## Basic Information
 - **Domains:** Sun, Prophecy, War

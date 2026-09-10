@@ -1,4 +1,5 @@
 ---
+title: Greeks
 type: Faction
 tags:
   - achaeans
@@ -9,8 +10,6 @@ aliases:
   - Argives
   - Danaans
 ---
-
-# Greeks
 
 ## Basic Information
 - **Type:** Military, Political

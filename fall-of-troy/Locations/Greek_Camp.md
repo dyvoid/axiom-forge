@@ -1,4 +1,5 @@
 ---
+title: Greek Camp
 type: Location
 tags:
   - greek
@@ -6,8 +7,6 @@ tags:
   - beach
   - siege-base
 ---
-
-# Greek Camp
 
 ## Basic Information
 - **Type:** Camp

@@ -47,7 +47,7 @@ export interface CoverImage {
 export interface ParsedFolio {
 	/** Filename stem — the folio's stable ID. URL-safe, no spaces. e.g. "Lystarra" */
 	name: string;
-	/** Display title from the H1 — free-form, may contain any characters. e.g. "Lys'tarra" */
+	/** Display title from frontmatter — free-form, may contain any characters. e.g. "Lys'tarra" */
 	title: string;
 	type: string;
 	folder: string;
@@ -69,7 +69,7 @@ export interface FolioIndexRecord {
 	folder: string;
 	/** Filename stem — the folio's stable ID. */
 	name: string;
-	/** Display title from the H1. */
+	/** Display title from frontmatter. */
 	title: string;
 	tags: string[];
 	/** Alternative names (Obsidian-native `aliases`). Omitted when empty. */

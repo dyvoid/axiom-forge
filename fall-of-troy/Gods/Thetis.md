@@ -1,4 +1,5 @@
 ---
+title: Thetis
 type: God
 tags:
   - sea-nymph
@@ -7,8 +8,6 @@ tags:
 aliases:
   - Silver-footed Thetis
 ---
-
-# Thetis
 
 ## Basic Information
 - **Domains:** Sea, Fate

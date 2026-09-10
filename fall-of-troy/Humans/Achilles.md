@@ -1,4 +1,5 @@
 ---
+title: Achilles
 type: Human
 tags:
   - greek
@@ -10,8 +11,6 @@ aliases:
   - Swift-footed
   - Son of Peleus
 ---
-
-# Achilles
 
 ## Basic Information
 - **Sex:** Male

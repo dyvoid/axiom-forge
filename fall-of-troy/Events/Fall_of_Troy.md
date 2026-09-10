@@ -1,4 +1,5 @@
 ---
+title: Fall of Troy
 type: Event
 tags:
   - sack
@@ -7,8 +8,6 @@ tags:
 aliases:
   - The Sack of Ilium
 ---
-
-# Fall of Troy
 
 ## Basic Information
 - **Type:** Battle, Cosmic

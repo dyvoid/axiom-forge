@@ -1,12 +1,11 @@
 ---
+title: The Trojan Horse
 type: Event
 tags:
   - deception
   - stratagem
   - odysseus
 ---
-
-# The Trojan Horse
 
 ## Basic Information
 - **Type:** Deception, Political

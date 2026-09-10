@@ -1,4 +1,5 @@
 ---
+title: Troy
 type: Location
 tags:
   - city
@@ -9,8 +10,6 @@ aliases:
   - Ilium
   - Ilios
 ---
-
-# Troy
 
 ## Basic Information
 - **Type:** City

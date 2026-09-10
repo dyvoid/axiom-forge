@@ -1,4 +1,5 @@
 ---
+title: Penelope
 type: Human
 tags:
   - greek
@@ -8,8 +9,6 @@ aliases:
   - Weaver of the Shroud
   - Queen of Ithaca
 ---
-
-# Penelope
 
 ## Basic Information
 - **Sex:** Female

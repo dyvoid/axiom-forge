@@ -67,9 +67,9 @@ still parses but is not offered for new input.
 **Name** — a folio's filename stem, underscored and URL-safe (`Mycenaean_Invasion_of_Kea`). This
 is the folio's stable ID and what wiki-links point at.
 
-**Title** — the display name, taken from the file's `# H1`. Free-form; may contain characters a
-filename cannot. The title is the source of truth for display, and the name is derived from it —
-so changing a title renames the file and rewrites every link to it.
+**Title** — the display name, taken from the file's `title` frontmatter property. Free-form; may
+contain characters a filename cannot. The title is the source of truth for display, and the name
+is derived from it — so changing a title renames the file and rewrites every link to it.
 
 **Alias** — an alternative name, from Obsidian's native `aliases` frontmatter. Aliases are
 searchable and can be used as wiki-link display text.

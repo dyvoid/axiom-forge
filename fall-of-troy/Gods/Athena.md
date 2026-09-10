@@ -1,4 +1,5 @@
 ---
+title: Athena
 type: God
 tags:
   - olympian
@@ -9,8 +10,6 @@ aliases:
   - Minerva
   - Pallas Athena
 ---
-
-# Athena
 
 ## Basic Information
 - **Domains:** Wisdom, War, Crafts

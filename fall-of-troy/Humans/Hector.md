@@ -1,4 +1,5 @@
 ---
+title: Hector
 type: Human
 tags:
   - trojan
@@ -6,8 +7,6 @@ tags:
   - prince
   - warrior
 ---
-
-# Hector
 
 ## Basic Information
 - **Sex:** Male

@@ -1,4 +1,5 @@
 ---
+title: Cassandra
 type: Human
 tags:
   - trojan
@@ -9,8 +10,6 @@ aliases:
   - Alexandra
   - The Unbelieved
 ---
-
-# Cassandra
 
 ## Basic Information
 - **Sex:** Female

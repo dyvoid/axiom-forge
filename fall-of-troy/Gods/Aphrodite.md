@@ -1,4 +1,5 @@
 ---
+title: Aphrodite
 type: God
 tags:
   - olympian
@@ -8,8 +9,6 @@ tags:
 aliases:
   - Venus
 ---
-
-# Aphrodite
 
 ## Basic Information
 - **Domains:** Love, Trickery

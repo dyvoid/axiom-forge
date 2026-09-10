@@ -1,4 +1,5 @@
 ---
+title: Menelaus
 type: Human
 tags:
   - greek
@@ -8,8 +9,6 @@ aliases:
   - Red-haired Menelaus
   - King of Sparta
 ---
-
-# Menelaus
 
 ## Basic Information
 - **Sex:** Male

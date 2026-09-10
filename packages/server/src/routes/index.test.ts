@@ -37,12 +37,11 @@ const SYNTH_CONFIG = {
 function alphaFile(title: string, body?: string): string {
 	const lines = [
 		'---',
+		`title: ${title}`,
 		'type: Alpha',
 		'tags:',
 		'  - sample',
 		'---',
-		'',
-		`# ${title}`,
 		'',
 		'## Vitals',
 		'- **Label:** A label',

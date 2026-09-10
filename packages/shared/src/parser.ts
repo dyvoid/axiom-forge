@@ -225,8 +225,8 @@ function normalizeStringList(value: unknown): string[] {
  * @returns A ParsedFolio (without id or mtime — those are assigned by the server).
  */
 export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFolio {
-	// Metadata (type, tags, aliases) lives in YAML frontmatter; strip it off and
-	// parse sections from the remaining body. Malformed YAML throws (caller
+	// Metadata (title, type, tags, aliases) lives in YAML frontmatter; strip it off
+	// and parse sections from the remaining body. Malformed YAML throws (caller
 	// handles); a non-mapping payload surfaces as a warning.
 	const { data, content, warning: fmWarning } = parseFrontmatter(markdown);
 	const type = typeof data.type === 'string' ? data.type : '';
@@ -234,6 +234,8 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 	const aliases = normalizeStringList(data.aliases);
 
 	const { h1, preface: rawPreface, sections: rawSections } = splitSections(content);
+	const frontmatterTitle = typeof data.title === 'string' ? data.title.trim() : '';
+	const title = frontmatterTitle || h1;
 	const { coverImage, preface } = extractCoverImage(rawPreface);
 
 	const typeDef = schema.types[type];
@@ -289,7 +291,7 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 		// `name` is the filename stem (the folio's ID). The parser only sees file
 		// content, not the filename, so callers (server `getFolio`, etc.) overlay it.
 		name: '',
-		title: h1,
+		title,
 		type,
 		folder,
 		tags,
@@ -341,17 +343,17 @@ export function isFieldValueEmpty(value: FieldValue | undefined): boolean {
 /**
  * Build the YAML frontmatter block (`---`…`---`) for a folio.
  *
- * `type` is always present. `tags` and `aliases` are emitted as YAML block
- * lists and omitted entirely when empty (mirroring the empty-field omission
- * rule for the body). `lineWidth: -1` disables line wrapping so that long
- * values stay on one line — wrapping would otherwise threaten round-trip
+ * `title` and `type` are always present. `tags` and `aliases` are emitted as
+ * YAML block lists and omitted entirely when empty (mirroring the empty-field
+ * omission rule for the body). `lineWidth: -1` disables line wrapping so that
+ * long values stay on one line — wrapping would otherwise threaten round-trip
  * idempotency. js-yaml handles all escaping/quoting.
  *
  * The returned string ends with a blank line, so it can be concatenated
- * directly with a body that begins at the H1.
+ * directly with the Markdown body.
  */
 function serializeFrontmatter(folio: ParsedFolio): string {
-	const data: Record<string, unknown> = { type: folio.type };
+	const data: Record<string, unknown> = { title: folio.title, type: folio.type };
 	if (folio.tags.length > 0) data.tags = folio.tags;
 	if (folio.aliases && folio.aliases.length > 0) data.aliases = folio.aliases;
 	return `---\n${dump(data, { lineWidth: -1 })}---\n\n`;
@@ -366,19 +368,17 @@ function serializeFrontmatter(folio: ParsedFolio): string {
  */
 export function serializeToMarkdown(folio: ParsedFolio, schema: ProjectSchema): string {
 	const lines: string[] = [];
-
-	// H1 title (display name — separate from filename). Each block below pushes
-	// its own leading blank line, so the H1 itself adds none.
-	lines.push(`# ${folio.title}`);
+	const appendBlock = (...block: string[]): void => {
+		if (lines.length > 0) lines.push('');
+		lines.push(...block);
+	};
 
 	if (folio.coverImage) {
-		lines.push('');
-		lines.push(serializeCoverImage(folio.coverImage));
+		appendBlock(serializeCoverImage(folio.coverImage));
 	}
 
 	if (folio.preface) {
-		lines.push('');
-		lines.push(folio.preface);
+		appendBlock(folio.preface);
 	}
 
 	const typeDef = schema.types[folio.type];
@@ -399,26 +399,18 @@ export function serializeToMarkdown(folio: ParsedFolio, schema: ProjectSchema): 
 						fieldEntries.push(`- **${fieldName}:** ${serializeFieldValue(value!, fieldDef)}`);
 					}
 					if (fieldEntries.length === 0) continue;
-					lines.push('');
-					lines.push(`## ${sectionName}`);
-					lines.push(...fieldEntries);
+					appendBlock(`## ${sectionName}`, ...fieldEntries);
 					break;
 				}
 				case 'prose': {
 					if (!section.content) continue;
-					lines.push('');
-					lines.push(`## ${sectionName}`);
-					lines.push(section.content);
+					appendBlock(`## ${sectionName}`, section.content);
 					break;
 				}
 				case 'links': {
 					const links = section.value as WikiLink[] | null;
 					if (!links || links.length === 0) continue;
-					lines.push('');
-					lines.push(`## ${sectionName}`);
-					for (const link of links) {
-						lines.push(`- ${serializeWikiLink(link)}`);
-					}
+					appendBlock(`## ${sectionName}`, ...links.map((link) => `- ${serializeWikiLink(link)}`));
 					break;
 				}
 				default: {
@@ -429,6 +421,6 @@ export function serializeToMarkdown(folio: ParsedFolio, schema: ProjectSchema): 
 		}
 	}
 
-	const body = lines.join('\n') + '\n';
+	const body = lines.length > 0 ? `${lines.join('\n')}\n` : '';
 	return serializeFrontmatter(folio) + body;
 }
