@@ -23,7 +23,7 @@ import { Icon } from './Icon.js';
 import styles from './EntryContent.module.css';
 
 export type EntryVariant =
-	/** Stacked block: title + folder, aliases, snippet. Search dropdown, Linked Mentions. */
+	/** Stacked block: title + folder, snippet. Search dropdown, Linked Mentions. */
 	| 'card'
 	/** Two-column row: title on the left, snippet or tags on the right. Category Index. */
 	| 'row'
@@ -47,11 +47,6 @@ function EntryThumbnail({ folio }: { folio: FolioIndexRecord }): JSX.Element | n
 			<img className={styles.thumbnail} src={src} alt="" onError={() => setFailed(true)} />
 		</span>
 	);
-}
-
-/** The `aka …` line. Rendered by the `card` variant only. */
-function Aliases({ aliases, className }: { aliases: string[]; className: string }): JSX.Element {
-	return <span className={className}>aka {aliases.join(' · ')}</span>;
 }
 
 export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.Element {
@@ -87,22 +82,14 @@ export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.E
 		);
 	}
 
-	const aliases = folio.aliases ?? [];
-
 	return (
 		<div className={styles.cardLayout}>
 			<EntryThumbnail folio={folio} />
 			<div className={styles.cardBody}>
-				{/*
-				 * The alias rides on the title line rather than taking one of its own, so
-				 * an aliased card is exactly as tall as an unaliased one. Cards sit in a
-				 * stretch grid, so a taller card would pad out every neighbour in its row.
-				 * It truncates when space runs short — the folio page shows the full list.
-				 */}
+				{/* Aliases stay on the folio page so the card title keeps its full width. */}
 				<div className={styles.cardHeader}>
 					<span className={styles.cardHeading}>
 						<span className={styles.cardTitle}>{folio.title}</span>
-						{aliases.length > 0 && <Aliases aliases={aliases} className={styles.cardAliases} />}
 					</span>
 					<span className={styles.cardFolder}>{folio.folder}</span>
 				</div>

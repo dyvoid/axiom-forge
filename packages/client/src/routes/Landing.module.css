@@ -36,8 +36,8 @@
 }
 
 .title {
-	font-family: var(--ff-body);
-	font-weight: 400;
+	font-family: var(--ff-display);
+	font-weight: 500;
 	font-style: italic;
 	font-size: var(--fs-hero-xl);
 	line-height: var(--lh-h1);

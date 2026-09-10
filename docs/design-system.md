@@ -8,10 +8,14 @@ Two free Google Fonts dictate the typographic hierarchy:
 
 | Role | Family | Token | Weights | Notes |
 |---|---|---|---|---|
-| **Display / titles** | `Cormorant Garamond` | `--ff-display` | 400, 500, 600 roman; 400, 500 italic | Humanist serif. Used for folio H1, subtitles, and large drop caps. 600 is the heaviest weight loaded — 700 triggers a faux-bold smear. |
+| **Display / titles** | `Cormorant Garamond` | `--ff-display` | 400, 500, 600 roman; 400, 500 italic | Humanist serif. Used for page and folio titles, section headings, subtitles, preview-card titles, and large drop caps. 600 is the heaviest weight loaded — 700 triggers a faux-bold smear. |
 | **Body / labels** | `Spectral` | `--ff-body` | 300, 400, 500, 600 roman; 400 italic | Clean serif. Default body text, smallcaps labels (eyebrows), field values. |
 
-Spectral smallcaps labels use generous tracking (e.g. `letter-spacing: 0.18em` for section labels).
+Prominent page and folio titles use the 500-weight italic display face; preview-card titles use the same face at `--fs-subtitle`. Structural section headings use the 600-weight roman display face, while dense alphabetical index entries remain roman for contrast and scanability; preview-card snippets use roman body text.
+
+Within the folio nameplate, italic is reserved for the primary title. Aliases use 400-weight roman body type at `--fs-subtitle`, and tags step down to 300-weight roman body type at `--fs-meta`.
+
+Spectral smallcaps labels use generous tracking (e.g. `letter-spacing: 0.18em` for field and navigation labels).
 
 ## Color Palette
 
@@ -58,15 +62,13 @@ unsorted and out of context. An index line is a single line with aligned columns
 label — the index *is* the folder, and the value is scanning a known alphabetical list. Making the
 index look like cards would trade away that scanability.
 
-Field order is **name → alias → gloss** (snippet, falling back to tags), but only the card shows
-the alias. An index is scanned and sorted by title, so an alias there is noise in the column the
-eye is running down; the folio page and the search dropdown are where an alias earns its space.
+Field order is **name → gloss** (snippet, falling back to tags). Cards and index lines omit aliases
+because they reduce the space available to the identifying title; the folio page carries the full
+alias list.
 
-**Every text run truncates with an ellipsis; nothing wraps.** Long titles and long alias lists
-always exist, so the layout is designed for them rather than around them. A predictable ellipsis
-beats rows and cards whose height changes with their content — uneven heights break the vertical
-rhythm of a list far more visibly than a clipped tail breaks a single entry. Within a card the
-alias yields its space before the name does, since the name is what identifies the entry.
+Titles and single-line metadata truncate with an ellipsis. Card snippets clamp at two lines so they
+can provide context without making card height unbounded. Predictable truncation keeps list and card
+rhythm stable across long project content.
 
 Cover images follow the same two idioms. On a folio, the image sits above the metadata in the
 right column at its natural aspect ratio, inside a square-cornered parchment inset and one-pixel

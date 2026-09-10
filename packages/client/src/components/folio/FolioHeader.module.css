@@ -79,7 +79,8 @@
 
 .title {
 	font-family: var(--ff-display);
-	font-weight: 400;
+	font-weight: 500;
+	font-style: italic;
 	font-size: var(--fs-hero);
 	line-height: var(--lh-h1);
 	color: var(--text-primary);
@@ -111,40 +112,43 @@
 	margin-right: var(--sp-3);
 }
 
-/* Aliases ride as a single italic byline under the title -- the same `aka …`
-   preposition and middot separator used by the EntryContent card variant, just
-   scaled up to the folio page. The card and the meta panel both use this idiom;
-   the folio header is the name-plate context, so `aka` is the right preposition. */
+/* Aliases form a roman secondary-identity line beneath the italic title. */
 .aliases {
 	margin: 0 0 var(--sp-3);
 	font-family: var(--ff-body);
-	font-style: italic;
+	font-weight: 400;
+	font-style: normal;
 	font-size: var(--fs-subtitle);
+	line-height: var(--lh-subtitle);
 	color: var(--text-secondary);
+	overflow-wrap: break-word;
 }
 
-/* Tags align with the EntryContent row tag style -- italic, meta-sized, muted
-   -- and stay links with a gold hover, since the folio page is where you
-   navigate from an entry to its tag's index. */
+/* Tags are the lightest nameplate layer and remain links to their index. */
 .tags {
 	display: flex;
 	align-items: baseline;
 	flex-wrap: wrap;
 	gap: var(--sp-3);
 	font-family: var(--ff-body);
+	font-weight: 300;
+	font-style: normal;
 	font-size: var(--fs-meta);
-	font-style: italic;
+	line-height: var(--lh-subtitle);
 	color: var(--text-muted);
 }
 
 .tag {
+	min-width: 0;
+	max-width: 100%;
 	color: var(--text-muted);
 	text-decoration: none;
+	overflow-wrap: break-word;
 	transition: color 0.2s;
 }
 
 .tag:hover {
-	color: var(--accent-gold);
+	color: var(--accent-gold-text);
 }
 
 .tag + .tag::before {

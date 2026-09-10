@@ -5,12 +5,11 @@
 }
 
 .title {
-	font-family: var(--ff-body);
-	font-weight: 500;
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-sidebar-group);
-	text-transform: uppercase;
-	color: var(--text-muted);
+	font-family: var(--ff-display);
+	font-weight: 600;
+	font-size: var(--fs-subtitle);
+	line-height: var(--lh-subtitle);
+	color: var(--text-primary);
 }
 
 .box {
@@ -61,10 +60,9 @@
 }
 
 /* Text-list values such as aliases render as an italic run with
-   middot separators, matching the folio header's alias idiom -- not as
-   rounded gray lozenges, which are dashboard vocabulary in a print
-   aesthetic. The wrapping flex container in MetaSection.tsx provides
-   the gap; the middot adds the separator. */
+   middot separators rather than rounded gray lozenges, which are
+   dashboard vocabulary in a print aesthetic. The wrapping flex container
+   in MetaSection.tsx provides the gap; the middot adds the separator. */
 .textItem {
 	font-family: var(--ff-body);
 	font-style: italic;

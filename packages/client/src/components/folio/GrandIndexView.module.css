@@ -15,7 +15,8 @@
 
 .title {
 	font-family: var(--ff-display);
-	font-weight: 400;
+	font-weight: 500;
+	font-style: italic;
 	font-size: var(--fs-h1);
 	color: var(--text-primary);
 	margin: 0 0 var(--sp-2);
@@ -23,7 +24,7 @@
 
 .meta {
 	font-family: var(--ff-body);
-	font-size: var(--fs-meta);
+	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-eyebrow);
 	color: var(--text-muted);
 	margin-bottom: var(--sp-6);
