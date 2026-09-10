@@ -11,7 +11,6 @@ aliases:
 ---
 
 ## Basic Information
-- **Sex:** Male
 - **Born:** c. 1255 BCE
 - **Died:** Shortly after his return from Troy
 - **Allegiance:** [[Factions/Greeks]]

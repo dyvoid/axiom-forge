@@ -11,7 +11,6 @@ aliases:
 ---
 
 ## Basic Information
-- **Sex:** Female
 - **Born:** c. 1248 BCE
 - **Allegiance:** [[Factions/Greeks]]
 - **Spouse:** [[Humans/Odysseus]]

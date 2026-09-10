@@ -8,7 +8,6 @@ tags:
 ---
 
 ## Basic Information
-- **Sex:** Female
 - **Born:** c. 1238 BCE
 - **Allegiance:** [[Factions/Trojans]]
 - **Spouse:** [[Humans/Hector]]

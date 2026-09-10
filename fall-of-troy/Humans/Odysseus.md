@@ -12,7 +12,6 @@ aliases:
 ---
 
 ## Basic Information
-- **Sex:** Male
 - **Allegiance:** [[Factions/Greeks]]
 - **Divine Patron:** [[Gods/Athena]]
 - **Spouse:** [[Humans/Penelope]]

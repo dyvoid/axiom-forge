@@ -11,7 +11,6 @@ aliases:
 ---
 
 ## Basic Information
-- **Sex:** Male
 - **Born:** c. 1242 BCE
 - **Allegiance:** [[Factions/Greeks]]
 - **Divine Patron:** [[Gods/Athena]]

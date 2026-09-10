@@ -8,7 +8,6 @@ tags:
 ---
 
 ## Basic Information
-- **Sex:** Male
 - **Died:** Year 10 of the Siege of Troy
 - **Allegiance:** [[Factions/Greeks]]
 - **Divine Patron:** [[Gods/Zeus]]

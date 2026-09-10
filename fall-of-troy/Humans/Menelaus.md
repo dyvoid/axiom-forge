@@ -11,7 +11,6 @@ aliases:
 ---
 
 ## Basic Information
-- **Sex:** Male
 - **Born:** c. 1252 BCE
 - **Allegiance:** [[Factions/Greeks]]
 - **Spouse:** [[Humans/Helen]]

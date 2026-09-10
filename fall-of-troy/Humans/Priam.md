@@ -8,7 +8,6 @@ tags:
 ---
 
 ## Basic Information
-- **Sex:** Male
 - **Allegiance:** [[Factions/Trojans]]
 
 ## Description & History

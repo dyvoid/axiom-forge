@@ -11,7 +11,6 @@ aliases:
 ---
 
 ## Basic Information
-- **Sex:** Female
 - **Allegiance:** [[Factions/Trojans]]
 - **Spouse:** [[Humans/Paris]]
 - **Divine Patron:** [[Gods/Aphrodite]]

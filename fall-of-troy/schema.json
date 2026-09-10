@@ -8,7 +8,6 @@
 				"Basic Information": {
 					"role": "meta",
 					"fields": {
-						"Sex": { "type": "select", "options": ["Male", "Female"] },
 						"Born": { "type": "date" },
 						"Died": { "type": "date" },
 						"Allegiance": { "type": "wikilink", "target": "Factions" },

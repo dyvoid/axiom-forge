@@ -13,7 +13,6 @@ aliases:
 ---
 
 ## Basic Information
-- **Sex:** Male
 - **Born:** c. 1235 BCE
 - **Died:** Year 10 of the Siege of Troy
 - **Allegiance:** [[Factions/Greeks]]

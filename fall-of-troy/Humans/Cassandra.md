@@ -12,7 +12,6 @@ aliases:
 ---
 
 ## Basic Information
-- **Sex:** Female
 - **Born:** c. 1237 BCE
 - **Died:** Shortly after the fall of Troy
 - **Allegiance:** [[Factions/Trojans]]

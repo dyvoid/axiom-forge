@@ -152,7 +152,6 @@ aliases:
 ---
 
 ## Basic Information
-- **Sex:** Male
 - **Born:** c. 1235 BCE
 - **Allegiance:** [[Factions/Greeks]]
 - **Divine Patron:** [[Gods/Thetis]]
