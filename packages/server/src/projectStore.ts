@@ -14,6 +14,7 @@ import {
 	serializeToMarkdown,
 	validateAgainstSchema,
 	type Config,
+	type CoverImage,
 	type ProjectSchema,
 	type FolioIndexRecord,
 	type ParsedFolio,
@@ -25,7 +26,10 @@ import {
 	writeFolioFile,
 	renameFolioFile,
 	deleteFolioFile,
+	deleteImageFile,
+	resolveImageFile,
 	statFile,
+	writeProjectImage,
 } from './fileIO.js';
 import { Mutex } from './utils/mutex.js';
 import {
@@ -202,7 +206,7 @@ export class ProjectStore {
 	updateFolioRecord(
 		folder: string,
 		name: string,
-		patch: { mtime: number; title?: string; tags: string[]; aliases?: string[]; snippet?: string; warnings?: string[]; links: WikiLink[] },
+		patch: { mtime: number; title?: string; tags: string[]; aliases?: string[]; coverImage?: CoverImage; snippet?: string; warnings?: string[]; links: WikiLink[] },
 	): void {
 		const record = this.folios.find((f) => f.folder === folder && f.name === name);
 		if (!record) return;
@@ -210,6 +214,7 @@ export class ProjectStore {
 		if (patch.title !== undefined) record.title = patch.title;
 		record.tags = patch.tags;
 		record.aliases = patch.aliases;
+		record.coverImage = patch.coverImage;
 		record.snippet = patch.snippet;
 		if (patch.warnings !== undefined) record.warnings = patch.warnings;
 		record.links = patch.links;
@@ -258,6 +263,8 @@ export class ProjectStore {
 
 		const { content, mtime } = await readFolioFile(record.filePath);
 		const parsed = parseMarkdown(content, this.getSchema());
+		const coverWarning = await this.getCoverWarning(parsed.coverImage);
+		if (coverWarning) parsed.warnings = [...(parsed.warnings ?? []), coverWarning];
 		return {
 			...parsed,
 			id: record.id,
@@ -266,6 +273,34 @@ export class ProjectStore {
 			title: parsed.title || filenameToDisplayName(record.name),
 			folder: record.folder, // authoritative folder from index
 		};
+	}
+
+	async getCoverImageFile(folder: string, name: string): Promise<string | null> {
+		const record = this.getRecord(folder, name);
+		if (!record?.coverImage) return null;
+		const resolution = await resolveImageFile(this.projectPath, record.coverImage.path);
+		return resolution.filePath ?? null;
+	}
+
+	async uploadCoverImage(folder: string, name: string, fileName: string, content: Buffer): Promise<CoverImage> {
+		return this.writeMutex.runExclusive(async () => {
+			if (!this.getRecord(folder, name)) throw new NotFoundError('Folio not found');
+			const written = await writeProjectImage(this.projectPath, fileName, content);
+			return { path: written.path, syntax: 'wikilink' };
+		});
+	}
+
+	async deleteCoverImage(folder: string, name: string): Promise<void> {
+		return this.writeMutex.runExclusive(async () => {
+			const record = this.getRecord(folder, name);
+			if (!record) throw new NotFoundError('Folio not found');
+			const { content } = await readFolioFile(record.filePath);
+			const coverImage = parseMarkdown(content, this.getSchema()).coverImage;
+			if (!coverImage) throw new NotFoundError('Cover image not found');
+			const resolution = await resolveImageFile(this.projectPath, coverImage.path);
+			if (!resolution.filePath) throw new NotFoundError('Cover image not found');
+			await deleteImageFile(resolution.filePath);
+		});
 	}
 
 	// ── Mutations (ADR-0006) ────────────────────────────────
@@ -364,6 +399,7 @@ export class ProjectStore {
 				title: folioToWrite.title,
 				tags: folioToWrite.tags,
 				aliases: folioToWrite.aliases,
+				coverImage: folioToWrite.coverImage,
 				snippet,
 				warnings,
 				links: extractAllLinks(folioToWrite),
@@ -412,6 +448,7 @@ export class ProjectStore {
 				mtime,
 				tags: folioToWrite.tags,
 				aliases: folioToWrite.aliases,
+				coverImage: folioToWrite.coverImage,
 				snippet,
 				warnings,
 				links: extractAllLinks(folioToWrite),
@@ -422,11 +459,18 @@ export class ProjectStore {
 	}
 
 	/** Delete a folio and remove it from the index. */
-	async deleteFolio(folder: string, name: string): Promise<void> {
+	async deleteFolio(folder: string, name: string, deleteCoverImage = false): Promise<void> {
 		return this.writeMutex.runExclusive(async () => {
 			const record = this.getRecord(folder, name);
 			if (!record) throw new NotFoundError('Folio not found');
+			let coverFilePath: string | undefined;
+			if (deleteCoverImage) {
+				const { content } = await readFolioFile(record.filePath);
+				const coverImage = parseMarkdown(content, this.getSchema()).coverImage;
+				if (coverImage) coverFilePath = (await resolveImageFile(this.projectPath, coverImage.path)).filePath;
+			}
 			await deleteFolioFile(record.filePath);
+			if (coverFilePath) await deleteImageFile(coverFilePath);
 			this.removeFolioRecord(folder, name);
 		});
 	}
@@ -557,6 +601,7 @@ export class ProjectStore {
 		for (const { typeKey, folder, file } of allFiles) {
 			let tags: string[] = [];
 			let aliases: string[] | undefined;
+			let coverImage: CoverImage | undefined;
 			let snippet: string | undefined;
 			let warnings: string[];
 			let links: WikiLink[] = [];
@@ -566,7 +611,10 @@ export class ProjectStore {
 				const parsed = parseMarkdown(content, schema);
 				tags = parsed.tags;
 				aliases = parsed.aliases;
+				coverImage = parsed.coverImage;
 				warnings = parsed.warnings ?? [];
+				const coverWarning = await this.getCoverWarning(coverImage);
+				if (coverWarning) warnings.push(coverWarning);
 				if (parsed.title) title = parsed.title;
 				snippet = this.deriveSnippet(parsed);
 				links = extractAllLinks(parsed);
@@ -583,6 +631,7 @@ export class ProjectStore {
 				mtime: file.mtime,
 				tags,
 				aliases,
+				coverImage,
 				snippet,
 				warnings,
 				links,
@@ -591,6 +640,15 @@ export class ProjectStore {
 		this.nextId = id;
 
 		console.log(`  • indexed ${this.folios.length} folios`);
+	}
+
+	private async getCoverWarning(coverImage: CoverImage | undefined): Promise<string | undefined> {
+		if (!coverImage) return undefined;
+		const resolution = await resolveImageFile(this.projectPath, coverImage.path);
+		if (!resolution.error) return undefined;
+		if (resolution.error === 'ambiguous') return `Cover image "${coverImage.path}" is ambiguous; use a vault-relative path`;
+		if (resolution.error === 'outside-project') return `Cover image "${coverImage.path}" resolves outside the project`;
+		return `Cover image "${coverImage.path}" was not found`;
 	}
 
 	private async loadJson<T>(

@@ -21,6 +21,10 @@
 
 .metaCol {
 	flex: 0 0 var(--meta-col-width);
+	margin-left: auto;
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-6);
 }
 
 /* One separator vocabulary across the whole folio: a single 1px hairline.
@@ -94,6 +98,7 @@
 	.metaCol {
 		flex: 1 1 auto;
 		width: 100%;
+		margin-left: 0;
 		order: 1;
 	}
 

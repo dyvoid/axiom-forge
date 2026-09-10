@@ -66,6 +66,19 @@ Wiki-links use the **folder name** of the target type, not the type key. For exa
 5. **Prose fields:** Rendered as free text directly under the section header, with no bullet prefix.
 6. **All other fields:** Use the `- **Field Name:** value` bullet format.
 
+### Cover images
+
+The first image embed between the H1 and the first `##` section is the folio's optional cover.
+Both Obsidian embeds (`![[Images/portrait.png]]`, including a preserved `|300` size suffix) and
+standard Markdown images (`![Portrait](Images/portrait.png)`) are recognized. The embed may use
+any vault-relative path; a bare filename resolves only when it uniquely identifies one image in
+the project. Supported extensions are `.png`, `.jpg`, `.jpeg`, `.webp`, and `.gif`.
+
+The embed is the source of truth, so an unreferenced image is not a cover. The first embed is
+extracted into structured folio data; later preface embeds remain ordinary preface content, and
+embeds below a `##` heading remain prose content. A missing, ambiguous, or out-of-project image
+produces a folio warning rather than making the Markdown unreadable.
+
 **Example Minimal Folio:**
 ```markdown
 ---

@@ -37,6 +37,13 @@ export interface ParsedSection {
 	fields?: Record<string, FieldValue>;
 }
 
+export interface CoverImage {
+	path: string;
+	alt?: string;
+	size?: string;
+	syntax: 'wikilink' | 'markdown';
+}
+
 export interface ParsedFolio {
 	/** Filename stem — the folio's stable ID. URL-safe, no spaces. e.g. "Lystarra" */
 	name: string;
@@ -48,6 +55,7 @@ export interface ParsedFolio {
 	/** Alternative names (Obsidian-native `aliases` frontmatter property). Omitted when empty. */
 	aliases?: string[];
 	preface?: string;
+	coverImage?: CoverImage;
 	sections: Record<string, ParsedSection>;
 	warnings?: string[];
 	mtime?: number;
@@ -66,5 +74,6 @@ export interface FolioIndexRecord {
 	tags: string[];
 	/** Alternative names (Obsidian-native `aliases`). Omitted when empty. */
 	aliases?: string[];
+	coverImage?: CoverImage;
 	snippet?: string;
 }

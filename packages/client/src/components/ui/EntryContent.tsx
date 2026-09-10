@@ -16,7 +16,9 @@
  * set to share and wrapping it here would be indirection with nothing inside.
  */
 
+import { useEffect, useState } from 'react';
 import type { FolioIndexRecord } from '@axiom-forge/shared';
+import { coverImageUrl } from '../../api/client.js';
 import { Icon } from './Icon.js';
 import styles from './EntryContent.module.css';
 
@@ -33,6 +35,18 @@ interface EntryContentProps {
 	variant: EntryVariant;
 	/** Icon name for the `inline` variant. Ignored by the others. */
 	icon?: string;
+}
+
+function EntryThumbnail({ folio }: { folio: FolioIndexRecord }): JSX.Element | null {
+	const [failed, setFailed] = useState(false);
+	const src = coverImageUrl(folio.folder, folio.name);
+	useEffect(() => setFailed(false), [src, folio.coverImage?.path]);
+	if (!folio.coverImage || failed) return null;
+	return (
+		<span className={styles.thumbnailFrame}>
+			<img className={styles.thumbnail} src={src} alt="" onError={() => setFailed(true)} />
+		</span>
+	);
 }
 
 /** The `aka …` line. Rendered by the `card` variant only. */
@@ -76,21 +90,24 @@ export function EntryContent({ folio, variant, icon }: EntryContentProps): JSX.E
 	const aliases = folio.aliases ?? [];
 
 	return (
-		<>
-			{/*
-			 * The alias rides on the title line rather than taking one of its own, so
-			 * an aliased card is exactly as tall as an unaliased one. Cards sit in a
-			 * stretch grid, so a taller card would pad out every neighbour in its row.
-			 * It truncates when space runs short — the folio page shows the full list.
-			 */}
-			<div className={styles.cardHeader}>
-				<span className={styles.cardHeading}>
-					<span className={styles.cardTitle}>{folio.title}</span>
-					{aliases.length > 0 && <Aliases aliases={aliases} className={styles.cardAliases} />}
-				</span>
-				<span className={styles.cardFolder}>{folio.folder}</span>
+		<div className={styles.cardLayout}>
+			<EntryThumbnail folio={folio} />
+			<div className={styles.cardBody}>
+				{/*
+				 * The alias rides on the title line rather than taking one of its own, so
+				 * an aliased card is exactly as tall as an unaliased one. Cards sit in a
+				 * stretch grid, so a taller card would pad out every neighbour in its row.
+				 * It truncates when space runs short — the folio page shows the full list.
+				 */}
+				<div className={styles.cardHeader}>
+					<span className={styles.cardHeading}>
+						<span className={styles.cardTitle}>{folio.title}</span>
+						{aliases.length > 0 && <Aliases aliases={aliases} className={styles.cardAliases} />}
+					</span>
+					<span className={styles.cardFolder}>{folio.folder}</span>
+				</div>
+				{folio.snippet && <div className={styles.cardSnippet}>{folio.snippet}</div>}
 			</div>
-			{folio.snippet && <div className={styles.cardSnippet}>{folio.snippet}</div>}
-		</>
+		</div>
 	);
 }

@@ -1,4 +1,5 @@
-import { Router, type Response } from 'express';
+import { extname } from 'node:path';
+import { Router, raw, type Response } from 'express';
 import type { ParsedFolio } from '@axiom-forge/shared';
 import type { ProjectStore } from '../projectStore.js';
 import {
@@ -60,12 +61,77 @@ function sendDomainError(err: unknown, res: Response): boolean {
 	return false;
 }
 
+function imageContentType(filePath: string): string {
+	switch (extname(filePath).toLowerCase()) {
+		case '.png': return 'image/png';
+		case '.jpg':
+		case '.jpeg': return 'image/jpeg';
+		case '.webp': return 'image/webp';
+		case '.gif': return 'image/gif';
+		default: return 'application/octet-stream';
+	}
+}
+
 export function foliosRouter(store: ProjectStore): Router {
 	const r = Router();
 
 	// GET /api/folios — all folio index records (for sidebar)
 	r.get('/', (_req, res) => {
 		res.json(store.getFolios());
+	});
+
+	r.get('/:folder/:name/image', async (req, res) => {
+		const { folder, name } = req.params;
+		try {
+			const filePath = await store.getCoverImageFile(folder!, name!);
+			if (!filePath) {
+				res.status(404).json({ error: 'Cover image not found' });
+				return;
+			}
+			res.setHeader('Content-Type', imageContentType(filePath));
+			res.setHeader('X-Content-Type-Options', 'nosniff');
+			res.sendFile(filePath);
+		} catch (err) {
+			console.error(`Error reading cover image ${folder}/${name}:`, err);
+			res.status(500).json({ error: 'Failed to read cover image' });
+		}
+	});
+
+	r.put(
+		'/:folder/:name/image',
+		raw({ type: ['image/png', 'image/jpeg', 'image/webp', 'image/gif'], limit: '10mb' }),
+		async (req, res) => {
+			const { folder, name } = req.params;
+			const fileName = typeof req.query.filename === 'string' ? req.query.filename : '';
+			if (!fileName || !Buffer.isBuffer(req.body) || req.body.length === 0) {
+				res.status(400).json({ error: 'An image body and filename query parameter are required' });
+				return;
+			}
+			try {
+				const coverImage = await store.uploadCoverImage(folder!, name!, fileName, req.body);
+				res.status(201).json({ coverImage });
+			} catch (err) {
+				if (sendDomainError(err, res)) return;
+				if (err instanceof Error && err.message === 'Unsupported image filename') {
+					res.status(400).json({ error: err.message });
+					return;
+				}
+				console.error(`Error uploading cover image ${folder}/${name}:`, err);
+				res.status(500).json({ error: 'Failed to upload cover image' });
+			}
+		},
+	);
+
+	r.delete('/:folder/:name/image', async (req, res) => {
+		const { folder, name } = req.params;
+		try {
+			await store.deleteCoverImage(folder!, name!);
+			res.json({ ok: true });
+		} catch (err) {
+			if (sendDomainError(err, res)) return;
+			console.error(`Error deleting cover image ${folder}/${name}:`, err);
+			res.status(500).json({ error: 'Failed to delete cover image' });
+		}
 	});
 
 	// GET /api/folios/:folder/:name — single parsed folio
@@ -139,7 +205,7 @@ export function foliosRouter(store: ProjectStore): Router {
 	r.delete('/:folder/:name', async (req, res) => {
 		const { folder, name } = req.params;
 		try {
-			await store.deleteFolio(folder!, name!);
+			await store.deleteFolio(folder!, name!, req.query.deleteCoverImage === 'true');
 			res.json({ ok: true });
 		} catch (err) {
 			if (sendDomainError(err, res)) return;

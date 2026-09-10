@@ -25,13 +25,12 @@ ADR-0005 contributes the Electron native dialog as one implementation. See
 | 2 | Project Scaffolding / Schema Setup Wizard | Proposed — **needs scoping** | [ADR-0013](adr/0013-project-scaffolding.md) | Pre-adoption blocker: no way to create a new project without hand-writing JSON schema. Skeleton ADR only — design not yet brainstormed, that's the next step, not a build |
 | 3 | Alternate Data Views (Table, Board, Saved Filters, Graph) | Proposed | [ADR-0016](adr/0016-alternate-data-views.md) | Fully designed. No schema changes needed for the table/board/saved-filter slice; graph view (same ADR) costs more, build last within it |
 | 4 | Structured Date Fields (Sort Key & Calendar Modes) | Proposed | [ADR-0015](adr/0015-structured-date-fields.md) | Fully designed. Adds `sortkey`/`calendar` modes to the `date` field type; keeps hand-editable flat YAML, no required nesting. Prerequisite for Timeline View |
-| 5 | Folio Cover Image | Proposed | [ADR-0018](adr/0018-folio-cover-image.md) | Fully designed. Optional, co-located image per folio (Wikipedia-infobox style); needs new static-file serving, none exists today. Inline images deferred |
-| 6 | Timeline View | Proposed | [ADR-0017](adr/0017-timeline-view.md) | Blocked on #4 (ADR-0015); lays out entries by sortable date value |
-| 7 | Visibility / Access Control (field & entry level) | Proposed — **needs scoping** | [ADR-0014](adr/0014-visibility-access-control.md) | Recurring want across GM/novelist/publisher/creator use cases. Skeleton ADR only, and its own Consequences concede the no-auth deployment model may cap how far it can go. **Reviewed 2026-08-30 and kept** at full scope; narrowing to display-only remains available when it is scoped |
-| 8 | Project Themes | Proposed | [ADR-0001](adr/0001-project-themes.md) | Persona-dependent, no strong consensus. In tension with the design system: AGENTS.md treats the print aesthetic as load-bearing, and there is no dark mode or `prefers-color-scheme` handling to build on. **Reviewed 2026-08-30 and kept** — the objection stands but is not grounds to close it |
-| 9 | Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | Persona-dependent, no strong consensus |
-| 10 | Markdown Source Edit Mode | Proposed | [ADR-0012](adr/0012-markdown-source-edit-mode.md) | Toggle between structured form editor and raw Markdown textarea. 2 of its 4 open questions are now settled by ADR-0009. **Rank reviewed and held 2026-08-30** knowing it is the only in-app repair for a schema-drifted file, which is otherwise readable but unsaveable — that gap is [accepted for now](data-model.md#a-drifted-file-is-readable-but-not-saveable) |
-| 11 | Desktop Packaging & Distribution | Proposed | [ADR-0005](adr/0005-desktop-packaging-distribution.md) | Uses Electron and electron-builder; value is platform-dependent per persona |
+| 5 | Timeline View | Proposed | [ADR-0017](adr/0017-timeline-view.md) | Blocked on #4 (ADR-0015); lays out entries by sortable date value |
+| 6 | Visibility / Access Control (field & entry level) | Proposed — **needs scoping** | [ADR-0014](adr/0014-visibility-access-control.md) | Recurring want across GM/novelist/publisher/creator use cases. Skeleton ADR only, and its own Consequences concede the no-auth deployment model may cap how far it can go. **Reviewed 2026-08-30 and kept** at full scope; narrowing to display-only remains available when it is scoped |
+| 7 | Project Themes | Proposed | [ADR-0001](adr/0001-project-themes.md) | Persona-dependent, no strong consensus. In tension with the design system: AGENTS.md treats the print aesthetic as load-bearing, and there is no dark mode or `prefers-color-scheme` handling to build on. **Reviewed 2026-08-30 and kept** — the objection stands but is not grounds to close it |
+| 8 | Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | Persona-dependent, no strong consensus |
+| 9 | Markdown Source Edit Mode | Proposed | [ADR-0012](adr/0012-markdown-source-edit-mode.md) | Toggle between structured form editor and raw Markdown textarea. 2 of its 4 open questions are now settled by ADR-0009. **Rank reviewed and held 2026-08-30** knowing it is the only in-app repair for a schema-drifted file, which is otherwise readable but unsaveable — that gap is [accepted for now](data-model.md#a-drifted-file-is-readable-but-not-saveable) |
+| 10 | Desktop Packaging & Distribution | Proposed | [ADR-0005](adr/0005-desktop-packaging-distribution.md) | Uses Electron and electron-builder; value is platform-dependent per persona |
 
 ## Architecture Candidates
 
@@ -54,6 +53,7 @@ part of the active sequence.
 
 | Feature | Status | ADR | Notes |
 |---|---|---|---|
+| Folio Cover Image | Accepted | [ADR-0018](adr/0018-folio-cover-image.md) | Obsidian-native preface embeds, secure vault-path serving, uploads, optional shared-image deletion, infobox display, and preview-card thumbnails |
 | Consolidate Folio Validation Rules | Accepted | [ADR-0009](adr/0009-consolidate-folio-validation-rules.md) | One `validateAgainstSchema` engine; `mode` selects severity, read stays lenient |
 | Section Kind as a Discriminated Union | Accepted | [ADR-0021](adr/0021-section-kind-union.md) | `classifySection` + shared `isFieldValueEmpty`; section-level `type` narrowed at the type level |
 | Multi-File Write Safety | Accepted | [ADR-0010](adr/0010-multi-file-write-safety.md) | Batched rename link-rewrite: all targets verified against indexed mtime before the first write; supersedes ADR-0003 |

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useBlocker } from 'react-router-dom';
 import {
 	classifySection,
@@ -16,6 +16,7 @@ import { FieldEditor } from './edit/FieldEditor.js';
 import { FieldTypeHint } from './edit/FieldTypeHint.js';
 import { TextListField } from './edit/TextListField.js';
 import { TextareaField } from './edit/TextareaField.js';
+import { CoverImageEditor } from './edit/CoverImageEditor.js';
 import { useFolios, useCreateFolio } from '../../api/queries.js';
 import { useProject } from '../../context/ProjectContext.js';
 import { collectUnresolvedLinks } from '../../utils/links.js';
@@ -27,8 +28,8 @@ interface Props {
 	saving: boolean;
 	deleting: boolean;
 	saveError: string | null;
-	onSave: (next: ParsedFolio) => void;
-	onDelete: () => void;
+	onSave: (next: ParsedFolio, coverFile: File | null, onSaved: () => void) => void;
+	onDelete: (deleteCoverImage: boolean, onDeleted: () => void) => void;
 }
 
 export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onSave, onDelete }: Props): JSX.Element {
@@ -36,15 +37,23 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	// Local draft — initialised from server state, mutated on every keystroke.
 	const [draft, setDraft] = useState<ParsedFolio>(() => structuredClone(folio));
 	const [dirty, setDirty] = useState(false);
+	const dirtyRef = useRef(false);
 	const [confirmDelete, setConfirmDelete] = useState(false);
 	const [confirmNavigate, setConfirmNavigate] = useState(false);
 	const [createError, setCreateError] = useState<string | null>(null);
+	const [coverError, setCoverError] = useState<string | null>(null);
+	const [coverFile, setCoverFile] = useState<File | null>(null);
 
 	// Wrap setDraft so any mutation flips the dirty flag. Avoids the
 	// per-keystroke JSON.stringify(folio) that the previous diff used.
 	const mutateDraft = (updater: (prev: ParsedFolio) => ParsedFolio): void => {
 		setDraft(updater);
+		dirtyRef.current = true;
 		setDirty(true);
+	};
+	const markClean = (): void => {
+		dirtyRef.current = false;
+		setDirty(false);
 	};
 	const { data: folios } = useFolios();
 	const { schema } = useProject();
@@ -60,7 +69,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 
 	const blocker = useBlocker(
 		({ currentLocation, nextLocation }) =>
-			dirty && currentLocation.pathname !== nextLocation.pathname
+			dirtyRef.current && currentLocation.pathname !== nextLocation.pathname
 	);
 
 	useEffect(() => {
@@ -111,8 +120,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	}
 
 	function handleSave(): void {
-		onSave(draft);
-		setDirty(false);
+		onSave(draft, coverFile, markClean);
 	}
 
 	function handleDiscard(): void {
@@ -194,6 +202,13 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 				</div>
 			)}
 
+			{coverError && (
+				<div className={styles.warnings}>
+					<div className={styles.warningsLabel}>Cover image</div>
+					{coverError}
+				</div>
+			)}
+
 			{unresolvedLinks.length > 0 && (
 				<div className={`${styles.warnings} ${styles.brokenLinks}`}>
 					<div className={styles.warningsLabel}>
@@ -235,13 +250,20 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 			<ConfirmDialog
 				open={confirmDelete}
 				title="Delete folio"
-				message={`Delete "${folio.title}"? This cannot be undone. The file will be removed from disk.`}
-				confirmLabel="Delete folio"
+				message={folio.coverImage
+					? `Delete "${folio.title}"? Its cover may be shared by other folios. Choose whether to keep or delete the image file.`
+					: `Delete "${folio.title}"? This cannot be undone. The file will be removed from disk.`}
+				confirmLabel={folio.coverImage ? 'Delete folio and image' : 'Delete folio'}
+				secondaryLabel={folio.coverImage ? 'Keep image' : undefined}
 				danger
 				onCancel={() => setConfirmDelete(false)}
+				onSecondary={() => {
+					setConfirmDelete(false);
+					onDelete(false, markClean);
+				}}
 				onConfirm={() => {
 					setConfirmDelete(false);
-					onDelete();
+					onDelete(Boolean(folio.coverImage), markClean);
 				}}
 			/>
 
@@ -253,11 +275,11 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 				danger
 				onCancel={() => {
 					setConfirmNavigate(false);
-					blocker.reset();
+					blocker.reset?.();
 				}}
 				onConfirm={() => {
 					setConfirmNavigate(false);
-					blocker.proceed();
+					blocker.proceed?.();
 				}}
 			/>
 
@@ -292,6 +314,18 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 					/>
 				</div>
 			</div>
+
+			<CoverImageEditor
+				cover={draft.coverImage}
+				folder={folio.folder}
+				name={folio.name}
+				pendingFile={coverFile}
+				onChange={(coverImage, file) => {
+					setCoverFile(file);
+					mutateDraft((current) => ({ ...current, coverImage }));
+				}}
+				onError={(message) => setCoverError(message || null)}
+			/>
 
 			<div className={styles.divider} />
 

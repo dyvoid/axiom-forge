@@ -1,0 +1,100 @@
+.section {
+	margin-bottom: var(--sp-5);
+}
+
+.header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--sp-3);
+	margin-bottom: var(--sp-2);
+	font-family: var(--ff-body);
+	font-size: var(--fs-eyebrow);
+	font-weight: 500;
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.remove {
+	border: 0;
+	padding: 0;
+	background: transparent;
+	font: inherit;
+	letter-spacing: inherit;
+	text-transform: inherit;
+	color: var(--accent-rust);
+	cursor: pointer;
+}
+
+.dropzone {
+	display: block;
+	border: 1px dashed var(--border);
+	padding: var(--sp-3);
+	background: color-mix(in srgb, var(--bg-panel) 35%, transparent);
+	cursor: pointer;
+	transition: border-color 120ms, background-color 120ms;
+}
+
+.dropzone:hover,
+.dropzone:focus-within,
+.dragging {
+	border-color: var(--accent-rust);
+	background: color-mix(in srgb, var(--accent-rust) 5%, var(--bg-page));
+}
+
+.input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+.dropzone > span,
+.previewRow {
+	display: flex;
+	align-items: center;
+	gap: var(--sp-3);
+	font-family: var(--ff-body);
+	color: var(--text-secondary);
+}
+
+.dropzone strong,
+.dropzone small {
+	display: block;
+}
+
+.dropzone strong {
+	font-size: var(--fs-label);
+	font-weight: 500;
+}
+
+.dropzone small {
+	margin-top: var(--sp-0-5);
+	font-size: var(--fs-eyebrow);
+	color: var(--text-muted);
+}
+
+.previewFrame {
+	width: 64px;
+	height: 64px;
+	flex: 0 0 64px;
+	border: 1px solid var(--border);
+	padding: var(--sp-0-5);
+	background: var(--bg-page);
+}
+
+.previewFrame img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+@media (pointer: coarse) {
+	.remove {
+		min-height: var(--touch-target);
+	}
+}

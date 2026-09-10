@@ -35,7 +35,7 @@ they belong: ADR-0019 accepted and ADR-0020 deferred (their status lines), ADR-0
 onboarding surface (its Scope section), and ADR-0012 / ADR-0001 / ADR-0014 reviewed and held at
 their current rank and scope (their [ROADMAP](docs/ROADMAP.md) rows).
 
-One accepted gap follows from holding ADR-0012 at #10: a schema-drifted file is readable in the
+One accepted gap follows from holding ADR-0012 at #9: a schema-drifted file is readable in the
 app but cannot be saved from it. Documented in
 [Data Model](docs/data-model.md#a-drifted-file-is-readable-but-not-saveable) so it is not
 rediscovered as a bug.

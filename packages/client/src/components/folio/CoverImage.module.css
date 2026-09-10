@@ -1,0 +1,27 @@
+.figure {
+	width: 100%;
+	max-width: var(--meta-col-width);
+	margin: 0 auto;
+}
+
+.frame {
+	border: 1px solid var(--border);
+	padding: var(--sp-1-5);
+	background: var(--bg-page);
+}
+
+.image {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.caption {
+	margin-top: var(--sp-2);
+	font-family: var(--ff-body);
+	font-size: var(--fs-meta);
+	font-style: italic;
+	line-height: 1.4;
+	text-align: center;
+	color: var(--text-secondary);
+}

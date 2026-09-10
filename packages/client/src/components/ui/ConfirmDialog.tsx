@@ -7,8 +7,10 @@ interface ConfirmDialogProps {
 	title: string;
 	message: string;
 	confirmLabel?: string;
+	secondaryLabel?: string;
 	danger?: boolean;
 	onConfirm: () => void;
+	onSecondary?: () => void;
 	onCancel: () => void;
 }
 
@@ -17,8 +19,10 @@ export function ConfirmDialog({
 	title,
 	message,
 	confirmLabel = 'Confirm',
+	secondaryLabel,
 	danger = false,
 	onConfirm,
+	onSecondary,
 	onCancel,
 }: ConfirmDialogProps): JSX.Element | null {
 	const titleId = useId();
@@ -44,6 +48,11 @@ export function ConfirmDialog({
 					<button type="button" className={styles.btnCancel} onClick={onCancel}>
 						Cancel
 					</button>
+					{secondaryLabel && onSecondary && (
+						<button type="button" className={styles.btnCancel} onClick={onSecondary}>
+							{secondaryLabel}
+						</button>
+					)}
 					<button
 						type="button"
 						className={`${styles.btnConfirm} ${danger ? styles.danger : ''}`}

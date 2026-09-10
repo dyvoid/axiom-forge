@@ -12,7 +12,7 @@
 import { load, dump } from 'js-yaml';
 import { classifySection, validateAgainstSchema } from './schema.js';
 import type { ProjectSchema, FieldDef } from './schema.js';
-import type { ParsedFolio, ParsedSection, FieldValue, WikiLink } from './types.js';
+import type { CoverImage, ParsedFolio, ParsedSection, FieldValue, WikiLink } from './types.js';
 import { parseWikiLink, parseWikiLinks, serializeWikiLink, serializeWikiLinks } from './wikilink.js';
 
 // ── Helpers ─────────────────────────────────────────────────
@@ -54,6 +54,41 @@ function parseBulletField(line: string): [string, string] | null {
 	const m = /^-\s+\*\*(.+?):\*\*\s*(.*)$/.exec(line.trim());
 	if (!m) return null;
 	return [m[1]!, m[2]!.trim()];
+}
+
+const IMAGE_EXTENSION = /\.(?:png|jpe?g|webp|gif)$/i;
+
+function parseCoverEmbed(line: string): CoverImage | null {
+	const wikilink = /^!\[\[([^|\]]+)(?:\|([^\]]+))?\]\]$/.exec(line.trim());
+	if (wikilink && IMAGE_EXTENSION.test(wikilink[1]!.trim())) {
+		return {
+			path: wikilink[1]!.trim(),
+			...(wikilink[2]?.trim() ? { size: wikilink[2].trim() } : {}),
+			syntax: 'wikilink',
+		};
+	}
+	const markdown = /^!\[([^\]]*)\]\(([^)]+)\)$/.exec(line.trim());
+	if (!markdown || !IMAGE_EXTENSION.test(markdown[2]!.trim())) return null;
+	return {
+		path: markdown[2]!.trim(),
+		...(markdown[1]?.trim() ? { alt: markdown[1].trim() } : {}),
+		syntax: 'markdown',
+	};
+}
+
+function extractCoverImage(preface: string): { coverImage?: CoverImage; preface?: string } {
+	const lines = preface.split(/\r?\n/);
+	const index = lines.findIndex((line) => parseCoverEmbed(line) !== null);
+	if (index === -1) return { preface: preface || undefined };
+	const coverImage = parseCoverEmbed(lines[index]!)!;
+	lines.splice(index, 1);
+	const remaining = lines.join('\n').trim();
+	return { coverImage, preface: remaining || undefined };
+}
+
+function serializeCoverImage(cover: CoverImage): string {
+	if (cover.syntax === 'markdown') return `![${cover.alt ?? ''}](${cover.path})`;
+	return `![[${cover.path}${cover.size ? `|${cover.size}` : ''}]]`;
 }
 
 // ── Field Value Parsing ─────────────────────────────────────
@@ -198,7 +233,8 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 	const tags = normalizeStringList(data.tags);
 	const aliases = normalizeStringList(data.aliases);
 
-	const { h1, preface, sections: rawSections } = splitSections(content);
+	const { h1, preface: rawPreface, sections: rawSections } = splitSections(content);
+	const { coverImage, preface } = extractCoverImage(rawPreface);
 
 	const typeDef = schema.types[type];
 	const folder = typeDef?.folder ?? '';
@@ -258,7 +294,8 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 		folder,
 		tags,
 		aliases: aliases.length > 0 ? aliases : undefined,
-		preface: preface || undefined,
+		preface,
+		coverImage,
 		sections,
 		warnings,
 	};
@@ -333,6 +370,11 @@ export function serializeToMarkdown(folio: ParsedFolio, schema: ProjectSchema): 
 	// H1 title (display name — separate from filename). Each block below pushes
 	// its own leading blank line, so the H1 itself adds none.
 	lines.push(`# ${folio.title}`);
+
+	if (folio.coverImage) {
+		lines.push('');
+		lines.push(serializeCoverImage(folio.coverImage));
+	}
 
 	if (folio.preface) {
 		lines.push('');

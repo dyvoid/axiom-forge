@@ -7,6 +7,7 @@ import { ProseSection } from './ProseSection.js';
 import { MetaSection } from './MetaSection.js';
 import { FieldSection } from './FieldSection.js';
 import { BacklinksPanel } from './BacklinksPanel.js';
+import { CoverImage } from './CoverImage.js';
 import styles from './FolioReadView.module.css';
 
 interface FolioReadViewProps {
@@ -69,7 +70,7 @@ export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
 			)}
 
 			{/* Top Block Layout */}
-			{(hasProseData || hasMetaData) && (
+			{(hasProseData || hasMetaData || folio.coverImage) && (
 				<>
 					<div className={styles.divider} />
 					<div className={styles.topBlock}>
@@ -82,13 +83,18 @@ export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
 								/>
 							</div>
 						)}
-						{hasMetaData && (
+						{(hasMetaData || folio.coverImage) && (
 							<div className={styles.metaCol}>
-								<MetaSection 
-									name={metaSectionName!} 
-									data={folio.sections[metaSectionName!]!} 
-									schema={typeDef.sections[metaSectionName!]!} 
-								/>
+								{folio.coverImage && (
+									<CoverImage cover={folio.coverImage} folder={folio.folder} name={folio.name} />
+								)}
+								{hasMetaData && (
+									<MetaSection
+										name={metaSectionName!}
+										data={folio.sections[metaSectionName!]!}
+										schema={typeDef.sections[metaSectionName!]!}
+									/>
+								)}
 							</div>
 						)}
 					</div>

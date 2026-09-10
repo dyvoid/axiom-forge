@@ -161,6 +161,74 @@ describe('GET /api/folios/:folder/:name', () => {
 	});
 });
 
+describe('folio cover images', () => {
+	const imageBytes = Buffer.from([0x89, 0x50, 0x4e, 0x47]);
+
+	async function installCover(embed = '![[Images/portrait.png]]'): Promise<void> {
+		await mkdir(join(tmpDir, 'Images'), { recursive: true });
+		await writeFile(join(tmpDir, 'Images', 'portrait.png'), imageBytes);
+		const markdown = alphaFile('One', 'Aleph', 'One has a story.')
+			.replace('# One\n', `# One\n\n${embed}\n`);
+		await writeFile(join(tmpDir, 'Alphas', 'One.md'), markdown, 'utf-8');
+		app = await makeApp(tmpDir);
+	}
+
+	it('indexes and serves an explicitly pathed cover image', async () => {
+		await installCover();
+		const list = await request(app).get('/api/folios');
+		const one = list.body.find((f: { name: string }) => f.name === 'One');
+		expect(one.coverImage).toEqual({ path: 'Images/portrait.png', syntax: 'wikilink' });
+		const res = await request(app).get('/api/folios/Alphas/One/image');
+		expect(res.status).toBe(200);
+		expect(res.headers['content-type']).toContain('image/png');
+		expect(res.headers['x-content-type-options']).toBe('nosniff');
+	});
+
+	it('resolves a unique bare filename and warns when it becomes ambiguous', async () => {
+		await installCover('![[portrait.png]]');
+		expect((await request(app).get('/api/folios/Alphas/One/image')).status).toBe(200);
+		await mkdir(join(tmpDir, 'Other'), { recursive: true });
+		await writeFile(join(tmpDir, 'Other', 'portrait.png'), imageBytes);
+		app = await makeApp(tmpDir);
+		const folio = await request(app).get('/api/folios/Alphas/One');
+		expect(folio.body.warnings).toContain('Cover image "portrait.png" is ambiguous; use a vault-relative path');
+		expect((await request(app).get('/api/folios/Alphas/One/image')).status).toBe(404);
+	});
+
+	it('rejects cover paths outside the project', async () => {
+		await installCover('![[../outside.png]]');
+		const folio = await request(app).get('/api/folios/Alphas/One');
+		expect(folio.body.warnings).toContain('Cover image "../outside.png" resolves outside the project');
+		expect((await request(app).get('/api/folios/Alphas/One/image')).status).toBe(404);
+	});
+
+	it('uploads allowed images into Images with a collision-safe name', async () => {
+		await mkdir(join(tmpDir, 'Images'), { recursive: true });
+		await writeFile(join(tmpDir, 'Images', 'portrait.png'), imageBytes);
+		const res = await request(app)
+			.put('/api/folios/Alphas/One/image?filename=portrait.png')
+			.set('Content-Type', 'image/png')
+			.send(imageBytes);
+		expect(res.status).toBe(201);
+		expect(res.body.coverImage).toEqual({ path: 'Images/portrait_2.png', syntax: 'wikilink' });
+		await access(join(tmpDir, 'Images', 'portrait_2.png'));
+	});
+
+	it('can delete the image with the folio or preserve it', async () => {
+		await installCover();
+		const keep = await request(app).delete('/api/folios/Alphas/One');
+		expect(keep.status).toBe(200);
+		await access(join(tmpDir, 'Images', 'portrait.png'));
+
+		await writeFile(join(tmpDir, 'Alphas', 'One.md'),
+			alphaFile('One').replace('# One\n', '# One\n\n![[Images/portrait.png]]\n'), 'utf-8');
+		app = await makeApp(tmpDir);
+		const remove = await request(app).delete('/api/folios/Alphas/One?deleteCoverImage=true');
+		expect(remove.status).toBe(200);
+		await expect(access(join(tmpDir, 'Images', 'portrait.png'))).rejects.toThrow();
+	});
+});
+
 // ── PUT — in-place save ──────────────────────────────────────
 
 describe('PUT /api/folios/:folder/:name — in-place', () => {

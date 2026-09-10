@@ -189,6 +189,13 @@ const ParsedSectionSchema = z.object({
 	fields: z.record(z.string(), FieldValueSchema).optional(),
 });
 
+const CoverImageSchema = z.object({
+	path: z.string().min(1),
+	alt: z.string().optional(),
+	size: z.string().optional(),
+	syntax: z.enum(['wikilink', 'markdown']),
+});
+
 export const ParsedFolioSchema = z.object({
 	// `name` is the filename stem and is *server-owned* — derived from the
 	// title on save. Clients are not required to populate it (and on POST,
@@ -199,6 +206,8 @@ export const ParsedFolioSchema = z.object({
 	folder: z.string().min(1),
 	tags: z.array(z.string()),
 	aliases: z.array(z.string()).optional(),
+	preface: z.string().optional(),
+	coverImage: CoverImageSchema.optional(),
 	sections: z.record(z.string(), ParsedSectionSchema),
 	// `warnings` and `mtime` are server-side annotations, not user input —
 	// accept-and-ignore rather than reject if a client sends them back.

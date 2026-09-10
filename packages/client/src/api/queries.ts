@@ -90,8 +90,8 @@ export function useCreateFolio(options?: { navigateOnSuccess?: boolean }) {
 export function useDeleteFolio() {
 	const qc = useQueryClient();
 	return useMutation({
-		mutationFn: ({ folder, name }: { folder: string; name: string }) =>
-			deleteFolio(folder, name),
+		mutationFn: ({ folder, name, deleteCoverImage }: { folder: string; name: string; deleteCoverImage: boolean }) =>
+			deleteFolio(folder, name, deleteCoverImage),
 		onSuccess: (_, { folder, name }) => {
 			qc.removeQueries({ queryKey: ['folio', folder, name] });
 			qc.invalidateQueries({ queryKey: ['folios'] });

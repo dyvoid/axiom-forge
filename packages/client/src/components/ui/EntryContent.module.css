@@ -22,6 +22,36 @@
 
 /* ── card: stacked preview (search dropdown, Linked Mentions) ─────── */
 
+.cardLayout {
+	display: flex;
+	align-items: stretch;
+	gap: var(--sp-3);
+	min-width: 0;
+}
+
+.cardBody {
+	flex: 1;
+	min-width: 0;
+}
+
+.thumbnailFrame {
+	width: 52px;
+	min-height: 52px;
+	flex: 0 0 52px;
+	align-self: stretch;
+	border: 1px solid var(--border);
+	padding: var(--sp-0-5);
+	background: var(--bg-page);
+}
+
+.thumbnail {
+	display: block;
+	width: 100%;
+	height: 100%;
+	min-height: 48px;
+	object-fit: cover;
+}
+
 .cardHeader {
 	display: flex;
 	align-items: baseline;

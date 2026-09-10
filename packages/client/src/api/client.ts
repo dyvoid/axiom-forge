@@ -42,7 +42,7 @@ async function request<T>(path: string): Promise<T> {
 
 // ── Typed API methods ───────────────────────────────────
 
-import type { Config, ProjectSchema, FolioIndexRecord, ParsedFolio } from '@axiom-forge/shared';
+import type { Config, CoverImage, ProjectSchema, FolioIndexRecord, ParsedFolio } from '@axiom-forge/shared';
 
 export function fetchConfig(): Promise<Config> {
 	return request<Config>('/config');
@@ -135,9 +135,26 @@ export async function postFolio(
 	return res.json() as Promise<{ name: string; mtime: number; warnings: string[]; brokenLinks: BrokenLinkReport[] }>;
 }
 
-export async function deleteFolio(folder: string, name: string): Promise<void> {
+export function coverImageUrl(folder: string, name: string): string {
+	return `${BASE}/folios/${encodeURIComponent(folder)}/${encodeURIComponent(name)}/image`;
+}
+
+export async function uploadCoverImage(folder: string, name: string, file: File): Promise<CoverImage> {
 	const res = await fetch(
-		`${BASE}/folios/${encodeURIComponent(folder)}/${encodeURIComponent(name)}`,
+		`${coverImageUrl(folder, name)}?filename=${encodeURIComponent(file.name)}`,
+		{ method: 'PUT', headers: { 'Content-Type': file.type }, body: file },
+	);
+	if (!res.ok) {
+		const body = await res.text().catch(() => '');
+		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
+	}
+	const data = await res.json() as { coverImage: CoverImage };
+	return data.coverImage;
+}
+
+export async function deleteFolio(folder: string, name: string, deleteCoverImage = false): Promise<void> {
+	const res = await fetch(
+		`${BASE}/folios/${encodeURIComponent(folder)}/${encodeURIComponent(name)}?deleteCoverImage=${deleteCoverImage}`,
 		{ method: 'DELETE' },
 	);
 	if (!res.ok) {

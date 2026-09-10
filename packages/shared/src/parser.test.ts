@@ -76,10 +76,56 @@ function expectStructurallyEqual(a: ParsedFolio, b: ParsedFolio): void {
 	expect(b.folder).toEqual(a.folder);
 	expect(b.tags).toEqual(a.tags);
 	expect(b.aliases).toEqual(a.aliases);
+	expect(b.preface).toEqual(a.preface);
+	expect(b.coverImage).toEqual(a.coverImage);
 	expect(b.sections).toEqual(a.sections);
 }
 
 // ── Round-trip stability across field types ──────────────────
+
+describe('folio cover images', () => {
+	it('extracts the first Obsidian image embed from the preface and preserves its size', () => {
+		const parsed = parseMarkdown([
+			'---', 'type: Alpha', '---', '', '# Illustrated', '',
+			'Opening note.', '![[Images/portrait.png|300]]', '![[Images/detail.jpg]]', '',
+			'## Story', 'Text.', '',
+		].join('\n'), synthSchema);
+		expect(parsed.coverImage).toEqual({ path: 'Images/portrait.png', size: '300', syntax: 'wikilink' });
+		expect(parsed.preface).toBe('Opening note.\n![[Images/detail.jpg]]');
+	});
+
+	it('extracts standard Markdown image syntax with alt text', () => {
+		const parsed = parseMarkdown([
+			'---', 'type: Alpha', '---', '', '# Illustrated', '',
+			'![A bronze portrait](Images/portrait.webp)', '',
+		].join('\n'), synthSchema);
+		expect(parsed.coverImage).toEqual({
+			path: 'Images/portrait.webp', alt: 'A bronze portrait', syntax: 'markdown',
+		});
+		expect(parsed.preface).toBeUndefined();
+	});
+
+	it('ignores non-image embeds and images inside sections', () => {
+		const parsed = parseMarkdown([
+			'---', 'type: Alpha', '---', '', '# Unillustrated', '',
+			'![[Documents/source.pdf]]', '', '## Story', '![[Images/inline.gif]]', '',
+		].join('\n'), synthSchema);
+		expect(parsed.coverImage).toBeUndefined();
+		expect(parsed.preface).toBe('![[Documents/source.pdf]]');
+		expect(parsed.sections.Story?.content).toBe('![[Images/inline.gif]]');
+	});
+
+	it('round-trips cover data ahead of remaining preface content', () => {
+		const folio: ParsedFolio = {
+			name: 'Illustrated', title: 'Illustrated', type: 'Alpha', folder: 'Alphas', tags: [],
+			coverImage: { path: 'Images/portrait.jpeg', size: '420', syntax: 'wikilink' },
+			preface: 'Opening note.', sections: {},
+		};
+		const { second, markdown } = roundTrip(folio);
+		expectStructurallyEqual(folio, second);
+		expect(markdown).toContain('# Illustrated\n\n![[Images/portrait.jpeg|420]]\n\nOpening note.');
+	});
+});
 
 describe('parser round-trip — synthetic schema', () => {
 	it('round-trips a folio populating every field type', () => {

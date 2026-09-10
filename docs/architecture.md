@@ -31,11 +31,14 @@ The server exposes the following REST API:
 - `GET /api/folios/:folder/:name` - Returns a single parsed folio as structured JSON
 - `GET /api/search?q=` - Ranked search across titles, names, aliases, tags, and prose snippets
 - `GET /api/folios/:folder/:name/backlinks` - Returns folios linking to this target
+- `GET /api/folios/:folder/:name/image` - Resolves and serves the folio's cover embed with a strict image content type
+- `PUT /api/folios/:folder/:name/image?filename=` - Uploads an allowed image (maximum 10 MB) to the project `Images/` folder and returns its collision-safe vault path
+- `DELETE /api/folios/:folder/:name/image` - Deletes the image referenced by the folio's current cover embed
 - `GET /api/warnings` - Returns all parse warnings, grouped by folio
 - `POST /api/reload` - Rebuilds the in-memory index from disk and re-reads config + schema
 - `POST /api/folios/:folder` - Creates a new folio
 - `PUT /api/folios/:folder/:name` - Saves (and optionally renames) a folio. Validates `mtime` to prevent edit conflicts; on rename, atomically moves the file and rewrites every `[[Folder/Old_Name]]` wikilink across the project.
-- `DELETE /api/folios/:folder/:name` - Deletes a folio
+- `DELETE /api/folios/:folder/:name?deleteCoverImage=` - Deletes a folio and optionally its referenced cover image
 
 ### Rename & Link Rewriting
 If a folio's H1 title changes during an edit, the server computes the new filename. After renaming the file, it automatically rewrites any `[[Folder/Old_Name]]` wikilinks across the entire project to prevent dead links.

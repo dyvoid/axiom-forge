@@ -68,6 +68,14 @@ beats rows and cards whose height changes with their content — uneven heights 
 rhythm of a list far more visibly than a clipped tail breaks a single entry. Within a card the
 alias yields its space before the name does, since the name is what identifies the entry.
 
+Cover images follow the same two idioms. On a folio, the image sits above the metadata in the
+right column at its natural aspect ratio, inside a square-cornered parchment inset and one-pixel
+hairline frame; it is never cropped, filtered, rounded, or shadowed. Standard Markdown alt text
+becomes a centered italic caption. On preview cards, covers become small cropped thumbnails that
+help identify an unfamiliar entry. Index rows and inline entries remain text-only so images do not
+interrupt their alphabetical scanning rhythm. Missing images leave no placeholder; the folio's
+warning callout carries the error instead.
+
 Index column widths are **content-relative** (`clamp(9ch, 22%, 24ch)`), never a pixel width
 measured against whatever titles a particular project happens to contain. `ch` tracks the type
 size and the percentage tracks the viewport, so the column holds up across projects and zoom
