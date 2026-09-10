@@ -37,7 +37,7 @@ export function Landing(): JSX.Element {
 			<div className={styles.topCorners}>
 				<div className={styles.topLeft}>AXIOM · FORGE</div>
 				<div className={styles.topRight}>
-					{config.version ? `VOL. ${config.version.toUpperCase()} ` : ''}
+					{config.version ? `ACHIVE VOL. ${config.version.toUpperCase()} ` : ''}
 				</div>
 			</div>
 			<div className={styles.hero}>
