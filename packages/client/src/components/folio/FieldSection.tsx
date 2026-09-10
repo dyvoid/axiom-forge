@@ -45,16 +45,16 @@ export function FieldSection({ name, schema, data }: FieldSectionProps): JSX.Ele
 			return (
 				<section className={styles.section}>
 					<h2 className={styles.title}>{name}</h2>
-					<div className={styles.wrap}>
+					<dl className={styles.ledger}>
 						{validFields.map(([fName, fDef]) => (
 							<div key={fName} className={styles.field}>
-								<div className={styles.label}>{fName}</div>
-								<div className={styles.value}>
+								<dt className={styles.label}>{fName}</dt>
+								<dd className={styles.value}>
 									<FieldValueRenderer value={data.fields![fName]} type={fDef.type} />
-								</div>
+								</dd>
 							</div>
 						))}
-					</div>
+					</dl>
 				</section>
 			);
 		}

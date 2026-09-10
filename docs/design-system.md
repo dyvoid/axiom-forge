@@ -43,7 +43,7 @@ To preserve the print aesthetic, we eschew default browser chrome:
 ### Empty States & Grid Modifiers
 The layout engine implements specific aesthetic rules based on content density:
 1. **Empty Sections**: If a structured section (like Meta or Relationships) contains only empty fields, its header is omitted entirely from rendering.
-2. **List Layouts**: Within structured sections (`MetaSection`, `FieldSection`), list-type fields (e.g. `wikilink-list`) with exactly 1 item use the compact inline 2-column layout (just like scalar fields). Only lists with >1 item render in the stacked, wrapping layout.
+2. **List Layouts**: Full-width structured sections use a label/value ledger; list values wrap within their value column. In the narrower `MetaSection`, lists with more than one item stack below their label.
 3. **Wikilinks**: Selected wikilink chips show a type glyph in `--color-accent` and the display name. The literal `[ ]` markdown brackets around wikilinks are intentionally omitted from the UI for a cleaner visual layout. There is no strikethrough styling for dead links (they are identified by tooltips and warnings in edit mode).
 
 ### Entry Presentation: Two Idioms

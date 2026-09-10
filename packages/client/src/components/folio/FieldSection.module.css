@@ -12,10 +12,11 @@
 	color: var(--text-primary);
 }
 
-.grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-	gap: var(--sp-5);
+.ledger {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-4);
+	margin: 0;
 }
 
 .wrap {
@@ -25,9 +26,11 @@
 }
 
 .field {
-	display: flex;
-	flex-direction: column;
-	gap: var(--sp-1);
+	min-width: 0;
+	display: grid;
+	grid-template-columns: minmax(140px, 0.28fr) minmax(0, 1fr);
+	gap: var(--sp-5);
+	align-items: baseline;
 }
 
 /* Eyebrow voice — the single structural label voice across the folio
@@ -45,14 +48,17 @@
 }
 
 .value {
+	min-width: 0;
+	margin: 0;
 	font-family: var(--ff-body);
 	font-size: var(--fs-body);
 	color: var(--text-primary);
 }
 
-/* ── Responsive: single-column grid on narrow screens ────── */
+/* ── Responsive: stack labels above values on narrow screens ── */
 @media (max-width: 600px) {
-	.grid {
+	.field {
 		grid-template-columns: 1fr;
+		gap: var(--sp-1);
 	}
 }
