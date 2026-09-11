@@ -91,8 +91,10 @@ my-world/
 │   └── Bob.md
 ├── Locations/
 │   └── Crete.md
-└── Events/
-    └── Battle_of_Kea.md
+├── Events/
+│   └── Battle_of_Kea.md
+└── Images/              # optional — cover images uploaded from the editor
+    └── alice_portrait.png
 ```
 
 ### `config.json`
