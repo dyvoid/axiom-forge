@@ -70,8 +70,8 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 						nextIndex = currentIndex + 1;
 					}
 
-					if (nextIndex !== currentIndex) {
-						const nextFolio = activeList[nextIndex];
+					const nextFolio = activeList[nextIndex];
+					if (nextIndex !== currentIndex && nextFolio) {
 						navigate(`/folio/${activeSchema.folder}/${nextFolio.name}`);
 					}
 				} else {

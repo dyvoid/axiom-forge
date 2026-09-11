@@ -59,8 +59,9 @@ export function TagFilter({ availableTags, selectedTags, onChange }: TagFilterPr
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent) {
-		if (e.key === 'Backspace' && query === '' && selectedTags.length > 0) {
-			removeTag(selectedTags[selectedTags.length - 1]);
+		const lastTag = selectedTags[selectedTags.length - 1];
+		if (e.key === 'Backspace' && query === '' && lastTag) {
+			removeTag(lastTag);
 			return;
 		}
 

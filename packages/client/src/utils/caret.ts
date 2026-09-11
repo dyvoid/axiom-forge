@@ -1,36 +1,41 @@
-// Standard properties to copy to the shadow div for accurate measurement
+// Standard properties to copy to the shadow div for accurate measurement.
+// Spelled as CSS property names rather than camelCase JS keys so they can go
+// through getPropertyValue/setProperty, which is the only typed way to reach a
+// vendor-prefixed property (-moz-tab-size) — CSSStyleDeclaration declares no
+// named key for it, and indexing it by string falls back to a numeric-only
+// index signature.
 const properties = [
 	'direction',
-	'boxSizing',
+	'box-sizing',
 	'width',
 	'height',
-	'overflowX',
-	'overflowY',
-	'borderTopWidth',
-	'borderRightWidth',
-	'borderBottomWidth',
-	'borderLeftWidth',
-	'borderStyle',
-	'paddingTop',
-	'paddingRight',
-	'paddingBottom',
-	'paddingLeft',
-	'fontStyle',
-	'fontVariant',
-	'fontWeight',
-	'fontStretch',
-	'fontSize',
-	'fontSizeAdjust',
-	'lineHeight',
-	'fontFamily',
-	'textAlign',
-	'textTransform',
-	'textIndent',
-	'textDecoration',
-	'letterSpacing',
-	'wordSpacing',
-	'tabSize',
-	'MozTabSize',
+	'overflow-x',
+	'overflow-y',
+	'border-top-width',
+	'border-right-width',
+	'border-bottom-width',
+	'border-left-width',
+	'border-style',
+	'padding-top',
+	'padding-right',
+	'padding-bottom',
+	'padding-left',
+	'font-style',
+	'font-variant',
+	'font-weight',
+	'font-stretch',
+	'font-size',
+	'font-size-adjust',
+	'line-height',
+	'font-family',
+	'text-align',
+	'text-transform',
+	'text-indent',
+	'text-decoration',
+	'letter-spacing',
+	'word-spacing',
+	'tab-size',
+	'-moz-tab-size',
 ] as const;
 
 interface Coordinates {
@@ -56,8 +61,7 @@ export function getCaretCoordinates(element: HTMLTextAreaElement, position: numb
 	style.visibility = 'hidden';
 
 	properties.forEach((prop) => {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		style[prop as any] = computed[prop as any];
+		style.setProperty(prop, computed.getPropertyValue(prop));
 	});
 
 	// Handle Firefox textarea bug where scrolling affects calculation

@@ -44,13 +44,12 @@ or field values from the sample project. See `schema.test.ts` for the establishe
 ## What the checks do not cover
 
 `npm test` runs Vitest, which transpiles without typechecking, and `npm run lint` runs ESLint,
-markdownlint, and `check-repo.mjs`. Neither typechecks `packages/client` — that happens only in
-`npm run build`, via `vite build`, which does not typecheck either.
+markdownlint, and `check-repo.mjs`. Neither typechecks anything, and `vite build` does not either.
 
-So `npx tsc -p packages/client --noEmit` is not part of any check, and it currently reports three
-errors across three files, all unchecked index or array accesses: `Sidebar.tsx`, `TagFilter.tsx`,
-`caret.ts`. `packages/shared` and `packages/server` are typechecked by their own `tsc` builds and
-are clean.
+Typechecking is its own command: **`npm run typecheck`** (`tsc -p packages/client --noEmit`), which
+CI runs between Lint and Build. `packages/shared` and `packages/server` need no entry there — their
+own `tsc` builds typecheck them, and `npm run build` runs both.
 
-Run that command before and after a client change and compare the counts, rather than reading a
-non-empty result as something the change introduced.
+All three packages are currently clean. Before this became a gate the client carried standing
+errors that nothing caught, so the count drifted and the figure recorded here went stale twice.
+Keep it at zero rather than re-introducing a tolerated baseline.
