@@ -30,6 +30,22 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 		if (creating) nameInputRef.current?.focus();
 	}, [creating]);
 
+	// Collapse the form back to the button when the click lands outside it.
+	// Capture phase, so it runs before a click elsewhere navigates away; the
+	// confirm button lives inside the form and so does not trigger this.
+	useEffect(() => {
+		if (!creating) return;
+		function handlePointerDown(e: PointerEvent): void {
+			const target = e.target as HTMLElement;
+			if (!target.closest(`.${styles.newEntryForm}`)) {
+				setCreating(false);
+				setNewName('');
+			}
+		}
+		window.addEventListener('pointerdown', handlePointerDown, true);
+		return () => window.removeEventListener('pointerdown', handlePointerDown, true);
+	}, [creating]);
+
 	const byType = useMemo(() => {
 		const acc: Record<string, typeof folios> = {};
 		if (folios) {
@@ -197,6 +213,14 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 							aria-label="Create entry"
 						>
 							↵
+						</button>
+						<button
+							type="button"
+							className={styles.newEntryCancel}
+							onClick={() => { setCreating(false); setNewName(''); }}
+							aria-label="Cancel"
+						>
+							✕
 						</button>
 					</div>
 				) : activeSchema ? (

@@ -24,6 +24,22 @@ export function CategoryIndexView(): JSX.Element {
 		if (creating) inputRef.current?.focus();
 	}, [creating]);
 
+	// Collapse the form back to the button when the click lands outside it.
+	// Capture phase, so it runs before a click elsewhere navigates away; the
+	// confirm and cancel buttons live inside the form and so do not trigger this.
+	useEffect(() => {
+		if (!creating) return;
+		function handlePointerDown(e: PointerEvent): void {
+			const target = e.target as HTMLElement;
+			if (!target.closest(`.${styles.addForm}`)) {
+				setCreating(false);
+				setNewName('');
+			}
+		}
+		window.addEventListener('pointerdown', handlePointerDown, true);
+		return () => window.removeEventListener('pointerdown', handlePointerDown, true);
+	}, [creating]);
+
 	const categoryFolios = folios?.filter(f => f.folder === folder) ?? [];
 	
 	const allTags = Array.from(new Set(categoryFolios.flatMap(f => f.tags || []))).sort();

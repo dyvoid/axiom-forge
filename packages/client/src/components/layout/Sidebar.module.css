@@ -133,6 +133,10 @@
 
 .newEntryInput {
 	flex: 1;
+	/* A flex item defaults to min-width:auto, and an input's intrinsic width is
+	   ~200px — wider than this sidebar — so without this the input refuses to
+	   shrink and pushes the confirm/cancel buttons outside the panel. */
+	min-width: 0;
 	background: transparent;
 	border: 0;
 	border-bottom: 1px solid var(--border);
@@ -152,7 +156,8 @@
 	border-bottom-color: var(--accent-rust);
 }
 
-.newEntryConfirm {
+.newEntryConfirm,
+.newEntryCancel {
 	background: transparent;
 	font-family: var(--ff-body);
 	font-size: var(--fs-body);
@@ -164,6 +169,10 @@
 
 .newEntryConfirm:hover:not(:disabled) {
 	color: var(--accent-rust);
+}
+
+.newEntryCancel:hover {
+	color: var(--text-primary);
 }
 
 .newEntryConfirm:disabled {
