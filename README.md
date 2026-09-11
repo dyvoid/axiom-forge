@@ -9,9 +9,9 @@ A schema-driven, local-first encyclopedia and worldbuilding tool. Your world liv
 
 No database. No cloud. No lock-in. The Markdown files *are* the source of truth — open them in any editor, commit them to Git, sync them however you like.
 
-| Landing | Grand Index | Folio |
-|---|---|---|
-| ![Landing page](docs/screenshots/landing.jpg) | ![Grand Index](docs/screenshots/index.jpg) | ![Folio detail](docs/screenshots/folio.jpg) |
+| Landing | Grand Index | Folio | Folio Edit |
+|---|---|---|---|
+| ![Landing page](docs/screenshots/landing.jpg) | ![Grand Index](docs/screenshots/index.jpg) | ![Folio detail](docs/screenshots/folio.jpg) | ![Folio edit](docs/screenshots/folio-edit.jpg) |
 
 ## Why
 
