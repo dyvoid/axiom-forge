@@ -31,7 +31,7 @@ export function WikiLinkPicker({
 	autoFocus,
 	onChange,
 }: WikiLinkPickerProps): JSX.Element {
-	const { schema } = useProject();
+	const { schemaIndex } = useProject();
 	const { data: folios } = useFolios();
 
 	const [query, setQuery] = useState('');
@@ -108,8 +108,7 @@ export function WikiLinkPicker({
 
 	// Resolve icon for a folder
 	function folderIcon(folder: string): string {
-		const entry = Object.entries(schema.types).find(([, def]) => def.folder === folder);
-		return entry?.[1].icon || 'circle';
+		return schemaIndex.typeDefForFolder(folder)?.icon || 'circle';
 	}
 
 	function parseRaw(raw: string): WikiLink | null {

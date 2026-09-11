@@ -7,7 +7,7 @@ import { Icon } from '../ui/Icon.js';
 import styles from './WikiLinkChip.module.css';
 
 export function WikiLinkChip({ link }: { link: WikiLink }): JSX.Element {
-	const { schema } = useProject();
+	const { schemaIndex } = useProject();
 	const folioMap = useFolioMap();
 
 	const target = folioMap.get(`${link.folder}/${link.name}`);
@@ -15,10 +15,10 @@ export function WikiLinkChip({ link }: { link: WikiLink }): JSX.Element {
 	const display = link.alias || target?.title || link.name.replace(/_/g, ' ');
 
 	// Determine icon based on the folder->type mapping
-	const iconName = useMemo(() => {
-		const targetType = Object.entries(schema.types).find(([, def]) => def.folder === link.folder)?.[1];
-		return targetType?.icon || 'circle';
-	}, [schema, link.folder]);
+	const iconName = useMemo(
+		() => schemaIndex.typeDefForFolder(link.folder)?.icon || 'circle',
+		[schemaIndex, link.folder],
+	);
 
 	if (isDead) {
 		return (

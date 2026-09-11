@@ -1,4 +1,5 @@
 export * from './schema.js';
+export * from './schemaIndex.js';
 export * from './types.js';
 export * from './parser.js';
 export * from './wikilink.js';

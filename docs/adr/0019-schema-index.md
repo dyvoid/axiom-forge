@@ -1,7 +1,7 @@
 # 19. Schema Index
 
 **Date:** 2026-08-26
-**Status:** Accepted — not yet implemented
+**Status:** Accepted — implemented
 
 ## Context
 
@@ -80,3 +80,26 @@ than two; settle that at build time.
   plumbing there; the server holds it as a field alongside `schema`.
 - **Not a performance change.** The scans are over a handful of types. This is about locality,
   not speed — do not justify it as an optimisation.
+
+## Implementation
+
+`packages/shared/src/schemaIndex.ts`, tested in `schemaIndex.test.ts`. Built in
+`ProjectStore.load()`/`reload()` behind `getSchemaIndex()`, and in `ProjectContext` as
+`schemaIndex` alongside `schema`. Three deviations from the Decision:
+
+- **`sectionsInOrder` returns `{ name, def }`, not classified sections.** The Decision left this
+  open. Every consumer that calls `classifySection` does so in a leaf component holding one
+  `SectionDef` (`FieldSection`, `SectionBlock`), never over the list — so classifying inside the
+  index would be computed and discarded at both list call sites. Sections carry their name
+  because a `SectionDef` alone cannot locate its data in a folio.
+- **`typeKeys` and `folders` are exposed as declaration-order arrays.** The `Sidebar`
+  category-navigation handler steps to an adjacent category, which is an ordinal question the
+  listed lookups cannot answer. Navigating over `folders` directly is what retires its two
+  standing type errors.
+- **The folder bijection throws.** `createSchemaIndex` raises `DuplicateFolderError` when two
+  types claim one folder. Load is the only point where this can be reported against the file the
+  user can fix; the client surfaces it through `ProjectContext`'s existing failure branch rather
+  than throwing out of render.
+
+Role lookup is first-wins when a type declares two sections with the same role. `SectionDefSchema`
+does not forbid that, and the index does not start rejecting it.

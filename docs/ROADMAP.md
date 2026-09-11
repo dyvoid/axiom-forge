@@ -37,13 +37,12 @@ ADR-0005 contributes the Electron native dialog as one implementation. See
 Internal quality work: no user-visible feature, but each one lowers the cost of the features
 above. Same status axis as the table above — `Proposed` means the design is recorded, not agreed.
 
-These two were resolved separately on 2026-08-30. A1 is Accepted and is the next build, as
-ADR-0004's prerequisite. A2 stays Proposed and is revisited after ADR-0013, which reshapes the
-same `load`/`reload` surface it would reorganize. Each ADR carries the reasoning.
+A1 has been built and moves to [Implemented / Resolved](#implemented--resolved) below. A2 stays
+Proposed and is revisited after ADR-0013, which reshapes the same `load`/`reload` surface it would
+reorganize. Its ADR carries the reasoning.
 
 | # | Change | Status | ADR | Notes |
 |---|---|---|---|---|
-| A1 | Schema Index | Accepted | [ADR-0019](adr/0019-schema-index.md) | Folder → type and role → section lookups are re-derived at 10 call sites across both packages, 2 of them standing type errors. Effectively a prerequisite for #1: ADR-0004's schema-load validation must resolve `target` folders to types to check an `inverse` path |
 | A2 | Extract the Folio Index from ProjectStore | Proposed — deferred | [ADR-0020](adr/0020-folio-index-module.md) | 7 public `ProjectStore` methods exist only to maintain the in-memory array and have no external callers. Absorbs the former `Map`-lookup housekeeping item. Nothing waits on it and no failure mode behind it; sequence it *after* ADR-0013, which reshapes the same `load`/`reload` surface |
 
 ## Implemented / Resolved
@@ -53,6 +52,7 @@ part of the active sequence.
 
 | Feature | Status | ADR | Notes |
 |---|---|---|---|
+| Schema Index | Accepted | [ADR-0019](adr/0019-schema-index.md) | `createSchemaIndex` in `shared`; folder ↔ type and role → section lookups built once per schema load, held by `ProjectStore` and `ProjectContext`. Unblocks #1 |
 | Folio Cover Image | Accepted | [ADR-0018](adr/0018-folio-cover-image.md) | Obsidian-native preface embeds, secure vault-path serving, uploads, optional shared-image deletion, infobox display, and preview-card thumbnails |
 | Consolidate Folio Validation Rules | Accepted | [ADR-0009](adr/0009-consolidate-folio-validation-rules.md) | One `validateAgainstSchema` engine; `mode` selects severity, read stays lenient |
 | Section Kind as a Discriminated Union | Accepted | [ADR-0021](adr/0021-section-kind-union.md) | `classifySection` + shared `isFieldValueEmpty`; section-level `type` narrowed at the type level |

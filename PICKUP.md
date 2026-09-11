@@ -15,13 +15,12 @@ Nothing.
 
 ## Next Up
 
-1. **[ADR-0019] Schema Index** — Accepted 2026-08-30, not yet built. **This is the next build.**
-   ADR-0004 below cannot validate an `inverse` path without resolving `target` folders to types,
-   which is what this index is. Ten call sites collapse; two standing `packages/client` type
-   errors go with them. Unit-testable in the existing tier-1 `schema.test.ts`.
-2. **[ADR-0004] Bidirectional / Inverse Fields** — Accepted. Its two Open Items (deletion,
-   dangling targets) are decidable at build time, not user-blocked.
-3. **[ADR-0013] Project Scaffolding** — the only backlog item that changes who can adopt the
+1. **[ADR-0004] Bidirectional / Inverse Fields** — Accepted, and now unblocked: ADR-0019 shipped,
+   so `createSchemaIndex().typeKeyForFolder()` is available for the schema-load validation that
+   must resolve a `target` folder to a type before it can check an `inverse` path.
+   **This is the next build.** Its two Open Items (deletion, dangling targets) are decidable at
+   build time, not user-blocked.
+2. **[ADR-0013] Project Scaffolding** — the only backlog item that changes who can adopt the
    tool, and as of 2026-08-30 it also owns the onboarding surface for ADR-0002 and ADR-0005.
    Skeleton ADR: next step is a design brainstorm, not a build.
 

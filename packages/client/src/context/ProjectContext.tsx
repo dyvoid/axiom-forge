@@ -7,14 +7,16 @@
  * client until a full page reload.
  */
 
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import type { Config, ProjectSchema } from '@axiom-forge/shared';
+import { createSchemaIndex, type Config, type ProjectSchema, type SchemaIndex } from '@axiom-forge/shared';
 import { fetchConfig, fetchSchema } from '../api/client.js';
 
 interface ProjectContextValue {
 	config: Config;
 	schema: ProjectSchema;
+	/** Pre-computed schema lookups (ADR-0019) — rebuilt whenever the schema refetches. */
+	schemaIndex: SchemaIndex;
 }
 
 const ProjectContext = createContext<ProjectContextValue | null>(null);
@@ -45,6 +47,19 @@ export function ProjectProvider({ children }: { children: ReactNode }): JSX.Elem
 	const configQuery = useConfigQuery();
 	const schemaQuery = useSchemaQuery();
 
+	// A schema that can't be indexed (two types on one folder) is a project the
+	// app cannot serve, so it surfaces through the same failure branch as a
+	// fetch error rather than throwing out of render.
+	const schema = schemaQuery.data;
+	const indexed = useMemo(() => {
+		if (!schema) return null;
+		try {
+			return { index: createSchemaIndex(schema), error: null };
+		} catch (err) {
+			return { index: null, error: err };
+		}
+	}, [schema]);
+
 	if (configQuery.isLoading || schemaQuery.isLoading) {
 		return (
 			<div style={{
@@ -63,8 +78,8 @@ export function ProjectProvider({ children }: { children: ReactNode }): JSX.Elem
 		);
 	}
 
-	const error = configQuery.error ?? schemaQuery.error;
-	if (error || !configQuery.data || !schemaQuery.data) {
+	const error = configQuery.error ?? schemaQuery.error ?? indexed?.error;
+	if (error || !configQuery.data || !schemaQuery.data || !indexed?.index) {
 		const message = error instanceof Error ? error.message : String(error ?? 'Unknown error');
 		return (
 			<div style={{
@@ -81,7 +96,9 @@ export function ProjectProvider({ children }: { children: ReactNode }): JSX.Elem
 	}
 
 	return (
-		<ProjectContext.Provider value={{ config: configQuery.data, schema: schemaQuery.data }}>
+		<ProjectContext.Provider
+			value={{ config: configQuery.data, schema: schemaQuery.data, schemaIndex: indexed.index }}
+		>
 			{children}
 		</ProjectContext.Provider>
 	);

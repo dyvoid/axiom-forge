@@ -16,7 +16,7 @@ interface FolioReadViewProps {
 
 export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
 	const navigate = useNavigate();
-	const { schema } = useProject();
+	const { schema, schemaIndex } = useProject();
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -40,21 +40,16 @@ export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
 	}
 
 	// 1. Find roles
-	let proseSectionName: string | undefined;
-	let metaSectionName: string | undefined;
-
-	for (const [sName, sDef] of Object.entries(typeDef.sections)) {
-		if (sDef.role === 'prose') proseSectionName = sName;
-		if (sDef.role === 'meta') metaSectionName = sName;
-	}
+	const proseSectionName = schemaIndex.proseSection(folio.type)?.name;
+	const metaSectionName = schemaIndex.metaSection(folio.type)?.name;
 
 	const hasProseData = proseSectionName && folio.sections[proseSectionName];
 	const hasMetaData = metaSectionName && folio.sections[metaSectionName];
 
 	// 2. Identify remaining sections
-	const remainingSections = Object.entries(typeDef.sections).filter(
-		([sName]) => sName !== proseSectionName && sName !== metaSectionName
-	);
+	const remainingSections = schemaIndex
+		.sectionsInOrder(folio.type)
+		.filter((s) => s.name !== proseSectionName && s.name !== metaSectionName);
 
 	return (
 		<div className={styles.container}>
@@ -104,7 +99,7 @@ export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
 
 			{/* Remaining Sections (Full Width) */}
 			<div className={styles.remaining}>
-				{remainingSections.map(([sName, sDef]) => {
+				{remainingSections.map(({ name: sName, def: sDef }) => {
 					const data = folio.sections[sName];
 					if (!data) return null;
 					return (

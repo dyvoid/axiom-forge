@@ -56,7 +56,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 		setDirty(false);
 	};
 	const { data: folios } = useFolios();
-	const { schema } = useProject();
+	const { schemaIndex } = useProject();
 	const createStub = useCreateFolio({ navigateOnSuccess: false });
 	const createAndEdit = useCreateFolio({ navigateOnSuccess: true });
 
@@ -132,26 +132,26 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	};
 
 	function handleCreateStub(folder: string, name: string): void {
-		const entry = Object.entries(schema.types).find(([, def]) => def.folder === folder);
-		if (!entry) return;
-		setCreateError(null);
-		createStub.mutate(
-			{
-				folder,
-				folio: { name, title: name.replace(/_/g, ' '), type: entry[0], folder, tags: [], sections: {} },
-			},
-			{ onError: onCreateError },
-		);
+		createMissingFolio(createStub, folder, name);
 	}
 
 	function handleCreateAndEdit(folder: string, name: string): void {
-		const entry = Object.entries(schema.types).find(([, def]) => def.folder === folder);
-		if (!entry) return;
+		createMissingFolio(createAndEdit, folder, name);
+	}
+
+	/** Create the folio behind an unresolved wikilink; the two callers differ only in whether they navigate to it. */
+	function createMissingFolio(
+		mutation: typeof createStub,
+		folder: string,
+		name: string,
+	): void {
+		const typeKey = schemaIndex.typeKeyForFolder(folder);
+		if (!typeKey) return;
 		setCreateError(null);
-		createAndEdit.mutate(
+		mutation.mutate(
 			{
 				folder,
-				folio: { name, title: name.replace(/_/g, ' '), type: entry[0], folder, tags: [], sections: {} },
+				folio: { name, title: name.replace(/_/g, ' '), type: typeKey, folder, tags: [], sections: {} },
 			},
 			{ onError: onCreateError },
 		);
@@ -160,7 +160,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 	const backTo = `/folio/${encodeURIComponent(folio.folder)}/${encodeURIComponent(folio.name)}`;
 
 	// Build the section list in schema declaration order.
-	const sections = Object.entries(typeDef.sections);
+	const sections = schemaIndex.sectionsInOrder(folio.type);
 
 	return (
 		<div className={styles.container}>
@@ -330,7 +330,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 			<div className={styles.divider} />
 
 			{/* Sections */}
-			{sections.map(([sectionName, sectionDef], idx) => (
+			{sections.map(({ name: sectionName, def: sectionDef }, idx) => (
 				<SectionBlock
 					key={sectionName}
 					ordinal={toRoman(idx + 1)}

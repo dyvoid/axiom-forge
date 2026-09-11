@@ -11,7 +11,7 @@ import { useProject } from '../../context/ProjectContext.js';
 
 export function GrandIndexView(): JSX.Element {
 	const { data: folios, isLoading } = useFolios();
-	const { schema } = useProject();
+	const { schemaIndex } = useProject();
 	const [query, setQuery] = useState('');
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -111,8 +111,7 @@ export function GrandIndexView(): JSX.Element {
 							<h2 className={styles.letterHeader}>{letter}</h2>
 							<div className={styles.letterList}>
 								{grouped[letter]!.map(f => {
-									const typeDef = Object.values(schema.types).find(t => t.folder === f.folder);
-									const icon = typeDef?.icon || 'circle';
+									const icon = schemaIndex.typeDefForFolder(f.folder)?.icon || 'circle';
 									return (
 										<Link
 											key={f.id}

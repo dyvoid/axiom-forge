@@ -16,12 +16,11 @@ interface Props {
  * an inline WikiLinkPicker for adding more.
  */
 export function WikilinkListField({ value, target, onChange, ariaLabel }: Props): JSX.Element {
-	const { schema } = useProject();
+	const { schemaIndex } = useProject();
 
 	// Resolve icon for a folder
 	function folderIcon(folder: string): string {
-		const entry = Object.entries(schema.types).find(([, def]) => def.folder === folder);
-		return entry?.[1].icon || 'circle';
+		return schemaIndex.typeDefForFolder(folder)?.icon || 'circle';
 	}
 
 	return (

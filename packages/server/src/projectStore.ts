@@ -5,6 +5,7 @@ import {
 	ProjectSchemaSchema,
 	ParsedFolioSchema,
 	collectBrokenLinks,
+	createSchemaIndex,
 	displayNameToFilename,
 	extractAllLinks,
 	filenameToDisplayName,
@@ -16,6 +17,7 @@ import {
 	type Config,
 	type CoverImage,
 	type ProjectSchema,
+	type SchemaIndex,
 	type FolioIndexRecord,
 	type ParsedFolio,
 	type WikiLink,
@@ -76,6 +78,7 @@ interface PlannedLinkRewrite {
 export class ProjectStore {
 	private config: Config | null = null;
 	private schema: ProjectSchema | null = null;
+	private schemaIndex: SchemaIndex | null = null;
 	private folios: InternalFolioRecord[] = [];
 	private nextId = 1;
 	/** Serializes all mutating operations so concurrent writes can't interleave. */
@@ -91,6 +94,7 @@ export class ProjectStore {
 
 		this.config = await this.loadJson('config.json', ConfigSchema.parse);
 		this.schema = await this.loadJson('schema.json', ProjectSchemaSchema.parse);
+		this.schemaIndex = createSchemaIndex(this.schema);
 
 		console.log(
 			`  • config: "${this.config.name}"`,
@@ -111,6 +115,11 @@ export class ProjectStore {
 	getSchema(): ProjectSchema {
 		if (!this.schema) throw new Error('ProjectStore not loaded.');
 		return this.schema;
+	}
+
+	getSchemaIndex(): SchemaIndex {
+		if (!this.schemaIndex) throw new Error('ProjectStore not loaded.');
+		return this.schemaIndex;
 	}
 
 	/** Return all folio index records (for the sidebar). */
@@ -222,11 +231,9 @@ export class ProjectStore {
 
 	/** Compute a snippet from a parsed folio (first paragraph of prose, ≤120 chars). */
 	deriveSnippet(parsed: ParsedFolio): string | undefined {
-		const typeDef = this.getSchema().types[parsed.type];
-		if (!typeDef) return undefined;
-		const proseSectionName = Object.entries(typeDef.sections).find(([, def]) => def.role === 'prose')?.[0];
-		if (!proseSectionName) return undefined;
-		const proseContent = parsed.sections[proseSectionName]?.content;
+		const prose = this.getSchemaIndex().proseSection(parsed.type);
+		if (!prose) return undefined;
+		const proseContent = parsed.sections[prose.name]?.content;
 		if (!proseContent) return undefined;
 		const firstParagraph = proseContent
 			.split(/\n\s*\n/)
@@ -420,9 +427,8 @@ export class ProjectStore {
 	async createFolio(folder: string, folio: ParsedFolio): Promise<CreateResult> {
 		return this.writeMutex.runExclusive(async () => {
 			const schema = this.getSchema();
-			const typeEntry = Object.entries(schema.types).find(([, t]) => t.folder === folder);
-			if (!typeEntry) throw new BadRequestError(`Unknown folder: ${folder}`);
-			const [typeKey] = typeEntry;
+			const typeKey = this.getSchemaIndex().typeKeyForFolder(folder);
+			if (!typeKey) throw new BadRequestError(`Unknown folder: ${folder}`);
 
 			this.validateForWrite(folio, schema);
 
@@ -478,6 +484,7 @@ export class ProjectStore {
 	async reload(): Promise<void> {
 		this.config = await this.loadJson('config.json', ConfigSchema.parse);
 		this.schema = await this.loadJson('schema.json', ProjectSchemaSchema.parse);
+		this.schemaIndex = createSchemaIndex(this.schema);
 		this.folios = [];
 		this.nextId = 1;
 		await this.buildFolioIndex();

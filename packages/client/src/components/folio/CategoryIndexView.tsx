@@ -11,7 +11,7 @@ import styles from './CategoryIndexView.module.css';
 
 export function CategoryIndexView(): JSX.Element {
 	const { folder } = useParams<{ folder: string }>();
-	const { schema } = useProject();
+	const { schemaIndex } = useProject();
 	const { data: folios, isLoading } = useFolios();
 	const createFolio = useCreateFolio();
 	const [creating, setCreating] = useState(false);
@@ -54,9 +54,8 @@ export function CategoryIndexView(): JSX.Element {
 
 	if (isLoading) return <div className={styles.container}>Loading index...</div>;
 
-	const typeDefEntry = Object.entries(schema.types).find(([, def]) => def.folder === folder);
-	const typeName = typeDefEntry ? typeDefEntry[0] : folder;
-	const typeDef = typeDefEntry ? typeDefEntry[1] : null;
+	const typeName = (folder && schemaIndex.typeKeyForFolder(folder)) || folder;
+	const typeDef = (folder && schemaIndex.typeDefForFolder(folder)) || null;
 
 	function handleCreateSubmit(): void {
 		const trimmed = newName.trim();

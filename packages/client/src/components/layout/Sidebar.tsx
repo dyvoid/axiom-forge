@@ -6,7 +6,7 @@ import styles from './Sidebar.module.css';
 import { Icon } from '../ui/Icon.js';
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Element {
-	const { schema } = useProject();
+	const { schema, schemaIndex } = useProject();
 	const { data: folios } = useFolios();
 	const { folder: routeFolder, name: routeName } = useParams<{ folder?: string, name?: string }>();
 	const navigate = useNavigate();
@@ -19,12 +19,12 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 
 	useEffect(() => {
 		if (routeFolder) {
-			const typeKey = Object.entries(schema.types).find(([, def]) => def.folder === routeFolder)?.[0];
+			const typeKey = schemaIndex.typeKeyForFolder(routeFolder);
 			if (typeKey) setActiveType(typeKey);
 		} else {
 			setActiveType('');
 		}
-	}, [routeFolder, schema.types]);
+	}, [routeFolder, schemaIndex]);
 
 	useEffect(() => {
 		if (creating) nameInputRef.current?.focus();
@@ -76,19 +76,19 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 					}
 				} else {
 					// Navigate between categories
-					const typeKeys = Object.keys(schema.types);
-					const currentIndex = typeKeys.findIndex(k => schema.types[k].folder === routeFolder);
+					const { folders } = schemaIndex;
+					const currentIndex = folders.indexOf(routeFolder);
 					if (currentIndex === -1) return;
 
 					let nextIndex = currentIndex;
 					if (e.key === 'ArrowUp' && currentIndex > 0) {
 						nextIndex = currentIndex - 1;
-					} else if (e.key === 'ArrowDown' && currentIndex < typeKeys.length - 1) {
+					} else if (e.key === 'ArrowDown' && currentIndex < folders.length - 1) {
 						nextIndex = currentIndex + 1;
 					}
 
-					if (nextIndex !== currentIndex) {
-						const nextFolder = schema.types[typeKeys[nextIndex]].folder;
+					const nextFolder = folders[nextIndex];
+					if (nextIndex !== currentIndex && nextFolder) {
 						navigate(`/folio/${nextFolder}`);
 					}
 				}
@@ -97,7 +97,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [routeFolder, routeName, activeSchema, activeList, navigate]);
+	}, [routeFolder, routeName, activeSchema, activeList, navigate, schemaIndex]);
 
 	function handleNewEntry(): void {
 		setNewName('');
