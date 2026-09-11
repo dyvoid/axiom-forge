@@ -75,3 +75,11 @@ record of what was done.
   neither order is tested because the logic sits inside components. Extracting it moves the logic
   into the tier `packages/client` already tests. Leave the duplicated filter-bar markup alone
   until ADR-0016 makes it a third caller
+
+- [ ] Subtract the textarea's `scrollTop`/`scrollLeft` in `getCaretCoordinates`
+  (`packages/client/src/utils/caret.ts`). The mirror div measures the caret against the full
+  unscrolled text, but `TextareaField` anchors the `[[` wikilink picker inside a wrapper aligned
+  to the textarea's *visible* box, so the popover detaches as soon as the textarea scrolls —
+  measured at `scrollTop: 118`, it renders 130px below the textarea's bottom edge, while at
+  `scrollTop: 0` it is correct. Anchoring is the bug; whether the popover should also flip above
+  the caret near the bottom edge is a separate question
