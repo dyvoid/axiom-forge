@@ -25,6 +25,7 @@ Most worldbuilding tools either (a) lock your content inside a proprietary datab
 - **Wikilinks** — `[[Folder/EntryName]]` syntax, rendered as clickable chips that resolve to live entries.
 - **Sidebar navigation** — types and entries are indexed automatically as files are added.
 - **Read & edit views** — click Edit on any entry to modify fields and prose; saves write back to disk.
+- **Cover images** — drag-and-drop a PNG, JPG, WebP, or GIF (up to 10 MB) onto a folio; it's stored in the project's `Images/` folder and linked from the entry.
 - **Schema warnings** — invalid sections, broken wikilinks, or unknown fields surface as warnings on load.
 
 ## Quick start
