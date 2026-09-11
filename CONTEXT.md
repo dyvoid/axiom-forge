@@ -27,9 +27,10 @@ entry in the in-memory index (see below), not the file.
 
 ## Project
 
-**Project** — one folder on disk holding the whole world: a `config.json`, a `schema.json`, and
-one subfolder of `.md` files per type. The server is pointed at exactly one project via
-`--project`. The files are the source of truth; there is no database.
+**Project** — one folder on disk holding the whole world: a `config.json`, a `schema.json`, one
+subfolder of `.md` files per type, and an optional `Images/` folder for cover images. The server
+is pointed at exactly one project via `--project`. The files are the source of truth; there is no
+database.
 
 **Sample project** — `fall-of-troy/`, the worked example shipped in the repo. Tests may read it
 only to assert that real files parse; see the synthetic-schema rule in [Testing](docs/testing.md).
@@ -88,6 +89,14 @@ stored.
 
 **Unresolved link** (client) / **broken link** (server) — a wiki-link whose target folio does not
 exist. Never an error; both read and save tolerate it and surface it for the user to fix.
+
+## Media
+
+**Cover image** — the optional single image shown atop a folio, extracted from the first image
+embed in its preface. Uploads land in an `Images/` folder at the project root, created on first
+use; the embed line is the source of truth, so an unreferenced file in `Images/` is not a cover.
+See [ADR-0018](docs/adr/0018-folio-cover-image.md) and
+[Data Model](docs/data-model.md#cover-images).
 
 ## Index and state
 
