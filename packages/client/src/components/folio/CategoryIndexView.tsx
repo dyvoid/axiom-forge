@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { scoreFolio } from '@axiom-forge/shared';
-import { useFolios, useCreateFolio } from '../../api/queries.js';
+import { useFolios } from '../../api/queries.js';
 import { useProject } from '../../context/ProjectContext.js';
 import { Icon } from '../ui/Icon.js';
 import { EntryContent } from '../ui/EntryContent.js';
@@ -13,7 +13,7 @@ export function CategoryIndexView(): JSX.Element {
 	const { folder } = useParams<{ folder: string }>();
 	const { schemaIndex } = useProject();
 	const { data: folios, isLoading } = useFolios();
-	const createFolio = useCreateFolio();
+	const navigate = useNavigate();
 	const [creating, setCreating] = useState(false);
 	const [newName, setNewName] = useState('');
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -77,17 +77,9 @@ export function CategoryIndexView(): JSX.Element {
 		const trimmed = newName.trim();
 		if (!trimmed || !folder) return;
 		setCreating(false);
-		const folio = {
-			type: typeName ?? '',
-			folder: folder,
-			name: '',
-			title: trimmed,
-			status: undefined,
-			tags: [],
-			sections: {},
-			warnings: [],
-		};
-		createFolio.mutate({ folder, folio });
+		setNewName('');
+		// Open the editor on an unsaved draft — nothing is written until Save.
+		navigate(`/new/${encodeURIComponent(folder)}?title=${encodeURIComponent(trimmed)}`);
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent): void {
@@ -116,13 +108,12 @@ export function CategoryIndexView(): JSX.Element {
 								onChange={(e) => setNewName(e.target.value)}
 								onKeyDown={handleKeyDown}
 								placeholder={`New ${typeName}…`}
-								disabled={createFolio.isPending}
 							/>
 							<button
 								type="button"
 								className={styles.addConfirm}
 								onClick={handleCreateSubmit}
-								disabled={!newName.trim() || createFolio.isPending}
+								disabled={!newName.trim()}
 							>
 								↵
 							</button>

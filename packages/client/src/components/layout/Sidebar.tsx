@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { NavLink, useParams, useNavigate } from 'react-router-dom';
 import { useProject } from '../../context/ProjectContext.js';
-import { useFolios, useCreateFolio } from '../../api/queries.js';
+import { useFolios } from '../../api/queries.js';
 import styles from './Sidebar.module.css';
 import { Icon } from '../ui/Icon.js';
 
@@ -10,7 +10,6 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 	const { data: folios } = useFolios();
 	const { folder: routeFolder, name: routeName } = useParams<{ folder?: string, name?: string }>();
 	const navigate = useNavigate();
-	const createFolio = useCreateFolio();
 
 	const [activeType, setActiveType] = useState<string>('');
 	const [creating, setCreating] = useState(false);
@@ -32,7 +31,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 
 	// Collapse the form back to the button when the click lands outside it.
 	// Capture phase, so it runs before a click elsewhere navigates away; the
-	// confirm button lives inside the form and so does not trigger this.
+	// confirm and cancel buttons live inside the form and so do not trigger this.
 	useEffect(() => {
 		if (!creating) return;
 		function handlePointerDown(e: PointerEvent): void {
@@ -124,17 +123,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 		const trimmed = newName.trim();
 		if (!trimmed || !activeSchema) return;
 		setCreating(false);
-
-		const folio = {
-			type: activeType,
-			folder: activeSchema.folder,
-			name: '',
-			title: trimmed,
-			tags: [],
-			sections: {},
-			warnings: [],
-		};
-		createFolio.mutate({ folder: activeSchema.folder, folio });
+		setNewName('');
+		// Open the editor on an unsaved draft — nothing is written until Save.
+		navigate(`/new/${encodeURIComponent(activeSchema.folder)}?title=${encodeURIComponent(trimmed)}`);
 	}
 
 	function handleCreateKeyDown(e: React.KeyboardEvent): void {
@@ -203,13 +194,12 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 							onChange={(e) => setNewName(e.target.value)}
 							onKeyDown={handleCreateKeyDown}
 							placeholder={`New ${activeType || 'entry'}…`}
-							disabled={createFolio.isPending}
 						/>
 						<button
 							type="button"
 							className={styles.newEntryConfirm}
 							onClick={handleCreateSubmit}
-							disabled={!newName.trim() || createFolio.isPending}
+							disabled={!newName.trim()}
 							aria-label="Create entry"
 						>
 							↵

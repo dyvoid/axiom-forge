@@ -23,16 +23,22 @@ import { collectUnresolvedLinks } from '../../utils/links.js';
 import styles from './FolioEditView.module.css';
 
 interface Props {
-	folio: ParsedFolio & { id: number; mtime: number };
+	/**
+	 * `id` and `mtime` are server-assigned, so a draft that has never been
+	 * written to disk carries neither. They are absent exactly when `isNew`.
+	 */
+	folio: ParsedFolio & { id?: number; mtime?: number };
 	typeDef: TypeDef;
 	saving: boolean;
 	deleting: boolean;
 	saveError: string | null;
+	/** Editing a folio that does not exist on disk yet: nothing is written until Save. */
+	isNew?: boolean;
 	onSave: (next: ParsedFolio, coverFile: File | null, onSaved: () => void) => void;
 	onDelete: (deleteCoverImage: boolean, onDeleted: () => void) => void;
 }
 
-export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onSave, onDelete }: Props): JSX.Element {
+export function FolioEditView({ folio, typeDef, saving, deleting, saveError, isNew, onSave, onDelete }: Props): JSX.Element {
 	const navigate = useNavigate();
 	// Local draft — initialised from server state, mutated on every keystroke.
 	const [draft, setDraft] = useState<ParsedFolio>(() => structuredClone(folio));
@@ -157,7 +163,10 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 		);
 	}
 
-	const backTo = `/folio/${encodeURIComponent(folio.folder)}/${encodeURIComponent(folio.name)}`;
+	// A draft has no read view to go back to — discarding it returns to the category.
+	const backTo = isNew
+		? `/folio/${encodeURIComponent(folio.folder)}`
+		: `/folio/${encodeURIComponent(folio.folder)}/${encodeURIComponent(folio.name)}`;
 
 	// Build the section list in schema declaration order.
 	const sections = schemaIndex.sectionsInOrder(folio.type);
@@ -166,14 +175,16 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 		<div className={styles.container}>
 			{/* Sticky toolbar */}
 			<div className={styles.toolbar}>
-				<button
-					type="button"
-					className={styles.btnGhost}
-					onClick={() => setConfirmDelete(true)}
-					disabled={saving || deleting}
-				>
-					Delete
-				</button>
+				{!isNew && (
+					<button
+						type="button"
+						className={styles.btnGhost}
+						onClick={() => setConfirmDelete(true)}
+						disabled={saving || deleting}
+					>
+						Delete
+					</button>
+				)}
 				<div className={styles.toolbarSpacer} />
 				<button type="button" className={styles.btnGhost} onClick={handleDiscard} disabled={saving}>
 					Discard
@@ -182,7 +193,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 					type="button"
 					className={styles.btnPrimary}
 					onClick={handleSave}
-					disabled={saving || !dirty}
+					disabled={saving || (!dirty && !isNew)}
 				>
 					Save folio
 				</button>
@@ -289,8 +300,12 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 					<Icon name={typeDef.icon} size={12} />
 					<span>·</span>
 					<span>{folio.type}</span>
-					<span>·</span>
-					<span>Folio {toRoman(folio.id)}</span>
+					{folio.id !== undefined && (
+						<>
+							<span>·</span>
+							<span>Folio {toRoman(folio.id)}</span>
+						</>
+					)}
 				</div>
 			</div>
 
@@ -357,7 +372,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, onS
 					type="button"
 					className={styles.btnPrimary}
 					onClick={handleSave}
-					disabled={saving || !dirty}
+					disabled={saving || (!dirty && !isNew)}
 				>
 					Save folio
 				</button>
