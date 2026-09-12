@@ -1,23 +1,18 @@
 /* Shared styles for edit-mode field components.
    Tokens map from the prototype's --oxblood/--rule/--ink-3 → app tokens. */
 
+/* The border/ground/focus recipe lives in controls.module.css — the same
+   `.fieldBox` the chip fields and the index bars compose, so every control
+   you type into is one object. Only typography and sizing differ here. */
 .input {
+	composes: fieldBox from '../../ui/controls.module.css';
+	display: block;
+	min-height: var(--control-height);
 	font-family: var(--ff-body);
 	font-size: var(--fs-body-sm);
 	color: var(--text-primary);
-	background: color-mix(in srgb, var(--bg-input-highlight) 55%, transparent);
-	border: 1px solid var(--border);
-	padding: var(--control-padding);
 	outline: none;
 	width: 100%;
-	border-radius: 0;
-	transition: border-color 120ms, background 120ms;
-	box-sizing: border-box;
-}
-
-.input:focus {
-	border-color: var(--accent-rust);
-	background: color-mix(in srgb, var(--bg-input-highlight) 90%, transparent);
 }
 
 .textarea {
@@ -95,15 +90,13 @@
 }
 
 .pickerInputWrap {
+	composes: fieldBox from '../../ui/controls.module.css';
 	display: flex;
 	align-items: center;
-	border: 1px solid var(--border);
-	background: color-mix(in srgb, var(--bg-input-highlight) 55%, transparent);
-	transition: border-color 120ms, background 120ms;
+	min-height: var(--control-height);
 }
 
-.pickerInputWrap.pickerFocused,
-.pickerInputWrap:focus-within {
+.pickerInputWrap.pickerFocused {
 	border-color: var(--accent-rust);
 	background: color-mix(in srgb, var(--bg-input-highlight) 90%, transparent);
 }
@@ -115,7 +108,7 @@
 	font-family: var(--ff-body);
 	font-size: var(--fs-body-sm);
 	color: var(--text-primary);
-	padding: var(--control-padding);
+	padding: 0;
 	flex: 1;
 	min-width: 0;
 }
@@ -138,7 +131,6 @@
 	display: flex;
 	align-items: center;
 	gap: var(--sp-1-5);
-	padding: var(--control-padding);
 	font-family: var(--ff-body);
 	font-size: var(--fs-body-sm);
 	color: var(--accent-gold-text);

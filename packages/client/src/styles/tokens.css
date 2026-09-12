@@ -116,6 +116,9 @@
 	--control-padding: 7px 10px;
 	--btn-compact-padding: 3px 10px;
 	--btn-compact-padding-touch: 8px 14px;
+	/* Single-line control height, so a text input, a custom select, a chip
+	   field and a filter bar all line up in the same form. */
+	--control-height: 38px;
 
 	/* ── Layout ───────────────────────────────────────── */
 	--page-max-width: 1280px;

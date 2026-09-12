@@ -6,14 +6,15 @@
    border, ground and focus response are defined once.
    ──────────────────────────────────────────────────── */
 
+/* Treatment only — border, ground, focus response. Layout (display,
+   min-height, gap) stays with each control, because CSS Modules emits a
+   composed class *after* the class composing it: anything declared here
+   would win over the consumer trying to override it. */
 .fieldBox {
-	display: flex;
-	align-items: center;
-	gap: var(--sp-2);
-	padding: var(--sp-1-5) var(--sp-2);
+	padding: var(--control-padding);
 	border: 1px solid var(--border);
-	background: color-mix(in srgb, var(--bg-input-highlight) 40%, transparent);
-	min-height: 38px;
+	border-radius: 0;
+	background: color-mix(in srgb, var(--bg-input-highlight) 55%, transparent);
 	box-sizing: border-box;
 	transition: border-color 120ms, background 120ms;
 }

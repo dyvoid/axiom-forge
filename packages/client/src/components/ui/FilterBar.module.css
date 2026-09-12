@@ -7,6 +7,10 @@
 
 .bar {
 	composes: fieldBox from './controls.module.css';
+	display: flex;
+	align-items: center;
+	gap: var(--sp-2);
+	min-height: var(--control-height);
 	flex: 1;
 }
 
