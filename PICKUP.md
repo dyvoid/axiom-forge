@@ -11,7 +11,9 @@ session did, read git log.
 
 ## In Progress
 
-Nothing.
+**Landing hero tuning** (`experiment/hero-tuner`) — every look-shaping shader value is a uniform
+in `HeroParams`, editable live at `/?tune`. It is the base for phase 1 of ADR-0001, which is
+designed but not built.
 
 ## Next Up
 
@@ -29,14 +31,18 @@ scaffolding will reshape.
 
 ## Open Decisions
 
-None. The UI consistency audit is closed — see
+**Accept ADR-0001 phase 1?** It was rescoped on 2026-09-12 to an optional `theme.json` with a
+`hero` section only, including a switch that disables the hero. Accepting it clears the build;
+later theming phases stay undesigned.
+
+The UI consistency audit is closed — see
 [its handoff](docs/ui-consistency-audit.md) for what the component tests deliberately don't
 reach, and check those flows in a browser when changing the shared controls.
 
 The four raised by the 2026-08-30 ADR audit were answered that day and are recorded where
 they belong: ADR-0019 accepted and ADR-0020 deferred (their status lines), ADR-0013 given the
-onboarding surface (its Scope section), and ADR-0012 / ADR-0001 / ADR-0014 reviewed and held at
-their current rank and scope (their [ROADMAP](docs/ROADMAP.md) rows).
+onboarding surface (its Scope section), and ADR-0012 / ADR-0014 reviewed and held at their
+current rank and scope (their [ROADMAP](docs/ROADMAP.md) rows).
 
 One accepted gap follows from holding ADR-0012 at #9: a schema-drifted file is readable in the
 app but cannot be saved from it. Documented in

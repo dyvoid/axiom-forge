@@ -1,18 +1,95 @@
 # 1. Project Themes
 
-**Date:** 2026-05-23  
+**Date:** 2026-05-23, revised 2026-09-12  
 **Status:** Proposed
 
 ## Context
-Currently, Axiom Forge relies on a hardcoded "Parchment" aesthetic with rust and gold accents defined in `tokens.css`. To allow users to customize their world's aesthetic, we need a theme system that overrides these hardcoded tokens without breaking the application's layout rules.
+
+Axiom Forge ships one hardcoded "Parchment" aesthetic, defined as CSS variables in `tokens.css`.
+Projects want some say over how their world looks, but the print aesthetic is load-bearing (see
+AGENTS.md), and there is no dark mode or `prefers-color-scheme` handling to build a full theme
+system on yet.
+
+The landing hero is the one surface where per-project appearance is cheap and contained. Its
+shader is already fully driven by `HeroParams` (`packages/client/src/hero/heroParams.ts`), with a
+`?tune` panel that edits every value live. It appears only on `/`, so theming it cannot disturb
+the reading and editing UI.
+
+An earlier attempt put a `theme` block with an `accent` color in `config.json`. `ConfigSchema`
+never declared it, so it was stripped on load and did nothing. It is deprecated and removed.
 
 ## Decision
-We will implement a `theme.json` file inside the user's project folder.
-- We will ship two base themes inside the application: `axiom-forge-light` (the current default) and `axiom-forge-dark`.
-- The user's `theme.json` will override the base values.
-- The frontend will include a UI toggle/dropdown allowing users to switch between the custom project theme, the default light theme, and the default dark theme.
+
+Themes live in an optional `theme.json` in the project root. With no file, the app uses its own
+defaults. `config.json` carries no theme settings.
+
+The file is organized by surface, so later phases add sections rather than restructure it.
+**Phase 1 supports only a `hero` section.** A top-level section the app does not know is
+reported as a warning and ignored.
+
+```json
+{
+  "hero": {
+    "enabled": true,
+    "smoke": "#f6f1e7",
+    "background": "#998a73",
+    "gold": "#997a47",
+    "density": 0.38,
+    "speed": 1,
+    "size": 1,
+    "vignette": { "color": "#000000", "strength": 0.08 },
+    "clearTitle": false
+  }
+}
+```
+
+Every field is optional; an omitted field keeps the app default shown above.
+
+| Field | Meaning | Maps to |
+|---|---|---|
+| `enabled` | `false` removes the hero entirely: no canvas, no WebGL context, the landing page shows the plain page background | not rendering `WebGLHero` |
+| `smoke` | Smoke color; the top of its gradient is derived from it | `smokeBottom`, `smokeTop` |
+| `background` | Color showing through the gaps | `backgroundColor` |
+| `gold` | Tint in the thinnest smoke | `goldColor` |
+| `density` (0–1) | How far the smoke is allowed to thin; higher is denser | `smokeMinimum` |
+| `speed` (≥ 0) | Animation speed; `0` holds a still frame | `timeSpeed` |
+| `size` (> 0) | Shape size; `2` makes the billows twice as large | divides `layerAScale` and `layerBScale` |
+| `vignette.color`, `vignette.strength` (0–1) | Edge tint | `vignetteColor`, `vignetteStrength` |
+| `clearTitle` | Fill the gaps behind the title instead of in the corners | `maskMode` |
+
+These names are a stable, look-level vocabulary, deliberately not the shader's uniform names. The
+other `HeroParams` (noise, warp, thresholds, fades, mask edges, gamma) stay app-level and are
+reachable only through `?tune`. That keeps the choices few enough to be usable, and leaves the
+shader free to be reworked without breaking any project's file. The names are also chosen to make
+sense for the future hero variants `WebGLHero` anticipates.
+
+Loading and delivery:
+
+- The server reads `theme.json` on load and on `reload()`. A missing file is not an error.
+- A malformed file, or a value that fails validation, never stops the project loading. The
+  offending value falls back to its default and is reported through the existing schema
+  warnings.
+- Validation lives in `packages/shared/src/schema.ts` beside `ConfigSchema`; the mapping from
+  theme fields to `HeroParams` lives with the hero in the client.
+- A new `GET /api/theme` returns the validated theme, `{}` when there is no file, matching the
+  one-route-per-file pattern of `config` and `schema`.
+- The `?tune` panel gains a copy action that emits only the `hero` fields that differ from the
+  defaults, ready to paste into `theme.json`.
+
+Later phases are out of scope here and will be decided when they are designed: overriding the
+design tokens, base light and dark themes, and a theme switcher.
 
 ## Consequences
-- The `ProjectContext` (or a new `ThemeContext`) must handle injecting CSS variables dynamically based on the selected theme.
-- The UI requires a new dropdown component for theme selection.
-- The `config.json` schema might need to be updated or migrated to point to or include the `theme.json`.
+
+- `theme.json` becomes part of the on-disk format; `data-model.md` and the README describe it
+  once it is built.
+- `resolveHeroParams(theme.hero)` becomes the single place a project's choices meet the app
+  defaults.
+- Phase 1 does not theme the landing type. A project that picks a dark `background` or `smoke`
+  can make the muted landing text illegible: moving from the shipped colors to a tan field
+  measured roughly 1.4–1.9:1 for the muted text. Phase 1 documents the risk; the token phase is
+  where text colors can follow the theme.
+- A disabled hero changes nothing else on the landing page, and it avoids WebGL on machines where
+  it is slow or unavailable.
+- The print-aesthetic objection recorded in the roadmap applies to the later phases, not to
+  phase 1, which only touches the landing hero.
