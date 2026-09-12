@@ -63,3 +63,97 @@
 	font-style: italic;
 	text-align: center;
 }
+
+/* ── Buttons ──────────────────────────────────────────
+   Compose three parts: `.btn`, one size, one tone. The tone carries the
+   meaning and is the same everywhere — filled dark is the primary action,
+   filled rust is destructive, outlined muted is secondary, outlined rust
+   is an accented create action. Sizes are `.btnRegular` for dialog and
+   page actions, `.btnCompact` for chrome that sits beside content.
+   ──────────────────────────────────────────────────── */
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--sp-2);
+	font-family: var(--ff-body);
+	text-transform: uppercase;
+	text-decoration: none;
+	cursor: pointer;
+	border: 1px solid transparent;
+	border-radius: 0;
+	transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+/* Sizes */
+
+.btnRegular {
+	font-size: var(--fs-button);
+	letter-spacing: var(--ls-button);
+	padding: var(--sp-2) var(--sp-4);
+}
+
+.btnCompact {
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	padding: var(--btn-compact-padding);
+	border-radius: 2px;
+}
+
+/* Tones */
+
+.btnSecondary {
+	background: transparent;
+	border-color: var(--border);
+	color: var(--text-muted);
+}
+
+.btnSecondary:hover {
+	color: var(--text-primary);
+	border-color: var(--text-muted);
+}
+
+.btnPrimary {
+	background: var(--text-primary);
+	border-color: var(--text-primary);
+	color: var(--bg-page);
+}
+
+.btnPrimary:hover:not(:disabled) {
+	background: color-mix(in srgb, var(--text-primary) 85%, transparent);
+	border-color: color-mix(in srgb, var(--text-primary) 85%, transparent);
+}
+
+.btnDanger {
+	background: var(--accent-rust);
+	border-color: var(--accent-rust);
+	color: var(--bg-page);
+}
+
+.btnDanger:hover:not(:disabled) {
+	background: color-mix(in srgb, var(--accent-rust) 85%, transparent);
+	border-color: color-mix(in srgb, var(--accent-rust) 85%, transparent);
+}
+
+.btnAccent {
+	background: transparent;
+	border-color: var(--accent-rust);
+	color: var(--accent-rust);
+}
+
+.btnAccent:hover:not(:disabled) {
+	background: color-mix(in srgb, var(--accent-rust) 8%, transparent);
+}
+
+@media (pointer: coarse) {
+	.btnCompact {
+		padding: var(--btn-compact-padding-touch);
+	}
+}

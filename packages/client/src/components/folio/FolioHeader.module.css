@@ -59,22 +59,7 @@
 }
 
 .editBtn {
-	cursor: pointer;
-	font-family: var(--ff-body);
-	font-weight: 500;
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-eyebrow);
-	text-transform: uppercase;
-	color: var(--text-muted);
-	border: 1px solid var(--border-soft);
-	padding: var(--btn-compact-padding);
-	border-radius: 2px;
-	transition: color 0.2s, border-color 0.2s;
-}
-
-.editBtn:hover {
-	color: var(--text-primary);
-	border-color: var(--text-muted);
+	composes: btn btnCompact btnSecondary from '../ui/controls.module.css';
 }
 
 .title {

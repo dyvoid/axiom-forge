@@ -25,20 +25,5 @@
    Not FolioHeader.editBtn's tighter inline-toolbar convention -- this
    button sits alone on the page, not next to a breadcrumb. */
 .actionBtn {
-	display: inline-flex;
-	background-color: transparent;
-	color: var(--text-muted);
-	font-family: var(--ff-body);
-	font-size: var(--fs-button);
-	letter-spacing: var(--ls-button);
-	text-transform: uppercase;
-	border: 1px solid var(--border);
-	padding: var(--sp-2) var(--sp-4);
-	text-decoration: none;
-	cursor: pointer;
-}
-
-.actionBtn:hover {
-	color: var(--text-primary);
-	border-color: var(--text-muted);
+	composes: btn btnRegular btnSecondary from './controls.module.css';
 }

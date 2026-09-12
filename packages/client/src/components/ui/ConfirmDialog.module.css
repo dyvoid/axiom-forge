@@ -18,10 +18,11 @@
 
 .title {
 	font-family: var(--ff-display);
-	font-size: var(--fs-h2);
+	font-size: var(--fs-h3);
 	font-style: italic;
 	font-weight: 500;
-	color: var(--text-primary);
+	line-height: var(--lh-subtitle);
+	color: var(--accent-rust);
 	margin-bottom: var(--sp-3);
 }
 
@@ -40,37 +41,16 @@
 }
 
 .btnCancel {
-	background: transparent;
-	border: 1px solid var(--border);
-	font-family: var(--ff-body);
-	font-size: var(--fs-button);
-	letter-spacing: var(--ls-button);
-	text-transform: uppercase;
-	color: var(--text-muted);
-	padding: var(--sp-2) var(--sp-4);
-	cursor: pointer;
-}
-
-.btnCancel:hover {
-	color: var(--text-primary);
-	border-color: var(--text-muted);
+	composes: btn btnRegular btnSecondary from './controls.module.css';
 }
 
 .btnConfirm {
-	background: var(--text-primary);
-	color: var(--bg-page);
-	border: 1px solid var(--text-primary);
-	font-family: var(--ff-body);
-	font-size: var(--fs-button);
-	letter-spacing: var(--ls-button);
-	text-transform: uppercase;
+	composes: btn btnRegular btnPrimary from './controls.module.css';
 	padding: var(--sp-2) var(--sp-5);
-	cursor: pointer;
 }
 
-.btnConfirm.danger {
-	background: var(--accent-rust);
-	border-color: var(--accent-rust);
+.danger {
+	composes: btnDanger from './controls.module.css';
 }
 
 /* ── Responsive: full-width dialog on narrow screens ─────── */

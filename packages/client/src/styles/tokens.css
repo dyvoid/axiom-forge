@@ -13,6 +13,9 @@
 	--fs-hero: clamp(2.25rem, 7vw, 5.5rem);
 	--fs-h1: clamp(2rem, 5vw, 4rem);
 	--fs-h2: clamp(1.25rem, 2vw, 1.375rem);
+	/* Fills the gap between h1 and h2 — used where a heading needs presence
+	   without page-title scale, e.g. dialog titles. */
+	--fs-h3: clamp(1.5rem, 3vw, 1.75rem);
 	--fs-subtitle-lg: clamp(1.25rem, 2.5vw, 1.5rem);
 	--fs-subtitle: 18px;
 	--fs-body-lg: 17px;

@@ -22,21 +22,7 @@
 }
 
 .outlined {
-	font-family: var(--ff-body);
-	font-weight: 500;
-	font-size: var(--fs-label);
-	letter-spacing: var(--ls-button);
-	text-transform: uppercase;
-	color: var(--accent-rust);
-	background: transparent;
-	border: 1px solid var(--accent-rust);
-	padding: var(--sp-2) var(--sp-4);
-	cursor: pointer;
-	transition: all 0.2s;
-}
-
-.outlined:hover {
-	background: color-mix(in srgb, var(--accent-rust) 8%, transparent);
+	composes: btn btnRegular btnAccent from './controls.module.css';
 }
 
 .form {
@@ -49,7 +35,7 @@
    doesn't collapse and shift the page when the form opens. Mirrors the
    button's box: label line box + vertical padding + border. */
 .formOutlined {
-	min-height: calc(var(--fs-label) * var(--lh-body) + 2 * var(--sp-2) + 2px);
+	min-height: calc(var(--fs-button) * var(--lh-body) + 2 * var(--sp-2) + 2px);
 	min-width: 200px;
 }
 

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { NavLink, useParams, useNavigate } from 'react-router-dom';
 import { useProject } from '../../context/ProjectContext.js';
 import { useFolios } from '../../api/queries.js';
