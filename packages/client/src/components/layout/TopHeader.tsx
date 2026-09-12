@@ -124,7 +124,7 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 						<input
 							ref={inputRef}
 							type="text"
-							placeholder="Search the index..."
+							placeholder="Search the index…"
 							className={styles.searchInput}
 							aria-label="Search the index"
 							aria-expanded={open}

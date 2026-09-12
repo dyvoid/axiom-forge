@@ -36,7 +36,7 @@ export function FolioSkeleton(): JSX.Element {
 				</div>
 			</div>
 			
-			<div className={styles.loadingText}>Illuminating folio…</div>
+			<div className={styles.loadingText} role="status">Illuminating folio…</div>
 		</div>
 	);
 }

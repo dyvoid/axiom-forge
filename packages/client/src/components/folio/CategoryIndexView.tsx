@@ -7,6 +7,8 @@ import { Icon } from '../ui/Icon.js';
 import { EntryContent } from '../ui/EntryContent.js';
 import { NewEntryButton } from '../ui/NewEntryButton.js';
 import { TagFilter } from '../ui/TagFilter.js';
+import { EmptyState } from '../ui/EmptyState.js';
+import { LoadingState } from '../ui/LoadingState.js';
 import bar from '../ui/FilterBar.module.css';
 import styles from './CategoryIndexView.module.css';
 
@@ -45,7 +47,7 @@ export function CategoryIndexView(): JSX.Element {
 		? queryFiltered.filter(f => selectedTags.every(t => f.tags?.includes(t)))
 		: queryFiltered;
 
-	if (isLoading) return <div className={styles.container}>Loading index...</div>;
+	if (isLoading) return <div className={styles.container}><LoadingState message="Loading index" /></div>;
 
 	const typeName = (folder && schemaIndex.typeKeyForFolder(folder)) || folder;
 	const typeDef = (folder && schemaIndex.typeDefForFolder(folder)) || null;
@@ -78,7 +80,7 @@ export function CategoryIndexView(): JSX.Element {
 						</span>
 						<input
 							type="text"
-							placeholder="Search the index..."
+							placeholder="Search the index…"
 							className={bar.input}
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
@@ -97,7 +99,7 @@ export function CategoryIndexView(): JSX.Element {
 							</button>
 						)}
 					</div>
-					<div style={{ flex: 1 }}>
+					<div className={styles.tagFilterCol}>
 						<TagFilter 
 							availableTags={allTags}
 							selectedTags={selectedTags}
@@ -110,7 +112,19 @@ export function CategoryIndexView(): JSX.Element {
 			<div className={styles.list}>
 				{filteredFolios.length === 0 ? (
 					<div className={styles.empty}>
-						{q || selectedTags.length > 0 ? 'No results found.' : 'No entries yet.'}
+						{q || selectedTags.length > 0 ? (
+							<EmptyState
+								variant="inline"
+								icon="search-x"
+								message="No results found. Try a different search, or clear the tag filter."
+							/>
+						) : (
+							<EmptyState
+								variant="inline"
+								icon={typeDef?.icon || 'circle'}
+								message={`No ${typeName} entries yet. Create the first one above.`}
+							/>
+						)}
 					</div>
 				) : (
 					filteredFolios.map(f => {

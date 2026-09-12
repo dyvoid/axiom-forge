@@ -6,6 +6,7 @@ import { ConflictError, uploadCoverImage } from '../api/client.js';
 import { useProject } from '../context/ProjectContext.js';
 import { FolioEditView } from '../components/folio/FolioEditView.js';
 import { FolioEmptyState } from '../components/folio/FolioEmptyState.js';
+import { LoadingState } from '../components/ui/LoadingState.js';
 import editStyles from '../components/folio/FolioEditView.module.css';
 
 export function FolioEdit(): JSX.Element {
@@ -21,7 +22,7 @@ export function FolioEdit(): JSX.Element {
 	if (isLoading) {
 		return (
 			<div className={editStyles.container}>
-				<p className={editStyles.footerStatus}>Loading folio…</p>
+				<LoadingState message="Loading folio" />
 			</div>
 		);
 	}

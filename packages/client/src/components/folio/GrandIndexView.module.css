@@ -102,3 +102,14 @@
 	}
 }
 
+
+/* Layout only -- treatment and copy come from the shared EmptyState
+   (inline variant). Matches the category index's empty block. */
+.empty {
+	padding: var(--sp-6) 0;
+	border-top: 1px solid var(--border-soft);
+}
+
+.tagFilterCol {
+	flex: 1;
+}

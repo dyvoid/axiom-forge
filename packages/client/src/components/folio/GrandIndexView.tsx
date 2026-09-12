@@ -5,6 +5,8 @@ import { useFolios } from '../../api/queries.js';
 import { Icon } from '../ui/Icon.js';
 import { EntryContent } from '../ui/EntryContent.js';
 import { TagFilter } from '../ui/TagFilter.js';
+import { EmptyState } from '../ui/EmptyState.js';
+import { LoadingState } from '../ui/LoadingState.js';
 import bar from '../ui/FilterBar.module.css';
 import styles from './GrandIndexView.module.css';
 import { useProject } from '../../context/ProjectContext.js';
@@ -15,7 +17,7 @@ export function GrandIndexView(): JSX.Element {
 	const [query, setQuery] = useState('');
 	const [searchParams, setSearchParams] = useSearchParams();
 
-	if (isLoading) return <div className={styles.container}>Loading...</div>;
+	if (isLoading) return <div className={styles.container}><LoadingState message="Loading index" /></div>;
 
 	const allFolios = folios ?? [];
 	const q = query.trim().toLowerCase();
@@ -71,7 +73,7 @@ export function GrandIndexView(): JSX.Element {
 						</span>
 						<input
 							type="text"
-							placeholder="Search the index..."
+							placeholder="Search the index…"
 							className={bar.input}
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
@@ -90,7 +92,7 @@ export function GrandIndexView(): JSX.Element {
 							</button>
 						)}
 					</div>
-					<div style={{ flex: 1 }}>
+					<div className={styles.tagFilterCol}>
 						<TagFilter 
 							availableTags={allTags}
 							selectedTags={selectedTags}
@@ -102,8 +104,12 @@ export function GrandIndexView(): JSX.Element {
 
 			<div className={styles.indexColumns}>
 				{filtered.length === 0 && (q || selectedTags.length > 0) ? (
-					<div style={{ color: 'var(--text-muted)', fontFamily: 'var(--ff-body)', fontStyle: 'italic' }}>
-						No results found.
+					<div className={styles.empty}>
+						<EmptyState
+							variant="inline"
+							icon="search-x"
+							message="No results found. Try a different search, or clear the tag filter."
+						/>
 					</div>
 				) : (
 					letters.map(letter => (

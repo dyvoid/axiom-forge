@@ -90,12 +90,15 @@
 	flex-direction: column;
 }
 
+/* Layout only -- the italic/muted treatment and the copy live in the shared
+   EmptyState (inline variant) this wraps. */
 .empty {
-	font-family: var(--ff-body);
-	font-style: italic;
-	color: var(--text-muted);
 	padding: var(--sp-6) 0;
 	border-top: 1px solid var(--border-soft);
+}
+
+.tagFilterCol {
+	flex: 1;
 }
 
 .entry {

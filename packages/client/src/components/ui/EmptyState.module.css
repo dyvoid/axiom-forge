@@ -27,3 +27,28 @@
 .actionBtn {
 	composes: btn btnRegular btnSecondary from './controls.module.css';
 }
+
+/* ── Inline variant ───────────────────────────────────
+   Same vocabulary as the page variant (rust icon, italic title, muted
+   message) at list scale: the icon sits on the baseline of the message
+   rather than above a heading, and nothing claims heading-sized space. */
+.iconInline {
+	color: var(--accent-rust);
+	opacity: 0.8;
+	margin-bottom: var(--sp-2);
+}
+
+.titleInline {
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: var(--fs-body);
+	color: var(--text-primary);
+	margin-bottom: var(--sp-1);
+}
+
+.messageInline {
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: var(--fs-body);
+	color: var(--text-muted);
+}

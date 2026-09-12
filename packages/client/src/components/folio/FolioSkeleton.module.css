@@ -56,11 +56,10 @@
 	background-color: var(--bg-panel);
 }
 
+/* Same caption treatment as the shared LoadingState; only the spacing is
+   this skeleton's own, since it sits below the bones rather than alone. */
 .loadingText {
-	font-family: var(--ff-body);
-	font-style: italic;
-	color: var(--text-muted);
-	font-size: var(--fs-body);
+	composes: loadingText from '../ui/LoadingState.module.css';
 	text-align: center;
 	margin-top: var(--sp-8);
 }

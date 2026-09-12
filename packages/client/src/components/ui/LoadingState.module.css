@@ -1,0 +1,16 @@
+/* Shared "still fetching" visual. Four views used to hand-roll this, each
+   with its own font stack, colour and ellipsis spelling (`...` vs `…`).
+   Treatment only -- callers own the surrounding layout, per the composed-class
+   ordering gotcha in docs/ui-consistency-audit.md. */
+.loadingText {
+	font-family: var(--ff-body);
+	font-style: italic;
+	font-size: var(--fs-body);
+	color: var(--text-muted);
+}
+
+.block {
+	composes: loadingText;
+	text-align: center;
+	padding: var(--sp-8) 0;
+}
