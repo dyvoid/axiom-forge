@@ -84,7 +84,7 @@ A project folder contains:
 
 ```
 my-world/
-├── config.json         # name, description, version, theme
+├── config.json         # name, description, version
 ├── schema.json         # type definitions
 ├── Characters/
 │   ├── Alice.md
@@ -103,8 +103,7 @@ my-world/
 {
   "name": "My World",
   "description": "A short tagline",
-  "version": "1.0.0",
-  "theme": { "accent": "#9a7a2c" }
+  "version": "1.0.0"
 }
 ```
 

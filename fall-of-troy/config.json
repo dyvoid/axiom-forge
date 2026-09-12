@@ -1,8 +1,5 @@
 {
 	"name": "The Fall of Troy",
 	"description": "Gods, heroes, and the ten-year war that ended an age",
-	"version": "1.0.0",
-	"theme": {
-		"accent": "#8b6914"
-	}
+	"version": "1.0.0"
 }
