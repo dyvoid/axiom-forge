@@ -1,112 +1,110 @@
 # UI consistency audit — handoff
 
-Started from a user complaint that the edit form's tags/domains/mortal-champions
+Started from a complaint that the edit form's tags/domains/mortal-champions
 fields looked and behaved like three unrelated widgets. That turned out to be
 symptomatic: the same "same concept, built N times, slightly differently"
 pattern recurs across the app. This doc is the running list, so work can
 resume without re-deriving it.
 
-## Done this session
+## Done
 
-- **Six hand-rolled dropdown/combobox implementations** (`TextListField`,
+Shared primitives now live in
+[`components/ui/controls.module.css`](../packages/client/src/components/ui/controls.module.css):
+`.fieldBox`, `.menuSurface` / `.menuOption` / `.menuEmpty`, and the button
+system. **Anything new that takes typing, opens a menu, or is a button should
+compose from there rather than restating the recipe.**
+
+- **Six hand-rolled combobox implementations** (`TextListField`,
   `MultiselectField`, `WikiLinkPicker`, `SelectField`, `TagFilter`,
-  `TopHeader` search) each reimplemented open state, outside-click, and
-  keyboard nav independently. Extracted to
-  [`hooks/useCombobox.ts`](../packages/client/src/hooks/useCombobox.ts).
-  This also fixed a real bug: after adding a chip via the dropdown, a second
-  click on the still-focused input did nothing (reopen was wired only to
-  `onFocus`, which doesn't fire on an already-focused element). Affected tags,
-  mortal champions, and the index tag filter.
-- **Four visually/behaviorally distinct "chip list" fields** (tags, domains,
-  wikilink-lists, index tag filter) unified into one
-  [`ChipField`](../packages/client/src/components/ui/ChipField.tsx) +
-  [`controls.module.css`](../packages/client/src/components/ui/controls.module.css)
-  `.fieldBox` primitive. What varies between call sites is now only data
-  (option source, whether typed text can be committed, whether chips carry an
-  icon), never a different component. The index search bar and tag filter
-  also now compose the same `.fieldBox` as the edit-form fields (user
-  explicitly chose "match the control" when search-box vs. chip-box drifted
-  after the first pass).
-- **Regression I introduced and then fixed**: `ChipField`'s default
-  substring matcher didn't know about folio aliases, so typing an alias
-  (e.g. "Ulysses" for Odysseus) in a wikilink picker found nothing and offered
-  to create a broken link — silent data corruption. `packages/shared` already
-  has `scoreFolio` (ADR-0011) as the single source of truth for this exact
-  problem, previously ignored by this new code. Both `ChipField` (via a
-  `score` prop) and `WikiLinkPicker` now rank through `scoreFolio`.
-- Missing `aria-label`s on `CategoryIndexView`'s inline create-entry
-  buttons, and a related gap the audit missed: section-level `wikilink-list`
-  fields (Mortal Champions, Connected Events) had **no accessible name at
-  all** because `FolioEditView.tsx` didn't pass `label` to `FieldEditor` for
-  that code path — fixed by passing `sectionName`.
-- Wrong empty-state copy: `CategoryIndexView` said "No entries yet." even when
-  the category had entries but a search/tag filter matched none. Now
-  distinguishes "No results found." for the filtered case.
-- Minor: curly vs straight quotes between the two "Press ↵ to add …"
-  messages; `WikiLinkChip`/`WikiLinkPicker` now use the shared
-  `wikiLinkDisplayName`/`filenameToDisplayName` helpers instead of inlining
-  `replace(/_/g, ' ')`.
+  `TopHeader`) each reimplemented open state, outside-click and keyboard nav.
+  Extracted to [`hooks/useCombobox.ts`](../packages/client/src/hooks/useCombobox.ts).
+  Fixed a real bug in passing: after adding a chip, a second click on the
+  still-focused input did nothing, because reopening was wired only to
+  `onFocus`, which doesn't fire on an already-focused element.
+- **Four chip-list fields** unified into
+  [`ChipField`](../packages/client/src/components/ui/ChipField.tsx). Call
+  sites now differ only in data (option source, whether typed text commits,
+  whether chips carry an icon).
+- **Alias-search regression, introduced and fixed in the same session.**
+  `ChipField` initially hand-rolled substring matching instead of using
+  `scoreFolio` — the single source of truth per ADR-0011, which exists
+  *because* this had already diverged once. Typing "Ulysses" found nothing and
+  offered to create a broken link to a nonexistent folio while Odysseus sat
+  right there. Both `ChipField` (via its `score` prop) and `WikiLinkPicker`
+  now rank through `scoreFolio`.
+- **One field-box recipe.** `.input` and `.pickerInputWrap` compose
+  `.fieldBox`; single-line height is a `--control-height` token.
+- **One create-entry affordance.** `Sidebar` and `CategoryIndexView` both use
+  [`NewEntryButton`](../packages/client/src/components/ui/NewEntryButton.tsx);
+  prominence is a named variant, not a second implementation.
+- **One menu surface.** The three dropdowns had disagreed on ground, border,
+  radius, shadow, highlight and z-index (the edit-form menu's `z-index: 10`
+  could render beneath other chrome).
+- **One button system** — `.btn` + size + tone. Tone carries meaning
+  consistently: filled dark = primary, filled rust = destructive, outlined
+  muted = secondary, outlined rust = accented create. Previously "primary"
+  meant outlined-fills-on-hover on the edit form and filled in dialogs.
+- **Accessibility**: missing `aria-label`s on the category index's create
+  buttons; section-level `wikilink-list` fields (Mortal Champions, Connected
+  Events) had *no accessible name at all* because `FolioEditView` never passed
+  `label` to `FieldEditor` on that path.
+- **Wrong empty-state copy**: the category index said "No entries yet." when a
+  search or tag filter simply matched nothing.
+- **Dialog titles** use the display italic at `--fs-h3` in rust — sized up
+  rather than bolded, since Cormorant's heavier weights are unpleasant.
+- **Dev server moved to `:5273`.** On Windows a second process can bind an
+  already-listening port, so sharing Vite's 5173 default with another local
+  project silently served that app instead while Vite reported success.
 
-All 168 existing tests pass; typecheck clean. No new tests were added for the
-above — worth doing before this ships.
+### Gotcha worth remembering
 
-## Not started — design-system items, need your call before touching
+CSS Modules emits a composed class *after* the class composing it, so anything
+`.fieldBox` declares beats a consumer trying to override it. That silently
+flattened the textarea's 240px min-height to 38px on the first attempt. The
+shared primitives therefore own **treatment only** — never layout (`display`,
+`min-height`, `gap`, positioning). Also: `composes` is rejected on compound
+selectors like `.btnConfirm.danger`; use a standalone class.
 
-These are real, verified (file:line below), but each involves a visual
-decision, not just a bug fix. Ordered roughly by how much they affect users.
+## Still open
 
-1. **Two competing field-box recipes on the same edit form.**
-   `controls.module.css` `.fieldBox` (40% ground, 38px min-height) vs.
-   `fields.module.css` `.input` (55% ground, `--control-padding`) vs. a third
-   hand-copy in `.pickerInputWrap`. Text/date/select fields use `.input`;
-   chip fields use `.fieldBox`. They sit in adjacent rows at different
-   heights/tints on the same form. Needs one recipe, not three.
+Ordered by value. Nothing here is started.
 
-2. **"Create a new entry" is built twice.**
-   `Sidebar.tsx` (`+ New entry`, muted text button) vs.
-   `CategoryIndexView.tsx` (`+ ADD ENTRY`, rust-bordered box) — same feature,
-   different label casing/verb, different button style, near-verbatim
-   duplicated CSS (`.newEntryForm` vs `.addForm` etc).
+1. **Tests.** The largest gap, and not part of the original audit. This
+   session refactored shared components with no automated coverage, verified
+   only by clicking through the browser — and shipped the alias regression
+   above, which a test would have caught immediately. **Blocked on a decision:**
+   vitest is present but there is no `jsdom` or `@testing-library/react`, so
+   real `ChipField` tests mean adding dependencies. The subset needing no new
+   deps: `parseWikiLinkText` (its file `utils/links.test.ts` exists but doesn't
+   cover it), and extracting the option-building/scoring out of
+   `WikilinkListField` into a pure helper — which would directly cover the bug
+   that shipped.
+2. **Four loading and four empty-state treatments**, none using the existing
+   shared `EmptyState` component. Also `…` vs `...` inconsistency in loading
+   copy. Real, user-visible, no judgment calls.
+3. **Single wikilink field vs. wikilink-list still diverge.** `WikiLinkPicker`
+   commits on `onClick` and sets `aria-activedescendant` / option ids;
+   `ChipField` commits on `onMouseDown`+`preventDefault` and sets neither.
+   Different placeholder convention too. Worth aligning now that both rank
+   through `scoreFolio`.
+4. **Cosmetic.** Duplicated breadcrumb primitives between
+   `FolioHeader.module.css` and `CategoryIndexView.module.css` (the two
+   `.crumbCurrent` rules differ); duplicated middot-separator recipe; a few
+   inline `style={{}}` objects that should be classes. Cheap, low value.
 
-3. **Single wikilink field vs. wikilink-list still diverge** even after this
-   session's work: `WikiLinkPicker` (single) uses plain `onClick` to commit
-   and sets `aria-activedescendant`/option ids; `ChipField` (list) uses
-   `onMouseDown`+preventDefault and sets neither. Different placeholder
-   convention (field name vs. generic "add…"). Worth reconciling now that
-   both go through `scoreFolio`.
+## Investigated and dropped — do not "fix" these
 
-4. **Three dropdown/menu surfaces**: `ChipField.module.css` `.menu`,
-   `fields.module.css` `.menu` (z-index 10 vs 100, different hover tint), and
-   `TopHeader.module.css` `.searchDropdown` (different background token,
-   border-radius, shadow, highlight color).
-
-5. **Six button recipes, three of them verbatim duplicates**, plus two
-   contradictory "primary" looks (`FolioEditView.module.css` `.btnPrimary` is
-   outlined; `ConfirmDialog.module.css` `.btnConfirm` is filled — both called
-   "primary"). `CategoryIndexView.module.css` `.addBtn` is a seventh.
-
-6. **Four loading treatments, four empty-state treatments**, none using the
-   existing shared `EmptyState` component. Also `…` vs `...` inconsistency in
-   loading copy.
-
-7. **Confirmation asymmetry / inverted button semantics.** Delete and
-   unsaved-nav confirm; cover-image removal and chip clear-all don't.
-   `SchemaWarningsDialog`'s "Dismiss" gets the same filled/primary treatment
-   that means "do the destructive thing" in `ConfirmDialog`. Verb drift:
-   Delete / Remove / Discard / Dismiss / Clear all for similar operations.
-
-8. **Low-severity / cosmetic**: literal `text-transform`-defeating caps in
-   JSX (`"+ ADD ENTRY"`, `'ENTRY'/'ENTRIES'`) instead of CSS; duplicated
-   breadcrumb primitives between `FolioHeader.module.css` and
-   `CategoryIndexView.module.css` with one subtle difference; duplicated
-   middot-separator recipe; a few inline `style={{}}` objects instead of
-   classes.
-
-## Recommended order for next session
-
-Start with #2 (new-entry widget) — it's the most template-1-and-2 like the
-original tags/domains problem: same feature, two implementations, one fix
-collapses both. Then #1 (field-box recipes) since it's the most visible on
-the very form we just touched. Save the button/menu/empty-state items (#4–7)
-for a deliberate design-system pass rather than fixing them piecemeal, since
-they touch a lot of surface area at once.
+- **Confirmation asymmetry is not a defect.** There is already a coherent
+  rule: deleting a folio writes to disk and navigating away loses work, so
+  both confirm; removing a cover image and clearing chips are *draft* edits
+  (`onChange(undefined, null)`) undone by Discard, so neither should. Don't
+  add confirmations to draft edits.
+- **Verb drift is mostly legitimate.** Delete destroys a folio, Remove takes
+  something out of one, Discard throws away unsaved changes, Dismiss closes a
+  notice. Different words for different things.
+- Read-mode `WikiLinkChip` vs edit-mode chips, and index rows vs backlink
+  cards, are deliberate — documented in `MetaSection.module.css`.
+- Already clean, verified: `useFocusTrap` shared by both dialogs,
+  `EntryContent`, `WikiLinkChip`, `EmptyState`, the design tokens, and
+  `packages/shared` (no duplicated parsing/validation; `scoreFolio` properly
+  shared with the server).
