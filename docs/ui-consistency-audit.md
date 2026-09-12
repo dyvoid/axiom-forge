@@ -12,7 +12,14 @@ Shared primitives now live in
 [`components/ui/controls.module.css`](../packages/client/src/components/ui/controls.module.css):
 `.fieldBox`, `.menuSurface` / `.menuOption` / `.menuEmpty`, and the button
 system. **Anything new that takes typing, opens a menu, or is a button should
-compose from there rather than restating the recipe.**
+compose from there rather than restating the recipe.** Alongside it:
+[`eyebrow.module.css`](../packages/client/src/components/ui/eyebrow.module.css)
+(the uppercase strip above a page title, and its crumbs),
+[`separators.module.css`](../packages/client/src/components/ui/separators.module.css)
+(the `Alpha · Beta` middot run), and the
+[`LoadingState`](../packages/client/src/components/ui/LoadingState.tsx) /
+[`EmptyState`](../packages/client/src/components/ui/EmptyState.tsx)
+components.
 
 - **Six hand-rolled combobox implementations** (`TextListField`,
   `MultiselectField`, `WikiLinkPicker`, `SelectField`, `TagFilter`,
@@ -52,6 +59,29 @@ compose from there rather than restating the recipe.**
   search or tag filter simply matched nothing.
 - **Dialog titles** use the display italic at `--fs-h3` in rust — sized up
   rather than bolded, since Cormorant's heavier weights are unpleasant.
+- **One loading treatment and one empty-state treatment.** Five views
+  hand-rolled "still fetching" across three font/colour recipes and two
+  spellings of the ellipsis (`ProjectContext`'s was a nine-property inline
+  style object, and wasn't in the original audit). All now render
+  `LoadingState`; `FolioSkeleton` keeps its richer bones and composes the
+  same caption treatment. `EmptyState` gained an `inline` variant for
+  "this list came back with nothing", which both indexes now use.
+- **The single wikilink field and the wikilink list agree.** Both commit on
+  `onMouseDown` + `preventDefault`, both wire `aria-controls` / option ids /
+  `aria-activedescendant`, and both default to the shared `Search <target>…`
+  placeholder. `WikilinkField` used to pass the field's accessible name in
+  as the *placeholder*, so a "Patron Deity" field prompted with "Patron
+  Deity" instead of saying what it searched. Candidate scoping (target
+  filter, already-selected exclusion, the `Folder/Name` id, whether the
+  folder column shows) was written twice and is now pure helpers in
+  `utils/links`, with tests.
+- **One eyebrow, one middot run.** The eyebrow strip existed three times and
+  the two `.crumbCurrent` rules had already drifted -- only the category
+  index's laid out an icon beside the label, so the folio header's would
+  have collapsed one. The middot run existed twice, differing only in the
+  gap (now a `--middot-gap` token).
+- **Accessibility, second pass**: neither index's search input had an
+  accessible name.
 - **Dev server moved to `:5273`.** On Windows a second process can bind an
   already-listening port, so sharing Vite's 5173 default with another local
   project silently served that app instead while Vite reported success.
@@ -67,30 +97,33 @@ selectors like `.btnConfirm.danger`; use a standalone class.
 
 ## Still open
 
-Ordered by value. Nothing here is started.
+1. **Component tests.** Still the largest gap. The no-new-dependency subset
+   is done: `utils/links` now holds the wikilink-field logic that used to
+   live inside two components, and `utils/links.test.ts` covers
+   `parseWikiLinkText`, `searchPlaceholder`, `isLinkCandidate`,
+   `showsFolderColumn` and `linkKey` (26 tests).
 
-1. **Tests.** The largest gap, and not part of the original audit. This
-   session refactored shared components with no automated coverage, verified
-   only by clicking through the browser — and shipped the alias regression
-   above, which a test would have caught immediately. **Blocked on a decision:**
-   vitest is present but there is no `jsdom` or `@testing-library/react`, so
-   real `ChipField` tests mean adding dependencies. The subset needing no new
-   deps: `parseWikiLinkText` (its file `utils/links.test.ts` exists but doesn't
-   cover it), and extracting the option-building/scoring out of
-   `WikilinkListField` into a pure helper — which would directly cover the bug
-   that shipped.
-2. **Four loading and four empty-state treatments**, none using the existing
-   shared `EmptyState` component. Also `…` vs `...` inconsistency in loading
-   copy. Real, user-visible, no judgment calls.
-3. **Single wikilink field vs. wikilink-list still diverge.** `WikiLinkPicker`
-   commits on `onClick` and sets `aria-activedescendant` / option ids;
-   `ChipField` commits on `onMouseDown`+`preventDefault` and sets neither.
-   Different placeholder convention too. Worth aligning now that both rank
-   through `scoreFolio`.
-4. **Cosmetic.** Duplicated breadcrumb primitives between
-   `FolioHeader.module.css` and `CategoryIndexView.module.css` (the two
-   `.crumbCurrent` rules differ); duplicated middot-separator recipe; a few
-   inline `style={{}}` objects that should be classes. Cheap, low value.
+   What remains needs a decision: vitest is present but there is no `jsdom`
+   or `@testing-library/react`, so testing `ChipField` and `WikiLinkPicker`
+   as *components* — the open/commit/keyboard behaviour, which is where the
+   alias regression actually shipped — means adding those two devDependencies.
+   Everything short of that has been extracted and covered. Until then the
+   controls are verified by driving the real app in a browser; the flows
+   worth re-checking after any change to them are both index views, the
+   folio read and edit views, and committing an option in each picker by
+   mouse and by keyboard.
+
+2. **Inline styles that are staying.** Three remain and are correct as
+   inline: `TextareaField`'s picker `top`/`left` (computed caret position),
+   `WebGLHero`'s canvas box (the canvas is positioned by the component that
+   owns it, not by a sheet), and `Icon`'s `flexShrink` (one declaration
+   intrinsic to the element).
+
+3. **The editor's eyebrow uses middots where the read view's uses arrows.**
+   Left as is deliberately: the read view's is a navigational breadcrumb
+   with links, the editor's is a static "which folio is open" label. They
+   now share the typography and the middot recipe, not the glyph. Revisit
+   only if the editor's ever becomes navigable.
 
 ## Investigated and dropped — do not "fix" these
 
