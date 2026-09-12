@@ -23,7 +23,7 @@ The core feature set is complete. New features are chosen from a backlog; see
 
 npm workspaces monorepo: `packages/shared` (Markdown parser, Zod schemas, wikilink helpers),
 `packages/server` (Express REST API on `:3000`, in-memory `projectStore`), `packages/client`
-(React + Vite SPA on `:5173`, TanStack Query). No database — the server reads the project folder
+(React + Vite SPA on `:5273`, TanStack Query). No database — the server reads the project folder
 on startup and builds an in-memory index. Saves write back to disk via the API.
 
 See [Architecture Overview](docs/architecture.md) for the full picture, and the

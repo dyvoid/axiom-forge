@@ -5,7 +5,10 @@ export default defineConfig({
 	plugins: [react()],
 	server: {
 		host: '127.0.0.1',
-		port: 5173,
+		// Not Vite's 5173 default: on Windows a second process can bind an
+		// already-listening port, so sharing the default with another local
+		// Vite project silently routes requests to whichever won the race.
+		port: 5273,
 		strictPort: true,
 		proxy: {
 			'/api': {

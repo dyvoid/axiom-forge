@@ -45,7 +45,7 @@ If a folio's frontmatter `title` changes during an edit, the server computes the
 
 ## Frontend Client (`packages/client`)
 
-The frontend is a single-page React application powered by Vite. In development mode, Vite runs on `:5173` and proxies `/api` to the Express server on `:3000`.
+The frontend is a single-page React application powered by Vite. In development mode, Vite runs on `:5273` and proxies `/api` to the Express server on `:3000`.
 
 ### State Management
 - **`ProjectContext`**: Fetches `/api/config` and `/api/schema` once at boot. These are effectively immutable for the session.

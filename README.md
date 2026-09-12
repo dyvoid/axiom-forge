@@ -51,7 +51,7 @@ The repo ships with a sample project — `fall-of-troy` — so you can try it im
 npm run dev
 ```
 
-Your default browser opens at <http://127.0.0.1:5173> once Vite is listening. Set
+Your default browser opens at <http://127.0.0.1:5273> once Vite is listening. Set
 `AXIOM_FORGE_NO_OPEN=1` to suppress that and open the page yourself.
 
 There are also launchers at the repo root that install dependencies on first run and start
@@ -187,7 +187,7 @@ The server reads the project folder once on startup, parses every Markdown file 
 
 | Script | What it does |
 |---|---|
-| `npm run dev` | Starts server (`:3000`) and client (`:5173`) concurrently with hot reload |
+| `npm run dev` | Starts server (`:3000`) and client (`:5273`) concurrently with hot reload |
 | `npm run build` | Compiles all three packages |
 | `npm start` | Runs the compiled server (after `build`) |
 | `npm test` | Runs the Vitest suite |
