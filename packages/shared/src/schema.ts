@@ -13,6 +13,109 @@ export const ConfigSchema = z.object({
 export type Config = z.infer<typeof ConfigSchema>;
 
 // ────────────────────────────────────────────────────────────
+// theme.json (optional) — ADR-0001
+// ────────────────────────────────────────────────────────────
+//
+// Validated leniently, unlike config.json and schema.json: a theme is
+// cosmetic and must never stop a project loading, so each bad value falls
+// back to its default with a warning instead of failing the whole file.
+// Only the `hero` section exists so far.
+// ────────────────────────────────────────────────────────────
+
+const HexColorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Expected a "#rrggbb" hex color');
+const UnitIntervalSchema = z.number().min(0).max(1);
+
+type FieldSchemas = Record<string, z.ZodTypeAny>;
+
+const HERO_THEME_FIELDS = {
+	enabled: z.boolean(),
+	smoke: HexColorSchema,
+	background: HexColorSchema,
+	gold: HexColorSchema,
+	density: UnitIntervalSchema,
+	speed: z.number().min(0),
+	size: z.number().positive(),
+	clearTitle: z.boolean(),
+} satisfies FieldSchemas;
+
+const VIGNETTE_THEME_FIELDS = {
+	color: HexColorSchema,
+	strength: UnitIntervalSchema,
+} satisfies FieldSchemas;
+
+export const HeroThemeSchema = z
+	.object({ ...HERO_THEME_FIELDS, vignette: z.object(VIGNETTE_THEME_FIELDS).partial() })
+	.partial();
+
+export const ThemeSchema = z.object({ hero: HeroThemeSchema }).partial();
+
+export type HeroTheme = z.infer<typeof HeroThemeSchema>;
+export type Theme = z.infer<typeof ThemeSchema>;
+
+export interface ParsedTheme {
+	theme: Theme;
+	warnings: string[];
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+	return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function parseThemeSection(
+	value: unknown,
+	path: string,
+	fields: FieldSchemas,
+	subsections: Record<string, FieldSchemas>,
+	warnings: string[],
+): Record<string, unknown> | undefined {
+	if (!isPlainObject(value)) {
+		warnings.push(`"${path}" must be an object; using its defaults.`);
+		return undefined;
+	}
+	const out: Record<string, unknown> = {};
+	for (const [key, fieldValue] of Object.entries(value)) {
+		const at = `${path}.${key}`;
+		const subsection = subsections[key];
+		if (subsection) {
+			const parsed = parseThemeSection(fieldValue, at, subsection, {}, warnings);
+			if (parsed) out[key] = parsed;
+			continue;
+		}
+		const schema = fields[key];
+		if (!schema) {
+			warnings.push(`Unknown setting "${at}" is ignored.`);
+			continue;
+		}
+		const result = schema.safeParse(fieldValue);
+		if (result.success) out[key] = result.data;
+		else warnings.push(`"${at}": ${result.error.issues[0]?.message ?? 'invalid value'}; using the default.`);
+	}
+	return out;
+}
+
+/**
+ * Validate a parsed theme.json. Never throws: whatever is valid is kept, and
+ * everything else is dropped with a human-readable warning, so the caller can
+ * always serve a usable (possibly empty) theme.
+ */
+export function parseTheme(raw: unknown): ParsedTheme {
+	const warnings: string[] = [];
+	if (!isPlainObject(raw)) {
+		return { theme: {}, warnings: ['theme.json must contain a JSON object; using the default theme.'] };
+	}
+	const theme: Theme = {};
+	for (const [key, value] of Object.entries(raw)) {
+		if (key !== 'hero') {
+			warnings.push(`Unknown section "${key}" is ignored.`);
+			continue;
+		}
+		const hero = parseThemeSection(value, 'hero', HERO_THEME_FIELDS, { vignette: VIGNETTE_THEME_FIELDS }, warnings);
+		if (hero) theme.hero = hero as HeroTheme;
+	}
+	return { theme, warnings };
+}
+
+// ────────────────────────────────────────────────────────────
 // schema.json
 // ────────────────────────────────────────────────────────────
 //

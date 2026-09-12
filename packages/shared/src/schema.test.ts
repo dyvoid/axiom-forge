@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { ConfigSchema, ProjectSchemaSchema, classifySection, validateAgainstSchema, type ProjectSchema, type SectionDef } from './schema.js';
+import { ConfigSchema, ProjectSchemaSchema, classifySection, parseTheme, validateAgainstSchema, type ProjectSchema, type SectionDef } from './schema.js';
 import { parseMarkdown, serializeToMarkdown } from './parser.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -11,6 +11,61 @@ const projectRoot = resolve(here, '../../../fall-of-troy');
 function readJson(relPath: string): unknown {
 	return JSON.parse(readFileSync(resolve(projectRoot, relPath), 'utf-8'));
 }
+
+describe('parseTheme', () => {
+	it('keeps a fully valid hero section as-is, with no warnings', () => {
+		const hero = {
+			enabled: false,
+			smoke: '#f6f1e7',
+			background: '#998A73',
+			gold: '#997a47',
+			density: 0.5,
+			speed: 0,
+			size: 2,
+			vignette: { color: '#000000', strength: 1 },
+			clearTitle: true,
+		};
+		expect(parseTheme({ hero })).toEqual({ theme: { hero }, warnings: [] });
+	});
+
+	it('accepts an empty object and a partial hero', () => {
+		expect(parseTheme({})).toEqual({ theme: {}, warnings: [] });
+		expect(parseTheme({ hero: { speed: 2 } })).toEqual({ theme: { hero: { speed: 2 } }, warnings: [] });
+	});
+
+	it('drops each invalid value on its own and warns about it', () => {
+		const { theme, warnings } = parseTheme({
+			hero: {
+				smoke: 'white',
+				density: 1.5,
+				speed: -1,
+				size: 0,
+				clearTitle: 'yes',
+				background: '#112233',
+				vignette: { color: '#000', strength: 0.2 },
+			},
+		});
+		expect(theme).toEqual({ hero: { background: '#112233', vignette: { strength: 0.2 } } });
+		expect(warnings).toHaveLength(6);
+		for (const path of ['hero.smoke', 'hero.density', 'hero.speed', 'hero.size', 'hero.clearTitle', 'hero.vignette.color']) {
+			expect(warnings.some((w) => w.includes(`"${path}"`)), path).toBe(true);
+		}
+	});
+
+	it('ignores unknown sections and settings with a warning', () => {
+		const { theme, warnings } = parseTheme({ tokens: {}, hero: { octaves: 8, speed: 1 } });
+		expect(theme).toEqual({ hero: { speed: 1 } });
+		expect(warnings).toEqual(['Unknown section "tokens" is ignored.', 'Unknown setting "hero.octaves" is ignored.']);
+	});
+
+	it('falls back to an empty theme when the shape is wrong', () => {
+		expect(parseTheme([1]).theme).toEqual({});
+		expect(parseTheme('hero').warnings).toHaveLength(1);
+		const { theme, warnings } = parseTheme({ hero: 'on', });
+		expect(theme).toEqual({});
+		expect(warnings).toEqual(['"hero" must be an object; using its defaults.']);
+	});
+});
 
 // Established exception to the synthetic-schemas rule (see AGENTS.md): reads
 // fall-of-troy/ to smoke-test that the sample project files stay valid against

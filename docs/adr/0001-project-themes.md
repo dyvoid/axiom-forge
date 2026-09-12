@@ -1,7 +1,7 @@
 # 1. Project Themes
 
 **Date:** 2026-05-23, revised 2026-09-12  
-**Status:** Proposed
+**Status:** Accepted
 
 ## Context
 
@@ -93,3 +93,19 @@ design tokens, base light and dark themes, and a theme switcher.
   it is slow or unavailable.
 - The print-aesthetic objection recorded in the roadmap applies to the later phases, not to
   phase 1, which only touches the landing hero.
+
+## Implementation
+
+Phase 1 is built as decided. Where it landed, and the details the Decision left open:
+
+- `parseTheme` and `ThemeSchema` in `packages/shared/src/schema.ts`; `ProjectStore.loadTheme`
+  runs on `load()` and `reload()`; `GET /api/theme` in `packages/server/src/routes/theme.ts`.
+- Theme warnings are one entry in `GET /api/warnings` with an empty `folder` and
+  `name: "theme.json"`. The warnings dialog is shown by the app shell, so they surface once the
+  user leaves the landing page, not on it.
+- `resolveHeroParams` and `heroThemeFromParams` live in `packages/client/src/hero/heroTheme.ts`.
+  Landing fetches the theme through its own query, outside `ProjectContext`'s loading gate, and
+  holds the hero back until that query settles so a project never flashes the default colors.
+- `?tune` starts from the project's look and draws the hero even when the theme disables it. Its
+  "Copy theme.json" emits only the settings that differ from the defaults and names any tuned
+  value theme.json cannot express; its paste box accepts a theme.json as well as a values blob.

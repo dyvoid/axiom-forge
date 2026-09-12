@@ -14,6 +14,47 @@ Project identity and UI preferences. Always present in the project root.
 }
 ```
 
+### `theme.json` (optional)
+A project's own look. Only the landing hero is themeable so far
+([ADR-0001](adr/0001-project-themes.md)).
+
+```json
+{
+  "hero": {
+    "enabled": true,
+    "smoke": "#f6f1e7",
+    "background": "#998a73",
+    "gold": "#997a47",
+    "density": 0.38,
+    "speed": 1,
+    "size": 1,
+    "vignette": { "color": "#000000", "strength": 0.08 },
+    "clearTitle": false
+  }
+}
+```
+
+Every field is optional; the values above are the defaults.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `enabled` | boolean | `false` removes the hero entirely |
+| `smoke` | `"#rrggbb"` | Smoke color; the top of its gradient is derived from it |
+| `background` | `"#rrggbb"` | Color showing through the gaps in the smoke |
+| `gold` | `"#rrggbb"` | Tint where the smoke is thinnest |
+| `density` | number, 0–1 | How far the smoke may thin; higher is denser |
+| `speed` | number, ≥ 0 | Animation speed; `0` holds a still frame |
+| `size` | number, > 0 | Shape size; `2` makes the billows twice as large |
+| `vignette.color` | `"#rrggbb"` | Edge tint |
+| `vignette.strength` | number, 0–1 | How strongly the edges take that tint |
+| `clearTitle` | boolean | Keep the smoke unbroken behind the title instead of in the corners |
+
+Unlike `config.json` and `schema.json`, this file never stops a project loading. A missing file
+means the defaults. Invalid JSON, a value of the wrong type or range, or an unknown section or
+setting falls back to the default and is reported through the warnings dialog.
+
+The landing text is not themed yet, so a dark `background` or `smoke` can make it hard to read.
+
 ### `schema.json`
 Defines all folio types, their sections, fields, and field types. The app reads this on startup and builds its entire UI from it. Nothing about folio types is hardcoded in the app.
 

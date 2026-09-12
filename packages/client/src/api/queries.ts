@@ -6,7 +6,20 @@ import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { ParsedFolio, FolioIndexRecord } from '@axiom-forge/shared';
-import { fetchFolios, fetchFolio, putFolio, postFolio, deleteFolio, fetchWarnings, fetchSearch, fetchBacklinks } from './client.js';
+import { fetchFolios, fetchFolio, putFolio, postFolio, deleteFolio, fetchWarnings, fetchSearch, fetchBacklinks, fetchTheme } from './client.js';
+
+/**
+ * The project's optional theme.json (ADR-0001) — `{}` when it has none. Not
+ * part of ProjectContext's loading gate: a theme is cosmetic, so a slow or
+ * failed fetch must never hold up the app.
+ */
+export function useTheme() {
+	return useQuery({
+		queryKey: ['theme'],
+		queryFn: fetchTheme,
+		staleTime: Infinity,
+	});
+}
 
 /** Schema parse warnings across all project files — fetched once at startup. */
 export function useWarnings() {

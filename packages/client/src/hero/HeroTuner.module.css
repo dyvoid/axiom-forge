@@ -45,6 +45,12 @@
 	color: var(--text-muted);
 }
 
+.note {
+	padding: var(--sp-2) var(--sp-4) 0;
+	font-size: var(--fs-eyebrow);
+	color: var(--accent-rust);
+}
+
 .actions {
 	display: flex;
 	flex-wrap: wrap;

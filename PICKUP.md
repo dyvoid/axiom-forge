@@ -11,9 +11,10 @@ session did, read git log.
 
 ## In Progress
 
-**Landing hero tuning** (`experiment/hero-tuner`) — every look-shaping shader value is a uniform
-in `HeroParams`, editable live at `/?tune`. It is the base for phase 1 of ADR-0001, which is
-designed but not built.
+**Landing hero tuning and project themes, phase 1** (`experiment/hero-tuner`) — the hero's shader
+values are uniforms editable live at `/?tune`, and a project's optional `theme.json` restyles or
+disables the hero (ADR-0001). The later theming phases (design tokens, dark mode, a switcher) are
+not designed yet.
 
 ## Next Up
 
@@ -31,11 +32,7 @@ scaffolding will reshape.
 
 ## Open Decisions
 
-**Accept ADR-0001 phase 1?** It was rescoped on 2026-09-12 to an optional `theme.json` with a
-`hero` section only, including a switch that disables the hero. Accepting it clears the build;
-later theming phases stay undesigned.
-
-The UI consistency audit is closed — see
+None. The UI consistency audit is closed — see
 [its handoff](docs/ui-consistency-audit.md) for what the component tests deliberately don't
 reach, and check those flows in a browser when changing the shared controls.
 

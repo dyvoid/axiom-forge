@@ -28,7 +28,8 @@ entry in the in-memory index (see below), not the file.
 ## Project
 
 **Project** — one folder on disk holding the whole world: a `config.json`, a `schema.json`, one
-subfolder of `.md` files per type, and an optional `Images/` folder for cover images. The server
+subfolder of `.md` files per type, an optional `Images/` folder for cover images, and an optional
+`theme.json` that restyles or disables the landing hero. The server
 is pointed at exactly one project via `--project`. The files are the source of truth; there is no
 database.
 

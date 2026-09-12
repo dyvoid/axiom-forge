@@ -13,6 +13,11 @@ interface Props {
 	onClose: () => void;
 }
 
+/** `folder/name`, or just the name for a project-root file such as theme.json. */
+function entryPath(entry: WarningEntry): string {
+	return entry.folder ? `${entry.folder}/${entry.name}` : entry.name;
+}
+
 export function SchemaWarningsDialog({ warnings, onClose }: Props): JSX.Element {
 	const [copied, setCopied] = useState(false);
 	const titleId = useId();
@@ -23,7 +28,7 @@ export function SchemaWarningsDialog({ warnings, onClose }: Props): JSX.Element 
 	function buildCopyText(): string {
 		return warnings
 			.map((e) => {
-				const header = `${e.folder}/${e.name}`;
+				const header = entryPath(e);
 				const lines = e.warnings.map((w) => `  - ${w}`).join('\n');
 				return `${header}\n${lines}`;
 			})
@@ -57,7 +62,7 @@ export function SchemaWarningsDialog({ warnings, onClose }: Props): JSX.Element 
 				<div className={styles.body}>
 					{warnings.map((entry) => (
 						<div key={`${entry.folder}/${entry.name}`} className={styles.fileBlock}>
-							<div className={styles.filePath}>{entry.folder}/{entry.name}</div>
+							<div className={styles.filePath}>{entryPath(entry)}</div>
 							<div className={styles.warningList}>
 								{entry.warnings.map((w, i) => (
 									<div key={i} className={styles.warningItem}>{w}</div>

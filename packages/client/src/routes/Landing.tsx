@@ -1,18 +1,19 @@
 /**
- * Landing route — project home page.
- * Phase 1: title block, description, type counts, "Enter" CTA.
- * WebGL hero will be layered in after we confirm the basics work.
+ * Landing route — project home page: title block, description, type counts,
+ * the "Enter" CTA, and the WebGL hero behind them. A project can restyle or
+ * disable the hero through its theme.json (ADR-0001).
  */
 
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useProject } from '../context/ProjectContext.js';
-import { useFolios } from '../api/queries.js';
+import { useFolios, useTheme } from '../api/queries.js';
 import { Icon } from '../components/ui/Icon.js';
 import styles from './Landing.module.css';
 
 import { WebGLHero } from '../hero/WebGLHero.js';
-import { DEFAULT_HERO_PARAMS, type HeroParams } from '../hero/heroParams.js';
+import { resolveHeroParams } from '../hero/heroTheme.js';
+import type { HeroParams } from '../hero/heroParams.js';
 
 // Debug panel for the hero shader; its own chunk, fetched only on `/?tune`.
 const HeroTuner = lazy(() => import('../hero/HeroTuner.js').then((m) => ({ default: m.HeroTuner })));
@@ -23,7 +24,18 @@ export function Landing(): JSX.Element {
 	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
 	const tuning = searchParams.has('tune');
-	const [heroParams, setHeroParams] = useState<HeroParams>(DEFAULT_HERO_PARAMS);
+
+	// The hero waits for the theme so a project never flashes the default
+	// colors before its own. A failed fetch settles too, and falls back to the
+	// defaults rather than leaving the page without a hero.
+	const themeQuery = useTheme();
+	const heroTheme = themeQuery.data?.hero;
+	const heroEnabled = heroTheme?.enabled !== false;
+	const projectParams = useMemo(() => resolveHeroParams(heroTheme), [heroTheme]);
+	const [tunedParams, setTunedParams] = useState<HeroParams | null>(null);
+	const heroParams = tuning && tunedParams ? tunedParams : projectParams;
+	const showHero = !themeQuery.isLoading && (heroEnabled || tuning);
+
 	const [contentHidden, setContentHidden] = useState(false);
 
 	// Count folios per type
@@ -43,7 +55,7 @@ export function Landing(): JSX.Element {
 	return (
 		<>
 			<div className={contentHidden ? `${styles.landing} ${styles.contentHidden}` : styles.landing}>
-				<WebGLHero variant="codex" params={heroParams} />
+				{showHero && <WebGLHero variant="codex" params={heroParams} />}
 				<div className={styles.topCorners}>
 					<div className={styles.topLeft}>AXIOM · FORGE</div>
 					<div className={styles.topRight}>
@@ -65,14 +77,14 @@ export function Landing(): JSX.Element {
 						</button>
 					</div>
 				</div>
-	
+
 				<footer className={styles.footer}>
 					<div className={styles.typeCounts}>
 						{Object.entries(schema.types).map(([typeKey, typeDef]) => {
 							const count = typeCounts[typeKey] ?? 0;
 							return (
-								<button 
-									key={typeKey} 
+								<button
+									key={typeKey}
 									className={styles.typeEntry}
 									onClick={() => navigate(`/folio/${typeDef.folder}`)}
 								>
@@ -88,7 +100,8 @@ export function Landing(): JSX.Element {
 				<Suspense fallback={null}>
 					<HeroTuner
 						params={heroParams}
-						onChange={setHeroParams}
+						heroEnabled={heroEnabled}
+						onChange={setTunedParams}
 						contentHidden={contentHidden}
 						onContentHiddenChange={setContentHidden}
 					/>

@@ -112,6 +112,8 @@ The `/` Landing route features a WebGL fragment shader: a pale cream smoke body 
 
 Its colors and tunable values are uniforms, not literals: `packages/client/src/hero/heroParams.ts` holds the shipped values (`DEFAULT_HERO_PARAMS`), each uploaded as `u_<key>`. Opening `/?tune` loads a debug panel that edits them live, persists the edit in localStorage, and copies the result as JSON to paste back over the defaults. The shader colors are deliberately not design tokens — they are raw 0–1 RGB, and the smoke is tuned against the parchment tokens by eye.
 
+A project's optional `theme.json` restyles a small, look-level subset of those values or disables the hero ([ADR-0001](adr/0001-project-themes.md)). `?tune` starts from that project look and can copy it back out as a `theme.json`.
+
 ### Responsive Behavior
 
 The layout adapts across three content-driven breakpoints, defined as tokens in `tokens.css`:

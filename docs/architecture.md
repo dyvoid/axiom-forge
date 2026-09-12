@@ -27,6 +27,7 @@ Because the app does not watch the filesystem (no `chokidar`), it relies on a li
 The server exposes the following REST API:
 - `GET /api/config` - Returns `config.json`
 - `GET /api/schema` - Returns the validated `schema.json`
+- `GET /api/theme` - Returns the validated optional `theme.json`, or `{}` when the project has none
 - `GET /api/folios` - Returns the full folio index (sidebar & index views)
 - `GET /api/folios/:folder/:name` - Returns a single parsed folio as structured JSON
 - `GET /api/search?q=` - Ranked search across titles, names, aliases, tags, and prose snippets
@@ -34,8 +35,8 @@ The server exposes the following REST API:
 - `GET /api/folios/:folder/:name/image` - Resolves and serves the folio's cover embed with a strict image content type
 - `PUT /api/folios/:folder/:name/image?filename=` - Uploads an allowed image (maximum 10 MB) to the project `Images/` folder and returns its collision-safe vault path
 - `DELETE /api/folios/:folder/:name/image` - Deletes the image referenced by the folio's current cover embed
-- `GET /api/warnings` - Returns all parse warnings, grouped by folio
-- `POST /api/reload` - Rebuilds the in-memory index from disk and re-reads config + schema
+- `GET /api/warnings` - Returns all parse warnings, grouped by file; `theme.json` problems are an entry with an empty `folder`
+- `POST /api/reload` - Rebuilds the in-memory index from disk and re-reads config, schema and theme
 - `POST /api/folios/:folder` - Creates a new folio
 - `PUT /api/folios/:folder/:name` - Saves (and optionally renames) a folio. Validates `mtime` to prevent edit conflicts; on rename, atomically moves the file and rewrites every `[[Folder/Old_Name]]` wikilink across the project.
 - `DELETE /api/folios/:folder/:name?deleteCoverImage=` - Deletes a folio and optionally its referenced cover image
@@ -49,7 +50,7 @@ The frontend is a single-page React application powered by Vite. In development 
 
 ### State Management
 - **`ProjectContext`**: Fetches `/api/config` and `/api/schema` once at boot. These are effectively immutable for the session.
-- **TanStack Query**: Manages all dynamic server state: folio lists, individual reads, search results, and backlinks. It caches data heavily and invalidates on save or via the header "Sync" button.
+- **TanStack Query**: Manages all dynamic server state: folio lists, individual reads, search results, and backlinks. The theme is also a query, used only by `Landing` and deliberately outside `ProjectContext`'s loading gate, since a theme must never hold up the app. It caches data heavily and invalidates on save or via the header "Sync" button.
 
 ### Routing
 The UI handles routing entirely client-side using React Router:

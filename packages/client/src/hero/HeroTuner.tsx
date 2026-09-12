@@ -1,13 +1,16 @@
 /**
  * Debug panel for the landing hero shader, opened with `/?tune`.
  *
- * Edits a live copy of `HeroParams` and keeps it in localStorage so a reload
+ * Starts from the project's own look (its theme.json applied to the app
+ * defaults), edits a live copy, and keeps the edit in localStorage so a reload
  * (which also reseeds the smoke) doesn't lose the work. Nothing here changes
- * what ships: to adopt a look, copy the values and paste them over
- * `DEFAULT_HERO_PARAMS` in `heroParams.ts`.
+ * what ships: to adopt a look for one project, copy it as theme.json; to
+ * change the app-wide defaults, copy all values over `DEFAULT_HERO_PARAMS`
+ * in `heroParams.ts`.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { parseTheme } from '@axiom-forge/shared';
 import controls from '../components/ui/controls.module.css';
 import {
 	DEFAULT_HERO_PARAMS,
@@ -18,51 +21,72 @@ import {
 	sanitizeHeroParams,
 	vec3ToHex,
 	type HeroControl,
+	type HeroParamKey,
 	type HeroParams,
 	type Vec2,
 } from './heroParams.js';
+import { heroThemeFromParams, resolveHeroParams } from './heroTheme.js';
 import styles from './HeroTuner.module.css';
 
 const STORAGE_KEY = 'axiom-forge.hero-tuner';
 
 type HeroTunerProps = {
+	/** What the hero is showing right now. */
 	params: HeroParams;
-	onChange: (params: HeroParams) => void;
+	/** theme.json's `hero.enabled`. The tuner shows the hero either way. */
+	heroEnabled: boolean;
+	/** A tuned set, or `null` to return to the project's own look. */
+	onChange: (params: HeroParams | null) => void;
 	contentHidden: boolean;
 	onContentHiddenChange: (hidden: boolean) => void;
 };
 
 const btn = `${controls.btn} ${controls.btnCompact} ${controls.btnSecondary}`;
 
-export function HeroTuner({ params, onChange, contentHidden, onContentHiddenChange }: HeroTunerProps): JSX.Element {
+const CONTROL_LABELS = new Map<HeroParamKey, string>(
+	HERO_CONTROL_GROUPS.flatMap((group) =>
+		group.controls.map((control) => [control.key, `${group.title} › ${control.label}`] as const),
+	),
+);
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+	return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+export function HeroTuner({
+	params,
+	heroEnabled,
+	onChange,
+	contentHidden,
+	onContentHiddenChange,
+}: HeroTunerProps): JSX.Element {
 	const [collapsed, setCollapsed] = useState(false);
 	const [transfer, setTransfer] = useState<string | null>(null);
 	const [status, setStatus] = useState('');
-	const restored = useRef(false);
 
-	// Restore once, then persist every change. The guard keeps the first save
-	// (still holding the defaults) from overwriting what is being restored.
 	useEffect(() => {
 		try {
 			const stored = localStorage.getItem(STORAGE_KEY);
 			if (stored) onChange(sanitizeHeroParams(JSON.parse(stored)));
 		} catch {
-			// Unreadable or blocked storage: start from the defaults.
+			// Unreadable or blocked storage: start from the project's look.
 		}
-		restored.current = true;
 	}, []); // restore once on mount
 
-	useEffect(() => {
-		if (!restored.current) return;
+	// Persisting here rather than in an effect on `params` means only real
+	// edits are stored — never the project's look it happens to be showing.
+	function update(next: HeroParams | null) {
+		onChange(next);
 		try {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(params));
+			if (next) localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+			else localStorage.removeItem(STORAGE_KEY);
 		} catch {
 			// Storage full or blocked; the panel still works for this session.
 		}
-	}, [params]);
+	}
 
 	function set<K extends keyof HeroParams>(key: K, value: HeroParams[K]) {
-		onChange({ ...params, [key]: value });
+		update({ ...params, [key]: value });
 	}
 
 	function reset(key: keyof HeroParams) {
@@ -70,24 +94,45 @@ export function HeroTuner({ params, onChange, contentHidden, onContentHiddenChan
 		set(key, (Array.isArray(fallback) ? [...fallback] : fallback) as HeroParams[typeof key]);
 	}
 
-	async function copyValues() {
-		const text = formatHeroParams(params);
+	async function copy(text: string, done: string) {
 		try {
 			await navigator.clipboard.writeText(text);
-			setStatus('Copied to clipboard');
+			setStatus(done);
 		} catch {
 			setTransfer(text);
 			setStatus('Clipboard blocked — copy from the box');
 		}
 	}
 
+	function copyTheme() {
+		const { theme, unsupported } = heroThemeFromParams(params, heroEnabled);
+		const skipped = unsupported.map((key) => CONTROL_LABELS.get(key) ?? key);
+		void copy(
+			JSON.stringify(theme, null, '\t'),
+			skipped.length > 0
+				? `Copied theme.json. Not settable there, so left out: ${skipped.join('; ')}`
+				: 'Copied theme.json',
+		);
+	}
+
+	// Accepts either a theme.json (recognised by its `hero` section) or a full
+	// values blob from "Copy all values".
 	function applyTransfer() {
+		let parsed: unknown;
 		try {
-			onChange(sanitizeHeroParams(JSON.parse(transfer ?? '')));
-			setTransfer(null);
-			setStatus('Applied');
+			parsed = JSON.parse(transfer ?? '');
 		} catch {
 			setStatus('Not valid JSON');
+			return;
+		}
+		setTransfer(null);
+		if (isPlainObject(parsed) && 'hero' in parsed) {
+			const { theme, warnings } = parseTheme(parsed);
+			update(resolveHeroParams(theme.hero));
+			setStatus(warnings.length > 0 ? `Applied theme.json with warnings: ${warnings.join(' ')}` : 'Applied theme.json');
+		} else {
+			update(sanitizeHeroParams(parsed));
+			setStatus('Applied values');
 		}
 	}
 
@@ -108,9 +153,18 @@ export function HeroTuner({ params, onChange, contentHidden, onContentHiddenChan
 				</button>
 			</header>
 
+			{!heroEnabled && (
+				<p className={styles.note}>
+					This project's theme.json disables the hero. It is shown here only while tuning.
+				</p>
+			)}
+
 			<div className={styles.actions}>
-				<button type="button" className={btn} onClick={() => void copyValues()}>
-					Copy values
+				<button type="button" className={btn} onClick={copyTheme}>
+					Copy theme.json
+				</button>
+				<button type="button" className={btn} onClick={() => void copy(formatHeroParams(params), 'Copied all values')}>
+					Copy all values
 				</button>
 				<button
 					type="button"
@@ -118,17 +172,17 @@ export function HeroTuner({ params, onChange, contentHidden, onContentHiddenChan
 					onClick={() => setTransfer(transfer === null ? '' : null)}
 					aria-expanded={transfer !== null}
 				>
-					Paste values
+					Paste
 				</button>
 				<button
 					type="button"
 					className={btn}
 					onClick={() => {
-						onChange(sanitizeHeroParams(null));
-						setStatus('Reset to shipped values');
+						update(null);
+						setStatus("Back to the project's look");
 					}}
 				>
-					Reset all
+					Reset
 				</button>
 				<label className={styles.checkbox}>
 					<input
@@ -147,7 +201,7 @@ export function HeroTuner({ params, onChange, contentHidden, onContentHiddenChan
 						aria-label="Values JSON"
 						value={transfer}
 						onChange={(e) => setTransfer(e.target.value)}
-						placeholder="Paste a copied values blob"
+						placeholder="Paste a theme.json or a copied values blob"
 						spellCheck={false}
 					/>
 					<button type="button" className={btn} onClick={applyTransfer}>
@@ -200,7 +254,7 @@ function ControlRow({ control, params, onSet, onReset }: ControlRowProps): JSX.E
 						className={styles.resetOne}
 						onClick={() => onReset(control.key)}
 						aria-label={`Reset ${control.label}`}
-						title="Reset to shipped value"
+						title="Reset to the app default"
 					>
 						↺
 					</button>

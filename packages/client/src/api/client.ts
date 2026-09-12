@@ -42,7 +42,7 @@ async function request<T>(path: string): Promise<T> {
 
 // ── Typed API methods ───────────────────────────────────
 
-import type { Config, CoverImage, ProjectSchema, FolioIndexRecord, ParsedFolio } from '@axiom-forge/shared';
+import type { Config, CoverImage, ProjectSchema, FolioIndexRecord, ParsedFolio, Theme } from '@axiom-forge/shared';
 
 export function fetchConfig(): Promise<Config> {
 	return request<Config>('/config');
@@ -50,6 +50,10 @@ export function fetchConfig(): Promise<Config> {
 
 export function fetchSchema(): Promise<ProjectSchema> {
 	return request<ProjectSchema>('/schema');
+}
+
+export function fetchTheme(): Promise<Theme> {
+	return request<Theme>('/theme');
 }
 
 export function fetchFolios(): Promise<FolioIndexRecord[]> {

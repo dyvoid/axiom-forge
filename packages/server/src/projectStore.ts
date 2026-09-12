@@ -10,6 +10,7 @@ import {
 	extractAllLinks,
 	filenameToDisplayName,
 	parseMarkdown,
+	parseTheme,
 	rankFolios,
 	rewriteWikiLinks,
 	serializeToMarkdown,
@@ -18,6 +19,7 @@ import {
 	type CoverImage,
 	type ProjectSchema,
 	type SchemaIndex,
+	type Theme,
 	type FolioIndexRecord,
 	type ParsedFolio,
 	type WikiLink,
@@ -79,6 +81,9 @@ export class ProjectStore {
 	private config: Config | null = null;
 	private schema: ProjectSchema | null = null;
 	private schemaIndex: SchemaIndex | null = null;
+	/** From the optional theme.json (ADR-0001); `{}` when absent or unusable. */
+	private theme: Theme = {};
+	private themeWarnings: string[] = [];
 	private folios: InternalFolioRecord[] = [];
 	private nextId = 1;
 	/** Serializes all mutating operations so concurrent writes can't interleave. */
@@ -95,6 +100,7 @@ export class ProjectStore {
 		this.config = await this.loadJson('config.json', ConfigSchema.parse);
 		this.schema = await this.loadJson('schema.json', ProjectSchemaSchema.parse);
 		this.schemaIndex = createSchemaIndex(this.schema);
+		await this.loadTheme();
 
 		console.log(
 			`  • config: "${this.config.name}"`,
@@ -120,6 +126,11 @@ export class ProjectStore {
 	getSchemaIndex(): SchemaIndex {
 		if (!this.schemaIndex) throw new Error('ProjectStore not loaded.');
 		return this.schemaIndex;
+	}
+
+	/** The validated theme.json, or `{}` when the project has none. */
+	getTheme(): Theme {
+		return this.theme;
 	}
 
 	/** Return all folio index records (for the sidebar). */
@@ -149,11 +160,21 @@ export class ProjectStore {
 		return this.folios.map((f) => f.filePath);
 	}
 
-	/** Return all parse warnings across the project, grouped by folio. */
+	/**
+	 * Return all parse warnings across the project, grouped by file. theme.json
+	 * problems come first, as an entry with an empty `folder` because the file
+	 * sits in the project root.
+	 */
 	getWarnings(): { folder: string; name: string; warnings: string[] }[] {
-		return this.folios
-			.filter((f) => f.warnings.length > 0)
-			.map(({ folder, name, warnings }) => ({ folder, name, warnings }));
+		const themeEntry = this.themeWarnings.length > 0
+			? [{ folder: '', name: 'theme.json', warnings: this.themeWarnings }]
+			: [];
+		return [
+			...themeEntry,
+			...this.folios
+				.filter((f) => f.warnings.length > 0)
+				.map(({ folder, name, warnings }) => ({ folder, name, warnings })),
+		];
 	}
 
 	/**
@@ -483,6 +504,7 @@ export class ProjectStore {
 
 	async reload(): Promise<void> {
 		this.config = await this.loadJson('config.json', ConfigSchema.parse);
+		await this.loadTheme();
 		this.schema = await this.loadJson('schema.json', ProjectSchemaSchema.parse);
 		this.schemaIndex = createSchemaIndex(this.schema);
 		this.folios = [];
@@ -656,6 +678,40 @@ export class ProjectStore {
 		if (resolution.error === 'ambiguous') return `Cover image "${coverImage.path}" is ambiguous; use a vault-relative path`;
 		if (resolution.error === 'outside-project') return `Cover image "${coverImage.path}" resolves outside the project`;
 		return `Cover image "${coverImage.path}" was not found`;
+	}
+
+	/**
+	 * Read the optional theme.json (ADR-0001). Unlike `loadJson` this never
+	 * throws: a missing file means the app defaults, and an unreadable or
+	 * invalid one falls back to them with warnings.
+	 */
+	private async loadTheme(): Promise<void> {
+		const fullPath = resolve(this.projectPath, 'theme.json');
+		this.theme = {};
+		this.themeWarnings = [];
+
+		let raw: string;
+		try {
+			raw = await readFile(fullPath, 'utf-8');
+		} catch (err) {
+			if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+				this.themeWarnings = [`Could not read theme.json, using the default theme: ${(err as Error).message}`];
+			}
+			return;
+		}
+
+		let parsed: unknown;
+		try {
+			parsed = JSON.parse(raw);
+		} catch (err) {
+			this.themeWarnings = [`Invalid JSON, using the default theme: ${(err as Error).message}`];
+			return;
+		}
+
+		const { theme, warnings } = parseTheme(parsed);
+		this.theme = theme;
+		this.themeWarnings = warnings;
+		console.log(`  • theme: ${Object.keys(theme).join(', ') || 'no usable sections'}`);
 	}
 
 	private async loadJson<T>(

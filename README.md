@@ -86,6 +86,7 @@ A project folder contains:
 my-world/
 ├── config.json         # name, description, version
 ├── schema.json         # type definitions
+├── theme.json          # optional — restyle or disable the landing hero
 ├── Characters/
 │   ├── Alice.md
 │   └── Bob.md
@@ -106,6 +107,19 @@ my-world/
   "version": "1.0.0"
 }
 ```
+
+### `theme.json` (optional)
+
+Restyles the smoke on the landing page, or turns it off. Every setting is optional:
+
+```json
+{
+  "hero": { "smoke": "#f6f1e7", "background": "#998a73", "speed": 0.5, "clearTitle": true }
+}
+```
+
+See [Data Model](docs/data-model.md) for every setting. Open the landing page with `?tune` to
+adjust the look live and copy the result as a `theme.json`.
 
 ### `schema.json`
 

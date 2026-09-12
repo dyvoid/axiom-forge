@@ -42,11 +42,19 @@ export const folios: FolioIndexRecord[] = [
 	{ id: 4, type: 'Location', folder: 'Locations', name: 'Troy', title: 'Troy', tags: [] },
 ];
 
-export function renderWithProject(ui: ReactElement): RenderResult {
+export interface RenderWithProjectOptions {
+	/** Extra query-cache entries to seed, as `[queryKey, data]` pairs. */
+	queryData?: [readonly unknown[], unknown][];
+}
+
+export function renderWithProject(ui: ReactElement, options: RenderWithProjectOptions = {}): RenderResult {
 	const queryClient = new QueryClient({
 		defaultOptions: { queries: { retry: false, gcTime: Infinity } },
 	});
 	queryClient.setQueryData(['folios'], folios);
+	for (const [key, data] of options.queryData ?? []) {
+		queryClient.setQueryData(key, data);
+	}
 
 	const schemaIndex = createSchemaIndex(schema);
 	const config = { title: 'The Fall of Troy' } as never;
