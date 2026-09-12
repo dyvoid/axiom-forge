@@ -17,10 +17,9 @@
 }
 
 .title {
-	font-family: var(--ff-body);
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-eyebrow);
-	text-transform: uppercase;
+	font-family: var(--ff-display);
+	font-size: var(--fs-h2);
+	font-style: italic;
 	font-weight: 500;
 	color: var(--text-primary);
 	margin-bottom: var(--sp-3);
