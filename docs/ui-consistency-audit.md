@@ -97,21 +97,24 @@ selectors like `.btnConfirm.danger`; use a standalone class.
 
 ## Still open
 
-1. **Component tests.** Still the largest gap. The no-new-dependency subset
-   is done: `utils/links` now holds the wikilink-field logic that used to
-   live inside two components, and `utils/links.test.ts` covers
-   `parseWikiLinkText`, `searchPlaceholder`, `isLinkCandidate`,
-   `showsFolderColumn` and `linkKey` (26 tests).
+1. **What the component tests cannot reach.** The tests landed —
+   `ChipField`, `WikiLinkPicker` and `WikilinkListField` are covered
+   (45 tests) on top of the pure helpers in `utils/links` (26). jsdom
+   implements no layout, so two classes of bug stay outside their reach and
+   still need a browser:
 
-   What remains needs a decision: vitest is present but there is no `jsdom`
-   or `@testing-library/react`, so testing `ChipField` and `WikiLinkPicker`
-   as *components* — the open/commit/keyboard behaviour, which is where the
-   alias regression actually shipped — means adding those two devDependencies.
-   Everything short of that has been extracted and covered. Until then the
-   controls are verified by driving the real app in a browser; the flows
-   worth re-checking after any change to them are both index views, the
-   folio read and edit views, and committing an option in each picker by
-   mouse and by keyboard.
+   - **Anything about layout or CSS.** Including the composed-class ordering
+     trap below, which is this project's most instructive bug and would pass
+     a jsdom test cleanly.
+   - **Event ordering that depends on real focus.** The pickers commit on
+     `mousedown` + `preventDefault` rather than `click` so focus never
+     leaves the input mid-commit. Swapping that back to `onClick` keeps
+     every test green — verified by mutation, and said so in the tests
+     themselves.
+
+   After changing these controls, drive the real app: both index views, the
+   folio read and edit views, and commit an option in each picker by mouse
+   and by keyboard.
 
 2. **Inline styles that are staying.** Three remain and are correct as
    inline: `TextareaField`'s picker `top`/`left` (computed caret position),

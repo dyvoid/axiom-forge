@@ -29,11 +29,9 @@ scaffolding will reshape.
 
 ## Open Decisions
 
-**Do we add `jsdom` + `@testing-library/react` to `packages/client`?** The UI consistency audit
-is otherwise closed — see [its handoff](docs/ui-consistency-audit.md). Everything testable
-without them has been extracted to `utils/links` and covered. What stays uncovered is the
-open/commit/keyboard behaviour of `ChipField` and `WikiLinkPicker`, which is exactly where the
-alias regression shipped. Two devDependencies, or the shared controls stay browser-verified only.
+None. The UI consistency audit is closed — see
+[its handoff](docs/ui-consistency-audit.md) for what the component tests deliberately don't
+reach, and check those flows in a browser when changing the shared controls.
 
 The four raised by the 2026-08-30 ADR audit were answered that day and are recorded where
 they belong: ADR-0019 accepted and ADR-0020 deferred (their status lines), ADR-0013 given the

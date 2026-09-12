@@ -37,9 +37,29 @@ or field values from the sample project. See `schema.test.ts` for the establishe
 - New or changed API routes → integration test in `packages/server`, using a synthetic project
   fixture in `tmpdir`.
 - New pure utility functions in `packages/client` → unit test.
-- React components → not tested today. Adding them requires a test renderer setup
-  (e.g. jsdom + `@testing-library/react`). This is a deliberate omission, not an oversight;
-  add the setup when the benefit justifies its cost.
+- React components → render test with `@testing-library/react`. Start the file with a
+  `/** @vitest-environment jsdom */` docblock: only component files pay for a DOM, and the
+  pure-utility tests keep running in node. Components that read the folio index or the schema
+  render through `src/test/renderWithProject.tsx`, which seeds the query cache and a fixture
+  schema rather than mocking the fetch layer, so the component runs its real code paths.
+
+  Assert through roles and accessible names (`getByRole('combobox', { name: 'Allies' })`), not
+  CSS-module class names — the class names are hashed, and an assertion on one pins the
+  implementation rather than the behaviour.
+
+### What component tests cannot reach
+
+jsdom implements no layout. Two classes of bug pass a green suite and need a real browser:
+
+- **Anything about layout or CSS.** Including the composed-class ordering trap recorded in
+  [the UI consistency audit](ui-consistency-audit.md), where a shared class silently flattened
+  a textarea's 240px min-height to 38px.
+- **Event ordering that depends on real focus.** The pickers commit on `mousedown` +
+  `preventDefault` rather than `click`; jsdom fires both with no focus ordering behind them,
+  so swapping the handler keeps the tests green. Verified by mutation, and noted in the tests.
+
+A test that passes against the bug it claims to cover is worse than no test. When a test exists
+to pin a specific regression, break the code and watch it fail before trusting it.
 
 ## What the checks do not cover
 
