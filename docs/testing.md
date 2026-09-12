@@ -47,6 +47,19 @@ or field values from the sample project. See `schema.test.ts` for the establishe
   CSS-module class names — the class names are hashed, and an assertion on one pins the
   implementation rather than the behaviour.
 
+### Node version
+
+CI pins Node 20 (`.github/workflows/ci.yml`), and `engines` declares `>=20.19.0`. A test
+dependency must fit inside that range — it does not get to raise the project's supported Node.
+jsdom 30 requires Node 22.22+ and turned `main` red while passing locally on a Node 22 machine,
+because `npm ci` does not enforce `engines`. jsdom is pinned to ^28 for that reason.
+
+It lives in the **root** devDependencies, not the client's: vitest declares jsdom as an optional
+peer and resolves it from its own location, so a client-local copy is the one version that
+doesn't get used. Check `npm why jsdom` returns a single entry after touching it.
+
+If a test run passes locally and fails in CI, compare `node -v` against the workflow first.
+
 ### What component tests cannot reach
 
 jsdom implements no layout. Two classes of bug pass a green suite and need a real browser:
