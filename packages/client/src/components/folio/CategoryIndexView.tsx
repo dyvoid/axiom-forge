@@ -114,6 +114,7 @@ export function CategoryIndexView(): JSX.Element {
 								className={styles.addConfirm}
 								onClick={handleCreateSubmit}
 								disabled={!newName.trim()}
+								aria-label="Create entry"
 							>
 								↵
 							</button>
@@ -121,6 +122,7 @@ export function CategoryIndexView(): JSX.Element {
 								type="button"
 								className={styles.addCancel}
 								onClick={() => { setCreating(false); setNewName(''); }}
+								aria-label="Cancel"
 							>
 								✕
 							</button>
@@ -172,7 +174,9 @@ export function CategoryIndexView(): JSX.Element {
 
 			<div className={styles.list}>
 				{filteredFolios.length === 0 ? (
-					<div className={styles.empty}>No entries yet.</div>
+					<div className={styles.empty}>
+						{q || selectedTags.length > 0 ? 'No results found.' : 'No entries yet.'}
+					</div>
 				) : (
 					filteredFolios.map(f => {
 						return (

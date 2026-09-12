@@ -440,6 +440,7 @@ function SectionBlock({
 							fieldDef={synthDef}
 							value={(data?.value as FieldValue) ?? null}
 							onChange={(v) => onUpdateSection({ value: v })}
+							label={sectionName}
 						/>
 					</div>
 				</>
