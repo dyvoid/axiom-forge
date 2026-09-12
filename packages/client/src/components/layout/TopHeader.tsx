@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useProject } from '../../context/ProjectContext.js';
 import { useSearch } from '../../api/queries.js';
+import { useCombobox } from '../../hooks/useCombobox.js';
 import { Icon } from '../ui/Icon.js';
 import { EntryContent } from '../ui/EntryContent.js';
 import { reloadProject } from '../../api/client.js';
@@ -16,10 +17,8 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 	const [syncing, setSyncing] = useState(false);
 
 	const [query, setQuery] = useState('');
-	const [open, setOpen] = useState(false);
-	const [highlightIdx, setHighlightIdx] = useState(0);
+	const { open, openMenu, closeMenu, highlightIdx, setHighlightIdx, containerRef: searchRef } = useCombobox<HTMLDivElement>();
 
-	const searchRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const { data: results } = useSearch(query);
@@ -43,17 +42,6 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 		return () => window.removeEventListener('keydown', handleGlobalKeyDown);
 	}, [showSearch]);
 
-	// Click outside
-	useEffect(() => {
-		const handleOutside = (e: MouseEvent) => {
-			if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-				setOpen(false);
-			}
-		};
-		document.addEventListener('mousedown', handleOutside);
-		return () => document.removeEventListener('mousedown', handleOutside);
-	}, []);
-
 	useEffect(() => {
 		setHighlightIdx(0);
 	}, [query, items.length]);
@@ -71,14 +59,14 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 
 	function navigateTo(folder: string, name: string) {
 		navigate(`/folio/${encodeURIComponent(folder)}/${encodeURIComponent(name)}`);
-		setOpen(false);
+		closeMenu();
 		setQuery('');
 		inputRef.current?.blur();
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent) {
 		if (!open && e.key !== 'Escape') {
-			setOpen(true);
+			openMenu();
 		}
 		switch (e.key) {
 			case 'ArrowDown':
@@ -97,7 +85,7 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 				break;
 			case 'Escape':
 				e.preventDefault();
-				setOpen(false);
+				closeMenu();
 				inputRef.current?.blur();
 				break;
 		}
@@ -147,9 +135,9 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 							value={query}
 							onChange={(e) => {
 								setQuery(e.target.value);
-								setOpen(true);
+								openMenu();
 							}}
-							onFocus={() => setOpen(true)}
+							onFocus={openMenu}
 							onKeyDown={handleKeyDown}
 						/>
 						{query && (

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { filenameToDisplayName } from '@axiom-forge/shared';
 import type { WikiLink } from '@axiom-forge/shared';
 import { useFolioMap } from '../../api/queries.js';
 import { useProject } from '../../context/ProjectContext.js';
@@ -12,7 +13,7 @@ export function WikiLinkChip({ link }: { link: WikiLink }): JSX.Element {
 
 	const target = folioMap.get(`${link.folder}/${link.name}`);
 	const isDead = !target;
-	const display = link.alias || target?.title || link.name.replace(/_/g, ' ');
+	const display = link.alias || target?.title || filenameToDisplayName(link.name);
 
 	// Determine icon based on the folder->type mapping
 	const iconName = useMemo(

@@ -1,7 +1,10 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { filenameToDisplayName, scoreFolio } from '@axiom-forge/shared';
 import type { WikiLink } from '@axiom-forge/shared';
 import { useFolios } from '../../../api/queries.js';
 import { useProject } from '../../../context/ProjectContext.js';
+import { useCombobox } from '../../../hooks/useCombobox.js';
+import { parseWikiLinkText } from '../../../utils/links.js';
 import { Icon } from '../../ui/Icon.js';
 import styles from './fields.module.css';
 
@@ -12,10 +15,6 @@ interface WikiLinkPickerProps {
 	target?: string | string[];
 	/** Placeholder text when no value is selected. */
 	placeholder?: string;
-	/** Wikilinks already selected (for list mode) — excluded from dropdown. */
-	exclude?: WikiLink[];
-	/** If true, renders seamlessly inside a tag container without borders. */
-	inline?: boolean;
 	/** Whether to autofocus the search input on mount. */
 	autoFocus?: boolean;
 	/** Called when the user selects or clears a folio. */
@@ -26,8 +25,6 @@ export function WikiLinkPicker({
 	value,
 	target,
 	placeholder,
-	exclude,
-	inline,
 	autoFocus,
 	onChange,
 }: WikiLinkPickerProps): JSX.Element {
@@ -35,112 +32,49 @@ export function WikiLinkPicker({
 	const { data: folios } = useFolios();
 
 	const [query, setQuery] = useState('');
-	const [open, setOpen] = useState(false);
-	const [highlightIdx, setHighlightIdx] = useState(0);
-	const wrapRef = useRef<HTMLDivElement | null>(null);
+	const { open, openMenu, closeMenu, highlightIdx, setHighlightIdx, containerRef: wrapRef, menuRef } = useCombobox<HTMLDivElement>();
 	const inputRef = useRef<HTMLInputElement | null>(null);
-	const menuRef = useRef<HTMLDivElement | null>(null);
 	const listboxId = useId();
 
-	// Click-outside handler
-	useEffect(() => {
-		function handleOutside(e: MouseEvent) {
-			if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
-				setOpen(false);
-			}
-		}
-		document.addEventListener('mousedown', handleOutside);
-		return () => document.removeEventListener('mousedown', handleOutside);
-	}, []);
+	const selectedKey = value ? `${value.folder}/${value.name}` : null;
 
-	// Build the set of excluded keys for fast lookup
-	const excludeSet = useMemo(() => {
-		const set = new Set<string>();
-		if (exclude) {
-			for (const link of exclude) {
-				set.add(`${link.folder}/${link.name}`);
-			}
-		}
-		if (value) {
-			set.add(`${value.folder}/${value.name}`);
-		}
-		return set;
-	}, [exclude, value]);
-
-	// Filtered candidates
+	// Filtered candidates. Ranking goes through the shared scorer so this picker
+	// agrees with the header search and both indexes — including aliases, which
+	// the substring match it used before silently missed (ADR-0011).
 	const candidates = useMemo(() => {
 		if (!folios) return [];
-		const q = query.toLowerCase().trim();
-		return folios.filter((f) => {
-			// Target folder filter
+		const inScope = folios.filter((f) => {
 			if (target) {
 				if (Array.isArray(target) ? !target.includes(f.folder) : f.folder !== target) {
 					return false;
 				}
 			}
-			// Exclude already-selected
-			if (excludeSet.has(`${f.folder}/${f.name}`)) return false;
-			// Query filter
-			if (q) {
-				const title = f.title.toLowerCase();
-				const name = f.name.replace(/_/g, ' ').toLowerCase();
-				const folder = f.folder.toLowerCase();
-				return title.includes(q) || name.includes(q) || `${folder}/${name}`.includes(q) || `${folder}/${title}`.includes(q);
-			}
-			return true;
+			return selectedKey !== `${f.folder}/${f.name}`;
 		});
-	}, [folios, target, query, excludeSet]);
+
+		if (!query.trim()) return inScope;
+
+		return inScope
+			.map((folio) => ({ folio, rank: scoreFolio(folio, query) }))
+			.filter((scored) => scored.rank > 0)
+			.sort((a, b) => b.rank - a.rank)
+			.map((scored) => scored.folio);
+	}, [folios, target, query, selectedKey]);
 
 	// Clamp highlight when candidates change
 	useEffect(() => {
 		setHighlightIdx(0);
 	}, [candidates.length, query]);
 
-	// Scroll highlighted item into view
-	useEffect(() => {
-		if (!open || !menuRef.current) return;
-		const items = menuRef.current.children;
-		const item = items[highlightIdx] as HTMLElement | undefined;
-		if (item) {
-			item.scrollIntoView({ block: 'nearest' });
-		}
-	}, [highlightIdx, open]);
-
 	// Resolve icon for a folder
 	function folderIcon(folder: string): string {
 		return schemaIndex.typeDefForFolder(folder)?.icon || 'circle';
 	}
 
-	function parseRaw(raw: string): WikiLink | null {
-		const str = raw.trim();
-		if (!str) return null;
-		
-		const parts = str.split('/');
-		let folder: string;
-		let name: string;
-		
-		if (parts.length > 1) {
-			folder = parts[0]!;
-			name = parts.slice(1).join('/');
-		} else {
-			name = str;
-			if (Array.isArray(target) && target.length > 0) {
-				folder = target[0]!;
-			} else if (typeof target === 'string' && target) {
-				folder = target;
-			} else {
-				folder = 'Unsorted';
-			}
-		}
-		
-		name = name.replace(/\s+/g, '_');
-		return { folder, name };
-	}
-
 	function handleSelect(folder: string, name: string): void {
 		onChange({ folder, name });
 		setQuery('');
-		setOpen(false);
+		closeMenu();
 	}
 
 	function handleClear(): void {
@@ -152,7 +86,7 @@ export function WikiLinkPicker({
 	function handleKeyDown(e: React.KeyboardEvent): void {
 		if (!open) {
 			if (e.key === 'ArrowDown' || e.key === 'Enter') {
-				setOpen(true);
+				openMenu();
 				e.preventDefault();
 			}
 			return;
@@ -171,13 +105,13 @@ export function WikiLinkPicker({
 				if (candidates[highlightIdx]) {
 					handleSelect(candidates[highlightIdx]!.folder, candidates[highlightIdx]!.name);
 				} else {
-					const link = parseRaw(query);
+					const link = parseWikiLinkText(query, target);
 					if (link) handleSelect(link.folder, link.name);
 				}
 				break;
 			case 'Escape':
 				e.preventDefault();
-				setOpen(false);
+				closeMenu();
 				break;
 		}
 	}
@@ -186,28 +120,20 @@ export function WikiLinkPicker({
 	const selectedFolio = value
 		? folios?.find((f) => f.folder === value.folder && f.name === value.name)
 		: null;
-	const displayName = selectedFolio?.title || value?.name.replace(/_/g, ' ') || '';
+	const displayName = selectedFolio?.title || (value ? filenameToDisplayName(value.name) : '');
 
 	const targetDisplay = Array.isArray(target) ? target.join(', ') : target;
 	const showFolder = !target || (Array.isArray(target) && target.length > 1);
 
-	const wrapClass = inline
-		? `${styles.pickerWrap} ${styles.pickerWrapInline}`
-		: styles.pickerWrap;
-
-	const inputWrapClass = inline
-		? ''
-		: `${styles.pickerInputWrap} ${open ? styles.pickerFocused : ''}`;
-
 	return (
-		<div ref={wrapRef} className={wrapClass}>
-			<div className={inputWrapClass}>
+		<div ref={wrapRef} className={styles.pickerWrap}>
+			<div className={`${styles.pickerInputWrap} ${open ? styles.pickerFocused : ''}`}>
 				{value && !open ? (
 					<>
 						<div
 							className={styles.pickerSelected}
 							onClick={() => {
-								setOpen(true);
+								openMenu();
 								setTimeout(() => inputRef.current?.focus(), 0);
 							}}
 						>
@@ -222,7 +148,7 @@ export function WikiLinkPicker({
 					<input
 						ref={inputRef}
 						autoFocus={autoFocus}
-						className={inline ? styles.tagPickerInput : styles.pickerInput}
+						className={styles.pickerInput}
 						value={query}
 						placeholder={placeholder || (targetDisplay ? `Search ${targetDisplay}…` : 'Search folios…')}
 						role="combobox"
@@ -233,9 +159,10 @@ export function WikiLinkPicker({
 						aria-label={placeholder || (targetDisplay ? `Search ${targetDisplay}` : 'Search folios')}
 						onChange={(e) => {
 							setQuery(e.target.value);
-							if (!open) setOpen(true);
+							openMenu();
 						}}
-						onFocus={() => setOpen(true)}
+						onFocus={openMenu}
+						onClick={openMenu}
 						onKeyDown={handleKeyDown}
 					/>
 				)}
@@ -245,7 +172,7 @@ export function WikiLinkPicker({
 				<div ref={menuRef} className={styles.menu} id={listboxId} role="listbox">
 					{candidates.length === 0 ? (
 						<div className={styles.menuEmpty}>
-							{query.trim() ? `Press ↵ to add "${query.trim()}"` : 'No matches'}
+							{query.trim() ? `Press ↵ to add “${query.trim()}”` : 'No matches'}
 						</div>
 					) : (
 						candidates.map((f, i) => (

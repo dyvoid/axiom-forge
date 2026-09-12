@@ -1,4 +1,5 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef } from 'react';
+import { useCombobox } from '../../../hooks/useCombobox.js';
 import styles from './fields.module.css';
 
 interface Props {
@@ -9,19 +10,9 @@ interface Props {
 }
 
 export function SelectField({ value, options, onChange, label }: Props): JSX.Element {
-	const [open, setOpen] = useState(false);
-	const [highlightIdx, setHighlightIdx] = useState(0);
-	const ref = useRef<HTMLDivElement | null>(null);
+	const { open, openMenu, closeMenu, toggleMenu, highlightIdx, setHighlightIdx, containerRef } = useCombobox<HTMLDivElement>();
 	const buttonRef = useRef<HTMLButtonElement | null>(null);
 	const listboxId = useId();
-
-	useEffect(() => {
-		function handleOutside(e: MouseEvent) {
-			if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-		}
-		document.addEventListener('mousedown', handleOutside);
-		return () => document.removeEventListener('mousedown', handleOutside);
-	}, []);
 
 	useEffect(() => {
 		if (open) {
@@ -33,7 +24,7 @@ export function SelectField({ value, options, onChange, label }: Props): JSX.Ele
 		if (!open) {
 			if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
-				setOpen(true);
+				openMenu();
 			}
 			return;
 		}
@@ -50,20 +41,20 @@ export function SelectField({ value, options, onChange, label }: Props): JSX.Ele
 				e.preventDefault();
 				if (options[highlightIdx] !== undefined) {
 					onChange(options[highlightIdx]!);
-					setOpen(false);
+					closeMenu();
 					buttonRef.current?.focus();
 				}
 				break;
 			case 'Escape':
 				e.preventDefault();
-				setOpen(false);
+				closeMenu();
 				buttonRef.current?.focus();
 				break;
 			case ' ':
 				e.preventDefault();
 				if (options[highlightIdx] !== undefined) {
 					onChange(options[highlightIdx]!);
-					setOpen(false);
+					closeMenu();
 					buttonRef.current?.focus();
 				}
 				break;
@@ -71,7 +62,7 @@ export function SelectField({ value, options, onChange, label }: Props): JSX.Ele
 	}
 
 	return (
-		<div ref={ref} className={styles.selectWrap}>
+		<div ref={containerRef} className={styles.selectWrap}>
 			<button
 				ref={buttonRef}
 				type="button"
@@ -80,7 +71,7 @@ export function SelectField({ value, options, onChange, label }: Props): JSX.Ele
 				aria-expanded={open}
 				aria-controls={listboxId}
 				aria-label={label}
-				onClick={() => setOpen((o) => !o)}
+				onClick={toggleMenu}
 				onKeyDown={handleKeyDown}
 			>
 				<span>
@@ -98,7 +89,7 @@ export function SelectField({ value, options, onChange, label }: Props): JSX.Ele
 							className={`${styles.menuItem} ${o === value ? styles.selected : ''} ${i === highlightIdx ? styles.menuItemHighlight : ''}`}
 							onClick={() => {
 								onChange(o);
-								setOpen(false);
+								closeMenu();
 								buttonRef.current?.focus();
 							}}
 							onMouseEnter={() => setHighlightIdx(i)}

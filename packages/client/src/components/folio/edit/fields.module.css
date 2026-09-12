@@ -88,73 +88,10 @@
 	background: color-mix(in srgb, var(--accent-rust) 8%, transparent);
 }
 
-/* ── Tag list (chips + input) ─────────────────────── */
-
-.tagBox {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--sp-1-5) var(--sp-2);
-	align-items: center;
-	padding: var(--sp-1-5) var(--sp-2);
-	border: 1px solid var(--border);
-	background: color-mix(in srgb, var(--bg-input-highlight) 40%, transparent);
-	min-height: 38px;
-}
-
-.chip {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--sp-1-5);
-	font-family: var(--ff-body);
-	font-size: var(--fs-control);
-	color: var(--text-primary);
-	background: color-mix(in srgb, var(--accent-gold) 12%, transparent);
-	border: 1px solid color-mix(in srgb, var(--accent-gold) 40%, transparent);
-	padding: 3px 4px 3px 8px;
-}
-
-.chipRemove {
-	background: transparent;
-	border: 0;
-	color: var(--text-muted);
-	cursor: pointer;
-	font-size: var(--fs-label);
-	line-height: 1;
-	padding: 0 var(--sp-1);
-}
-
-.tagInput {
-	border: 0;
-	background: transparent;
-	outline: none;
-	font-family: var(--ff-body);
-	font-size: var(--fs-control);
-	color: var(--text-primary);
-	padding: var(--sp-1) 0;
-	min-width: 100px;
-	flex: 1;
-	font-style: italic;
-}
-
-.addBtn {
-	background: transparent;
-	border: 1px dashed var(--text-muted);
-	color: var(--text-muted);
-	cursor: pointer;
-	font-family: var(--ff-body);
-	font-size: var(--fs-label);
-	padding: var(--btn-compact-padding);
-}
-
 /* ── WikiLinkPicker (autocomplete combobox) ─────────── */
 
 .pickerWrap {
 	position: relative;
-}
-
-.pickerWrapInline {
-	flex: 1;
-	min-width: 120px;
 }
 
 .pickerInputWrap {
@@ -236,20 +173,6 @@
 	text-align: center;
 }
 
-/* Inline picker inside tagBox (WikilinkListField) */
-.tagPickerInput {
-	border: 0;
-	background: transparent;
-	outline: none;
-	font-family: var(--ff-body);
-	font-size: var(--fs-control);
-	color: var(--text-primary);
-	padding: var(--sp-1) 0;
-	min-width: 120px;
-	flex: 1;
-	font-style: italic;
-}
-
 /* Inline picker inside TextareaField */
 .textareaWrapper {
 	position: relative;
@@ -289,24 +212,9 @@
 		align-items: center;
 	}
 
-	.chip {
-		padding: 6px 8px 6px 10px;
-	}
-
-	.chipRemove {
-		min-width: var(--touch-target);
-		min-height: var(--touch-target);
-		padding: 0 8px;
-	}
-
 	.pickerClear {
 		min-width: var(--touch-target);
 		min-height: var(--touch-target);
 		padding: 0 10px;
-	}
-
-	.addBtn {
-		min-height: var(--touch-target);
-		padding: var(--sp-1-5) var(--sp-3);
 	}
 }

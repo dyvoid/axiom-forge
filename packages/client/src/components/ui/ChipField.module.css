@@ -1,0 +1,157 @@
+/* ── ChipField ────────────────────────────────────────
+   The single multi-value control: a row of chips plus an
+   inline input that opens a dropdown. Used for tags, text
+   lists, fixed option lists, wikilink lists and the index
+   tag filter, so every one of them looks and behaves the
+   same regardless of where its options come from.
+   ──────────────────────────────────────────────────── */
+
+.wrap {
+	position: relative;
+	width: 100%;
+}
+
+.box {
+	composes: fieldBox from './controls.module.css';
+	flex-wrap: wrap;
+	gap: var(--sp-1-5) var(--sp-2);
+	cursor: text;
+}
+
+.leadingIcon {
+	display: inline-flex;
+	align-items: center;
+	color: var(--text-muted);
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--sp-1-5);
+	font-family: var(--ff-body);
+	font-size: var(--fs-control);
+	color: var(--text-primary);
+	background: color-mix(in srgb, var(--accent-gold) 12%, transparent);
+	border: 1px solid color-mix(in srgb, var(--accent-gold) 40%, transparent);
+	padding: 3px 4px 3px 8px;
+}
+
+.chipRemove {
+	background: transparent;
+	border: 0;
+	color: var(--text-muted);
+	cursor: pointer;
+	font-size: var(--fs-label);
+	line-height: 1;
+	padding: 0 var(--sp-1);
+}
+
+.chipRemove:hover {
+	color: var(--accent-rust);
+}
+
+.input {
+	border: 0;
+	background: transparent;
+	outline: none;
+	font-family: var(--ff-body);
+	font-size: var(--fs-control);
+	color: var(--text-primary);
+	padding: var(--sp-1) 0;
+	min-width: 100px;
+	flex: 1;
+	font-style: italic;
+}
+
+.clearAll {
+	background: transparent;
+	border: 0;
+	color: var(--text-muted);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	padding: 0 var(--sp-1);
+	margin-left: auto;
+}
+
+.clearAll:hover {
+	color: var(--accent-rust);
+}
+
+/* ── Dropdown ──────────────────────────────────────── */
+
+.menu {
+	position: absolute;
+	top: calc(100% + var(--sp-1));
+	left: 0;
+	right: 0;
+	background: var(--bg-page);
+	border: 1px solid var(--text-muted);
+	box-shadow: var(--shadow-elevated);
+	z-index: 100;
+	max-height: 240px;
+	overflow-y: auto;
+}
+
+.menuItem {
+	display: flex;
+	align-items: center;
+	gap: var(--sp-2);
+	padding: var(--sp-2) var(--sp-3);
+	cursor: pointer;
+	font-family: var(--ff-body);
+	font-size: var(--fs-control);
+	color: var(--text-primary);
+	border-bottom: 1px solid var(--border-soft);
+}
+
+.menuItem:last-child {
+	border-bottom: none;
+}
+
+.menuItem:hover,
+.menuItemHighlight {
+	background: color-mix(in srgb, var(--accent-rust) 8%, transparent);
+}
+
+.menuItemMeta {
+	font-size: var(--fs-eyebrow);
+	color: var(--text-muted);
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	margin-left: auto;
+}
+
+.menuEmpty {
+	padding: var(--sp-3);
+	font-family: var(--ff-body);
+	font-size: var(--fs-label);
+	color: var(--text-muted);
+	font-style: italic;
+	text-align: center;
+}
+
+/* ── Responsive ────────────────────────────────────── */
+
+@media (max-width: 600px) {
+	.menu {
+		max-height: 200px;
+	}
+}
+
+@media (pointer: coarse) {
+	.menuItem {
+		padding: var(--sp-3);
+		min-height: var(--touch-target);
+	}
+
+	.chip {
+		padding: 6px 8px 6px 10px;
+	}
+
+	.chipRemove {
+		min-width: var(--touch-target);
+		min-height: var(--touch-target);
+		padding: 0 8px;
+	}
+}

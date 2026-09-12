@@ -1,8 +1,9 @@
-import type { WikiLink } from '@axiom-forge/shared';
-import { WikiLinkPicker } from './WikiLinkPicker.js';
+import { scoreFolio, wikiLinkDisplayName } from '@axiom-forge/shared';
+import type { FolioIndexRecord, WikiLink } from '@axiom-forge/shared';
+import { useFolios } from '../../../api/queries.js';
 import { useProject } from '../../../context/ProjectContext.js';
-import { Icon } from '../../ui/Icon.js';
-import styles from './fields.module.css';
+import { parseWikiLinkText } from '../../../utils/links.js';
+import { ChipField, type ChipOption } from '../../ui/ChipField.js';
 
 interface Props {
 	value: WikiLink[];
@@ -11,47 +12,67 @@ interface Props {
 	ariaLabel?: string;
 }
 
-/**
- * Wikilink list field — renders selected links as chips and provides
- * an inline WikiLinkPicker for adding more.
- */
+function linkId(link: WikiLink): string {
+	return `${link.folder}/${link.name}`;
+}
+
+function parseId(id: string): WikiLink {
+	const slash = id.indexOf('/');
+	return { folder: id.slice(0, slash), name: id.slice(slash + 1) };
+}
+
 export function WikilinkListField({ value, target, onChange, ariaLabel }: Props): JSX.Element {
 	const { schemaIndex } = useProject();
+	const { data: folios } = useFolios();
 
-	// Resolve icon for a folder
 	function folderIcon(folder: string): string {
 		return schemaIndex.typeDefForFolder(folder)?.icon || 'circle';
 	}
 
+	const selected = new Set(value.map(linkId));
+	const showFolder = !target || (Array.isArray(target) && target.length > 1);
+
+	const candidates = (folios ?? []).filter((f) => {
+		if (target) {
+			if (Array.isArray(target) ? !target.includes(f.folder) : f.folder !== target) return false;
+		}
+		return !selected.has(`${f.folder}/${f.name}`);
+	});
+
+	const byId = new Map<string, FolioIndexRecord>(candidates.map((f) => [`${f.folder}/${f.name}`, f]));
+
+	const options: ChipOption[] = candidates.map((f) => ({
+		id: `${f.folder}/${f.name}`,
+		label: f.title,
+		icon: folderIcon(f.folder),
+		meta: showFolder ? f.folder : undefined,
+	}));
+
+	function add(link: WikiLink): void {
+		if (!selected.has(linkId(link))) onChange([...value, link]);
+	}
+
 	return (
-		<div className={styles.tagBox} role="group" aria-label={ariaLabel}>
-			{value.map((link, i) => {
-				const display = link.alias || link.name.replace(/_/g, ' ');
-				return (
-					<span key={`${link.folder}/${link.name}-${i}`} className={styles.chip}>
-						<Icon name={folderIcon(link.folder)} size={10} />
-						<span>{display}</span>
-						<button
-							type="button"
-							className={styles.chipRemove}
-							aria-label={`Remove ${display}`}
-							onClick={() => onChange(value.filter((_, x) => x !== i))}
-						>
-							×
-						</button>
-					</span>
-				);
-			})}
-			<WikiLinkPicker
-				value={null}
-				target={target}
-				exclude={value}
-				inline={true}
-				placeholder={ariaLabel ? `Add ${ariaLabel.toLowerCase()}` : undefined}
-				onChange={(next) => {
-					if (next) onChange([...value, next]);
-				}}
-			/>
-		</div>
+		<ChipField
+			chips={value.map((link) => ({
+				id: linkId(link),
+				label: wikiLinkDisplayName(link),
+				icon: folderIcon(link.folder),
+			}))}
+			options={options}
+			// Rank through the shared scorer so this matches the header search and
+			// both indexes — including aliases, which a substring match misses.
+			score={(option, query) => {
+				const folio = byId.get(option.id);
+				return folio ? scoreFolio(folio, query) : 0;
+			}}
+			onAdd={(option) => add(parseId(option.id))}
+			onAddRaw={(raw) => {
+				const link = parseWikiLinkText(raw, target);
+				if (link) add(link);
+			}}
+			onRemove={(id) => onChange(value.filter((link) => linkId(link) !== id))}
+			ariaLabel={ariaLabel}
+		/>
 	);
 }

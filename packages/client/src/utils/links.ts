@@ -14,9 +14,40 @@ import {
 	type BrokenLinkRef,
 	type FolioIndexRecord,
 	type ParsedFolio,
+	type WikiLink,
 } from '@axiom-forge/shared';
 
 export type UnresolvedLink = BrokenLinkRef;
+
+/**
+ * Turn text typed into a link picker into a `WikiLink`. Accepts either
+ * `Folder/Name` or a bare name, in which case the field's schema target
+ * supplies the folder.
+ */
+export function parseWikiLinkText(raw: string, target?: string | string[]): WikiLink | null {
+	const str = raw.trim();
+	if (!str) return null;
+
+	const parts = str.split('/');
+	let folder: string;
+	let name: string;
+
+	if (parts.length > 1) {
+		folder = parts[0]!;
+		name = parts.slice(1).join('/');
+	} else {
+		name = str;
+		if (Array.isArray(target) && target.length > 0) {
+			folder = target[0]!;
+		} else if (typeof target === 'string' && target) {
+			folder = target;
+		} else {
+			folder = 'Unsorted';
+		}
+	}
+
+	return { folder, name: name.replace(/\s+/g, '_') };
+}
 
 /** True when an `[[Folder/Name]]` reference points at an existing folio. */
 export function isLinkResolved(

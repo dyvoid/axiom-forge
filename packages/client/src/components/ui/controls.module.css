@@ -1,0 +1,24 @@
+/* ── Control primitives ───────────────────────────────
+   The single definition of what a field you type into
+   looks like. Anything that accepts input — the chip
+   fields on the edit form, the search and tag filter
+   bars on the index pages — composes `.fieldBox` so the
+   border, ground and focus response are defined once.
+   ──────────────────────────────────────────────────── */
+
+.fieldBox {
+	display: flex;
+	align-items: center;
+	gap: var(--sp-2);
+	padding: var(--sp-1-5) var(--sp-2);
+	border: 1px solid var(--border);
+	background: color-mix(in srgb, var(--bg-input-highlight) 40%, transparent);
+	min-height: 38px;
+	box-sizing: border-box;
+	transition: border-color 120ms, background 120ms;
+}
+
+.fieldBox:focus-within {
+	border-color: var(--accent-rust);
+	background: color-mix(in srgb, var(--bg-input-highlight) 90%, transparent);
+}
