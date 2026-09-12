@@ -25,6 +25,7 @@ export type HeroParams = {
 	smokeTop: Vec3;
 	backgroundColor: Vec3;
 	goldColor: Vec3;
+	vignetteColor: Vec3;
 
 	mottleAmount: number;
 	mottleScale: Vec2;
@@ -69,6 +70,7 @@ export const DEFAULT_HERO_PARAMS: Readonly<HeroParams> = {
 	smokeTop: [0.935, 0.905, 0.85],
 	backgroundColor: [0.6, 0.54, 0.45],
 	goldColor: [0.6, 0.48, 0.28],
+	vignetteColor: [0, 0, 0],
 
 	mottleAmount: 0.06,
 	mottleScale: [6.4, 3.6],
@@ -182,6 +184,7 @@ export const HERO_CONTROL_GROUPS: HeroControlGroup[] = [
 			{ kind: 'color', key: 'smokeTop', label: 'Smoke, top' },
 			{ kind: 'color', key: 'backgroundColor', label: 'Background' },
 			{ kind: 'color', key: 'goldColor', label: 'Gold' },
+			{ kind: 'color', key: 'vignetteColor', label: 'Vignette' },
 		],
 	},
 	{

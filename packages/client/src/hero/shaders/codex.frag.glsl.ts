@@ -7,6 +7,7 @@ uniform vec3 u_smokeBottom;
 uniform vec3 u_smokeTop;
 uniform vec3 u_backgroundColor;
 uniform vec3 u_goldColor;
+uniform vec3 u_vignetteColor;
 
 uniform float u_mottleAmount;
 uniform vec2 u_mottleScale;
@@ -97,10 +98,11 @@ void main() {
 	float gold = smoothstep(u_goldRange.x, u_goldRange.y, smoke);
 	col = mix(col, u_goldColor, gold * u_goldAmount);
 
-	// Vignette.
+	// Vignette: tints the edges toward its color. With black this is the same
+	// as darkening by (1 - strength) at the rim.
 	vec2 c = uv - 0.5;
 	float vig = smoothstep(u_vignetteRadius.x, u_vignetteRadius.y, length(c * u_vignetteAspect));
-	col *= 1.0 - u_vignetteStrength + u_vignetteStrength * vig;
+	col = mix(col, u_vignetteColor, u_vignetteStrength * (1.0 - vig));
 
 	gl_FragColor = vec4(col, 1.0);
 }
