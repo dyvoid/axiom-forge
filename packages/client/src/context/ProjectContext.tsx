@@ -21,7 +21,9 @@ interface ProjectContextValue {
 	schemaIndex: SchemaIndex;
 }
 
-const ProjectContext = createContext<ProjectContextValue | null>(null);
+/* Exported so tests can provide a fixture project without standing up the
+   provider's two queries. Application code should use ProjectProvider. */
+export const ProjectContext = createContext<ProjectContextValue | null>(null);
 
 export function useProject(): ProjectContextValue {
 	const ctx = useContext(ProjectContext);
