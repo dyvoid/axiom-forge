@@ -298,14 +298,8 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, isN
 			<div className={styles.eyebrowRow}>
 				<div className={styles.eyebrow}>
 					<Icon name={typeDef.icon} size={12} />
-					<span>·</span>
 					<span>{folio.type}</span>
-					{folio.id !== undefined && (
-						<>
-							<span>·</span>
-							<span>Folio {toRoman(folio.id)}</span>
-						</>
-					)}
+					{folio.id !== undefined && <span>Folio {toRoman(folio.id)}</span>}
 				</div>
 			</div>
 

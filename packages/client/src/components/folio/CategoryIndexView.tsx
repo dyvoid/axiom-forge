@@ -81,6 +81,7 @@ export function CategoryIndexView(): JSX.Element {
 						<input
 							type="text"
 							placeholder="Search the index…"
+							aria-label="Search this category"
 							className={bar.input}
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}

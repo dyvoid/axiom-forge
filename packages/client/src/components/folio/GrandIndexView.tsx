@@ -74,6 +74,7 @@ export function GrandIndexView(): JSX.Element {
 						<input
 							type="text"
 							placeholder="Search the index…"
+							aria-label="Search the index"
 							className={bar.input}
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}

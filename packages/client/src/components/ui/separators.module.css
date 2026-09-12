@@ -1,0 +1,12 @@
+/* Middot-separated run: "Alpha · Beta · Gamma". Written twice before, once
+   for folio tags and once for meta text-lists, differing only in the gap.
+   Put this on the wrapping flex container; the container's own `gap` sets
+   the space before each middot and `--middot-gap` the space after it.
+
+   Treatment only -- the container still declares its own display/flex-wrap,
+   because a composed class always wins over the consumer's overrides. */
+.middotRun > * + *::before {
+	content: '·';
+	margin-right: var(--middot-gap);
+	color: var(--border-soft);
+}

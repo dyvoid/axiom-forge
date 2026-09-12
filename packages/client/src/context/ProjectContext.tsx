@@ -11,6 +11,8 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { createSchemaIndex, type Config, type ProjectSchema, type SchemaIndex } from '@axiom-forge/shared';
 import { fetchConfig, fetchSchema } from '../api/client.js';
+import { LoadingState } from '../components/ui/LoadingState.js';
+import styles from './ProjectContext.module.css';
 
 interface ProjectContextValue {
 	config: Config;
@@ -62,18 +64,8 @@ export function ProjectProvider({ children }: { children: ReactNode }): JSX.Elem
 
 	if (configQuery.isLoading || schemaQuery.isLoading) {
 		return (
-			<div style={{
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center',
-				height: '100vh',
-				fontFamily: 'var(--ff-body)',
-				color: 'var(--text-muted)',
-				fontSize: 'var(--fs-eyebrow)',
-				letterSpacing: 'var(--ls-eyebrow)',
-				textTransform: 'uppercase',
-			}}>
-				Loading project…
+			<div className={styles.gate}>
+				<LoadingState message="Loading project" />
 			</div>
 		);
 	}
@@ -82,15 +74,8 @@ export function ProjectProvider({ children }: { children: ReactNode }): JSX.Elem
 	if (error || !configQuery.data || !schemaQuery.data || !indexed?.index) {
 		const message = error instanceof Error ? error.message : String(error ?? 'Unknown error');
 		return (
-			<div style={{
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center',
-				height: '100vh',
-				fontFamily: 'var(--ff-body)',
-				color: 'var(--accent-rust)',
-			}}>
-				Failed to load project: {message}
+			<div className={styles.gate}>
+				<p className={styles.failure}>Failed to load project: {message}</p>
 			</div>
 		);
 	}

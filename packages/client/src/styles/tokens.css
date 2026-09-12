@@ -111,6 +111,9 @@
 	   components' tight chrome -- icon-button padding, list-row gaps. */
 	--sp-0-5: 2px;
 	--sp-1-5: 6px;
+	/* Space after a middot in a "Alpha · Beta" run; the run's own flex gap
+	   supplies the space before it. A consumer overrides this per run. */
+	--middot-gap: var(--sp-2);
 
 	/* ── Control padding ──────────────────────────────── */
 	/* Form-control padding (text inputs, pickers, custom selects) and

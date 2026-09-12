@@ -1,0 +1,43 @@
+/* The one eyebrow vocabulary: the small uppercase strip above a page title,
+   and the crumbs inside it. FolioHeader and CategoryIndexView each had
+   their own copy, and the two `.crumbCurrent` rules had already drifted: only
+   the category index's laid out an icon beside the label, so the folio
+   header's would have collapsed one. Callers compose these and own only
+   their own outer spacing. */
+.eyebrow {
+	display: flex;
+	align-items: center;
+	gap: var(--sp-2);
+	font-family: var(--ff-body);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.crumb {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--sp-1);
+	color: var(--text-muted);
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.crumb:hover {
+	color: var(--text-primary);
+}
+
+/* Same row layout as .crumb -- a current crumb may carry a type icon too --
+   but it is not a link, so it gets the settled colour and no hover. */
+.crumbCurrent {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--sp-1);
+	color: var(--text-secondary);
+}
+
+.separator {
+	opacity: 0.4;
+}

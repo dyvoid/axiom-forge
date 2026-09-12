@@ -30,20 +30,24 @@
 
 /* ── Inline variant ───────────────────────────────────
    Same vocabulary as the page variant (rust icon, italic title, muted
-   message) at list scale: the icon sits on the baseline of the message
-   rather than above a heading, and nothing claims heading-sized space. */
+   message) at list scale: one row, icon beside the message rather than
+   stacked above a heading, and nothing claims heading-sized space. */
+.inlineRow {
+	display: flex;
+	align-items: baseline;
+	gap: var(--sp-2);
+}
+
 .iconInline {
+	/* Nudged onto the text's baseline: the SVG's own box sits high. */
+	transform: translateY(3px);
 	color: var(--accent-rust);
 	opacity: 0.8;
-	margin-bottom: var(--sp-2);
 }
 
 .titleInline {
-	font-family: var(--ff-body);
-	font-style: italic;
-	font-size: var(--fs-body);
 	color: var(--text-primary);
-	margin-bottom: var(--sp-1);
+	margin-right: var(--sp-1);
 }
 
 .messageInline {

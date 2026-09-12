@@ -15,36 +15,19 @@
 }
 
 .eyebrow {
-	display: flex;
-	align-items: center;
-	gap: var(--sp-2);
-	font-family: var(--ff-body);
-	font-weight: 500;
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-eyebrow);
-	text-transform: uppercase;
-	color: var(--text-muted);
+	composes: eyebrow from '../ui/eyebrow.module.css';
 }
 
 .crumb {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--sp-1);
-	color: var(--text-muted);
-	text-decoration: none;
-	transition: color 0.2s;
-}
-
-.crumb:hover {
-	color: var(--text-primary);
+	composes: crumb from '../ui/eyebrow.module.css';
 }
 
 .crumbCurrent {
-	color: var(--text-secondary);
+	composes: crumbCurrent from '../ui/eyebrow.module.css';
 }
 
 .separator {
-	opacity: 0.4;
+	composes: separator from '../ui/eyebrow.module.css';
 }
 
 .actions {
@@ -111,6 +94,8 @@
 
 /* Tags are the lightest nameplate layer and remain links to their index. */
 .tags {
+	composes: middotRun from '../ui/separators.module.css';
+	--middot-gap: var(--sp-3);
 	display: flex;
 	align-items: baseline;
 	flex-wrap: wrap;
@@ -134,12 +119,6 @@
 
 .tag:hover {
 	color: var(--accent-gold-text);
-}
-
-.tag + .tag::before {
-	content: '·';
-	margin-right: var(--sp-3);
-	color: var(--border-soft);
 }
 
 /* ── Responsive: tighten spacing on narrow screens ───────── */

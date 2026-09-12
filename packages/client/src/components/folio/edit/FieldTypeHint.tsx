@@ -1,4 +1,5 @@
 import type { FieldDef } from '@axiom-forge/shared';
+import styles from './fields.module.css';
 
 interface Props {
 	fieldDef: FieldDef;
@@ -36,15 +37,6 @@ export function FieldTypeHint({ fieldDef }: Props): JSX.Element {
 			hint = String(fieldDef.type);
 	}
 	return (
-		<div
-			style={{
-				fontSize: 10,
-				color: 'var(--text-muted)',
-				fontStyle: 'italic',
-				marginTop: 2,
-			}}
-		>
-			{hint}
-		</div>
+		<div className={styles.typeHint}>{hint}</div>
 	);
 }

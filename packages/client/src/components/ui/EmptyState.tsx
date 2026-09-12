@@ -31,16 +31,31 @@ export function EmptyState({
 	actionTo,
 	variant = 'page',
 }: EmptyStateProps): JSX.Element {
-	const inline = variant === 'inline';
+	if (variant === 'inline') {
+		return (
+			<div className={styles.inlineRow}>
+				{icon && (
+					<span className={styles.iconInline}>
+						<Icon name={icon} size={18} strokeWidth={1} />
+					</span>
+				)}
+				<span className={styles.messageInline}>
+					{title && <span className={styles.titleInline}>{title}</span>}
+					{message}
+				</span>
+			</div>
+		);
+	}
+
 	return (
 		<>
 			{icon && (
-				<div className={inline ? styles.iconInline : styles.icon}>
-					<Icon name={icon} size={inline ? 20 : 48} strokeWidth={1} />
+				<div className={styles.icon}>
+					<Icon name={icon} size={48} strokeWidth={1} />
 				</div>
 			)}
-			{title && <h2 className={inline ? styles.titleInline : styles.title}>{title}</h2>}
-			<p className={inline ? styles.messageInline : styles.message}>{message}</p>
+			{title && <h2 className={styles.title}>{title}</h2>}
+			<p className={styles.message}>{message}</p>
 			{actionLabel && actionTo && (
 				<Link to={actionTo} className={styles.actionBtn}>
 					{actionLabel}

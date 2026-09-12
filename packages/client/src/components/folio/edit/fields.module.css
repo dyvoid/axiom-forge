@@ -194,3 +194,12 @@
 		padding: 0 10px;
 	}
 }
+
+/* Schema type annotation under a field label in dev/debug views. */
+.typeHint {
+	font-family: var(--ff-body);
+	font-size: var(--fs-tiny);
+	font-style: italic;
+	color: var(--text-muted);
+	margin-top: var(--sp-0-5);
+}

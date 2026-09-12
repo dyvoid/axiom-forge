@@ -92,6 +92,8 @@
 
 .searchBox {
 	composes: fieldBox from '../ui/controls.module.css';
+	/* Positioning context for the absolutely-placed results menu. */
+	position: relative;
 	display: flex;
 	align-items: center;
 	min-height: var(--control-height);

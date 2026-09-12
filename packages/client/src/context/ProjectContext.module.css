@@ -1,0 +1,16 @@
+/* Full-viewport gate shown before the project's config and schema land.
+   Layout only -- the loading and failure copy use the shared treatments. */
+.gate {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	text-align: center;
+	padding: var(--sp-5);
+}
+
+.failure {
+	font-family: var(--ff-body);
+	font-size: var(--fs-body);
+	color: var(--accent-rust);
+}

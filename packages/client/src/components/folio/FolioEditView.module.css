@@ -42,15 +42,12 @@
 	margin-bottom: var(--sp-3);
 }
 
+/* Not a breadcrumb -- nothing here navigates, it just says which folio is
+   open -- but the same eyebrow strip, so it takes the same treatment and the
+   shared middot run instead of hand-placed separator spans. */
 .eyebrow {
-	font-family: var(--ff-body);
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-eyebrow);
-	text-transform: uppercase;
-	color: var(--text-muted);
-	display: inline-flex;
-	align-items: center;
-	gap: var(--sp-2);
+	composes: eyebrow from '../ui/eyebrow.module.css';
+	composes: middotRun from '../ui/separators.module.css';
 }
 
 

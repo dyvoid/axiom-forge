@@ -70,10 +70,20 @@
 	color: var(--text-secondary);
 }
 
-.textItem + .textItem::before {
-	content: '·';
-	margin-right: var(--sp-1-5);
-	color: var(--border-soft);
+/* Wrapping flex rows for the multi-value field types. The container gap sets
+   the space before each middot; --middot-gap the space after. */
+.chipRow {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--sp-2);
+}
+
+.textRow {
+	composes: middotRun from '../ui/separators.module.css';
+	--middot-gap: var(--sp-1-5);
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--sp-1-5);
 }
 
 /* ── Responsive: stack label above value on narrow screens ── */

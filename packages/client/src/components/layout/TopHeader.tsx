@@ -119,7 +119,7 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 					<Icon name="refresh-cw" size={14} className={syncing ? styles.spinning : undefined} />
 				</button>
 				{showSearch && (
-					<div ref={searchRef} className={styles.searchBox} style={{ position: 'relative' }}>
+					<div ref={searchRef} className={styles.searchBox}>
 						<Icon name="search" size={14} className={styles.searchIcon} />
 						<input
 							ref={inputRef}
