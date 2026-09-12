@@ -4,6 +4,7 @@ import { useProject } from '../../context/ProjectContext.js';
 import { useFolios } from '../../api/queries.js';
 import styles from './Sidebar.module.css';
 import { Icon } from '../ui/Icon.js';
+import { NewEntryButton } from '../ui/NewEntryButton.js';
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Element {
 	const { schema, schemaIndex } = useProject();
@@ -12,9 +13,6 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 	const navigate = useNavigate();
 
 	const [activeType, setActiveType] = useState<string>('');
-	const [creating, setCreating] = useState(false);
-	const [newName, setNewName] = useState('');
-	const nameInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		if (routeFolder) {
@@ -24,26 +22,6 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 			setActiveType('');
 		}
 	}, [routeFolder, schemaIndex]);
-
-	useEffect(() => {
-		if (creating) nameInputRef.current?.focus();
-	}, [creating]);
-
-	// Collapse the form back to the button when the click lands outside it.
-	// Capture phase, so it runs before a click elsewhere navigates away; the
-	// confirm and cancel buttons live inside the form and so do not trigger this.
-	useEffect(() => {
-		if (!creating) return;
-		function handlePointerDown(e: PointerEvent): void {
-			const target = e.target as HTMLElement;
-			if (!target.closest(`.${styles.newEntryForm}`)) {
-				setCreating(false);
-				setNewName('');
-			}
-		}
-		window.addEventListener('pointerdown', handlePointerDown, true);
-		return () => window.removeEventListener('pointerdown', handlePointerDown, true);
-	}, [creating]);
 
 	const byType = useMemo(() => {
 		const acc: Record<string, typeof folios> = {};
@@ -114,25 +92,6 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, [routeFolder, routeName, activeSchema, activeList, navigate, schemaIndex]);
 
-	function handleNewEntry(): void {
-		setNewName('');
-		setCreating(true);
-	}
-
-	function handleCreateSubmit(): void {
-		const trimmed = newName.trim();
-		if (!trimmed || !activeSchema) return;
-		setCreating(false);
-		setNewName('');
-		// Open the editor on an unsaved draft — nothing is written until Save.
-		navigate(`/new/${encodeURIComponent(activeSchema.folder)}?title=${encodeURIComponent(trimmed)}`);
-	}
-
-	function handleCreateKeyDown(e: React.KeyboardEvent): void {
-		if (e.key === 'Enter') handleCreateSubmit();
-		if (e.key === 'Escape') { setCreating(false); setNewName(''); }
-	}
-
 	return (
 		<div className={styles.container}>
 			<nav className={styles.nav}>
@@ -185,42 +144,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 			</nav>
 
 			<div className={styles.footer}>
-				{creating ? (
-					<div className={styles.newEntryForm}>
-						<input
-							ref={nameInputRef}
-							className={styles.newEntryInput}
-							value={newName}
-							onChange={(e) => setNewName(e.target.value)}
-							onKeyDown={handleCreateKeyDown}
-							placeholder={`New ${activeType || 'entry'}…`}
-						/>
-						<button
-							type="button"
-							className={styles.newEntryConfirm}
-							onClick={handleCreateSubmit}
-							disabled={!newName.trim()}
-							aria-label="Create entry"
-						>
-							↵
-						</button>
-						<button
-							type="button"
-							className={styles.newEntryCancel}
-							onClick={() => { setCreating(false); setNewName(''); }}
-							aria-label="Cancel"
-						>
-							✕
-						</button>
-					</div>
-				) : activeSchema ? (
-					<button
-						className={styles.newBtn}
-						onClick={handleNewEntry}
-					>
-						+ New entry
-					</button>
-				) : null}
+				{activeSchema && (
+					<NewEntryButton folder={activeSchema.folder} typeName={activeType ?? undefined} />
+				)}
 			</div>
 		</div>
 	);

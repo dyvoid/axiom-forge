@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { scoreFolio } from '@axiom-forge/shared';
 import { useFolios } from '../../api/queries.js';
 import { useProject } from '../../context/ProjectContext.js';
 import { Icon } from '../ui/Icon.js';
 import { EntryContent } from '../ui/EntryContent.js';
+import { NewEntryButton } from '../ui/NewEntryButton.js';
 import { TagFilter } from '../ui/TagFilter.js';
 import bar from '../ui/FilterBar.module.css';
 import styles from './CategoryIndexView.module.css';
@@ -13,32 +14,8 @@ export function CategoryIndexView(): JSX.Element {
 	const { folder } = useParams<{ folder: string }>();
 	const { schemaIndex } = useProject();
 	const { data: folios, isLoading } = useFolios();
-	const navigate = useNavigate();
-	const [creating, setCreating] = useState(false);
-	const [newName, setNewName] = useState('');
-	const inputRef = useRef<HTMLInputElement>(null);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [query, setQuery] = useState('');
-
-	useEffect(() => {
-		if (creating) inputRef.current?.focus();
-	}, [creating]);
-
-	// Collapse the form back to the button when the click lands outside it.
-	// Capture phase, so it runs before a click elsewhere navigates away; the
-	// confirm and cancel buttons live inside the form and so do not trigger this.
-	useEffect(() => {
-		if (!creating) return;
-		function handlePointerDown(e: PointerEvent): void {
-			const target = e.target as HTMLElement;
-			if (!target.closest(`.${styles.addForm}`)) {
-				setCreating(false);
-				setNewName('');
-			}
-		}
-		window.addEventListener('pointerdown', handlePointerDown, true);
-		return () => window.removeEventListener('pointerdown', handlePointerDown, true);
-	}, [creating]);
 
 	const categoryFolios = folios?.filter(f => f.folder === folder) ?? [];
 	
@@ -73,20 +50,6 @@ export function CategoryIndexView(): JSX.Element {
 	const typeName = (folder && schemaIndex.typeKeyForFolder(folder)) || folder;
 	const typeDef = (folder && schemaIndex.typeDefForFolder(folder)) || null;
 
-	function handleCreateSubmit(): void {
-		const trimmed = newName.trim();
-		if (!trimmed || !folder) return;
-		setCreating(false);
-		setNewName('');
-		// Open the editor on an unsaved draft — nothing is written until Save.
-		navigate(`/new/${encodeURIComponent(folder)}?title=${encodeURIComponent(trimmed)}`);
-	}
-
-	function handleKeyDown(e: React.KeyboardEvent): void {
-		if (e.key === 'Enter') handleCreateSubmit();
-		if (e.key === 'Escape') { setCreating(false); setNewName(''); }
-	}
-
 	return (
 		<div className={styles.container}>
 			<header className={styles.header}>
@@ -99,36 +62,8 @@ export function CategoryIndexView(): JSX.Element {
 							{typeName}
 						</span>
 					</nav>
-					{creating ? (
-						<div className={styles.addForm}>
-							<input
-								ref={inputRef}
-								className={styles.addInput}
-								value={newName}
-								onChange={(e) => setNewName(e.target.value)}
-								onKeyDown={handleKeyDown}
-								placeholder={`New ${typeName}…`}
-							/>
-							<button
-								type="button"
-								className={styles.addConfirm}
-								onClick={handleCreateSubmit}
-								disabled={!newName.trim()}
-								aria-label="Create entry"
-							>
-								↵
-							</button>
-							<button
-								type="button"
-								className={styles.addCancel}
-								onClick={() => { setCreating(false); setNewName(''); }}
-								aria-label="Cancel"
-							>
-								✕
-							</button>
-						</div>
-					) : (
-						<button className={styles.addBtn} onClick={() => { setNewName(''); setCreating(true); }}>+ ADD ENTRY</button>
+					{folder && (
+						<NewEntryButton folder={folder} typeName={typeName} variant="outlined" />
 					)}
 				</div>
 				<h1 className={styles.title}>{typeName}</h1>
