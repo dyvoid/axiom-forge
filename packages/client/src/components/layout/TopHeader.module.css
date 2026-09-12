@@ -91,13 +91,10 @@
 }
 
 .searchBox {
+	composes: fieldBox from '../ui/controls.module.css';
 	display: flex;
 	align-items: center;
-	background: var(--bg-panel);
-	border: 1px solid var(--border-soft);
-	border-radius: 2px;
-	height: 36px;
-	padding: 0 var(--sp-3);
+	min-height: var(--control-height);
 	gap: var(--sp-3);
 	width: 280px;
 }
@@ -128,44 +125,30 @@
 }
 
 .searchDropdown {
-	position: absolute;
+	composes: menuSurface from '../ui/controls.module.css';
 	top: calc(100% + var(--sp-2));
 	right: 0;
 	width: 400px;
 	max-height: 50vh;
-	background: var(--bg-panel);
-	border: 1px solid var(--border);
-	border-radius: 4px;
-	box-shadow: 0 4px 20px color-mix(in srgb, var(--text-primary) 25%, transparent);
-	overflow-y: auto;
-	z-index: 100;
 	display: flex;
 	flex-direction: column;
 }
 
 .searchItem {
+	composes: menuOption from '../ui/controls.module.css';
 	display: flex;
 	flex-direction: column;
 	padding: var(--sp-3) var(--sp-4);
-	border-bottom: 1px solid var(--border-soft);
-	cursor: pointer;
 	text-decoration: none;
-	color: inherit;
-}
-
-.searchItem:last-child {
-	border-bottom: none;
 }
 
 .searchItemHighlight {
-	background: var(--bg-hover);
+	composes: menuOptionHighlight from '../ui/controls.module.css';
 }
 
 .searchEmpty {
+	composes: menuEmpty from '../ui/controls.module.css';
 	padding: var(--sp-4);
-	text-align: center;
-	color: var(--text-muted);
-	font-style: italic;
 }
 
 .clearBtn {

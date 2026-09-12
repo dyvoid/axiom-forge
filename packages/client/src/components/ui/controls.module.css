@@ -23,3 +23,43 @@
 	border-color: var(--accent-rust);
 	background: color-mix(in srgb, var(--bg-input-highlight) 90%, transparent);
 }
+
+/* ── Menu surface ─────────────────────────────────────
+   The floating panel a combobox, select or search box opens, and the
+   rows inside it. Positioning and row density stay with each consumer
+   (a header search lists richer cards than a tag dropdown); everything
+   that makes it read as the same kind of surface lives here.
+   ──────────────────────────────────────────────────── */
+
+.menuSurface {
+	position: absolute;
+	background: var(--bg-page);
+	border: 1px solid var(--text-muted);
+	box-shadow: var(--shadow-elevated);
+	overflow-y: auto;
+	z-index: 100;
+}
+
+.menuOption {
+	cursor: pointer;
+	color: var(--text-primary);
+	border-bottom: 1px solid var(--border-soft);
+}
+
+.menuOption:last-child {
+	border-bottom: none;
+}
+
+.menuOption:hover,
+.menuOptionHighlight {
+	background: color-mix(in srgb, var(--accent-rust) 8%, transparent);
+}
+
+.menuEmpty {
+	padding: var(--sp-3);
+	font-family: var(--ff-body);
+	font-size: var(--fs-label);
+	color: var(--text-muted);
+	font-style: italic;
+	text-align: center;
+}

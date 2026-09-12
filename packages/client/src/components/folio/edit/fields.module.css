@@ -54,29 +54,18 @@
 }
 
 .menu {
-	position: absolute;
+	composes: menuSurface from '../../ui/controls.module.css';
 	top: calc(100% + var(--sp-1));
 	left: 0;
 	right: 0;
-	background: var(--bg-page);
-	border: 1px solid var(--text-muted);
-	box-shadow: var(--shadow-elevated);
-	z-index: 10;
 	max-height: 240px;
-	overflow-y: auto;
 }
 
 .menuItem {
+	composes: menuOption from '../../ui/controls.module.css';
 	padding: var(--sp-2) var(--sp-3);
-	cursor: pointer;
 	font-family: var(--ff-body);
 	font-size: var(--fs-control);
-	color: var(--text-primary);
-	border-bottom: 1px solid var(--border-soft);
-}
-
-.menuItem:hover {
-	background: color-mix(in srgb, var(--accent-rust) 5%, transparent);
 }
 
 .menuItem.selected {
@@ -153,16 +142,11 @@
 }
 
 .menuItemHighlight {
-	background: color-mix(in srgb, var(--accent-rust) 8%, transparent);
+	composes: menuOptionHighlight from '../../ui/controls.module.css';
 }
 
 .menuEmpty {
-	padding: var(--sp-3);
-	font-family: var(--ff-body);
-	font-size: var(--fs-label);
-	color: var(--text-muted);
-	font-style: italic;
-	text-align: center;
+	composes: menuEmpty from '../../ui/controls.module.css';
 }
 
 /* Inline picker inside TextareaField */
