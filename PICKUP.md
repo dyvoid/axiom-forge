@@ -11,10 +11,7 @@ session did, read git log.
 
 ## In Progress
 
-**Landing hero tuning and project themes, phase 1** (`experiment/hero-tuner`) — the hero's shader
-values are uniforms editable live at `/?tune`, and a project's optional `theme.json` restyles or
-disables the hero (ADR-0001). The later theming phases (design tokens, dark mode, a switcher) are
-not designed yet.
+Nothing.
 
 ## Next Up
 
