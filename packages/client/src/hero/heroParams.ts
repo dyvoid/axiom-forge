@@ -6,6 +6,11 @@
  * `heroParams.test.ts` holds the two together. `DEFAULT_HERO_PARAMS` is the
  * look the landing page ships with; the `?tune` panel edits a copy of it.
  *
+ * The picture is a pale smoke body with gaps in it: two drifting noise layers
+ * open the gaps, and the darker background shows through them. The smoke is
+ * the lightest color, so the controls below all describe the smoke and its
+ * gaps rather than a dark plume painted over paper.
+ *
  * Colors are 0–1 RGB triples written straight to the framebuffer, not hex, so
  * the defaults stay exact rather than quantised to 1/255.
  */
@@ -16,9 +21,9 @@ export type Vec3 = [number, number, number];
 export type HeroParams = {
 	timeSpeed: number;
 
-	paperBottom: Vec3;
-	paperTop: Vec3;
-	smokeColor: Vec3;
+	smokeBottom: Vec3;
+	smokeTop: Vec3;
+	backgroundColor: Vec3;
 	goldColor: Vec3;
 
 	mottleAmount: number;
@@ -41,16 +46,16 @@ export type HeroParams = {
 	layerBFade: Vec2;
 	layerBAmount: number;
 
-	plumeGamma: number;
-	plumeOpacity: number;
+	smokeMinimum: number;
+	gapContrast: number;
 
 	maskMode: number;
 	maskX: Vec2;
 	maskY: Vec2;
-	maskFloor: number;
+	maskStrength: number;
 
 	goldAmount: number;
-	goldCore: Vec2;
+	goldRange: Vec2;
 
 	vignetteStrength: number;
 	vignetteRadius: Vec2;
@@ -60,9 +65,9 @@ export type HeroParams = {
 export const DEFAULT_HERO_PARAMS: Readonly<HeroParams> = {
 	timeSpeed: 1,
 
-	paperBottom: [0.965, 0.945, 0.905],
-	paperTop: [0.935, 0.905, 0.85],
-	smokeColor: [0.6, 0.54, 0.45],
+	smokeBottom: [0.965, 0.945, 0.905],
+	smokeTop: [0.935, 0.905, 0.85],
+	backgroundColor: [0.6, 0.54, 0.45],
 	goldColor: [0.6, 0.48, 0.28],
 
 	mottleAmount: 0.06,
@@ -85,16 +90,16 @@ export const DEFAULT_HERO_PARAMS: Readonly<HeroParams> = {
 	layerBFade: [1.05, 0.25],
 	layerBAmount: 0.44,
 
-	plumeGamma: 1.35,
-	plumeOpacity: 0.62,
+	smokeMinimum: 0.38,
+	gapContrast: 1.35,
 
 	maskMode: 0,
 	maskX: [0.25, 0.45],
 	maskY: [0.18, 0.32],
-	maskFloor: 0.35,
+	maskStrength: 0.65,
 
 	goldAmount: 0.15,
-	goldCore: [0.55, 0.95],
+	goldRange: [0.45, 0.05],
 
 	vignetteStrength: 0.08,
 	vignetteRadius: [1.3, 0.4],
@@ -133,6 +138,36 @@ export type HeroControl =
 
 export type HeroControlGroup = { title: string; controls: HeroControl[] };
 
+function gapLayerControls(
+	layer: 'A' | 'B',
+): HeroControl[] {
+	return [
+		{ kind: 'range2', key: `layer${layer}Scale`, label: 'Scale', parts: ['X', 'Y'], min: 0.05, max: 5, step: 0.01 },
+		{ kind: 'range', key: `layer${layer}Rise`, label: 'Rise speed', min: -0.2, max: 0.3, step: 0.001 },
+		{ kind: 'range', key: `layer${layer}Flow`, label: 'Churn speed', min: 0, max: 5, step: 0.05 },
+		{
+			kind: 'range2',
+			key: `layer${layer}Threshold`,
+			label: 'Gap threshold',
+			parts: ['Opens at', 'Fully open'],
+			min: 0,
+			max: 1,
+			step: 0.01,
+			hint: 'Noise value where this layer starts opening a gap, and where the gap is fully open',
+		},
+		{
+			kind: 'range2',
+			key: `layer${layer}Fade`,
+			label: 'Gaps by height',
+			parts: ['None above', 'Full below'],
+			min: -0.5,
+			max: 1.5,
+			step: 0.01,
+			hint: '0 is the bottom edge, 1 the top',
+		},
+	];
+}
+
 export const HERO_CONTROL_GROUPS: HeroControlGroup[] = [
 	{
 		title: 'Time',
@@ -143,14 +178,29 @@ export const HERO_CONTROL_GROUPS: HeroControlGroup[] = [
 	{
 		title: 'Colors',
 		controls: [
-			{ kind: 'color', key: 'paperBottom', label: 'Paper, bottom' },
-			{ kind: 'color', key: 'paperTop', label: 'Paper, top' },
-			{ kind: 'color', key: 'smokeColor', label: 'Smoke' },
-			{ kind: 'color', key: 'goldColor', label: 'Gold cores' },
+			{ kind: 'color', key: 'smokeBottom', label: 'Smoke, bottom' },
+			{ kind: 'color', key: 'smokeTop', label: 'Smoke, top' },
+			{ kind: 'color', key: 'backgroundColor', label: 'Background' },
+			{ kind: 'color', key: 'goldColor', label: 'Gold' },
 		],
 	},
 	{
-		title: 'Paper mottle',
+		title: 'Smoke',
+		controls: [
+			{
+				kind: 'range',
+				key: 'smokeMinimum',
+				label: 'Minimum density',
+				min: 0,
+				max: 1,
+				step: 0.01,
+				hint: 'The smoke never gets thinner than this, even in a fully open gap',
+			},
+			{ kind: 'range', key: 'gapContrast', label: 'Gap contrast (gamma)', min: 0.2, max: 4, step: 0.01 },
+		],
+	},
+	{
+		title: 'Smoke texture',
 		controls: [
 			{ kind: 'range', key: 'mottleAmount', label: 'Amount', min: 0, max: 0.4, step: 0.005 },
 			{ kind: 'range2', key: 'mottleScale', label: 'Scale', parts: ['X', 'Y'], min: 0, max: 60, step: 0.1 },
@@ -159,70 +209,17 @@ export const HERO_CONTROL_GROUPS: HeroControlGroup[] = [
 	{
 		title: 'Noise',
 		controls: [
-			{ kind: 'range', key: 'octaves', label: 'Octaves', min: 1, max: 8, step: 1, hint: 'Detail; also affects the mottle' },
+			{ kind: 'range', key: 'octaves', label: 'Octaves', min: 1, max: 8, step: 1, hint: 'Detail; also affects the smoke texture' },
 			{ kind: 'range', key: 'warpInner', label: 'Warp, inner', min: 0, max: 5, step: 0.05 },
 			{ kind: 'range', key: 'warpOuter', label: 'Warp, outer', min: 0, max: 5, step: 0.05 },
 		],
 	},
+	{ title: 'Gaps · near layer', controls: gapLayerControls('A') },
 	{
-		title: 'Layer A · near',
+		title: 'Gaps · far layer',
 		controls: [
-			{ kind: 'range2', key: 'layerAScale', label: 'Scale', parts: ['X', 'Y'], min: 0.05, max: 5, step: 0.01 },
-			{ kind: 'range', key: 'layerARise', label: 'Rise speed', min: -0.2, max: 0.3, step: 0.001 },
-			{ kind: 'range', key: 'layerAFlow', label: 'Churn speed', min: 0, max: 5, step: 0.05 },
-			{
-				kind: 'range2',
-				key: 'layerAThreshold',
-				label: 'Density threshold',
-				parts: ['Starts', 'Solid'],
-				min: 0,
-				max: 1,
-				step: 0.01,
-			},
-			{
-				kind: 'range2',
-				key: 'layerAFade',
-				label: 'Vertical fade',
-				parts: ['Gone at', 'Full below'],
-				min: -0.5,
-				max: 1.5,
-				step: 0.01,
-				hint: '0 is the bottom edge, 1 the top',
-			},
-		],
-	},
-	{
-		title: 'Layer B · far',
-		controls: [
-			{ kind: 'range', key: 'layerBAmount', label: 'Amount', min: 0, max: 1.5, step: 0.01 },
-			{ kind: 'range2', key: 'layerBScale', label: 'Scale', parts: ['X', 'Y'], min: 0.05, max: 5, step: 0.01 },
-			{ kind: 'range', key: 'layerBRise', label: 'Rise speed', min: -0.2, max: 0.3, step: 0.001 },
-			{ kind: 'range', key: 'layerBFlow', label: 'Churn speed', min: 0, max: 5, step: 0.05 },
-			{
-				kind: 'range2',
-				key: 'layerBThreshold',
-				label: 'Density threshold',
-				parts: ['Starts', 'Solid'],
-				min: 0,
-				max: 1,
-				step: 0.01,
-			},
-			{
-				kind: 'range2',
-				key: 'layerBFade',
-				label: 'Vertical fade',
-				parts: ['Gone at', 'Full below'],
-				min: -0.5,
-				max: 1.5,
-				step: 0.01,
-			},
-		],
-	},
-	{
-		title: 'Plume',
-		controls: [
-			{ kind: 'range', key: 'plumeOpacity', label: 'Opacity', min: 0, max: 1, step: 0.01 },
-			{ kind: 'range', key: 'plumeGamma', label: 'Contrast (gamma)', min: 0.2, max: 4, step: 0.01 },
+			{ kind: 'range', key: 'layerBAmount', label: 'Strength', min: 0, max: 1.5, step: 0.01 },
+			...gapLayerControls('B'),
 		],
 	},
 	{
@@ -231,7 +228,7 @@ export const HERO_CONTROL_GROUPS: HeroControlGroup[] = [
 			{
 				kind: 'choice',
 				key: 'maskMode',
-				label: 'Thins smoke in',
+				label: 'Fills the gaps in',
 				options: [
 					{ value: 0, label: 'Corners (shipped)' },
 					{ value: 1, label: 'Centre box' },
@@ -239,22 +236,22 @@ export const HERO_CONTROL_GROUPS: HeroControlGroup[] = [
 			},
 			{ kind: 'range2', key: 'maskX', label: 'Horizontal edge', parts: ['From', 'To'], min: 0, max: 0.7, step: 0.01, hint: 'Distance from centre' },
 			{ kind: 'range2', key: 'maskY', label: 'Vertical edge', parts: ['From', 'To'], min: 0, max: 0.7, step: 0.01 },
-			{ kind: 'range', key: 'maskFloor', label: 'Smoke kept in mask', min: 0, max: 1, step: 0.01 },
+			{ kind: 'range', key: 'maskStrength', label: 'Strength', min: 0, max: 1, step: 0.01, hint: '1 fills the gaps completely' },
 		],
 	},
 	{
-		title: 'Gold cores',
+		title: 'Gold (in the gaps)',
 		controls: [
 			{ kind: 'range', key: 'goldAmount', label: 'Amount', min: 0, max: 1, step: 0.01 },
 			{
 				kind: 'range2',
-				key: 'goldCore',
-				label: 'Plume range',
-				parts: ['Starts', 'Full'],
+				key: 'goldRange',
+				label: 'Smoke density',
+				parts: ['Starts below', 'Full at'],
 				min: 0,
 				max: 1,
 				step: 0.01,
-				hint: 'Compared against plume after opacity',
+				hint: 'Gold appears where the smoke is thinner than the first value',
 			},
 		],
 	},

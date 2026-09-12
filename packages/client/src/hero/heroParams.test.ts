@@ -39,27 +39,27 @@ describe('sanitizeHeroParams', () => {
 
 	it('keeps well-formed values and drops malformed or unknown ones', () => {
 		const result = sanitizeHeroParams({
-			plumeOpacity: 0.9,
-			smokeColor: [0.1, 0.2, 0.3],
-			plumeGamma: 'high',
+			smokeMinimum: 0.1,
+			backgroundColor: [0.1, 0.2, 0.3],
+			gapContrast: 'high',
 			octaves: Number.NaN,
 			maskX: [0.1],
-			goldCore: [0.2, null],
+			goldRange: [0.2, null],
 			notAParam: 4,
 		});
-		expect(result.plumeOpacity).toBe(0.9);
-		expect(result.smokeColor).toEqual([0.1, 0.2, 0.3]);
-		expect(result.plumeGamma).toBe(DEFAULT_HERO_PARAMS.plumeGamma);
+		expect(result.smokeMinimum).toBe(0.1);
+		expect(result.backgroundColor).toEqual([0.1, 0.2, 0.3]);
+		expect(result.gapContrast).toBe(DEFAULT_HERO_PARAMS.gapContrast);
 		expect(result.octaves).toBe(DEFAULT_HERO_PARAMS.octaves);
 		expect(result.maskX).toEqual(DEFAULT_HERO_PARAMS.maskX);
-		expect(result.goldCore).toEqual(DEFAULT_HERO_PARAMS.goldCore);
+		expect(result.goldRange).toEqual(DEFAULT_HERO_PARAMS.goldRange);
 		expect(result).not.toHaveProperty('notAParam');
 	});
 
 	it('never hands out the default arrays themselves', () => {
 		const result = sanitizeHeroParams(null);
-		result.paperTop[0] = 0;
-		expect(DEFAULT_HERO_PARAMS.paperTop[0]).not.toBe(0);
+		result.smokeTop[0] = 0;
+		expect(DEFAULT_HERO_PARAMS.smokeTop[0]).not.toBe(0);
 	});
 });
 
@@ -72,10 +72,19 @@ describe('formatHeroParams', () => {
 
 describe('isDefaultValue', () => {
 	it('compares scalars and vectors against the shipped values', () => {
-		expect(isDefaultValue('plumeOpacity', DEFAULT_HERO_PARAMS.plumeOpacity)).toBe(true);
-		expect(isDefaultValue('plumeOpacity', 0.5)).toBe(false);
+		expect(isDefaultValue('smokeMinimum', DEFAULT_HERO_PARAMS.smokeMinimum)).toBe(true);
+		expect(isDefaultValue('smokeMinimum', 0.5)).toBe(false);
 		expect(isDefaultValue('maskX', [...DEFAULT_HERO_PARAMS.maskX])).toBe(true);
 		expect(isDefaultValue('maskX', [0.25, 0.5])).toBe(false);
+	});
+});
+
+describe('the smoke is the lightest color', () => {
+	it('makes both smoke colors lighter than the background', () => {
+		const luma = ([r, g, b]: readonly number[]) => 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+		const background = luma(DEFAULT_HERO_PARAMS.backgroundColor);
+		expect(luma(DEFAULT_HERO_PARAMS.smokeBottom)).toBeGreaterThan(background);
+		expect(luma(DEFAULT_HERO_PARAMS.smokeTop)).toBeGreaterThan(background);
 	});
 });
 

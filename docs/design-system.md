@@ -108,7 +108,7 @@ edit-view control voice (menu items, chips, tag inputs); `--fs-button` is the tr
 button label size.
 
 ### WebGL Integration
-The `/` Landing route features a WebGL fragment shader drifting warm-gray smoke over parchment. Read mode does not display this shader.
+The `/` Landing route features a WebGL fragment shader: a pale cream smoke body with drifting gaps through which a warm tan background shows. Read mode does not display this shader. The shader and its tuner name the light layer the smoke, because that is what the eye reads as smoke; the dark shapes are the gaps.
 
 Its colors and tunable values are uniforms, not literals: `packages/client/src/hero/heroParams.ts` holds the shipped values (`DEFAULT_HERO_PARAMS`), each uploaded as `u_<key>`. Opening `/?tune` loads a debug panel that edits them live, persists the edit in localStorage, and copies the result as JSON to paste back over the defaults. The shader colors are deliberately not design tokens — they are raw 0–1 RGB, and the smoke is tuned against the parchment tokens by eye.
 
