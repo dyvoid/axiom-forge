@@ -17,7 +17,7 @@ export function WikilinkField({ value, target, onChange, ariaLabel }: Props): JS
 		<WikiLinkPicker
 			value={value}
 			target={target}
-			placeholder={ariaLabel}
+			ariaLabel={ariaLabel}
 			onChange={onChange}
 		/>
 	);

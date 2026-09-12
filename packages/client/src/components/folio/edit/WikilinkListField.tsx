@@ -2,7 +2,13 @@ import { scoreFolio, wikiLinkDisplayName } from '@axiom-forge/shared';
 import type { FolioIndexRecord, WikiLink } from '@axiom-forge/shared';
 import { useFolios } from '../../../api/queries.js';
 import { useProject } from '../../../context/ProjectContext.js';
-import { parseWikiLinkText } from '../../../utils/links.js';
+import {
+	isLinkCandidate,
+	linkKey,
+	parseWikiLinkText,
+	searchPlaceholder,
+	showsFolderColumn,
+} from '../../../utils/links.js';
 import { ChipField, type ChipOption } from '../../ui/ChipField.js';
 
 interface Props {
@@ -13,7 +19,7 @@ interface Props {
 }
 
 function linkId(link: WikiLink): string {
-	return `${link.folder}/${link.name}`;
+	return linkKey(link.folder, link.name);
 }
 
 function parseId(id: string): WikiLink {
@@ -30,19 +36,14 @@ export function WikilinkListField({ value, target, onChange, ariaLabel }: Props)
 	}
 
 	const selected = new Set(value.map(linkId));
-	const showFolder = !target || (Array.isArray(target) && target.length > 1);
+	const showFolder = showsFolderColumn(target);
 
-	const candidates = (folios ?? []).filter((f) => {
-		if (target) {
-			if (Array.isArray(target) ? !target.includes(f.folder) : f.folder !== target) return false;
-		}
-		return !selected.has(`${f.folder}/${f.name}`);
-	});
+	const candidates = (folios ?? []).filter((f) => isLinkCandidate(f, target, selected));
 
-	const byId = new Map<string, FolioIndexRecord>(candidates.map((f) => [`${f.folder}/${f.name}`, f]));
+	const byId = new Map<string, FolioIndexRecord>(candidates.map((f) => [linkKey(f.folder, f.name), f]));
 
 	const options: ChipOption[] = candidates.map((f) => ({
-		id: `${f.folder}/${f.name}`,
+		id: linkKey(f.folder, f.name),
 		label: f.title,
 		icon: folderIcon(f.folder),
 		meta: showFolder ? f.folder : undefined,
@@ -72,6 +73,7 @@ export function WikilinkListField({ value, target, onChange, ariaLabel }: Props)
 				if (link) add(link);
 			}}
 			onRemove={(id) => onChange(value.filter((link) => linkId(link) !== id))}
+			placeholder={searchPlaceholder(target)}
 			ariaLabel={ariaLabel}
 		/>
 	);

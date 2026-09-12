@@ -49,6 +49,46 @@ export function parseWikiLinkText(raw: string, target?: string | string[]): Wiki
 	return { folder, name: name.replace(/\s+/g, '_') };
 }
 
+/**
+ * Placeholder copy for a folio search input, given the field's schema target.
+ * Shared so the single-value picker and the wikilink list read the same way
+ * rather than each inventing a convention.
+ */
+export function searchPlaceholder(target?: string | string[]): string {
+	const display = Array.isArray(target) ? target.join(', ') : target;
+	return display ? `Search ${display}…` : 'Search folios…';
+}
+
+/**
+ * True when a folio is a legal candidate for a wikilink field: inside the
+ * schema target (if any) and not already selected.
+ */
+export function isLinkCandidate(
+	folio: FolioIndexRecord,
+	target: string | string[] | undefined,
+	selected: ReadonlySet<string>,
+): boolean {
+	if (target) {
+		if (Array.isArray(target) ? !target.includes(folio.folder) : folio.folder !== target) {
+			return false;
+		}
+	}
+	return !selected.has(linkKey(folio.folder, folio.name));
+}
+
+/** Stable `Folder/Name` identity for a link or folio record. */
+export function linkKey(folder: string, name: string): string {
+	return `${folder}/${name}`;
+}
+
+/**
+ * The folder column only earns its place when the candidates can span more
+ * than one folder — i.e. no target, or a multi-folder target.
+ */
+export function showsFolderColumn(target?: string | string[]): boolean {
+	return !target || (Array.isArray(target) && target.length > 1);
+}
+
 /** True when an `[[Folder/Name]]` reference points at an existing folio. */
 export function isLinkResolved(
 	folios: readonly FolioIndexRecord[] | undefined,

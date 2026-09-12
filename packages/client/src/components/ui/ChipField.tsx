@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useCombobox } from '../../hooks/useCombobox.js';
 import { Icon } from './Icon.js';
 import styles from './ChipField.module.css';
@@ -70,6 +70,7 @@ export function ChipField({
 	const { open, openMenu, closeMenu, highlightIdx, setHighlightIdx, containerRef, menuRef } =
 		useCombobox<HTMLDivElement>();
 	const inputRef = useRef<HTMLInputElement>(null);
+	const listboxId = useId();
 
 	const candidates = query.trim()
 		? options
@@ -179,6 +180,10 @@ export function ChipField({
 					role="combobox"
 					aria-expanded={open}
 					aria-autocomplete="list"
+					aria-controls={listboxId}
+					aria-activedescendant={
+						open && candidates[highlightIdx] ? `${listboxId}-option-${highlightIdx}` : undefined
+					}
 					onChange={(e) => {
 						setQuery(e.target.value);
 						openMenu();
@@ -204,7 +209,7 @@ export function ChipField({
 			</div>
 
 			{open && (candidates.length > 0 || query.trim()) && (
-				<div className={styles.menu} ref={menuRef} role="listbox">
+				<div className={styles.menu} ref={menuRef} id={listboxId} role="listbox">
 					{candidates.length === 0 ? (
 						<div className={styles.menuEmpty}>
 							{onAddRaw ? `Press ↵ to add “${query.trim()}”` : 'No matches'}
@@ -213,6 +218,7 @@ export function ChipField({
 						candidates.map((option, idx) => (
 							<div
 								key={option.id}
+								id={`${listboxId}-option-${idx}`}
 								role="option"
 								aria-selected={idx === highlightIdx}
 								className={`${styles.menuItem} ${idx === highlightIdx ? styles.menuItemHighlight : ''}`}

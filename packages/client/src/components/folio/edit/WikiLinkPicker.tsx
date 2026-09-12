@@ -4,7 +4,13 @@ import type { WikiLink } from '@axiom-forge/shared';
 import { useFolios } from '../../../api/queries.js';
 import { useProject } from '../../../context/ProjectContext.js';
 import { useCombobox } from '../../../hooks/useCombobox.js';
-import { parseWikiLinkText } from '../../../utils/links.js';
+import {
+	isLinkCandidate,
+	linkKey,
+	parseWikiLinkText,
+	searchPlaceholder,
+	showsFolderColumn,
+} from '../../../utils/links.js';
 import { Icon } from '../../ui/Icon.js';
 import styles from './fields.module.css';
 
@@ -13,8 +19,10 @@ interface WikiLinkPickerProps {
 	value: WikiLink | null;
 	/** Schema target folder(s) — filters the dropdown to only folios in this folder. */
 	target?: string | string[];
-	/** Placeholder text when no value is selected. */
+	/** Placeholder text when no value is selected. Defaults to `Search <target>…`. */
 	placeholder?: string;
+	/** Accessible name for the search input. Falls back to the placeholder. */
+	ariaLabel?: string;
 	/** Whether to autofocus the search input on mount. */
 	autoFocus?: boolean;
 	/** Called when the user selects or clears a folio. */
@@ -25,6 +33,7 @@ export function WikiLinkPicker({
 	value,
 	target,
 	placeholder,
+	ariaLabel,
 	autoFocus,
 	onChange,
 }: WikiLinkPickerProps): JSX.Element {
@@ -36,21 +45,15 @@ export function WikiLinkPicker({
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const listboxId = useId();
 
-	const selectedKey = value ? `${value.folder}/${value.name}` : null;
+	const selectedKey = value ? linkKey(value.folder, value.name) : null;
 
 	// Filtered candidates. Ranking goes through the shared scorer so this picker
 	// agrees with the header search and both indexes — including aliases, which
 	// the substring match it used before silently missed (ADR-0011).
 	const candidates = useMemo(() => {
 		if (!folios) return [];
-		const inScope = folios.filter((f) => {
-			if (target) {
-				if (Array.isArray(target) ? !target.includes(f.folder) : f.folder !== target) {
-					return false;
-				}
-			}
-			return selectedKey !== `${f.folder}/${f.name}`;
-		});
+		const selected = new Set(selectedKey ? [selectedKey] : []);
+		const inScope = folios.filter((f) => isLinkCandidate(f, target, selected));
 
 		if (!query.trim()) return inScope;
 
@@ -122,8 +125,7 @@ export function WikiLinkPicker({
 		: null;
 	const displayName = selectedFolio?.title || (value ? filenameToDisplayName(value.name) : '');
 
-	const targetDisplay = Array.isArray(target) ? target.join(', ') : target;
-	const showFolder = !target || (Array.isArray(target) && target.length > 1);
+	const showFolder = showsFolderColumn(target);
 
 	return (
 		<div ref={wrapRef} className={styles.pickerWrap}>
@@ -150,13 +152,13 @@ export function WikiLinkPicker({
 						autoFocus={autoFocus}
 						className={styles.pickerInput}
 						value={query}
-						placeholder={placeholder || (targetDisplay ? `Search ${targetDisplay}…` : 'Search folios…')}
+						placeholder={placeholder || searchPlaceholder(target)}
 						role="combobox"
 						aria-expanded={open}
 						aria-autocomplete="list"
 						aria-controls={listboxId}
-						aria-activedescendant={open && candidates[highlightIdx] ? `picker-option-${highlightIdx}` : undefined}
-						aria-label={placeholder || (targetDisplay ? `Search ${targetDisplay}` : 'Search folios')}
+						aria-activedescendant={open && candidates[highlightIdx] ? `${listboxId}-option-${highlightIdx}` : undefined}
+						aria-label={ariaLabel || placeholder || searchPlaceholder(target)}
 						onChange={(e) => {
 							setQuery(e.target.value);
 							openMenu();
@@ -177,13 +179,16 @@ export function WikiLinkPicker({
 					) : (
 						candidates.map((f, i) => (
 							<div
-								key={`${f.folder}/${f.name}`}
-								id={`picker-option-${i}`}
+								key={linkKey(f.folder, f.name)}
+								id={`${listboxId}-option-${i}`}
 								role="option"
 								aria-selected={i === highlightIdx}
 								className={`${styles.menuItem} ${i === highlightIdx ? styles.menuItemHighlight : ''}`}
 								onMouseEnter={() => setHighlightIdx(i)}
-								onClick={() => handleSelect(f.folder, f.name)}
+								onMouseDown={(e) => {
+									e.preventDefault();
+									handleSelect(f.folder, f.name);
+								}}
 							>
 								<div className={styles.menuItemRow}>
 									<Icon name={folderIcon(f.folder)} size={12} />
