@@ -7,6 +7,13 @@
 	isolation: isolate;
 }
 
+/* Set by the hero tuner's "Hide page text" so the shader can be judged bare. */
+.contentHidden .topCorners,
+.contentHidden .hero,
+.contentHidden .footer {
+	visibility: hidden;
+}
+
 .topCorners {
 	position: absolute;
 	top: var(--sp-6);

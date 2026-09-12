@@ -110,6 +110,8 @@ button label size.
 ### WebGL Integration
 The `/` Landing route features a WebGL fragment shader drifting warm-gray smoke over parchment. Read mode does not display this shader.
 
+Its colors and tunable values are uniforms, not literals: `packages/client/src/hero/heroParams.ts` holds the shipped values (`DEFAULT_HERO_PARAMS`), each uploaded as `u_<key>`. Opening `/?tune` loads a debug panel that edits them live, persists the edit in localStorage, and copies the result as JSON to paste back over the defaults. The shader colors are deliberately not design tokens — they are raw 0–1 RGB, and the smoke is tuned against the parchment tokens by eye.
+
 ### Responsive Behavior
 
 The layout adapts across three content-driven breakpoints, defined as tokens in `tokens.css`:

@@ -1,10 +1,13 @@
 import { useEffect, useRef } from 'react';
+import { DEFAULT_HERO_PARAMS, HERO_UNIFORM_KEYS, type HeroParams } from './heroParams.js';
 import { CODEX_FRAG } from './shaders/codex.frag.glsl.js';
 import { HERO_VERT } from './shaders/hero.vert.glsl.js';
 
 type WebGLHeroProps = {
 	variant?: 'codex'; // Future: 'lapidary' | 'penumbra'
 	className?: string;
+	/** Shader tuning; the landing page ships the defaults, `?tune` edits them live. */
+	params?: Readonly<HeroParams>;
 };
 
 const SHADERS: Record<string, string> = {
@@ -24,8 +27,18 @@ function compileShader(gl: WebGLRenderingContext, type: number, src: string): We
 	return sh;
 }
 
-export function WebGLHero({ variant = 'codex', className }: WebGLHeroProps): JSX.Element {
+export function WebGLHero({ variant = 'codex', className, params = DEFAULT_HERO_PARAMS }: WebGLHeroProps): JSX.Element {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+	// Params are read through a ref so changing them never rebuilds the GL
+	// program; the animation loop picks them up on its next frame.
+	const paramsRef = useRef(params);
+	// Set only under reduced motion, where there is no loop to pick changes up.
+	const redrawRef = useRef<(() => void) | null>(null);
+
+	useEffect(() => {
+		paramsRef.current = params;
+		redrawRef.current?.();
+	}, [params]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -69,6 +82,17 @@ export function WebGLHero({ variant = 'codex', className }: WebGLHeroProps): JSX
 		const uRes = gl.getUniformLocation(prog, 'u_res');
 		const uTime = gl.getUniformLocation(prog, 'u_time');
 		const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+		const paramUniforms = HERO_UNIFORM_KEYS.map((key) => [key, gl.getUniformLocation(prog, `u_${key}`)] as const);
+
+		function uploadParams() {
+			const p = paramsRef.current;
+			for (const [key, loc] of paramUniforms) {
+				const value = p[key];
+				if (typeof value === 'number') gl?.uniform1f(loc, value);
+				else if (value.length === 2) gl?.uniform2fv(loc, value);
+				else gl?.uniform3fv(loc, value);
+			}
+		}
 
 		const mouse = [0.5, 0.5];
 		function onMove(e: MouseEvent) {
@@ -112,14 +136,25 @@ export function WebGLHero({ variant = 'codex', className }: WebGLHeroProps): JSX
 		// track between visits while keeping the magnitudes small.
 		const PREWARM_SECONDS = 60;
 		const PREWARM_JITTER_SECONDS = 600;
-		const prewarmSeconds = PREWARM_SECONDS + Math.random() * PREWARM_JITTER_SECONDS;
-		const start = performance.now() - prewarmSeconds * 1000;
+		let simSeconds = PREWARM_SECONDS + Math.random() * PREWARM_JITTER_SECONDS;
+		let lastNow = performance.now();
+
+		// Time is integrated rather than read off the wall clock so `timeSpeed`
+		// can change mid-flight without the field jumping. A step is capped so a
+		// tab returning from the background resumes where it left off.
+		const MAX_STEP_SECONDS = 0.25;
 
 		function drawFrame() {
+			const now = performance.now();
+			const step = Math.min((now - lastNow) / 1000, MAX_STEP_SECONDS);
+			simSeconds += step * paramsRef.current.timeSpeed;
+			lastNow = now;
+
 			resize();
 			gl?.uniform2f(uRes, canvas!.width, canvas!.height);
-			gl?.uniform1f(uTime, (performance.now() - start) / 1000);
+			gl?.uniform1f(uTime, simSeconds);
 			gl?.uniform2f(uMouse, mouse[0]!, mouse[1]!);
+			uploadParams();
 			gl?.drawArrays(gl.TRIANGLES, 0, 3);
 		}
 
@@ -140,6 +175,7 @@ export function WebGLHero({ variant = 'codex', className }: WebGLHeroProps): JSX
 		if (reduceMotion) {
 			// Single static draw — no rAF loop, no mouse listener.
 			drawFrame();
+			redrawRef.current = drawFrame;
 		} else {
 			frame();
 			document.addEventListener('visibilitychange', onVisibilityChange);
@@ -154,6 +190,7 @@ export function WebGLHero({ variant = 'codex', className }: WebGLHeroProps): JSX
 
 		return () => {
 			alive = false;
+			redrawRef.current = null;
 			cancelAnimationFrame(raf);
 			window.removeEventListener('mousemove', onMove);
 		};

@@ -4,6 +4,7 @@ varying vec2 v_uv;
 uniform vec2 u_res;
 uniform float u_time;
 uniform vec2 u_mouse;
+uniform float u_octaves;
 
 float hash(vec2 p) {
 	vec2 q = fract(p * vec2(0.1031, 0.1030));
@@ -19,10 +20,13 @@ float vnoise(vec2 p) {
 		mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
 }
 
+// GLSL ES 1.0 loops need a constant bound, so the octave count is a break
+// inside a fixed 8-iteration loop.
 float fbm(vec2 p) {
 	float v = 0.0, a = 0.5;
 	mat2 R = mat2(0.8, -0.6, 0.6, 0.8);
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 8; i++) {
+		if (float(i) >= u_octaves) break;
 		v += a * vnoise(p);
 		p = R * p * 2.02;
 		a *= 0.5;
