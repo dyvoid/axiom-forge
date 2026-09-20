@@ -59,9 +59,7 @@ Do not commit generated source files. They create noisy diffs and painful merge 
 
 Review diffs skeptically — AI code looks clean but can be subtly wrong.
 
-High-blast-radius changes always get manual review. `AGENTS.md` holds the canonical list;
-it additionally covers `packages/shared/src/parser.ts` and `schema.ts`, public API endpoints,
-and anything touching secrets, auth, or permissions.
+High-blast-radius changes always get manual review. `AGENTS.md` holds the canonical list.
 
 ---
 

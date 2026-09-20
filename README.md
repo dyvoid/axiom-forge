@@ -204,7 +204,8 @@ The server reads the project folder once on startup, parses every Markdown file 
 | `npm run build` | Compiles all three packages |
 | `npm start` | Runs the compiled server (after `build`) |
 | `npm test` | Runs the Vitest suite |
-| `npm run lint` | Runs ESLint and markdownlint |
+| `npm run typecheck` | Typechecks the client; the `shared` and `server` builds typecheck themselves |
+| `npm run lint` | Runs ESLint, markdownlint, and the repo integrity checks in `scripts/check-repo.mjs` |
 
 ## Documentation
 

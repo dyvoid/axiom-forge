@@ -18,8 +18,10 @@ There is no separate `__tests__/` folder.
   `os.tmpdir()`, writes real `.md` and `.json` files, spins up a `ProjectStore`, mounts Express
   routes, and drives them with `supertest`. No file-system mocking — the real I/O is the point.
 
-- **`packages/client`** — unit tests for pure utility functions only (e.g. link resolution
-  helpers). React components are not tested today.
+- **`packages/client`** — two kinds. Pure utility functions (e.g. link resolution helpers) run
+  in node. Component render tests run under jsdom and go through
+  `src/test/renderWithProject.tsx`, which seeds the query cache and a fixture schema rather than
+  mocking fetch. The shared edit controls are covered; most views are not.
 
 ## Synthetic schemas rule
 

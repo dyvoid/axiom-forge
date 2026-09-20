@@ -10,12 +10,9 @@ Internal refactors are tracked separately under [Architecture Candidates](#archi
 — they compete for time with features but not on the same axis, so mixing them into one priority
 order would misrepresent both.
 
-**ADR-0013 owns the onboarding surface** (decided 2026-08-30). ADR-0002, ADR-0005 and ADR-0013
-each specified a different mechanism for the same "how does a user get into a project" surface,
-and ADR-0014 depended on it. ADR-0013 now leads: its design settles the shape, and the others
-adopt it rather than re-specify. ADR-0002 keeps project *switching*, config editing and removal;
-ADR-0005 contributes the Electron native dialog as one implementation. See
-[ADR-0013](adr/0013-project-scaffolding.md#scope-this-adr-owns-the-onboarding-surface).
+**ADR-0013 owns the onboarding surface** that ADR-0002, ADR-0005 and ADR-0014 all touch. Its
+[Scope section](adr/0013-project-scaffolding.md#scope-this-adr-owns-the-onboarding-surface)
+settles how the four divide.
 
 ## Candidate Features
 
@@ -26,10 +23,10 @@ ADR-0005 contributes the Electron native dialog as one implementation. See
 | 3 | Alternate Data Views (Table, Board, Saved Filters, Graph) | Proposed | [ADR-0016](adr/0016-alternate-data-views.md) | Fully designed. No schema changes needed for the table/board/saved-filter slice; graph view (same ADR) costs more, build last within it |
 | 4 | Structured Date Fields (Sort Key & Calendar Modes) | Proposed | [ADR-0015](adr/0015-structured-date-fields.md) | Fully designed. Adds `sortkey`/`calendar` modes to the `date` field type; keeps hand-editable flat YAML, no required nesting. Prerequisite for Timeline View |
 | 5 | Timeline View | Proposed | [ADR-0017](adr/0017-timeline-view.md) | Blocked on #4 (ADR-0015); lays out entries by sortable date value |
-| 6 | Visibility / Access Control (field & entry level) | Proposed — **needs scoping** | [ADR-0014](adr/0014-visibility-access-control.md) | Recurring want across GM/novelist/publisher/creator use cases. Skeleton ADR only, and its own Consequences concede the no-auth deployment model may cap how far it can go. **Reviewed 2026-08-30 and kept** at full scope; narrowing to display-only remains available when it is scoped |
+| 6 | Visibility / Access Control (field & entry level) | Proposed — **needs scoping** | [ADR-0014](adr/0014-visibility-access-control.md) | Recurring want across GM/novelist/publisher/creator use cases. Skeleton ADR only, and its own Consequences concede the no-auth deployment model may cap how far it can go. Held at full scope; narrowing to display-only remains available when it is scoped |
 | 7 | Project Themes | Accepted — phase 1 built | [ADR-0001](adr/0001-project-themes.md) | Phase 1 shipped: an optional `theme.json` with a `hero` section (colors, density, speed, size, vignette, clear title, or disable the hero). The next phases — design tokens, light/dark base themes, a switcher — are undesigned and need their own revision. The print-aesthetic objection (AGENTS.md treats it as load-bearing; no dark mode to build on) applies to those phases |
 | 8 | Multi-Project Management | Proposed | [ADR-0002](adr/0002-multi-project-management.md) | Persona-dependent, no strong consensus |
-| 9 | Markdown Source Edit Mode | Proposed | [ADR-0012](adr/0012-markdown-source-edit-mode.md) | Toggle between structured form editor and raw Markdown textarea. 2 of its 4 open questions are now settled by ADR-0009. **Rank reviewed and held 2026-08-30** knowing it is the only in-app repair for a schema-drifted file, which is otherwise readable but unsaveable — that gap is [accepted for now](data-model.md#a-drifted-file-is-readable-but-not-saveable) |
+| 9 | Markdown Source Edit Mode | Proposed | [ADR-0012](adr/0012-markdown-source-edit-mode.md) | Toggle between structured form editor and raw Markdown textarea. 2 of its 4 open questions are now settled by ADR-0009. Held at this rank knowing it is the only in-app repair for a schema-drifted file, which is otherwise readable but unsaveable — that gap is [accepted for now](data-model.md#a-drifted-file-is-readable-but-not-saveable) |
 | 10 | Desktop Packaging & Distribution | Proposed | [ADR-0005](adr/0005-desktop-packaging-distribution.md) | Uses Electron and electron-builder; value is platform-dependent per persona |
 
 ## Architecture Candidates
@@ -37,9 +34,8 @@ ADR-0005 contributes the Electron native dialog as one implementation. See
 Internal quality work: no user-visible feature, but each one lowers the cost of the features
 above. Same status axis as the table above — `Proposed` means the design is recorded, not agreed.
 
-A1 has been built and moves to [Implemented / Resolved](#implemented--resolved) below. A2 stays
-Proposed and is revisited after ADR-0013, which reshapes the same `load`/`reload` surface it would
-reorganize. Its ADR carries the reasoning.
+A2 stays Proposed and is revisited after ADR-0013, which reshapes the same `load`/`reload`
+surface it would reorganize. Its ADR carries the reasoning.
 
 | # | Change | Status | ADR | Notes |
 |---|---|---|---|---|

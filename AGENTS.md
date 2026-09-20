@@ -11,23 +11,15 @@ deliberately avoid AI-specific instructions so there's no second source of truth
 
 ## Project Overview
 
-Axiom Forge is a schema-driven, local-first encyclopedia and worldbuilding tool. Every entry is a
-plain Markdown file on disk — no database, no cloud, no lock-in. A `schema.json` describes your
-world's types and fields; the app parses, validates, and renders them as a fast navigable web UI.
-Wikilinks (`[[Folder/Name]]`) are first-class. The files are the source of truth.
-
-The core feature set is complete. New features are chosen from a backlog; see
-[docs/ROADMAP.md](docs/ROADMAP.md) for candidates and [PICKUP.md](PICKUP.md) for what's next.
+A schema-driven, local-first encyclopedia and worldbuilding tool whose Markdown files on disk are
+the source of truth. What it is and how to run it: [README](README.md). What might come next:
+[docs/ROADMAP.md](docs/ROADMAP.md), then [PICKUP.md](PICKUP.md) for where the last session stopped.
 
 ## Architecture
 
-npm workspaces monorepo: `packages/shared` (Markdown parser, Zod schemas, wikilink helpers),
-`packages/server` (Express REST API on `:3000`, in-memory `projectStore`), `packages/client`
-(React + Vite SPA on `:5273`, TanStack Query). No database — the server reads the project folder
-on startup and builds an in-memory index. Saves write back to disk via the API.
-
-See [Architecture Overview](docs/architecture.md) for the full picture, and the
-[ADR log](docs/adr/) for the reasoning behind specific decisions.
+An npm workspaces monorepo — `packages/shared` (parser, schemas), `packages/server` (Express, the
+in-memory index), `packages/client` (React + Vite). No database. Structure, endpoints and data
+flow: [Architecture](docs/architecture.md). Why a given choice was made: [ADR log](docs/adr/).
 
 ## AI Instructions
 
@@ -84,7 +76,8 @@ Each rule has a *why* so edge cases can be reasoned through, not just pattern-ma
 - **TypeScript** throughout all three packages. Do not loosen `tsconfig` strictness.
 - **Module system:** ESM. Do not mix CommonJS into the packages.
 - Commit the lockfile (`package-lock.json`). Do not commit `dist/` or build output.
-- Linting: ESLint (`.eslintrc.cjs`). Formatting: follow existing style — no Prettier introduced.
+- Linting: ESLint flat config (`eslint.config.js`). Formatting: follow existing style — no
+  Prettier introduced.
 - `npm run lint` also runs `scripts/check-repo.mjs`: undefined design tokens, dead relative links
   in Markdown, unresolved `fall-of-troy` wikilinks outside its allowlist, ADRs missing from the
   ROADMAP, and the doc line caps. These live in `lint` rather than a separate CI job so a failure
@@ -115,4 +108,5 @@ scope and the ADR hygiene rules.
 | [Documentation](docs/documentation.md) | Doc discipline, PICKUP scope, end-of-task checklist |
 | [ADR Log](docs/adr/) | Architecture decisions and their rationale |
 | [Git Strategy](docs/git-strategy.md) | Branching, merging, commit rules |
+| [UI Consistency Audit](docs/ui-consistency-audit.md) | The shared controls, and what was deliberately left alone |
 | [PICKUP](PICKUP.md) | Slim handoff: what's in progress, what's next, open decisions |

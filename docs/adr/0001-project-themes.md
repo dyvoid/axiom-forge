@@ -43,19 +43,11 @@ reported as a warning and ignored.
 }
 ```
 
-Every field is optional; an omitted field keeps the app default shown above.
-
-| Field | Meaning | Maps to |
-|---|---|---|
-| `enabled` | `false` removes the hero entirely: no canvas, no WebGL context, the landing page shows the plain page background | not rendering `WebGLHero` |
-| `smoke` | Smoke color; the top of its gradient is derived from it | `smokeBottom`, `smokeTop` |
-| `background` | Color showing through the gaps | `backgroundColor` |
-| `gold` | Tint in the thinnest smoke | `goldColor` |
-| `density` (0–1) | How far the smoke is allowed to thin; higher is denser | `smokeMinimum` |
-| `speed` (≥ 0) | Animation speed; `0` holds a still frame | `timeSpeed` |
-| `size` (> 0) | Shape size; `2` makes the billows twice as large | divides `layerAScale` and `layerBScale` |
-| `vignette.color`, `vignette.strength` (0–1) | Edge tint | `vignetteColor`, `vignetteStrength` |
-| `clearTitle` | Fill the gaps behind the title instead of in the corners | `maskMode` |
+Every field is optional; an omitted field keeps the app default shown above. Each one maps to a
+`HeroParams` value — `smoke` to `smokeBottom`/`smokeTop`, `density` to `smokeMinimum`, `speed` to
+`timeSpeed`, `size` dividing `layerAScale`/`layerBScale`, `clearTitle` to `maskMode`, `enabled`
+deciding whether `WebGLHero` renders at all. What each setting means on disk is
+[Data Model](../data-model.md#themejson-optional); this ADR does not restate it.
 
 These names are a stable, look-level vocabulary, deliberately not the shader's uniform names. The
 other `HeroParams` (noise, warp, thresholds, fades, mask edges, gamma) stay app-level and are

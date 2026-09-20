@@ -90,7 +90,7 @@ multi-column (`column-width` + `break-inside: avoid` per group) rather than `fle
 laid groups out row-major and made the alphabetical spine zigzag. `column-fill: balance`
 equalizes the column heights so the eye runs column 1 then column 2.
 
-### Undefined tokens fail the build
+### Undefined tokens fail lint
 
 `var(--token)` naming a property that `tokens.css` never defines is **invalid at computed-value
 time**: the declaration is dropped, or the property silently inherits. No console error, nothing a

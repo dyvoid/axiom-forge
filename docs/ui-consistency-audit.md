@@ -97,22 +97,14 @@ selectors like `.btnConfirm.danger`; use a standalone class.
 
 ## Still open
 
-1. **What the component tests cannot reach.** The tests landed —
-   `ChipField`, `WikiLinkPicker` and `WikilinkListField` are covered
-   (45 tests) on top of the pure helpers in `utils/links` (26). jsdom
-   implements no layout, so two classes of bug stay outside their reach and
-   still need a browser:
+1. **What the component tests cannot reach.** The tests landed: `ChipField`,
+   `WikiLinkPicker` and `WikilinkListField` are covered, on top of the pure
+   helpers in `utils/links`. Two classes of bug stay outside their reach —
+   layout, and event ordering that depends on real focus — because jsdom
+   implements no layout. [Testing](testing.md#what-component-tests-cannot-reach)
+   has the detail.
 
-   - **Anything about layout or CSS.** Including the composed-class ordering
-     trap below, which is this project's most instructive bug and would pass
-     a jsdom test cleanly.
-   - **Event ordering that depends on real focus.** The pickers commit on
-     `mousedown` + `preventDefault` rather than `click` so focus never
-     leaves the input mid-commit. Swapping that back to `onClick` keeps
-     every test green — verified by mutation, and said so in the tests
-     themselves.
-
-   After changing these controls, drive the real app: both index views, the
+   So after changing these controls, drive the real app: both index views, the
    folio read and edit views, and commit an option in each picker by mouse
    and by keyboard.
 
