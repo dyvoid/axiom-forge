@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { hasSectionHeading } from './fences.js';
 
 // ────────────────────────────────────────────────────────────
 // config.json
@@ -312,6 +313,7 @@ export const ParsedFolioSchema = z.object({
 	preface: z.string().optional(),
 	coverImage: CoverImageSchema.optional(),
 	sections: z.record(z.string(), ParsedSectionSchema),
+	extraFrontmatter: z.record(z.string(), z.unknown()).optional(),
 	// `warnings` and `mtime` are server-side annotations, not user input —
 	// accept-and-ignore rather than reject if a client sends them back.
 	warnings: z.array(z.string()).optional(),
@@ -347,7 +349,8 @@ export type SchemaIssueCode =
 	| 'unknown-section'
 	| 'unknown-field'
 	| 'invalid-select-value'
-	| 'wrong-shape';
+	| 'wrong-shape'
+	| 'unrepresentable';
 
 export interface SchemaConformanceIssue {
 	/** Dotted path to the offending element, e.g. 'sections.Vitals.fields.Mood'. */
@@ -362,6 +365,7 @@ export interface SchemaConformanceIssue {
 // transitively. We declare what we need locally to keep schema.ts self-contained.
 interface ValidationFolio {
 	type: string;
+	preface?: string;
 	sections: Record<string, {
 		content?: string;
 		value?: unknown;
@@ -408,6 +412,15 @@ export function validateAgainstSchema(
 		return issues;
 	}
 
+	if (mode === 'write' && folio.preface && hasSectionHeading(folio.preface)) {
+		issues.push({
+			path: 'preface',
+			code: 'unrepresentable',
+			severity,
+			message: SECTION_HEADING_MESSAGE('The text before the first section'),
+		});
+	}
+
 	for (const [sectionName, section] of Object.entries(folio.sections)) {
 		const sectionDef = typeDef.sections[sectionName];
 		if (!sectionDef) {
@@ -447,7 +460,16 @@ export function validateAgainstSchema(
 				break;
 			}
 			case 'prose':
-				// Free text — nothing to conform to.
+				// Free text — nothing to conform to, but it must not contain a
+				// line the parser would read back as the start of a new section.
+				if (mode === 'write' && section.content && hasSectionHeading(section.content)) {
+					issues.push({
+						path: `sections.${sectionName}.content`,
+						code: 'unrepresentable',
+						severity,
+						message: SECTION_HEADING_MESSAGE(`Section "${sectionName}"`),
+					});
+				}
 				break;
 			case 'links':
 				checkFieldValue(
@@ -488,6 +510,10 @@ function isPlainWikiLinkObject(v: unknown): boolean {
  * disk has already been coerced into shape by the parser, so on the read path
  * the check has nothing to say and is skipped rather than downgraded.
  *
+ * - `unrepresentable` (also write-only): the value has the right shape but
+ *   cannot be written in the Markdown format and read back unchanged — a line
+ *   break in a one-line bullet, a comma inside a list item, a `]` in a link.
+ *
  * Shape mismatches are reported once per field and short-circuit further
  * checks for that field.
  */
@@ -511,6 +537,11 @@ function checkFieldValue(
 				severity,
 				message: `${capitalize(label)} is declared ${fieldDef.type} and expects ${expectation}, got ${describeShape(value)}.`,
 			});
+			return;
+		}
+		const problem = representabilityProblem(fieldDef.type, value);
+		if (problem) {
+			issues.push({ path, code: 'unrepresentable', severity, message: `${capitalize(label)} ${problem}` });
 			return;
 		}
 	}
@@ -560,6 +591,51 @@ function shapeExpectation(type: FieldType, value: unknown): string | null {
 		return ok ? null : 'an array of { folder, name } objects';
 	}
 	return null;
+}
+
+const LINE_BREAK = /[\r\n]/;
+// What each part of `[[Folder/Name|Alias]]` cannot contain and still read back
+// unchanged: the folder ends at the first `/`, the path at `|` or `]`, the alias at `]`.
+const UNWRITABLE_IN_FOLDER = /[/|\]\r\n]/;
+const UNWRITABLE_IN_NAME = /[|\]\r\n]/;
+const UNWRITABLE_IN_ALIAS = /[\]\r\n]/;
+
+const SECTION_HEADING_MESSAGE = (where: string): string =>
+	`${where} has a line starting with "## ", which the file format reads as a new section. `
+	+ 'Use "###" for a heading inside a section.';
+
+const LINK_MESSAGE = 'has a link containing a "]" or a line break, a "|" in its folder or name, '
+	+ 'or a "/" in its folder, which cannot be written as a [[wiki-link]] and read back unchanged.';
+
+function isUnwritableLink(v: unknown): boolean {
+	const { folder, name, alias } = v as { folder: string; name: string; alias?: string };
+	return UNWRITABLE_IN_FOLDER.test(folder) || UNWRITABLE_IN_NAME.test(name) || UNWRITABLE_IN_ALIAS.test(alias ?? '');
+}
+
+/**
+ * Why an already well-shaped value cannot round-trip through the bullet-line
+ * format, or `null` when it can. Each field is one `- **Field:** value` line,
+ * lists are comma-separated on it, and links are `[[Folder/Name|Alias]]`.
+ */
+function representabilityProblem(type: FieldType, value: unknown): string | null {
+	switch (type) {
+		case 'text':
+		case 'date':
+		case 'select':
+		case 'textarea':
+			return LINE_BREAK.test(value as string)
+				? 'must be a single line: each field is stored on one "- **Field:** value" line.'
+				: null;
+		case 'text-list':
+		case 'multiselect':
+			return (value as string[]).some((v) => v.includes(',') || LINE_BREAK.test(v))
+				? 'has an item containing a comma or line break, which the file format would split into separate items.'
+				: null;
+		case 'wikilink':
+			return isUnwritableLink(value) ? LINK_MESSAGE : null;
+		case 'wikilink-list':
+			return (value as unknown[]).some(isUnwritableLink) ? LINK_MESSAGE : null;
+	}
 }
 
 function capitalize(s: string): string {

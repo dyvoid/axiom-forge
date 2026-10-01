@@ -2,11 +2,12 @@
 # Axiom Forge launcher for Linux and macOS.
 #
 # Installs dependencies (on first run, or if a previous install looks broken), then starts
-# both dev servers: the API on :3000 and the UI on :5173. `npm start` is deliberately not
+# both dev servers: the API on :3000 and the UI on :5273. `npm start` is deliberately not
 # used here — it runs the compiled server alone, which exposes the REST API with no UI.
 #
-# Extra arguments are forwarded to the server:
-#   ./start.sh --project ./path/to/your/project
+# Extra arguments are forwarded to the server. This script changes to the repo root first, so
+# give --project an absolute path:
+#   ./start.sh --project /home/you/worlds/my-project
 
 set -eu
 
@@ -17,7 +18,7 @@ do
 	if ! command -v "$tool" >/dev/null 2>&1
 	then
 		echo "Axiom Forge: '$tool' was not found on PATH." >&2
-		echo "Install Node.js 18.17 or newer: https://nodejs.org" >&2
+		echo "Install Node.js 20.19 or newer: https://nodejs.org" >&2
 		exit 1
 	fi
 done
@@ -50,5 +51,5 @@ then
 	npm -w @axiom-forge/shared run build
 fi
 
-echo "Axiom Forge: starting — the UI will be at http://localhost:5173"
+echo "Axiom Forge: starting — the UI will be at http://127.0.0.1:5273"
 exec npm run dev -- "$@"

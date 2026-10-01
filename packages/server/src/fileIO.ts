@@ -89,6 +89,15 @@ export async function statFile(filePath: string): Promise<{ mtime: number } | nu
 	}
 }
 
+/**
+ * True when both paths name the same file on disk — as `Troy.md` and
+ * `troy.md` do on a case-insensitive filesystem (Windows, macOS by default).
+ */
+export async function isSameFile(a: string, b: string): Promise<boolean> {
+	const [sa, sb] = await Promise.all([stat(a, { bigint: true }), stat(b, { bigint: true })]);
+	return sa.dev === sb.dev && sa.ino === sb.ino;
+}
+
 export type ImageResolution =
 	| { filePath: string; error?: undefined }
 	| { filePath?: undefined; error: 'missing' | 'ambiguous' | 'outside-project' };

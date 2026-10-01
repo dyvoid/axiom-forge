@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { ParsedFolio } from '@axiom-forge/shared';
 import { useFolio, useSaveFolio, useDeleteFolio } from '../api/queries.js';
 import { ConflictError, uploadCoverImage } from '../api/client.js';
@@ -12,12 +12,20 @@ import editStyles from '../components/folio/FolioEditView.module.css';
 export function FolioEdit(): JSX.Element {
 	const { folder, name } = useParams<{ folder: string; name: string }>();
 	const navigate = useNavigate();
+	const location = useLocation();
 	const { schema } = useProject();
 	const { data: folio, isLoading, error } = useFolio(folder ?? '', name ?? '');
 	const saveMutation = useSaveFolio(folder ?? '', name ?? '');
 	const deleteMutation = useDeleteFolio();
-	const [saveError, setSaveError] = useState<string | null>(null);
+	// FolioNew hands over a cover-upload failure when it lands here.
+	const handedOver = (location.state as { saveError?: string } | null)?.saveError;
+	const [saveError, setSaveError] = useState<string | null>(handedOver ?? null);
 	const [uploading, setUploading] = useState(false);
+
+	// Read it once: history keeps `state`, so a reload or Back would show it again.
+	useEffect(() => {
+		if (handedOver) navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+	}, [handedOver, location.pathname, location.search, navigate]);
 
 	if (isLoading) {
 		return (
@@ -100,6 +108,8 @@ export function FolioEdit(): JSX.Element {
 
 	return (
 		<FolioEditView
+			// The draft is seeded once, so a different folio needs a fresh editor.
+			key={`${folio.folder}/${folio.name}`}
 			folio={folio}
 			typeDef={typeDef}
 			saving={saveMutation.isPending || uploading}

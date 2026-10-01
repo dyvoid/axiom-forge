@@ -14,8 +14,12 @@ interface ConfirmDialogProps {
 	onCancel: () => void;
 }
 
-export function ConfirmDialog({
-	open,
+export function ConfirmDialog({ open, ...panel }: ConfirmDialogProps): JSX.Element | null {
+	return open ? <ConfirmDialogPanel {...panel} /> : null;
+}
+
+/** The open dialog. Its own component so the focus trap mounts and unmounts with it. */
+function ConfirmDialogPanel({
 	title,
 	message,
 	confirmLabel = 'Confirm',
@@ -24,12 +28,10 @@ export function ConfirmDialog({
 	onConfirm,
 	onSecondary,
 	onCancel,
-}: ConfirmDialogProps): JSX.Element | null {
+}: Omit<ConfirmDialogProps, 'open'>): JSX.Element {
 	const titleId = useId();
 	const descId = useId();
 	const containerRef = useFocusTrap<HTMLDivElement>(onCancel);
-
-	if (!open) return null;
 
 	return (
 		<div className={styles.overlay} onClick={onCancel}>

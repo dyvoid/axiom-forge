@@ -36,7 +36,7 @@ The server exposes the following REST API:
 - `PUT /api/folios/:folder/:name/image?filename=` - Uploads an allowed image (maximum 10 MB) to the project `Images/` folder and returns its collision-safe vault path
 - `DELETE /api/folios/:folder/:name/image` - Deletes the image referenced by the folio's current cover embed
 - `GET /api/warnings` - Returns all parse warnings, grouped by file; `theme.json` problems are an entry with an empty `folder`
-- `POST /api/reload` - Rebuilds the in-memory index from disk and re-reads config, schema and theme
+- `POST /api/reload` - Rebuilds the in-memory index from disk and re-reads config, schema and theme. Waits for any in-flight save, and swaps the new state in only once all of it has loaded, so a failed reload (`500`) leaves the previous project serving
 - `POST /api/folios/:folder` - Creates a new folio
 - `PUT /api/folios/:folder/:name` - Saves (and optionally renames) a folio. Validates `mtime` to prevent edit conflicts; on rename, atomically moves the file and rewrites every `[[Folder/Old_Name]]` wikilink across the project.
 - `DELETE /api/folios/:folder/:name?deleteCoverImage=` - Deletes a folio and optionally its referenced cover image
@@ -49,7 +49,7 @@ If a folio's frontmatter `title` changes during an edit, the server computes the
 The frontend is a single-page React application powered by Vite. In development mode, Vite runs on `:5273` and proxies `/api` to the Express server on `:3000`.
 
 ### State Management
-- **`ProjectContext`**: Fetches `/api/config` and `/api/schema` once at boot. These are effectively immutable for the session.
+- **`ProjectContext`**: Fetches `/api/config` and `/api/schema` through TanStack Query with no staleness timer, so they load once and refetch only when the header "Sync" button invalidates every query after a reload.
 - **TanStack Query**: Manages all dynamic server state: folio lists, individual reads, search results, and backlinks. The theme is also a query, used only by `Landing` and deliberately outside `ProjectContext`'s loading gate, since a theme must never hold up the app. It caches data heavily and invalidates on save or via the header "Sync" button.
 
 ### Routing
@@ -59,6 +59,7 @@ The UI handles routing entirely client-side using React Router:
 - `/folio/:folder` (`CategoryIndexView`) - Category-specific index with search/tags.
 - `/folio/:folder/:name` (`FolioRead`) - Read mode.
 - `/folio/:folder/:name/edit` (`FolioEdit`) - Edit mode (separate route, not a nested state, allowing distinct layouts).
+- `/new/:folder?title=` (`FolioNew`) - Editor for an unsaved draft; nothing is written until Save. Kept off `/folio/:folder/*` so it cannot collide with a folio named `new`.
 
 ### Read Mode Layout Dispatch
 The layout engine does not hardcode folio types. Instead, `FolioReadView` dynamically builds the page based on the `schema.json`.

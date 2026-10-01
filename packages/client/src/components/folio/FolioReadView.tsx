@@ -21,12 +21,13 @@ export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (
-				e.key === 'e' && 
-				document.activeElement?.tagName !== 'INPUT' && 
+				e.key === 'e' &&
+				!e.ctrlKey && !e.metaKey && !e.altKey &&
+				document.activeElement?.tagName !== 'INPUT' &&
 				document.activeElement?.tagName !== 'TEXTAREA'
 			) {
 				e.preventDefault();
-				navigate(`/folio/${folio.folder}/${folio.name}/edit`);
+				navigate(`/folio/${encodeURIComponent(folio.folder)}/${encodeURIComponent(folio.name)}/edit`);
 			}
 		};
 		window.addEventListener('keydown', handleKeyDown);

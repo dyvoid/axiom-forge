@@ -26,7 +26,7 @@ Most worldbuilding tools either (a) lock your content inside a proprietary datab
 - **Sidebar navigation** — types and entries are indexed automatically as files are added.
 - **Read & edit views** — click Edit on any entry to modify fields and prose; saves write back to disk.
 - **Cover images** — drag-and-drop a PNG, JPG, WebP, or GIF (up to 10 MB) onto a folio; it's stored in the project's `Images/` folder and linked from the entry.
-- **Schema warnings** — invalid sections, broken wikilinks, or unknown fields surface as warnings on load.
+- **Schema warnings** — unknown sections or fields, invalid option values, and missing cover images surface as warnings on load. Broken wikilinks are flagged in the editor and reported on save.
 
 ## Quick start
 
@@ -56,8 +56,8 @@ Your default browser opens at <http://127.0.0.1:5273> once Vite is listening. Se
 
 There are also launchers at the repo root that install dependencies on first run and start
 both servers, so a fresh clone needs one step instead of two — `start.bat` on Windows,
-`./start.sh` on Linux and macOS. Extra arguments are forwarded to the server, and `--project`
-wants an absolute path:
+`./start.sh` on Linux and macOS. Extra arguments are forwarded to the server. The launchers change to the repo root
+first, so give them an absolute `--project` path:
 
 ```bash
 ./start.sh --project /home/you/worlds/my-project
@@ -72,7 +72,8 @@ Two wikilinks in the sample point at entries that do not exist — `Humans/Aenea
 to find on a fresh clone. Both are figures whose stories run past the fall of the city, so they read
 naturally as entries nobody has written yet. Please don't "fix" them.
 
-To run against your own project folder:
+To run against your own project folder (a relative path resolves against the directory you run
+the command from):
 
 ```bash
 npm run dev -- --project ./path/to/your/project
@@ -130,7 +131,7 @@ Defines the types your world supports and the sections and fields each type has.
   "version": "1.0.0",
   "types": {
     "Character": {
-      "icon": "person",
+      "icon": "user",
       "folder": "Characters",
       "sections": {
         "Basic Information": {

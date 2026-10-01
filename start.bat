@@ -2,7 +2,7 @@
 rem Axiom Forge launcher for Windows.
 rem
 rem Installs dependencies (on first run, or if a previous install looks broken), then starts
-rem both dev servers: the API on :3000 and the UI on :5173. `npm start` is deliberately not
+rem both dev servers: the API on :3000 and the UI on :5273. `npm start` is deliberately not
 rem used here - it runs the compiled server alone, which exposes the REST API with no UI.
 rem
 rem Extra arguments are forwarded to the server:
@@ -14,14 +14,14 @@ cd /d "%~dp0"
 where node >nul 2>&1
 if errorlevel 1 (
 	echo Axiom Forge: 'node' was not found on PATH.
-	echo Install Node.js 18.17 or newer: https://nodejs.org
+	echo Install Node.js 20.19 or newer: https://nodejs.org
 	exit /b 1
 )
 
 where npm >nul 2>&1
 if errorlevel 1 (
 	echo Axiom Forge: 'npm' was not found on PATH.
-	echo Install Node.js 18.17 or newer: https://nodejs.org
+	echo Install Node.js 20.19 or newer: https://nodejs.org
 	exit /b 1
 )
 
@@ -58,6 +58,6 @@ if not exist "packages\shared\dist\index.js" (
 	if errorlevel 1 exit /b 1
 )
 
-echo Axiom Forge: starting - the UI will be at http://localhost:5173
+echo Axiom Forge: starting - the UI will be at http://127.0.0.1:5273
 call npm run dev -- %*
 exit /b %errorlevel%

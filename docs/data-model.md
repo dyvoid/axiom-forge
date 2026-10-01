@@ -85,7 +85,7 @@ Defines all folio types, their sections, fields, and field types. The app reads 
 | Type | Storage in Markdown | Description |
 |---|---|---|
 | `text` | `- **Field:** value` | Single-line freeform text. |
-| `textarea` | Free prose under section header | Multi-line text. HTML inline tags (bold, italic) and lists are parsed. |
+| `textarea` | As a section `type`: free prose under the section header. Inside `fields`: `- **Field:** value` | As a section, multi-line Markdown (emphasis, lists, links, wiki-links); raw HTML is not rendered. Inside `fields`, one line like any other field — the editor folds line breaks to spaces. |
 | `date` | `- **Field:** value` | Freeform date string (`1497 BCE`, `Year 42`). |
 | `select` | `- **Field:** value` | Dropdown value from predefined list. |
 | `multiselect` | `- **Field:** val1, val2` | Multiple tags from predefined list. |
@@ -100,12 +100,12 @@ Wiki-links use the **folder name** of the target type, not the type key. For exa
 
 `shared/parser.ts` handles the Markdown ↔ JSON structured data round trip.
 
-1. **Filename vs Display Name:** The frontmatter `title` is the source of truth for display. The filename is derived from the title with unsupported characters removed and word separators replaced by underscores (e.g., `Mycenaean_Invasion_of_Kea.md`). A legacy file without `title` may still supply it through a body `# H1`; saving that folio migrates it to frontmatter and removes the H1.
-2. **Frontmatter metadata is always present:** A YAML frontmatter block (`---`…`---`) at the very top of the file identifies `title`, `type`, `tags`, and optionally `aliases`. These are native Obsidian Properties — `tags` and `aliases` are special-cased by Obsidian, while `title` and `type` are custom properties.
+1. **Filename vs Display Name:** The frontmatter `title` is the source of truth for display. The filename is derived from the title with unsupported characters removed and word separators replaced by underscores (e.g., `Mycenaean_Invasion_of_Kea.md`). Names are unique within a folder **ignoring case**: Windows and macOS filesystems treat `Troy.md` and `troy.md` as one file, and Obsidian resolves links case-insensitively, so a create or rename onto a case variant of an existing name — or onto a file that appeared on disk since the last Sync — is refused with `409 exists`. A legacy file without `title` may still supply it through a `# H1` in the preface (before the first `##` section); only the first such line counts, and saving that folio migrates it to frontmatter and removes the H1. A `#` heading anywhere else is ordinary content.
+2. **Frontmatter metadata is always present:** A YAML frontmatter block (`---`…`---`) at the very top of the file holds `title` and `type`, plus `tags` and `aliases` when they are non-empty. These are native Obsidian Properties — `tags` and `aliases` are special-cased by Obsidian, while `title` and `type` are custom properties. Any other property (`publish`, `cssclasses`, a user's own `created`) is carried through a save unchanged, after the four the app manages. Scalars are read as written: `created: 2024-05-05` stays the string `2024-05-05`, never a date object.
 3. **Empty fields are omitted:** No placeholder dashes or empty values are ever written to disk.
 4. **Sections are omitted if empty:** A section is only written if it contains at least one non-empty field.
-5. **Prose fields:** Rendered as free text directly under the section header, with no bullet prefix.
-6. **All other fields:** Use the `- **Field Name:** value` bullet format.
+5. **Prose fields:** Rendered as free text directly under the section header, with no bullet prefix. A line starting `## ` is a section boundary unless it sits inside a fenced code block (```` ``` ```` or `~~~`), so a heading inside a section uses `###` or deeper.
+6. **All other fields:** Use the `- **Field Name:** value` bullet format, one line per field. List types are comma-separated on that line.
 
 ### Cover images
 
@@ -153,11 +153,22 @@ rules run ([ADR-0009](adr/0009-consolidate-folio-validation-rules.md)):
 | Unknown field | warning | `400` |
 | Invalid `select`/`multiselect` value | warning | `400` |
 | Wrong value shape for the declared type | not checked | `400` |
+| Value the format cannot hold (`unrepresentable`) | not checked | `400` |
 
 Reading is lenient and writing is strict, deliberately: schema drift already written to disk is
-shown rather than suppressed, while anything the app itself writes must conform. `wrong-shape` is
-the one asymmetric rule — it asks whether a save payload is well-formed, and a file on disk has
-already been coerced into shape by the parser, so on the read path it has nothing to say.
+shown rather than suppressed, while anything the app itself writes must conform. `wrong-shape` and
+`unrepresentable` are the asymmetric rules — they ask whether a save payload is well-formed, and a
+file on disk has already been coerced into shape by the parser, so on the read path they have
+nothing to say.
+
+`unrepresentable` catches a value that has the right shape but would not read back unchanged: a
+line break in a one-line field, a comma or line break inside a list item, a wiki-link part holding
+`]` (or `|` in its path, or `/` in its folder), or a `## ` line in prose or the preface outside a
+code fence. Writing any of these would silently change the folio on its next read.
+
+Two checks sit outside this engine because they depend on where the file is, not what it says. A
+save or create whose `type` is not the one its folder holds is rejected `400`; on read, a file
+like that, and a cover image that does not resolve, produce warnings.
 
 A file with no `type` at all is not checked against the schema; there is nothing to check it
 against, and a typeless file is a different problem from a non-conforming one.

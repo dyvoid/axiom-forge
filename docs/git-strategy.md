@@ -69,9 +69,10 @@ CI is load-bearing for trunk-based development — slow or weak pipelines break 
 
 Before anything merges to `main`:
 
-- All existing tests must pass (`npm test`)
-- Build must succeed (`npm run build`)
 - Lint must pass (`npm run lint`)
+- Typecheck must pass (`npm run typecheck`)
+- Build must succeed (`npm run build`)
+- All existing tests must pass (`npm test`)
 
 ---
 

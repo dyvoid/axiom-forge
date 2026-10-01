@@ -25,7 +25,24 @@ const tscBin = binPath('typescript', 'tsc');
 const tsxBin = binPath('tsx', 'tsx');
 const viteBin = binPath('vite', 'vite');
 
-const serverArgs = process.argv.slice(2);
+/**
+ * Forward CLI args to the server, with a relative `--project` made absolute.
+ * The server runs with `packages/server` as its cwd, so left relative the
+ * path would resolve against that rather than where the command was typed.
+ * npm sets INIT_CWD to the directory `npm run dev` was invoked from.
+ */
+function serverArgsFrom(argv)
+{
+	const args = [...argv];
+	const idx = args.indexOf('--project');
+	if (idx !== -1 && idx + 1 < args.length)
+	{
+		args[idx + 1] = resolve(process.env.INIT_CWD ?? process.cwd(), args[idx + 1]);
+	}
+	return args;
+}
+
+const serverArgs = serverArgsFrom(process.argv.slice(2));
 
 const procs = [
 	{

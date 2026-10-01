@@ -15,6 +15,7 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [syncing, setSyncing] = useState(false);
+	const [syncError, setSyncError] = useState<string | null>(null);
 
 	const [query, setQuery] = useState('');
 	const { open, openMenu, closeMenu, highlightIdx, setHighlightIdx, containerRef: searchRef } = useCombobox<HTMLDivElement>();
@@ -33,7 +34,10 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 	useEffect(() => {
 		const handleGlobalKeyDown = (e: KeyboardEvent) => {
 			if (!showSearch) return;
-			if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+			if (
+				e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey
+				&& document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA'
+			) {
 				e.preventDefault();
 				inputRef.current?.focus();
 			}
@@ -49,9 +53,14 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 	async function handleSync() {
 		if (syncing) return;
 		setSyncing(true);
+		setSyncError(null);
 		try {
 			await reloadProject();
 			await queryClient.invalidateQueries();
+		} catch (err) {
+			// The server keeps serving the project as it was, so say so rather
+			// than leave the click looking like it did nothing.
+			setSyncError(err instanceof Error ? err.message : String(err));
 		} finally {
 			setSyncing(false);
 		}
@@ -109,11 +118,16 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 				</Link>
 			</div>
 			<div className={styles.right}>
+				{syncError && (
+					<span className={styles.syncError} role="alert" title={syncError}>
+						Sync failed
+					</span>
+				)}
 				<button
-					className={styles.syncButton}
+					className={`${styles.syncButton} ${syncError ? styles.syncFailed : ''}`}
 					onClick={handleSync}
 					disabled={syncing}
-					title="Reload project from disk"
+					title={syncError ? `Sync failed: ${syncError}` : 'Reload project from disk'}
 					aria-label="Reload project from disk"
 				>
 					<Icon name="refresh-cw" size={14} className={syncing ? styles.spinning : undefined} />

@@ -75,7 +75,8 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, isN
 
 	const blocker = useBlocker(
 		({ currentLocation, nextLocation }) =>
-			dirtyRef.current && currentLocation.pathname !== nextLocation.pathname
+			dirtyRef.current
+			&& (currentLocation.pathname !== nextLocation.pathname || currentLocation.search !== nextLocation.search)
 	);
 
 	useEffect(() => {
@@ -84,20 +85,27 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, isN
 		}
 	}, [blocker]);
 
+	// A draft has no read view to go back to — discarding it returns to the category.
+	const backTo = isNew
+		? `/folio/${encodeURIComponent(folio.folder)}`
+		: `/folio/${encodeURIComponent(folio.folder)}/${encodeURIComponent(folio.name)}`;
+
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (
 				e.key === 'Escape' &&
+				// An open dialog's focus trap has already used this Escape to close itself.
+				!e.defaultPrevented &&
 				document.activeElement?.tagName !== 'INPUT' &&
 				document.activeElement?.tagName !== 'TEXTAREA'
 			) {
 				e.preventDefault();
-				navigate(`/folio/${folio.folder}/${folio.name}`);
+				navigate(backTo);
 			}
 		};
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [navigate, folio.folder, folio.name]);
+	}, [navigate, backTo]);
 
 	function patchSection(sectionName: string, patch: Partial<ParsedSection>): void {
 		mutateDraft((d) => ({
@@ -162,11 +170,6 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, isN
 			{ onError: onCreateError },
 		);
 	}
-
-	// A draft has no read view to go back to — discarding it returns to the category.
-	const backTo = isNew
-		? `/folio/${encodeURIComponent(folio.folder)}`
-		: `/folio/${encodeURIComponent(folio.folder)}/${encodeURIComponent(folio.name)}`;
 
 	// Build the section list in schema declaration order.
 	const sections = schemaIndex.sectionsInOrder(folio.type);

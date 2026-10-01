@@ -8,11 +8,19 @@ import { useEffect, useRef } from 'react';
  * - On Escape: calls `onEscape` if provided.
  * - On unmount: restores focus to the element that had it before the trap opened.
  *
+ * The trap is set up once, on mount, so the container must be rendered by
+ * then: mount the trapped element only while it is open, rather than calling
+ * this from a component that renders nothing while closed. `onEscape` is read
+ * through a ref, so callers can pass an inline function without re-running
+ * the trap — and pulling focus back to the first control — on every render.
+ *
  * Returns a ref to attach to the container element.
  */
 export function useFocusTrap<T extends HTMLElement>(onEscape?: () => void): React.RefObject<T> {
 	const containerRef = useRef<T>(null);
 	const previouslyFocused = useRef<HTMLElement | null>(null);
+	const onEscapeRef = useRef(onEscape);
+	onEscapeRef.current = onEscape;
 
 	useEffect(() => {
 		previouslyFocused.current = document.activeElement as HTMLElement | null;
@@ -32,7 +40,7 @@ export function useFocusTrap<T extends HTMLElement>(onEscape?: () => void): Reac
 		function handleKeyDown(e: KeyboardEvent) {
 			if (e.key === 'Escape') {
 				e.preventDefault();
-				onEscape?.();
+				onEscapeRef.current?.();
 				return;
 			}
 
@@ -67,7 +75,7 @@ export function useFocusTrap<T extends HTMLElement>(onEscape?: () => void): Reac
 			document.removeEventListener('keydown', handleKeyDown);
 			previouslyFocused.current?.focus();
 		};
-	}, [onEscape]);
+	}, []);
 
 	return containerRef;
 }
