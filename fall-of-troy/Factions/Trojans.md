@@ -27,4 +27,8 @@ Their defeat came not from failure of courage but from a failure of judgment: th
 - **Divine Supporters:** [[Gods/Apollo]], [[Gods/Aphrodite]]
 
 ## Connected Events
-- [[Events/Defense_of_the_Ships]], [[Events/Death_of_Patroclus]], [[Events/Death_of_Hector]], [[Events/The_Trojan_Horse]], [[Events/Fall_of_Troy]]
+- [[Events/Defense_of_the_Ships]]
+- [[Events/Death_of_Patroclus]]
+- [[Events/Death_of_Hector]]
+- [[Events/The_Trojan_Horse]]
+- [[Events/Fall_of_Troy]]

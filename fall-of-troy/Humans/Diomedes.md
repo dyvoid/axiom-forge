@@ -27,4 +27,6 @@ He and Odysseus made the most effective pairing in the Greek camp: one who could
 - **Enemies:** [[Humans/Hector]], [[Humans/Paris]]
 
 ## Connected Events
-- [[Events/Theft_of_the_Palladium]], [[Events/Defense_of_the_Ships]], [[Events/Fall_of_Troy]]
+- [[Events/Theft_of_the_Palladium]]
+- [[Events/Defense_of_the_Ships]]
+- [[Events/Fall_of_Troy]]

@@ -49,7 +49,11 @@ export function FolioNew(): JSX.Element {
 		setSaveError(null);
 		let created: { name: string; mtime: number };
 		try {
-			created = await createFolio.mutateAsync({ folder: folder!, folio: next });
+			// The draft's cover path is only the editor's preview: the real one
+			// comes back from the upload below, so nothing references an image
+			// until it exists.
+			const folio = coverFile ? { ...next, coverImage: undefined } : next;
+			created = await createFolio.mutateAsync({ folder: folder!, folio });
 		} catch (err) {
 			setSaveError(err instanceof Error ? err.message : String(err));
 			return;

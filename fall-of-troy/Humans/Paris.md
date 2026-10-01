@@ -28,4 +28,7 @@ His role in starting the war is unambiguous: he was offered a choice on Mount Id
 - **Enemies:** [[Humans/Achilles]], [[Humans/Menelaus]], [[Humans/Odysseus]]
 
 ## Connected Events
-- [[Events/Judgment_of_Paris]], [[Events/Abduction_of_Helen]], [[Events/Death_of_Hector]], [[Events/Fall_of_Troy]]
+- [[Events/Judgment_of_Paris]]
+- [[Events/Abduction_of_Helen]]
+- [[Events/Death_of_Hector]]
+- [[Events/Fall_of_Troy]]

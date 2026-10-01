@@ -25,4 +25,5 @@ She was in the palace when the city fell, and what happened afterwards is record
 - **Children:** [[Humans/Astyanax]]
 
 ## Connected Events
-- [[Events/Death_of_Hector]], [[Events/Fall_of_Troy]]
+- [[Events/Death_of_Hector]]
+- [[Events/Fall_of_Troy]]

@@ -24,4 +24,5 @@ Her grief runs beneath the entire poem — a mother who knows how the story ends
 - [[Humans/Achilles]]
 
 ## Connected Events
-- [[Events/Judgment_of_Achilles]], [[Events/Death_of_Patroclus]]
+- [[Events/Judgment_of_Achilles]]
+- [[Events/Death_of_Patroclus]]

@@ -12,8 +12,8 @@ aliases:
 
 ## Basic Information
 - **Allegiance:** [[Factions/Trojans]]
-- **Spouse:** [[Humans/Paris]]
 - **Divine Patron:** [[Gods/Aphrodite]]
+- **Spouse:** [[Humans/Paris]]
 
 ## Description & History
 Daughter of Zeus and Leda, Helen was considered the most beautiful woman in the world — a designation that was less a compliment than a burden. When she came of age, the kings of Greece competed for her hand with such ferocity that her mortal father Tyndareus made them all swear an oath to defend the marriage of whoever won her. Menelaus of Sparta won. The oath would later drag every Greek king to war.
@@ -27,4 +27,6 @@ After the fall of Troy she returned to Sparta with Menelaus. The gods had made h
 - **Enemies:** [[Humans/Menelaus]]
 
 ## Connected Events
-- [[Events/Judgment_of_Paris]], [[Events/Abduction_of_Helen]], [[Events/Fall_of_Troy]]
+- [[Events/Judgment_of_Paris]]
+- [[Events/Abduction_of_Helen]]
+- [[Events/Fall_of_Troy]]

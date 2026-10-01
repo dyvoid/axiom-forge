@@ -22,4 +22,6 @@ His neutrality is not indifference. He weighs the fates of Achilles and Hector i
 What he enforces is not an outcome but a procedure: guest-friendship was violated when Paris took Helen from the house of a host, and cities that do that fall. He arranged none of it and permits all of it. Troy burns because a rule Zeus guarantees was broken, and the guarantee is worth nothing to anyone inside the walls.
 
 ## Connected Events
-- [[Events/Judgment_of_Paris]], [[Events/Death_of_Patroclus]], [[Events/Death_of_Hector]]
+- [[Events/Judgment_of_Paris]]
+- [[Events/Death_of_Patroclus]]
+- [[Events/Death_of_Hector]]

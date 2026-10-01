@@ -27,4 +27,5 @@ What distinguishes him is what he did at the end. Troy burned, and he went throu
 - **Enemies:** [[Humans/Paris]], [[Humans/Hector]]
 
 ## Connected Events
-- [[Events/Abduction_of_Helen]], [[Events/Fall_of_Troy]]
+- [[Events/Abduction_of_Helen]]
+- [[Events/Fall_of_Troy]]
