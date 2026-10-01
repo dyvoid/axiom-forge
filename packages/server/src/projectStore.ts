@@ -31,6 +31,7 @@ import {
 	renameFolioFile,
 	deleteFolioFile,
 	deleteImageFile,
+	isSameFile,
 	resolveImageFile,
 	statFile,
 	writeProjectImage,
@@ -70,11 +71,31 @@ interface InternalFolioRecord extends FolioIndexRecord {
 	links: WikiLink[];
 }
 
+/**
+ * Everything `load`/`reload` read from disk. Assembled in full before any of
+ * it replaces the live state, so a reload that fails partway — a bad
+ * schema.json, an unreadable folder — leaves the previous project serving
+ * untouched, and readers never see a half-built index.
+ */
+interface ProjectSnapshot {
+	config: Config;
+	schema: ProjectSchema;
+	schemaIndex: SchemaIndex;
+	theme: Theme;
+	themeWarnings: string[];
+	folios: InternalFolioRecord[];
+}
+
 /** One verified, not-yet-written file in a batched link rewrite (ADR-0010). */
 interface PlannedLinkRewrite {
 	filePath: string;
 	content: string;
 	rewrites: number;
+}
+
+/** The public shape of an index record: no file path, mtime, warnings or outgoing links. */
+function toIndexRecord({ filePath: _f, mtime: _m, warnings: _w, links: _l, ...record }: InternalFolioRecord): FolioIndexRecord {
+	return record;
 }
 
 export class ProjectStore {
@@ -92,25 +113,16 @@ export class ProjectStore {
 	constructor(public readonly projectPath: string) {}
 
 	async load(): Promise<void> {
-		const dirStat = await stat(this.projectPath).catch(() => null);
-		if (!dirStat || !dirStat.isDirectory()) {
-			throw new Error(`Project path is not a directory: ${this.projectPath}`);
-		}
-
-		this.config = await this.loadJson('config.json', ConfigSchema.parse);
-		this.schema = await this.loadJson('schema.json', ProjectSchemaSchema.parse);
-		this.schemaIndex = createSchemaIndex(this.schema);
-		await this.loadTheme();
+		const snapshot = await this.readProject();
+		this.install(snapshot);
 
 		console.log(
-			`  • config: "${this.config.name}"`,
+			`  • config: "${snapshot.config.name}"`,
 		);
 		console.log(
-			`  • schema: ${Object.keys(this.schema.types).length} types ` +
-				`(${Object.keys(this.schema.types).join(', ')})`,
+			`  • schema: ${Object.keys(snapshot.schema.types).length} types ` +
+				`(${Object.keys(snapshot.schema.types).join(', ')})`,
 		);
-
-		await this.buildFolioIndex();
 	}
 
 	getConfig(): Config {
@@ -135,7 +147,7 @@ export class ProjectStore {
 
 	/** Return all folio index records (for the sidebar). */
 	getFolios(): FolioIndexRecord[] {
-		return this.folios.map(({ filePath: _f, mtime: _m, ...rest }) => rest);
+		return this.folios.map(toIndexRecord);
 	}
 
 	/** Return folios filtered by type key (e.g. "Character"). */
@@ -147,7 +159,7 @@ export class ProjectStore {
 	getBacklinks(targetFolder: string, targetName: string): FolioIndexRecord[] {
 		return this.folios
 			.filter((f) => f.links.some((l) => l.folder === targetFolder && l.name === targetName))
-			.map(({ filePath: _f, mtime: _m, links: _l, ...rest }) => rest);
+			.map(toIndexRecord);
 	}
 
 	/** Look up the internal record (incl. filePath, mtime). */
@@ -251,8 +263,8 @@ export class ProjectStore {
 	}
 
 	/** Compute a snippet from a parsed folio (first paragraph of prose, ≤120 chars). */
-	deriveSnippet(parsed: ParsedFolio): string | undefined {
-		const prose = this.getSchemaIndex().proseSection(parsed.type);
+	deriveSnippet(parsed: ParsedFolio, schemaIndex: SchemaIndex = this.getSchemaIndex()): string | undefined {
+		const prose = schemaIndex.proseSection(parsed.type);
 		if (!prose) return undefined;
 		const proseContent = parsed.sections[prose.name]?.content;
 		if (!proseContent) return undefined;
@@ -272,7 +284,10 @@ export class ProjectStore {
 
 		if (text.length > 120) {
 			text = text.substring(0, 120);
-			text = text.substring(0, Math.min(text.length, text.lastIndexOf(' ')));
+			// Cut back to a word boundary when there is one; a run with no spaces
+			// (a URL, or a script written without them) keeps the hard cut.
+			const lastSpace = text.lastIndexOf(' ');
+			if (lastSpace > 0) text = text.substring(0, lastSpace);
 			text = text.replace(/[\s,;:\-.]+$/, '');
 			return text + '...';
 		}
@@ -291,8 +306,10 @@ export class ProjectStore {
 
 		const { content, mtime } = await readFolioFile(record.filePath);
 		const parsed = parseMarkdown(content, this.getSchema());
-		const coverWarning = await this.getCoverWarning(parsed.coverImage);
-		if (coverWarning) parsed.warnings = [...(parsed.warnings ?? []), coverWarning];
+		parsed.warnings = [
+			...(parsed.warnings ?? []),
+			...(await this.locationWarnings(parsed.type, record.type, record.folder, parsed.coverImage)),
+		];
 		return {
 			...parsed,
 			id: record.id,
@@ -353,6 +370,7 @@ export class ProjectStore {
 
 			const record = this.getRecord(folder, name);
 			if (!record) throw new NotFoundError('Folio not found');
+			this.assertTypeMatchesFolder(folio.type, record.type, folder);
 
 			const fileStat = await statFile(record.filePath);
 			if (!fileStat) throw new NotFoundError('File missing on disk');
@@ -369,9 +387,16 @@ export class ProjectStore {
 			const oldName = record.name;
 			const oldFilePath = record.filePath;
 			const isRename = newName !== oldName;
+			const newFilePath = join(folderPath, `${newName}.md`);
 
-			if (isRename && this.getRecord(folder, newName)) {
-				throw new ConflictError({ kind: 'exists', name: newName });
+			if (isRename) {
+				const clash = this.findNameClash(folder, newName, oldName);
+				if (clash) throw new ConflictError({ kind: 'exists', name: clash.name });
+				// A file created outside the app since the last index build: the
+				// rename below would replace it.
+				if (await statFile(newFilePath) && !(await isSameFile(oldFilePath, newFilePath))) {
+					throw new ConflictError({ kind: 'exists', name: newName });
+				}
 			}
 
 			// 0. On rename, plan the project-wide link rewrite *before* touching
@@ -397,7 +422,7 @@ export class ProjectStore {
 			// 2. Atomic move to the new path. If this fails, the in-place write
 			//    above already succeeded; the save is consistent at the old name.
 			if (isRename) {
-				filePath = join(folderPath, `${newName}.md`);
+				filePath = newFilePath;
 				let renamedMtime: number;
 				try {
 					({ mtime: renamedMtime } = await renameFolioFile(oldFilePath, filePath));
@@ -422,6 +447,8 @@ export class ProjectStore {
 			// Update index from the validated in-memory folio — no re-read needed.
 			const finalStat = await stat(filePath);
 			const snippet = this.deriveSnippet(folioToWrite);
+			const coverWarning = await this.getCoverWarning(folioToWrite.coverImage);
+			if (coverWarning) warnings.push(coverWarning);
 			this.updateFolioRecord(folder, renamedTo ?? oldName, {
 				mtime: finalStat.mtimeMs,
 				title: folioToWrite.title,
@@ -452,20 +479,25 @@ export class ProjectStore {
 			if (!typeKey) throw new BadRequestError(`Unknown folder: ${folder}`);
 
 			this.validateForWrite(folio, schema);
+			this.assertTypeMatchesFolder(folio.type, typeKey, folder);
 
 			const filename = displayNameToFilename(folio.title || folio.name);
 			if (!filename) throw new InvalidTitleError();
-			if (this.getRecord(folder, filename)) {
-				throw new ConflictError({ kind: 'exists', name: filename });
-			}
+			const clash = this.findNameClash(folder, filename);
+			if (clash) throw new ConflictError({ kind: 'exists', name: clash.name });
 
 			const folioToWrite: ParsedFolio = { ...folio, name: filename };
 			const folderPath = resolve(this.projectPath, folder);
 			const filePath = join(folderPath, `${filename}.md`);
+			// Not in the index, but on disk: created outside the app since the
+			// last index build. Writing would replace it.
+			if (await statFile(filePath)) throw new ConflictError({ kind: 'exists', name: filename });
 			const markdown = serializeToMarkdown(folioToWrite, schema);
 			const warnings = this.reparseWarnings(markdown, schema);
 			const { mtime } = await writeFolioFile(filePath, markdown);
 			const snippet = this.deriveSnippet(folioToWrite);
+			const coverWarning = await this.getCoverWarning(folioToWrite.coverImage);
+			if (coverWarning) warnings.push(coverWarning);
 			this.addFolioRecord({
 				type: typeKey,
 				folder,
@@ -502,18 +534,81 @@ export class ProjectStore {
 		});
 	}
 
+	/**
+	 * Re-read the whole project from disk. Holds the write mutex, so it never
+	 * interleaves with a save; and swaps the new state in only once all of it
+	 * has been read, so a failed reload keeps the previous project serving.
+	 */
 	async reload(): Promise<void> {
-		this.config = await this.loadJson('config.json', ConfigSchema.parse);
-		await this.loadTheme();
-		this.schema = await this.loadJson('schema.json', ProjectSchemaSchema.parse);
-		this.schemaIndex = createSchemaIndex(this.schema);
-		this.folios = [];
-		this.nextId = 1;
-		await this.buildFolioIndex();
-		console.log('  • project reloaded from disk');
+		return this.writeMutex.runExclusive(async () => {
+			this.install(await this.readProject());
+			console.log('  • project reloaded from disk');
+		});
 	}
 
 	// ── Private ─────────────────────────────────────────────
+
+	private async readProject(): Promise<ProjectSnapshot> {
+		const dirStat = await stat(this.projectPath).catch(() => null);
+		if (!dirStat || !dirStat.isDirectory()) {
+			throw new Error(`Project path is not a directory: ${this.projectPath}`);
+		}
+		const config = await this.loadJson('config.json', ConfigSchema.parse);
+		const schema = await this.loadJson('schema.json', ProjectSchemaSchema.parse);
+		const schemaIndex = createSchemaIndex(schema);
+		const { theme, warnings: themeWarnings } = await this.readTheme();
+		const folios = await this.buildFolioIndex(schema, schemaIndex);
+		return { config, schema, schemaIndex, theme, themeWarnings, folios };
+	}
+
+	private install(snapshot: ProjectSnapshot): void {
+		this.config = snapshot.config;
+		this.schema = snapshot.schema;
+		this.schemaIndex = snapshot.schemaIndex;
+		this.theme = snapshot.theme;
+		this.themeWarnings = snapshot.themeWarnings;
+		this.folios = snapshot.folios;
+		this.nextId = snapshot.folios.length + 1;
+	}
+
+	/**
+	 * The record in `folder` whose name matches `name` ignoring case, other
+	 * than `except`. Windows and macOS filesystems are case-insensitive by
+	 * default, so writing `troy.md` beside `Troy.md` replaces it — and Obsidian
+	 * resolves links case-insensitively too. Names are unique per folder
+	 * ignoring case.
+	 */
+	private findNameClash(folder: string, name: string, except?: string): InternalFolioRecord | undefined {
+		const key = name.toLowerCase();
+		return this.folios.find((f) => f.folder === folder && f.name !== except && f.name.toLowerCase() === key);
+	}
+
+	/** A folio's `type` must be the one its folder belongs to; otherwise the file and the index disagree. */
+	private assertTypeMatchesFolder(type: string, folderType: string, folder: string): void {
+		if (type !== folderType) {
+			throw new BadRequestError(`Type "${type}" does not belong in folder "${folder}", which holds "${folderType}".`);
+		}
+	}
+
+	/**
+	 * Read-side warnings that depend on where a file sits rather than on its
+	 * content: a `type` that is not its folder's, and a cover image that does
+	 * not resolve.
+	 */
+	private async locationWarnings(
+		parsedType: string,
+		folderType: string,
+		folder: string,
+		coverImage: CoverImage | undefined,
+	): Promise<string[]> {
+		const warnings: string[] = [];
+		if (parsedType && parsedType !== folderType) {
+			warnings.push(`Type "${parsedType}" does not match folder "${folder}", which holds "${folderType}".`);
+		}
+		const coverWarning = await this.getCoverWarning(coverImage);
+		if (coverWarning) warnings.push(coverWarning);
+		return warnings;
+	}
 
 	/**
 	 * Validate a folio for writing: structural shape (zod) then schema
@@ -609,8 +704,7 @@ export class ProjectStore {
 		}
 	}
 
-	private async buildFolioIndex(): Promise<void> {
-		const schema = this.getSchema();
+	private async buildFolioIndex(schema: ProjectSchema, schemaIndex: SchemaIndex): Promise<InternalFolioRecord[]> {
 		const allFiles: { typeKey: string; folder: string; file: Awaited<ReturnType<typeof scanFolder>>[number] }[] = [];
 
 		for (const [typeKey, typeDef] of Object.entries(schema.types)) {
@@ -625,7 +719,7 @@ export class ProjectStore {
 		allFiles.sort((a, b) => a.file.name.localeCompare(b.file.name));
 
 		// Assign IDs and parse Meta blocks for tags/snippet.
-		this.folios = [];
+		const folios: InternalFolioRecord[] = [];
 		let id = 1;
 		for (const { typeKey, folder, file } of allFiles) {
 			let tags: string[] = [];
@@ -641,16 +735,17 @@ export class ProjectStore {
 				tags = parsed.tags;
 				aliases = parsed.aliases;
 				coverImage = parsed.coverImage;
-				warnings = parsed.warnings ?? [];
-				const coverWarning = await this.getCoverWarning(coverImage);
-				if (coverWarning) warnings.push(coverWarning);
+				warnings = [
+					...(parsed.warnings ?? []),
+					...(await this.locationWarnings(parsed.type, typeKey, folder, coverImage)),
+				];
 				if (parsed.title) title = parsed.title;
-				snippet = this.deriveSnippet(parsed);
+				snippet = this.deriveSnippet(parsed, schemaIndex);
 				links = extractAllLinks(parsed);
 			} catch (err) {
 				warnings = [`Failed to parse: ${err instanceof Error ? err.message : String(err)}`];
 			}
-			this.folios.push({
+			folios.push({
 				id: id++,
 				type: typeKey,
 				folder,
@@ -666,9 +761,8 @@ export class ProjectStore {
 				links,
 			});
 		}
-		this.nextId = id;
-
-		console.log(`  • indexed ${this.folios.length} folios`);
+		console.log(`  • indexed ${folios.length} folios`);
+		return folios;
 	}
 
 	private async getCoverWarning(coverImage: CoverImage | undefined): Promise<string | undefined> {
@@ -685,33 +779,29 @@ export class ProjectStore {
 	 * throws: a missing file means the app defaults, and an unreadable or
 	 * invalid one falls back to them with warnings.
 	 */
-	private async loadTheme(): Promise<void> {
+	private async readTheme(): Promise<{ theme: Theme; warnings: string[] }> {
 		const fullPath = resolve(this.projectPath, 'theme.json');
-		this.theme = {};
-		this.themeWarnings = [];
 
 		let raw: string;
 		try {
 			raw = await readFile(fullPath, 'utf-8');
 		} catch (err) {
 			if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
-				this.themeWarnings = [`Could not read theme.json, using the default theme: ${(err as Error).message}`];
+				return { theme: {}, warnings: [`Could not read theme.json, using the default theme: ${(err as Error).message}`] };
 			}
-			return;
+			return { theme: {}, warnings: [] };
 		}
 
 		let parsed: unknown;
 		try {
 			parsed = JSON.parse(raw);
 		} catch (err) {
-			this.themeWarnings = [`Invalid JSON, using the default theme: ${(err as Error).message}`];
-			return;
+			return { theme: {}, warnings: [`Invalid JSON, using the default theme: ${(err as Error).message}`] };
 		}
 
-		const { theme, warnings } = parseTheme(parsed);
-		this.theme = theme;
-		this.themeWarnings = warnings;
-		console.log(`  • theme: ${Object.keys(theme).join(', ') || 'no usable sections'}`);
+		const result = parseTheme(parsed);
+		console.log(`  • theme: ${Object.keys(result.theme).join(', ') || 'no usable sections'}`);
+		return result;
 	}
 
 	private async loadJson<T>(

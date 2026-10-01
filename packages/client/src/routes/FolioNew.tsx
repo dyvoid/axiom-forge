@@ -74,9 +74,13 @@ export function FolioNew(): JSX.Element {
 			onSaved();
 			navigate(readView);
 		} catch (err) {
-			setSaveError(err instanceof Error ? err.message : String(err));
+			// This component unmounts on the navigation, so the message travels
+			// with it for the editor to show.
+			const reason = err instanceof Error ? err.message : String(err);
 			onSaved();
-			navigate(`${readView}/edit`);
+			navigate(`${readView}/edit`, {
+				state: { saveError: `The folio was created, but its cover image was not attached: ${reason}` },
+			});
 		} finally {
 			setUploading(false);
 		}
@@ -84,6 +88,8 @@ export function FolioNew(): JSX.Element {
 
 	return (
 		<FolioEditView
+			// A new ?title= is a new draft, not an edit to this one.
+			key={`${folder}?${title}`}
 			folio={draft}
 			typeDef={typeDef}
 			saving={createFolio.isPending || uploading}

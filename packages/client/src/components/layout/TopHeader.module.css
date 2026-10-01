@@ -82,6 +82,24 @@
 	cursor: default;
 }
 
+/* A failed reload: the project on screen is the one from before the click. */
+.syncFailed,
+.syncFailed:hover:not(:disabled) {
+	color: var(--color-danger);
+}
+
+/* Eyebrow type, but not `composes: eyebrow` — the composed class would win
+   and turn the color back to muted (see the UI consistency audit). */
+.syncError {
+	font-family: var(--ff-body);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--color-danger);
+	white-space: nowrap;
+}
+
 @keyframes spin {
 	to { transform: rotate(360deg); }
 }

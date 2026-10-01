@@ -41,8 +41,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (
-				!routeFolder || 
-				document.activeElement?.tagName === 'INPUT' || 
+				!routeFolder ||
+				e.ctrlKey || e.metaKey || e.altKey || e.shiftKey ||
+				document.activeElement?.tagName === 'INPUT' ||
 				document.activeElement?.tagName === 'TEXTAREA'
 			) {
 				return;
@@ -65,7 +66,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 
 					const nextFolio = activeList[nextIndex];
 					if (nextIndex !== currentIndex && nextFolio) {
-						navigate(`/folio/${activeSchema.folder}/${nextFolio.name}`);
+						navigate(`/folio/${encodeURIComponent(activeSchema.folder)}/${encodeURIComponent(nextFolio.name)}`);
 					}
 				} else {
 					// Navigate between categories
@@ -82,7 +83,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 
 					const nextFolder = folders[nextIndex];
 					if (nextIndex !== currentIndex && nextFolder) {
-						navigate(`/folio/${nextFolder}`);
+						navigate(`/folio/${encodeURIComponent(nextFolder)}`);
 					}
 				}
 			}
@@ -106,7 +107,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 								className={`${styles.typeRow} ${isActive ? styles.activeTypeRow : ''}`}
 								aria-current={isActive ? 'location' : undefined}
 								onClick={() => {
-									navigate(`/folio/${typeDef.folder}`);
+									navigate(`/folio/${encodeURIComponent(typeDef.folder)}`);
 									onNavigate?.();
 								}}
 							>
@@ -129,7 +130,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 							{activeList.map((f) => (
 								<NavLink
 									key={f.id}
-									to={`/folio/${activeSchema.folder}/${f.name}`}
+									to={`/folio/${encodeURIComponent(activeSchema.folder)}/${encodeURIComponent(f.name)}`}
 									className={({ isActive }) =>
 										`${styles.folioLink} ${isActive ? styles.active : ''}`
 									}

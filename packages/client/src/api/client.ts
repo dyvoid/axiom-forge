@@ -31,12 +31,30 @@ export class ConflictError extends Error {
 	}
 }
 
+/**
+ * Build the error for a non-2xx response. A save the schema rejects carries a
+ * list of human-readable issues, which read better than the raw JSON body;
+ * anything else keeps the status line and body for debugging.
+ */
+export async function apiError(res: Response): Promise<ApiError> {
+	const body = await res.text().catch(() => '');
+	try {
+		const data = JSON.parse(body) as { error?: unknown; issues?: unknown };
+		if (data.error === 'schema-violation' && Array.isArray(data.issues)) {
+			const messages = data.issues
+				.map((issue) => (issue as { message?: unknown }).message)
+				.filter((m): m is string => typeof m === 'string');
+			if (messages.length > 0) return new ApiError(res.status, messages.join(' '));
+		}
+	} catch {
+		// Not JSON — fall through to the raw body.
+	}
+	return new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
+}
+
 async function request<T>(path: string): Promise<T> {
 	const res = await fetch(`${BASE}${path}`);
-	if (!res.ok) {
-		const body = await res.text().catch(() => '');
-		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
-	}
+	if (!res.ok) throw await apiError(res);
 	return res.json() as Promise<T>;
 }
 
@@ -113,10 +131,7 @@ export async function putFolio(
 			? new ConflictError(0, data.file ?? 'an unknown file')
 			: new ConflictError(data.serverMtime ?? 0);
 	}
-	if (!res.ok) {
-		const body = await res.text().catch(() => '');
-		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
-	}
+	if (!res.ok) throw await apiError(res);
 	return res.json() as Promise<SaveFolioResponse>;
 }
 
@@ -132,10 +147,7 @@ export async function postFolio(
 	if (res.status === 409) {
 		throw new ApiError(409, 'A folio with that name already exists');
 	}
-	if (!res.ok) {
-		const body = await res.text().catch(() => '');
-		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
-	}
+	if (!res.ok) throw await apiError(res);
 	return res.json() as Promise<{ name: string; mtime: number; warnings: string[]; brokenLinks: BrokenLinkReport[] }>;
 }
 
@@ -148,10 +160,7 @@ export async function uploadCoverImage(folder: string, name: string, file: File)
 		`${coverImageUrl(folder, name)}?filename=${encodeURIComponent(file.name)}`,
 		{ method: 'PUT', headers: { 'Content-Type': file.type }, body: file },
 	);
-	if (!res.ok) {
-		const body = await res.text().catch(() => '');
-		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
-	}
+	if (!res.ok) throw await apiError(res);
 	const data = await res.json() as { coverImage: CoverImage };
 	return data.coverImage;
 }
@@ -161,10 +170,7 @@ export async function deleteFolio(folder: string, name: string, deleteCoverImage
 		`${BASE}/folios/${encodeURIComponent(folder)}/${encodeURIComponent(name)}?deleteCoverImage=${deleteCoverImage}`,
 		{ method: 'DELETE' },
 	);
-	if (!res.ok) {
-		const body = await res.text().catch(() => '');
-		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
-	}
+	if (!res.ok) throw await apiError(res);
 }
 
 export function fetchWarnings(): Promise<{ folder: string; name: string; warnings: string[] }[]> {
@@ -173,8 +179,5 @@ export function fetchWarnings(): Promise<{ folder: string; name: string; warning
 
 export async function reloadProject(): Promise<void> {
 	const res = await fetch(`${BASE}/reload`, { method: 'POST' });
-	if (!res.ok) {
-		const body = await res.text().catch(() => '');
-		throw new ApiError(res.status, `${res.status} ${res.statusText}: ${body}`);
-	}
+	if (!res.ok) throw await apiError(res);
 }

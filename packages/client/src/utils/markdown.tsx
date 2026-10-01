@@ -4,8 +4,8 @@
  * React nodes so wikilinks render as real `<WikiLinkChip>` components
  * (with live folio-index lookup) rather than escaped HTML.
  *
- * Per .ai-rules.md §4, all wiki-link parsing lives in `shared`. Markdown
- * block/inline parsing is delegated to markdown-it.
+ * Per the parsing invariant in AGENTS.md, all wiki-link parsing lives in
+ * `shared`. Markdown block/inline parsing is delegated to markdown-it.
  */
 
 import { Fragment, type ReactNode } from 'react';

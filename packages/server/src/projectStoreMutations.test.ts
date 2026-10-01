@@ -37,6 +37,11 @@ const SYNTH_SCHEMA = {
 				},
 			},
 		},
+		Beta: {
+			icon: 'square',
+			folder: 'Betas',
+			sections: { Vitals: { role: 'meta', fields: { Label: { type: 'text' } } } },
+		},
 	},
 };
 
@@ -126,6 +131,28 @@ describe('ProjectStore.createFolio', () => {
 		const bad = folio('', 'Bad', { Unknown: { fields: { X: 'y' } } });
 		await expect(store.createFolio('Alphas', bad)).rejects.toBeInstanceOf(ValidationError);
 	});
+
+	it('treats a name differing only in case as taken', async () => {
+		const store = await makeStore(['Existing']);
+		await expect(store.createFolio('Alphas', folio('', 'existing'))).rejects.toMatchObject({
+			detail: { kind: 'exists', name: 'Existing' },
+		});
+	});
+
+	it('refuses to overwrite a file created on disk after the index was built', async () => {
+		const store = await makeStore([]);
+		const outside = join(store.projectPath, 'Alphas', 'Late.md');
+		await writeFile(outside, alphaFile('Late'), 'utf-8');
+		await expect(store.createFolio('Alphas', folio('', 'Late'))).rejects.toBeInstanceOf(ConflictError);
+		expect(await readFile(outside, 'utf-8')).toBe(alphaFile('Late'));
+	});
+
+	it('throws BadRequestError when the type does not belong in the folder', async () => {
+		const store = await makeStore([]);
+		await expect(store.createFolio('Alphas', { ...folio('', 'Stray'), type: 'Beta', folder: 'Betas' }))
+			.rejects.toBeInstanceOf(BadRequestError);
+		await expect(access(join(store.projectPath, 'Alphas', 'Stray.md'))).rejects.toThrow();
+	});
 });
 
 // ── saveFolio ────────────────────────────────────────────────
@@ -148,6 +175,39 @@ describe('ProjectStore.saveFolio', () => {
 	it('throws NotFoundError for an unknown folio', async () => {
 		const store = await makeStore([]);
 		await expect(store.saveFolio('Alphas', 'Ghost', folio('Ghost', 'Ghost'), 0)).rejects.toBeInstanceOf(NotFoundError);
+	});
+
+	it('refuses a rename onto another folio whose name differs only in case', async () => {
+		const store = await makeStore(['One', 'Two']);
+		const mtime = store.getRecord('Alphas', 'Two')!.mtime;
+		await expect(store.saveFolio('Alphas', 'Two', folio('Two', 'one'), mtime)).rejects.toMatchObject({
+			detail: { kind: 'exists', name: 'One' },
+		});
+		expect(await readFile(join(store.projectPath, 'Alphas', 'One.md'), 'utf-8')).toBe(alphaFile('One'));
+	});
+
+	it('allows a case-only rename of the folio itself', async () => {
+		const store = await makeStore(['Solo']);
+		const mtime = store.getRecord('Alphas', 'Solo')!.mtime;
+		const res = await store.saveFolio('Alphas', 'Solo', folio('Solo', 'solo'), mtime);
+		expect(res.renamedTo).toBe('solo');
+		expect(store.getRecord('Alphas', 'solo')).toBeDefined();
+	});
+
+	it('refuses a rename onto a file created on disk after the index was built', async () => {
+		const store = await makeStore(['One']);
+		const outside = join(store.projectPath, 'Alphas', 'Taken.md');
+		await writeFile(outside, alphaFile('Taken'), 'utf-8');
+		const mtime = store.getRecord('Alphas', 'One')!.mtime;
+		await expect(store.saveFolio('Alphas', 'One', folio('One', 'Taken'), mtime)).rejects.toBeInstanceOf(ConflictError);
+		expect(await readFile(outside, 'utf-8')).toBe(alphaFile('Taken'));
+	});
+
+	it('throws BadRequestError when the payload changes the folio type', async () => {
+		const store = await makeStore(['One']);
+		const mtime = store.getRecord('Alphas', 'One')!.mtime;
+		await expect(store.saveFolio('Alphas', 'One', { ...folio('One', 'One'), type: 'Beta', folder: 'Betas' }, mtime))
+			.rejects.toBeInstanceOf(BadRequestError);
 	});
 
 	it('renames the file and rewrites wikilinks across the project', async () => {
@@ -235,6 +295,19 @@ describe('ProjectStore.saveFolio', () => {
 		const cleanLinker = await readFile(join(store.projectPath, 'Alphas', 'Linker_A.md'), 'utf-8');
 		expect(cleanLinker).toContain('[[Alphas/Target]]');
 		expect(cleanLinker).not.toContain('Target_Renamed');
+	});
+});
+
+// ── reload ───────────────────────────────────────────────────
+
+describe('ProjectStore.reload', () => {
+	it('keeps the previous project serving when the reload fails', async () => {
+		const store = await makeStore(['Kept']);
+		await writeFile(join(store.projectPath, 'schema.json'), '{ not json', 'utf-8');
+		await writeFile(join(store.projectPath, 'config.json'), JSON.stringify({ name: 'Changed' }), 'utf-8');
+		await expect(store.reload()).rejects.toThrow(/Invalid JSON/);
+		expect(store.getConfig().name).toBe(SYNTH_CONFIG.name);
+		expect(store.getRecord('Alphas', 'Kept')).toBeDefined();
 	});
 });
 

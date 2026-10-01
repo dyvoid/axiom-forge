@@ -263,6 +263,75 @@ describe('validateAgainstSchema wrong-shape detection', () => {
 	});
 });
 
+describe('validateAgainstSchema unrepresentable values', () => {
+	const schema: ProjectSchema = {
+		version: '1.0.0',
+		types: {
+			Thing: {
+				icon: 'x',
+				folder: 'Things',
+				sections: {
+					Vitals: {
+						fields: {
+							Name: { type: 'text' },
+							Notes: { type: 'textarea' },
+							Labels: { type: 'text-list' },
+							Best: { type: 'wikilink', target: 'Things' },
+						},
+					},
+					Story: { role: 'prose', type: 'textarea' },
+					Friends: { type: 'wikilink-list', target: 'Things' },
+				},
+			},
+		},
+	};
+	const codes = (folio: Parameters<typeof validateAgainstSchema>[0], mode: 'read' | 'write' = 'write') =>
+		validateAgainstSchema(folio, schema, mode).map((i) => `${i.code} ${i.path}`);
+
+	it('rejects a line break in a one-line field', () => {
+		expect(codes({ type: 'Thing', sections: { Vitals: { fields: { Notes: 'first\n## Injected' } } } }))
+			.toEqual(['unrepresentable sections.Vitals.fields.Notes']);
+	});
+
+	it('rejects a list item the comma-separated format would split', () => {
+		expect(codes({ type: 'Thing', sections: { Vitals: { fields: { Labels: ['ok', 'one, two'] } } } }))
+			.toEqual(['unrepresentable sections.Vitals.fields.Labels']);
+	});
+
+	it('rejects link parts that cannot be written as a wiki-link', () => {
+		expect(codes({
+			type: 'Thing',
+			sections: {
+				Vitals: { fields: { Best: { folder: 'Things', name: 'A]]B' } } },
+				Friends: { value: [{ folder: 'Th/ings', name: 'A' }] },
+			},
+		})).toEqual(['unrepresentable sections.Vitals.fields.Best', 'unrepresentable sections.Friends.value']);
+	});
+
+	it('accepts a "|" in an alias and a "/" in a name, which do round-trip', () => {
+		expect(codes({
+			type: 'Thing',
+			sections: { Vitals: { fields: { Best: { folder: 'Things', name: 'A/B', alias: 'x|y' } } } },
+		})).toEqual([]);
+	});
+
+	it('rejects a "## " line in prose or preface, but not one inside a code fence', () => {
+		expect(codes({
+			type: 'Thing',
+			preface: 'Intro\n## Oops',
+			sections: { Story: { content: 'Text\n\n## Sneaky\n\nMore' } },
+		})).toEqual(['unrepresentable preface', 'unrepresentable sections.Story.content']);
+		expect(codes({
+			type: 'Thing',
+			sections: { Story: { content: '```\n## fenced\n```\n### Subheading' } },
+		})).toEqual([]);
+	});
+
+	it('is write-only', () => {
+		expect(codes({ type: 'Thing', sections: { Vitals: { fields: { Notes: 'a\nb' } } } }, 'read')).toEqual([]);
+	});
+});
+
 describe('classifySection', () => {
 	it('classifies a fields section and hands back its field map', () => {
 		const def: SectionDef = { role: 'meta', fields: { Name: { type: 'text' } } };

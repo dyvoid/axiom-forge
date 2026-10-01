@@ -130,7 +130,7 @@ export function CategoryIndexView(): JSX.Element {
 				) : (
 					filteredFolios.map(f => {
 						return (
-						<Link key={f.id} to={`/folio/${f.folder}/${f.name}`} className={styles.entry}>
+						<Link key={f.id} to={`/folio/${encodeURIComponent(f.folder)}/${encodeURIComponent(f.name)}`} className={styles.entry}>
 							<EntryContent folio={f} variant="row" />
 						</Link>
 					);

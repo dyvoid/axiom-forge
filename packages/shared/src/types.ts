@@ -57,6 +57,13 @@ export interface ParsedFolio {
 	preface?: string;
 	coverImage?: CoverImage;
 	sections: Record<string, ParsedSection>;
+	/**
+	 * Frontmatter properties the app does not manage (anything but `title`,
+	 * `type`, `tags`, `aliases`), carried through untouched so a save never
+	 * drops a property another tool wrote — Obsidian's `cssclasses`, Publish's
+	 * `publish`, a user's own `created`. Omitted when there are none.
+	 */
+	extraFrontmatter?: Record<string, unknown>;
 	warnings?: string[];
 	mtime?: number;
 }

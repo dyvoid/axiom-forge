@@ -60,8 +60,7 @@ The linter points at two kinds of file with one config. Roughly three quarters o
 would flag lives in `fall-of-troy/`, whose Markdown is written by the app's own
 `serializeToMarkdown`, not by hand. Making that output rule-clean is a change to the on-disk
 format — governed by [ADR-0022](adr/0022-frontmatter-display-titles.md) and guarded by the
-round-trip idempotency tests — not a lint fix. Most of the rest is in generated files under
-`packages/client/`. Only a small remainder is hand-written prose.
+round-trip idempotency tests — not a lint fix. The rest is hand-written prose.
 
 So the loose rule set is the price of linting generated data and hand-written docs together. If
 the prose docs are worth tightening, the shape is a path-scoped override in

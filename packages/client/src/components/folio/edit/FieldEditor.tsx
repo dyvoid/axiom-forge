@@ -38,10 +38,12 @@ export function FieldEditor({ fieldDef, value, onChange, label }: Props): JSX.El
 				/>
 			);
 		case 'textarea':
+			// A textarea inside a fields section is still one `- **Field:** value`
+			// line on disk, so a line break could not be saved; fold it to a space.
 			return (
 				<TextareaField
 					value={typeof value === 'string' ? value : ''}
-					onChange={(v) => onChange(v || null)}
+					onChange={(v) => onChange(v.replace(/\r?\n/g, ' ') || null)}
 					ariaLabel={label}
 				/>
 			);

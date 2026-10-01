@@ -38,7 +38,7 @@ export function WikiLinkChip({ link }: { link: WikiLink }): JSX.Element {
 
 	return (
 		<Link
-			to={`/folio/${link.folder}/${link.name}`}
+			to={`/folio/${encodeURIComponent(link.folder)}/${encodeURIComponent(link.name)}`}
 			className={styles.chip}
 		>
 			<Icon name={iconName} size={10} className={styles.icon} /> {display}

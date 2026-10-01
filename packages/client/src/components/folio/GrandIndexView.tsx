@@ -122,7 +122,7 @@ export function GrandIndexView(): JSX.Element {
 									return (
 										<Link
 											key={f.id}
-											to={`/folio/${f.folder}/${f.name}`}
+											to={`/folio/${encodeURIComponent(f.folder)}/${encodeURIComponent(f.name)}`}
 											className={styles.entryLink}
 										>
 											<EntryContent folio={f} variant="inline" icon={icon} />

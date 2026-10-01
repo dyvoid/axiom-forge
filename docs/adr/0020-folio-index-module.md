@@ -7,8 +7,7 @@
 
 [ADR-0006](0006-encapsulate-folio-mutations.md) moved every folio write behind `ProjectStore`
 methods, and [ADR-0010](0010-multi-file-write-safety.md) added the plan/commit rename rewrite on
-top. Both were right, and both grew the class: `projectStore.ts` is now 621 lines holding two
-distinct jobs.
+top. Both were right, and both grew the class: `projectStore.ts` now holds two distinct jobs.
 
 The first job is **mutation orchestration** — the write mutex, validation tiers, atomic disk I/O
 via `fileIO`, the two-phase link rewrite, and the typed domain errors. That is genuinely

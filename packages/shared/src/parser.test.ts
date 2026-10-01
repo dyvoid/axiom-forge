@@ -493,6 +493,72 @@ describe('parser — YAML frontmatter', () => {
 		expect(() => parseMarkdown(raw, synthSchema)).toThrow();
 	});
 
+	it('carries frontmatter properties it does not manage through a save unchanged', () => {
+		const raw = [
+			'---',
+			'title: Kept',
+			'type: Alpha',
+			'publish: true',
+			'created: 2024-05-05',
+			'cssclasses:',
+			'  - wide',
+			'---',
+			'',
+			'## Vitals',
+			'- **Label:** x',
+			'',
+		].join('\n');
+		const parsed = parseMarkdown(raw, synthSchema);
+		expect(parsed.extraFrontmatter).toEqual({ publish: true, created: '2024-05-05', cssclasses: ['wide'] });
+
+		const markdown = serializeToMarkdown({ ...parsed, name: 'Kept' }, synthSchema);
+		expect(markdown).toBe(raw);
+	});
+
+	it('never lets an extra property override a managed one', () => {
+		const folio: ParsedFolio = {
+			name: 'Owned',
+			title: 'Owned',
+			type: 'Alpha',
+			folder: 'Alphas',
+			tags: [],
+			sections: { Vitals: { fields: { Label: 'x' } } },
+			extraFrontmatter: { title: 'Hijacked', type: 'Beta', mood: 'calm' },
+		};
+		const reparsed = parseMarkdown(serializeToMarkdown(folio, synthSchema), synthSchema);
+		expect(reparsed.title).toBe('Owned');
+		expect(reparsed.type).toBe('Alpha');
+		expect(reparsed.extraFrontmatter).toEqual({ mood: 'calm' });
+	});
+
+	it('reads date-like and numeric scalars as the strings they were written as', () => {
+		const raw = [
+			'---',
+			'title: 1984',
+			'type: Alpha',
+			'tags:',
+			'  - 2024-05-05',
+			'  - 7',
+			'  -',
+			'aliases: 2025-01-01',
+			'---',
+			'',
+		].join('\n');
+		const parsed = parseMarkdown(raw, synthSchema);
+		expect(parsed.title).toBe('1984');
+		expect(parsed.tags).toEqual(['2024-05-05', '7']);
+		expect(parsed.aliases).toEqual(['2025-01-01']);
+
+		const { second } = roundTrip({ ...parsed, name: '1984' });
+		expect(second.tags).toEqual(['2024-05-05', '7']);
+		expect(second.aliases).toEqual(['2025-01-01']);
+	});
+
+	it('still loads explicitly tagged YAML values', () => {
+		const raw = ['---', 'type: Alpha', 'when: !!timestamp 2024-05-05', '---', ''].join('\n');
+		expect(() => parseMarkdown(raw, synthSchema)).not.toThrow();
+	});
+
 	it('warns when frontmatter is valid YAML but not a mapping', () => {
 		// A bare YAML list is syntactically valid but semantically wrong —
 		// frontmatter must be key: value pairs. Surface as a warning, not a throw.
@@ -511,6 +577,53 @@ describe('parser — YAML frontmatter', () => {
 		expect(parsed.warnings ?? []).toEqual(
 			expect.arrayContaining([expect.stringContaining('not a mapping')]),
 		);
+	});
+});
+
+// ── Body structure ───────────────────────────────────────────
+
+describe('parser — headings inside the body', () => {
+	it('keeps a level-1 heading inside a section as content', () => {
+		const raw = [
+			'---', 'title: Headed', 'type: Alpha', '---', '',
+			'## Story', 'Opening.', '', '# A chapter', '', 'More.', '',
+		].join('\n');
+		const parsed = parseMarkdown(raw, synthSchema);
+		expect(parsed.title).toBe('Headed');
+		expect(parsed.sections.Story?.content).toBe('Opening.\n\n# A chapter\n\nMore.');
+
+		const { second } = roundTrip({ ...parsed, name: 'Headed' });
+		expect(second.sections.Story?.content).toBe('Opening.\n\n# A chapter\n\nMore.');
+	});
+
+	it('takes only the first preface H1 as the legacy title', () => {
+		const parsed = parseMarkdown([
+			'---', 'type: Alpha', '---', '', '# Legacy', '', '# Second', '', '## Vitals', '- **Label:** x', '',
+		].join('\n'), synthSchema);
+		expect(parsed.title).toBe('Legacy');
+		expect(parsed.preface).toBe('# Second');
+	});
+
+	it('does not split sections or take a title from inside a code fence', () => {
+		const story = [
+			'Run this:',
+			'',
+			'```bash',
+			'# not a title',
+			'## not a section',
+			'```',
+			'',
+			'~~~~',
+			'## nor this',
+			'~~~',
+			'## still fenced',
+			'~~~~',
+		].join('\n');
+		const raw = ['---', 'title: Fenced', 'type: Alpha', '---', '', '## Story', story, ''].join('\n');
+		const parsed = parseMarkdown(raw, synthSchema);
+		expect(Object.keys(parsed.sections)).toEqual(['Story']);
+		expect(parsed.sections.Story?.content).toBe(story);
+		expect(parsed.warnings).toEqual([]);
 	});
 });
 

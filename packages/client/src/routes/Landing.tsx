@@ -86,7 +86,7 @@ export function Landing(): JSX.Element {
 								<button
 									key={typeKey}
 									className={styles.typeEntry}
-									onClick={() => navigate(`/folio/${typeDef.folder}`)}
+									onClick={() => navigate(`/folio/${encodeURIComponent(typeDef.folder)}`)}
 								>
 									<Icon name={typeDef.icon} className={styles.typeIcon} size={12} />
 									{typeKey} <span className={styles.count}>{count}</span>

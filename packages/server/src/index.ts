@@ -25,7 +25,9 @@ async function main(): Promise<void> {
 	await store.load();
 
 	const app = express();
-	app.use(express.json());
+	// express.json() defaults to 100 kB, which a long prose folio passes; the
+	// save then fails with a 413. Match the cover-image upload limit instead.
+	app.use(express.json({ limit: '10mb' }));
 	mountRoutes(app, store);
 
 	app.listen(PORT, HOST, () => {

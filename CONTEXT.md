@@ -17,7 +17,7 @@ Two rules keep this file honest, matching [Documentation Discipline](docs/docume
 **Folio** — one entry in the encyclopedia, stored as one Markdown file on disk. The central noun
 of the whole system: `ParsedFolio`, `FolioIndexRecord`, `projectStore.getFolio`, `/api/folios`.
 
-> **Folio vs. entry.** The UI says "entry" ("+ ADD ENTRY", "12 ENTRIES", `EntryContent`,
+> **Folio vs. entry.** The UI says "entry" ("+ New entry", "12 ENTRIES", `EntryContent`,
 > [ADR-0011](docs/adr/0011-unify-entry-cards-and-ranking.md)); code and API say "folio". Both are
 > current. Treat "entry" as the reader-facing word for a folio and keep it out of type, function,
 > and endpoint names.
@@ -67,7 +67,7 @@ still parses but is not offered for new input.
 ## Identity
 
 **Name** — a folio's filename stem, underscored and URL-safe (`Mycenaean_Invasion_of_Kea`). This
-is the folio's stable ID and what wiki-links point at.
+is the folio's stable ID and what wiki-links point at. Unique within its folder ignoring case.
 
 **Title** — the display name, taken from the file's `title` frontmatter property. Free-form; may
 contain characters a filename cannot. The title is the source of truth for display, and the name

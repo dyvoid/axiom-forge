@@ -140,6 +140,25 @@ describe('GET /api/folios', () => {
 			'Aleph', 'Bet', 'One', 'Three', 'Two',
 		]);
 	});
+
+	it('sends index records without server-internal fields', async () => {
+		const res = await request(app).get('/api/folios');
+		for (const record of res.body) {
+			expect(Object.keys(record)).not.toEqual(expect.arrayContaining(['filePath']));
+			expect(record).not.toHaveProperty('mtime');
+			expect(record).not.toHaveProperty('warnings');
+			expect(record).not.toHaveProperty('links');
+		}
+	});
+
+	it('keeps a hard-cut snippet for long prose with no spaces', async () => {
+		const unbroken = 'x'.repeat(130);
+		await writeFile(join(tmpDir, 'Alphas', 'Three.md'), alphaFile('Three', undefined, unbroken), 'utf-8');
+		app = await makeApp(tmpDir);
+		const res = await request(app).get('/api/folios');
+		const three = res.body.find((f: { name: string }) => f.name === 'Three');
+		expect(three.snippet).toBe(`${'x'.repeat(120)}...`);
+	});
 });
 
 describe('GET /api/folios/:folder/:name', () => {
@@ -156,6 +175,17 @@ describe('GET /api/folios/:folder/:name', () => {
 	it('404s for an unknown folio', async () => {
 		const res = await request(app).get('/api/folios/Alphas/Nope');
 		expect(res.status).toBe(404);
+	});
+
+	it('warns when a file declares a type its folder does not hold', async () => {
+		await writeFile(join(tmpDir, 'Alphas', 'Stray.md'), betaFile('Stray'), 'utf-8');
+		app = await makeApp(tmpDir);
+		const expected = 'Type "Beta" does not match folder "Alphas", which holds "Alpha".';
+		expect((await request(app).get('/api/folios/Alphas/Stray')).body.warnings).toContain(expected);
+		const all = await request(app).get('/api/warnings');
+		expect(all.body).toEqual(expect.arrayContaining([
+			{ folder: 'Alphas', name: 'Stray', warnings: [expected] },
+		]));
 	});
 });
 
@@ -212,6 +242,19 @@ describe('folio cover images', () => {
 		await access(join(tmpDir, 'Images', 'portrait_2.png'));
 	});
 
+	it('still reports a missing cover image after the folio is saved', async () => {
+		await installCover('![[Images/missing.png]]');
+		const warning = 'Cover image "Images/missing.png" was not found';
+		const before = await request(app).get('/api/warnings');
+		expect(before.body).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'One', warnings: [warning] })]));
+
+		const folio = (await request(app).get('/api/folios/Alphas/One')).body;
+		const saved = await request(app).put('/api/folios/Alphas/One').send({ folio, clientMtime: folio.mtime });
+		expect(saved.body.warnings).toEqual([warning]);
+		const after = await request(app).get('/api/warnings');
+		expect(after.body).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'One', warnings: [warning] })]));
+	});
+
 	it('can delete the image with the folio or preserve it', async () => {
 		await installCover();
 		const keep = await request(app).delete('/api/folios/Alphas/One');
@@ -251,6 +294,30 @@ describe('PUT /api/folios/:folder/:name — in-place', () => {
 		expect(res.body.warnings).toEqual([]);
 		const disk = await readFile(join(tmpDir, 'Alphas', 'One.md'), 'utf-8');
 		expect(disk).toContain('A revised story.');
+	});
+
+	it('keeps frontmatter properties the app does not manage through a GET → PUT', async () => {
+		const original = alphaFile('One', 'Aleph', 'One has a story.')
+			.replace('type: Alpha\n', 'type: Alpha\npublish: true\ncreated: 2024-05-05\n');
+		await writeFile(join(tmpDir, 'Alphas', 'One.md'), original, 'utf-8');
+		app = await makeApp(tmpDir);
+
+		const folio = await readFolio('Alphas', 'One');
+		folio.sections.Story = { content: 'Edited.' };
+		const res = await request(app).put('/api/folios/Alphas/One').send({ folio, clientMtime: folio.mtime });
+
+		expect(res.status).toBe(200);
+		const disk = await readFile(join(tmpDir, 'Alphas', 'One.md'), 'utf-8');
+		expect(disk).toContain('publish: true\ncreated: 2024-05-05\n');
+		expect(disk).toContain('Edited.');
+	});
+
+	it('returns 400 schema-violation for prose the file format would split into a new section', async () => {
+		const folio = await readFolio('Alphas', 'One');
+		folio.sections.Story = { content: 'Before.\n\n## Not a section\n\nAfter.' };
+		const res = await request(app).put('/api/folios/Alphas/One').send({ folio, clientMtime: folio.mtime });
+		expect(res.status).toBe(400);
+		expect(res.body.issues).toEqual([expect.objectContaining({ code: 'unrepresentable' })]);
 	});
 
 	it('returns 409 on stale clientMtime', async () => {

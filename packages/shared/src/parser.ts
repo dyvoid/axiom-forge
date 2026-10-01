@@ -9,27 +9,38 @@
  * typed value).
  */
 
-import { load, dump } from 'js-yaml';
+import * as jsYaml from 'js-yaml';
+import { CORE_SCHEMA, load, dump, type Type as YamlType } from 'js-yaml';
 import { classifySection, validateAgainstSchema } from './schema.js';
 import type { ProjectSchema, FieldDef } from './schema.js';
 import type { CoverImage, ParsedFolio, ParsedSection, FieldValue, WikiLink } from './types.js';
 import { parseWikiLink, parseWikiLinks, serializeWikiLink, serializeWikiLinks } from './wikilink.js';
+import { fencedLineMask } from './fences.js';
 
 // ── Helpers ─────────────────────────────────────────────────
 
-/** Split markdown content on `## ` headers, returning [headerName, body] pairs. */
+/**
+ * Split markdown content on `## ` headers, returning [headerName, body] pairs.
+ *
+ * Lines inside a fenced code block are content, never headers — a `## ` in a
+ * shell snippet must not start a section. A `# ` line counts as the legacy
+ * title only in the preface (ADR-0022), and only the first one; anywhere else
+ * it is the user's own heading and stays in the body.
+ */
 function splitSections(markdown: string): { h1: string; preface: string; sections: [string, string][] } {
 	const lines = markdown.split(/\r?\n/);
-	let h1 = '';
+	const fenced = fencedLineMask(lines);
+	let h1: string | null = null;
 	const prefaceLines: string[] = [];
 	const sections: [string, string][] = [];
 	let currentHeader: string | null = null;
 	let currentLines: string[] = [];
 
-	for (const line of lines) {
-		if (line.startsWith('# ')) {
+	for (const [i, line] of lines.entries()) {
+		const inFence = fenced[i]!;
+		if (!inFence && currentHeader === null && h1 === null && line.startsWith('# ')) {
 			h1 = line.slice(2).trim();
-		} else if (line.startsWith('## ')) {
+		} else if (!inFence && line.startsWith('## ')) {
 			if (currentHeader !== null) {
 				sections.push([currentHeader, currentLines.join('\n').trim()]);
 			}
@@ -46,7 +57,7 @@ function splitSections(markdown: string): { h1: string; preface: string; section
 	if (currentHeader !== null) {
 		sections.push([currentHeader, currentLines.join('\n').trim()]);
 	}
-	return { h1, preface: prefaceLines.join('\n').trim(), sections };
+	return { h1: h1 ?? '', preface: prefaceLines.join('\n').trim(), sections };
 }
 
 /** Parse a `- **Field Name:** value` line. Returns [fieldName, rawValue] or null. */
@@ -165,6 +176,26 @@ function parseFieldSection(body: string, fieldDefs: Record<string, FieldDef>): P
 const FRONTMATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 
 /**
+ * js-yaml's default schema minus implicit timestamps. The default resolves a
+ * bare `2024-05-05` to a `Date`, which then stringifies as
+ * "Sun May 05 2024 …" — corrupting a date-like tag on the next save, and
+ * rewriting another tool's `created: 2024-05-05` as a datetime. Here such a
+ * scalar stays the string it was written as. Every tag the default schema
+ * understands still loads, so no file that parsed before now throws.
+ */
+// js-yaml 4 exports its built-in types as `types`; @types/js-yaml omits it.
+const yamlTypes = (jsYaml as unknown as {
+	types: Record<'merge' | 'binary' | 'omap' | 'pairs' | 'set' | 'timestamp', YamlType>;
+}).types;
+const FRONTMATTER_SCHEMA = CORE_SCHEMA.extend({
+	implicit: [yamlTypes.merge],
+	explicit: [yamlTypes.binary, yamlTypes.omap, yamlTypes.pairs, yamlTypes.set, yamlTypes.timestamp],
+});
+
+/** The frontmatter keys the app owns. Everything else is carried through as `extraFrontmatter`. */
+const MANAGED_FRONTMATTER_KEYS: ReadonlySet<string> = new Set(['title', 'type', 'tags', 'aliases']);
+
+/**
  * Split a leading YAML frontmatter block off a Markdown document.
  *
  * Returns the parsed frontmatter as a plain object (empty when there is no
@@ -184,7 +215,7 @@ function parseFrontmatter(markdown: string): {
 } {
 	const m = FRONTMATTER_PATTERN.exec(markdown);
 	if (!m) return { data: {}, content: markdown };
-	const loaded = load(m[1] ?? '');
+	const loaded = load(m[1] ?? '', { schema: FRONTMATTER_SCHEMA });
 	if (loaded && typeof loaded === 'object' && !Array.isArray(loaded)) {
 		return { data: loaded as Record<string, unknown>, content: markdown.slice(m[0].length) };
 	}
@@ -197,22 +228,26 @@ function parseFrontmatter(markdown: string): {
 }
 
 /**
+ * A YAML scalar as the trimmed string it was written as, or '' for anything
+ * that is not a scalar. `title: 1984` loads as a number and is still a title.
+ */
+function scalarString(value: unknown): string {
+	if (typeof value === 'string') return value.trim();
+	if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+	return '';
+}
+
+/**
  * Coerce a raw YAML frontmatter value into a clean string list.
  *
  * Obsidian writes `tags`/`aliases` as YAML block lists, but a hand-edited
- * file may use a single scalar. Accept both: a list yields its trimmed
- * non-empty entries; a scalar yields a single-element list; anything else
- * (missing/null) yields an empty list.
+ * file may use a single scalar. Accept both: a list yields its non-empty
+ * scalar entries; a scalar yields a single-element list; anything else
+ * (missing/null, or an empty `- ` list item) contributes nothing.
  */
 function normalizeStringList(value: unknown): string[] {
-	if (Array.isArray(value)) {
-		return value.map((v) => String(v).trim()).filter(Boolean);
-	}
-	if (typeof value === 'string') {
-		const trimmed = value.trim();
-		return trimmed ? [trimmed] : [];
-	}
-	return [];
+	const items = Array.isArray(value) ? value : [value];
+	return items.map(scalarString).filter(Boolean);
 }
 
 // ── Main Parse Function ─────────────────────────────────────
@@ -229,13 +264,13 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 	// and parse sections from the remaining body. Malformed YAML throws (caller
 	// handles); a non-mapping payload surfaces as a warning.
 	const { data, content, warning: fmWarning } = parseFrontmatter(markdown);
-	const type = typeof data.type === 'string' ? data.type : '';
+	const type = scalarString(data.type);
 	const tags = normalizeStringList(data.tags);
 	const aliases = normalizeStringList(data.aliases);
+	const extraEntries = Object.entries(data).filter(([key]) => !MANAGED_FRONTMATTER_KEYS.has(key));
 
 	const { h1, preface: rawPreface, sections: rawSections } = splitSections(content);
-	const frontmatterTitle = typeof data.title === 'string' ? data.title.trim() : '';
-	const title = frontmatterTitle || h1;
+	const title = scalarString(data.title) || h1;
 	const { coverImage, preface } = extractCoverImage(rawPreface);
 
 	const typeDef = schema.types[type];
@@ -299,6 +334,7 @@ export function parseMarkdown(markdown: string, schema: ProjectSchema): ParsedFo
 		preface,
 		coverImage,
 		sections,
+		...(extraEntries.length > 0 ? { extraFrontmatter: Object.fromEntries(extraEntries) } : {}),
 		warnings,
 	};
 }
@@ -349,6 +385,10 @@ export function isFieldValueEmpty(value: FieldValue | undefined): boolean {
  * long values stay on one line — wrapping would otherwise threaten round-trip
  * idempotency. js-yaml handles all escaping/quoting.
  *
+ * Properties the app does not manage follow the managed ones, dumped with the
+ * same schema they were loaded with, so a date-like string another tool wrote
+ * (`created: 2024-05-05`) goes back out unquoted, exactly as it came in.
+ *
  * The returned string ends with a blank line, so it can be concatenated
  * directly with the Markdown body.
  */
@@ -356,7 +396,13 @@ function serializeFrontmatter(folio: ParsedFolio): string {
 	const data: Record<string, unknown> = { title: folio.title, type: folio.type };
 	if (folio.tags.length > 0) data.tags = folio.tags;
 	if (folio.aliases && folio.aliases.length > 0) data.aliases = folio.aliases;
-	return `---\n${dump(data, { lineWidth: -1 })}---\n\n`;
+	const extra = Object.fromEntries(
+		Object.entries(folio.extraFrontmatter ?? {}).filter(([key]) => !MANAGED_FRONTMATTER_KEYS.has(key)),
+	);
+	const extraYaml = Object.keys(extra).length > 0
+		? dump(extra, { lineWidth: -1, schema: FRONTMATTER_SCHEMA, skipInvalid: true })
+		: '';
+	return `---\n${dump(data, { lineWidth: -1 })}${extraYaml}---\n\n`;
 }
 
 /**
