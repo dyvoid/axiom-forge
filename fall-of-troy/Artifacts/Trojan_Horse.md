@@ -24,4 +24,5 @@ Inside the horse on the night Troy fell: Odysseus, Neoptolemus, Menelaus, Diomed
 At midnight, Sinon gave the signal. The trapdoor opened.
 
 ## Connected Events
-- [[Events/The_Trojan_Horse]], [[Events/Fall_of_Troy]]
+- [[Events/The_Trojan_Horse]]
+- [[Events/Fall_of_Troy]]

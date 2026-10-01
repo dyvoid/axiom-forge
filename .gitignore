@@ -36,8 +36,9 @@ dist/
 .DS_Store
 
 # --- AI tool artifacts ---
-# Caches and scratch output from AI coding tools.
+# Caches, scratch output and per-machine settings from AI coding tools.
 .aider*
+.claude/
 .cursor/
 .impeccable/
 coverage/

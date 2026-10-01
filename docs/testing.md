@@ -56,6 +56,15 @@ dependency must fit inside that range — it does not get to raise the project's
 jsdom 30 requires Node 22.22+ and turned `main` red while passing locally on a Node 22 machine,
 because `npm ci` does not enforce `engines`. jsdom is pinned to ^28 for that reason.
 
+Two more are held back by the same rule. `@testing-library/jest-dom` stays on `~6.9.1`, because 6.10
+and 7 declare Node 22. `markdownlint-cli2` stays on 0.22, because 0.23 needs Node 22. 0.22 pins
+vulnerable `js-yaml`, `markdown-it` and `smol-toml`, so the root `overrides` lift those to patched
+releases; drop them when it moves to 0.23.
+
+npm 10 can fail to resolve a `vitest` upgrade with `Cannot read properties of null (reading
+'edgesOut')`, an arborist bug in its peer-set handling. `npx npm@11 install` resolves the same
+tree, and CI's npm 10 `npm ci` installs the resulting lockfile without complaint.
+
 It lives in the **root** devDependencies, not the client's: vitest declares jsdom as an optional
 peer and resolves it from its own location, so a client-local copy is the one version that
 doesn't get used. Check `npm why jsdom` returns a single entry after touching it.

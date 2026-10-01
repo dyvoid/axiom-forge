@@ -28,4 +28,8 @@ What remained was not quite nothing. Aeneas escaped with his father and the sacr
 - **Characters:** [[Humans/Priam]], [[Humans/Hector]], [[Humans/Paris]], [[Humans/Helen]], [[Humans/Andromache]], [[Humans/Cassandra]]
 
 ## Connected Events
-- [[Events/Abduction_of_Helen]], [[Events/Defense_of_the_Ships]], [[Events/Death_of_Hector]], [[Events/The_Trojan_Horse]], [[Events/Fall_of_Troy]]
+- [[Events/Abduction_of_Helen]]
+- [[Events/Defense_of_the_Ships]]
+- [[Events/Death_of_Hector]]
+- [[Events/The_Trojan_Horse]]
+- [[Events/Fall_of_Troy]]

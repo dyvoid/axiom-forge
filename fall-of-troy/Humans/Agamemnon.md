@@ -27,4 +27,6 @@ He got his victory in the end, though it belonged more to Odysseus than to him. 
 - **Enemies:** [[Humans/Achilles]], [[Humans/Hector]], [[Humans/Priam]]
 
 ## Connected Events
-- [[Events/Judgment_of_Achilles]], [[Events/Defense_of_the_Ships]], [[Events/Fall_of_Troy]]
+- [[Events/Judgment_of_Achilles]]
+- [[Events/Defense_of_the_Ships]]
+- [[Events/Fall_of_Troy]]

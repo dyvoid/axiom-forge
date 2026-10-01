@@ -27,4 +27,6 @@ When Patroclus entered battle wearing Achilles' armour, it was Hector who killed
 - **Children:** [[Humans/Astyanax]]
 
 ## Connected Events
-- [[Events/Defense_of_the_Ships]], [[Events/Death_of_Patroclus]], [[Events/Death_of_Hector]]
+- [[Events/Defense_of_the_Ships]]
+- [[Events/Death_of_Patroclus]]
+- [[Events/Death_of_Hector]]

@@ -27,4 +27,6 @@ Then the armour of Achilles was awarded — not to the man who had carried the b
 - **Enemies:** [[Humans/Hector]], [[Humans/Paris]]
 
 ## Connected Events
-- [[Events/Defense_of_the_Ships]], [[Events/Death_of_Patroclus]], [[Events/Death_of_Hector]]
+- [[Events/Defense_of_the_Ships]]
+- [[Events/Death_of_Patroclus]]
+- [[Events/Death_of_Hector]]

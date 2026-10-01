@@ -28,4 +28,7 @@ The Trojan Horse was his idea. It was, by any measure, the most consequential ac
 - **Enemies:** [[Humans/Hector]], [[Humans/Paris]]
 
 ## Connected Events
-- [[Events/Judgment_of_Achilles]], [[Events/Theft_of_the_Palladium]], [[Events/The_Trojan_Horse]], [[Events/Fall_of_Troy]]
+- [[Events/Judgment_of_Achilles]]
+- [[Events/Theft_of_the_Palladium]]
+- [[Events/The_Trojan_Horse]]
+- [[Events/Fall_of_Troy]]

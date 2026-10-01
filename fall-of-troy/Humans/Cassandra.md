@@ -29,4 +29,6 @@ She took sanctuary at Athena's altar during the sack and was dragged from it, an
 - **Enemies:** [[Humans/Agamemnon]], [[Humans/Odysseus]]
 
 ## Connected Events
-- [[Events/The_Trojan_Horse]], [[Events/Fall_of_Troy]], [[Events/Judgment_of_Paris]]
+- [[Events/The_Trojan_Horse]]
+- [[Events/Fall_of_Troy]]
+- [[Events/Judgment_of_Paris]]

@@ -25,4 +25,6 @@ The camp became a stage for the most consequential internal conflict of the war:
 - **Characters:** [[Humans/Achilles]], [[Humans/Odysseus]], [[Humans/Patroclus]], [[Humans/Ajax]]
 
 ## Connected Events
-- [[Events/Judgment_of_Achilles]], [[Events/Defense_of_the_Ships]], [[Events/Death_of_Patroclus]]
+- [[Events/Judgment_of_Achilles]]
+- [[Events/Defense_of_the_Ships]]
+- [[Events/Death_of_Patroclus]]

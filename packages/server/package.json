@@ -11,7 +11,7 @@
 	},
 	"dependencies": {
 		"@axiom-forge/shared": "*",
-		"express": "^4.19.2"
+		"express": "^4.22.3"
 	},
 	"devDependencies": {
 		"@types/express": "^4.17.21",

@@ -22,4 +22,5 @@ Priam did not survive the fall of Troy. He was killed at the altar of Zeus by Ne
 - **Children:** [[Humans/Hector]], [[Humans/Paris]], [[Humans/Cassandra]]
 
 ## Connected Events
-- [[Events/Death_of_Hector]], [[Events/Fall_of_Troy]]
+- [[Events/Death_of_Hector]]
+- [[Events/Fall_of_Troy]]

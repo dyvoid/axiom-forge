@@ -29,18 +29,10 @@ scaffolding will reshape.
 
 ## Open Decisions
 
-1. **Runtime dependency upgrades.** `npm audit --omit=dev` flags `js-yaml` and `linkify-it` (via
-   `markdown-it`) as high, plus `express`'s `body-parser`/`qs` and `react-router`'s
-   `@remix-run/router` as moderate. Upgrading is a dependency change, which AGENTS.md routes
-   through the user. `js-yaml` matters most: it parses every folio's frontmatter.
-2. **`.claude/settings.local.json` is tracked.** It holds one machine's permission allowlist and a
-   `G:` drive path. Untracking it means a `.gitignore` change, which also needs the user.
-
-Known gaps with no ROADMAP entry yet, each needing a call on whether to schedule it: the preface
-(text before the first `##`) is preserved on save but shown in neither view; an image embed inside
-prose renders as a broken wiki-link chip and is listed as an unresolved link; and most sample files
-store section-level link lists comma-separated on one line, which the serializer rewrites one per
-line on their first save.
+1. **Whether to schedule two known gaps**, neither on the ROADMAP yet. The preface (text before
+   the first `##`) is preserved on save but shown in neither view. And an image embed inside prose
+   renders as a broken wiki-link chip and is listed as an unresolved link — rendering it needs an
+   endpoint that serves any vault image, not just a folio's cover.
 
 Two standing gaps worth not rediscovering as bugs. A schema-drifted file is readable in the app
 but cannot be saved from it, which follows from holding ADR-0012 at #9 —

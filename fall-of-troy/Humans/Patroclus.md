@@ -24,4 +24,5 @@ His death is the pivot point of the Iliad. Everything before it leads up to it; 
 - **Enemies:** [[Humans/Hector]]
 
 ## Connected Events
-- [[Events/Judgment_of_Achilles]], [[Events/Death_of_Patroclus]]
+- [[Events/Judgment_of_Achilles]]
+- [[Events/Death_of_Patroclus]]
