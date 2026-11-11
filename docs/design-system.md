@@ -56,6 +56,23 @@ result of something the user just did.
 A modal composes `dialog.module.css` for its scrim, panel and title, and keeps its own width and
 padding. Layers stack by token, lowest first: `--z-drawer`, `--z-menu`, `--z-dialog`.
 
+### The project list
+
+`/projects` sits one level above a project and borrows from both of its neighbours: the corner
+line of the landing page, and the title, count line and dotted row rules of an index. A project's
+name is set like a title (display italic) because it is one; its folder path is in `--ff-mono`,
+the one place on the page a raw value appears. The project that is open is marked in type alone,
+`Open now` in the rust eyebrow voice.
+
+Adding and editing happen in the page, not in a dialog: neither interrupts anything. Removal does
+use a dialog, and the destructive branch asks for the project's name to be typed
+(`ConfirmDialog`'s `requireText`). Reserve that for an action that cannot be undone *and* reaches
+beyond one folio.
+
+In the header the project name is a menu button (`ProjectMenu`). It keeps the name's italic and
+shows no border until hovered, so the header reads as before. Below `--bp-compact` the name gives
+way to an icon.
+
 ### Entry Presentation: Two Idioms
 
 A folio appears as a compact "entry" on several surfaces. These use **two deliberate idioms**, both
@@ -132,7 +149,7 @@ The layout adapts across three content-driven breakpoints, defined as tokens in 
 |---|---|---|
 | `--bp-stack` | `1100px` | The folio two-column (prose + meta) stacks vertically. Meta precedes prose — the quick-facts column orients the reader before the long-form history. Edit-view field rows stack label-above-value. |
 | `--bp-drawer` | `900px` | The fixed sidebar lifts off the flow and becomes an overlay drawer, slid in by a hamburger button in the header. A scrim dims the page behind it; clicking the scrim or navigating closes the drawer. |
-| `--bp-compact` | `600px` | The header hides the project title (logo alone is enough context). Search becomes fluid. Page padding tightens. Dialogs go full-width with stacked actions. |
+| `--bp-compact` | `600px` | The header's project menu shrinks to an icon. Search becomes fluid. Page padding tightens. Dialogs go full-width with stacked actions. |
 
 Display type sizes (`--fs-hero-xl`, `--fs-hero`, `--fs-h1`, `--fs-h2`, `--fs-subtitle-lg`) are fluid via `clamp()` — they scale with the viewport instead of overflowing. Body and label sizes stay fixed; they're small enough to fit at any viewport and the hierarchy depends on the display sizes doing the scaling work.
 

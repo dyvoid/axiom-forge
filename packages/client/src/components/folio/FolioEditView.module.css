@@ -154,12 +154,7 @@
 }
 
 .fieldLabel {
-	font-family: var(--ff-body);
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-eyebrow);
-	text-transform: uppercase;
-	color: var(--text-muted);
-	font-weight: 500;
+	composes: fieldLabel from '../ui/controls.module.css';
 	padding-top: 9px;
 }
 

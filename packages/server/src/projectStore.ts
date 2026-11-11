@@ -535,6 +535,22 @@ export class ProjectStore {
 	}
 
 	/**
+	 * Re-read `config.json` alone, after the registry has rewritten it. Holds
+	 * the write mutex like every other state change, and leaves the previous
+	 * config in place if the file no longer validates.
+	 */
+	async refreshConfig(): Promise<void> {
+		return this.writeMutex.runExclusive(async () => {
+			this.config = await this.loadJson('config.json', ConfigSchema.parse);
+		});
+	}
+
+	/** Resolves once every write already queued on this store has finished. */
+	async idle(): Promise<void> {
+		return this.writeMutex.runExclusive(async () => undefined);
+	}
+
+	/**
 	 * Re-read the whole project from disk. Holds the write mutex, so it never
 	 * interleaves with a save; and swaps the new state in only once all of it
 	 * has been read, so a failed reload keeps the previous project serving.

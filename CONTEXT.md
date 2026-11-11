@@ -29,9 +29,20 @@ entry in the in-memory index (see below), not the file.
 
 **Project** — one folder on disk holding the whole world: a `config.json`, a `schema.json`, one
 subfolder of `.md` files per type, an optional `Images/` folder for cover images, and an optional
-`theme.json` that restyles or disables the landing hero. The server
-is pointed at exactly one project via `--project`. The files are the source of truth; there is no
-database.
+`theme.json` that restyles or disables the landing hero. The files are the source of truth;
+there is no database.
+
+**Project list** — the projects this installation knows about: a file of folder paths kept outside
+every project, owned by `ProjectRegistry`. **Adding** a project puts its folder on the list;
+**removing** takes it off and leaves the folder alone. **Deleting** is the separate act of
+removing the folder from disk. See
+[ADR-0023](docs/adr/0023-project-registry-and-active-project.md).
+
+**Active project** (server) / **open project** (UI) — the one project the server has loaded and
+every folio endpoint serves. There is exactly one or none. **Opening** a project makes it the
+active one.
+
+**Starter schema** — the fixed one-type `schema.json` a new project begins with.
 
 **Sample project** — `fall-of-troy/`, the worked example shipped in the repo. Tests may read it
 only to assert that real files parse; see the synthetic-schema rule in [Testing](docs/testing.md).
@@ -132,6 +143,7 @@ aborts the whole save rather than tearing it; see
 
 ## Surfaces
 
-**Landing** — the project home at `/`. **Grand Index** — the searchable index of every folio, at
+**Projects** — the project list, at `/projects`; the level above a project, and what the app
+shows when none is open. **Landing** — the project home at `/`. **Grand Index** — the searchable index of every folio, at
 `/index`. **Category index** — the same for one type, at `/folio/:folder`. **Read mode** and
 **edit mode** — the two folio views, separate routes rather than one route with a toggle.

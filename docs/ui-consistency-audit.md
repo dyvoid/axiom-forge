@@ -105,6 +105,10 @@ components.
   colour and, in the indexes, had a `title` but no accessible name
   (`.fieldClear`). `NewEntryButton` drew its confirm and cancel as `↵` and `✕`
   text where every other control uses a Lucide icon.
+- **One section heading.** `FieldSection`, `ProseSection` and `MetaSection`
+  each restated the roman-600 section title; it is `sectionTitle` in
+  `page.module.css`, which the project list's "Add a project" also uses. The
+  small uppercase field label is `fieldLabel` in `controls.module.css`.
 - **Index filtering** is one pure helper, `utils/filterFolios`, plus
   `useTagFilterParams` for the `?tags=` round-trip. The filter-bar *markup* is
   still written in both index views, deliberately: it waits for ADR-0016 to

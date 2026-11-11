@@ -1,25 +1,43 @@
 # 2. Multi-Project Management
 
-**Date:** 2026-05-23  
-**Status:** Proposed
+**Date:** 2026-05-23
+**Status:** Accepted
 
 ## Context
-Currently, the application runs via a `--project` CLI flag pointing to a single folder. There is no way from within the UI to switch between different Axiom Forge projects or initialize a new one from an empty state.
 
-> **Scope narrowed 2026-08-30.** The onboarding/entry surface below is now owned by
-> [ADR-0013](0013-project-scaffolding.md), which leads on how a user gets into a project at all.
-> What remains this ADR's subject is everything *after* that: switching between loaded projects,
-> editing a project's config, and removing one. The Onboarding bullet is kept as the original
-> statement of the empty state, but ADR-0013 settles its shape.
+The application ran via a `--project` CLI flag pointing to a single folder. There was no way from
+within the UI to switch between Axiom Forge projects, or to start from an empty state.
 
 ## Decision
-We will build multi-project management directly into the application.
-- **Onboarding:** If the app loads without a project, it will display an "Add Project" UI to locate a compatible folder. *(Superseded in scope by [ADR-0013](0013-project-scaffolding.md).)*
-- **Top Bar Switcher:** The top bar title will become a dropdown menu, allowing users to switch between loaded projects or add new ones.
-- **Config Editor:** Users will be able to edit a project's `config.json` directly from the UI.
-- **Project Deletion:** Users can remove a project via the UI. This must include a critical warning asking whether to just *unlink* the project from Axiom Forge, or *permanently delete* all markdown files from the disk.
+
+Multi-project management is built into the application.
+
+- **Onboarding.** With no project open, the app shows the project list, where a folder can be
+  added. The shape of that surface is recorded in
+  [ADR-0023](0023-project-registry-and-active-project.md#the-entry-surface).
+- **Top bar switcher.** The project name in the top bar is a menu: back to the project's home
+  page, across to another project, or to the full list.
+- **Config editor.** A project's `config.json` (name, description, version) is edited from the
+  project list. Keys the app does not manage are kept.
+- **Project removal.** A project can be removed from the UI. The user chooses between *unlinking*
+  it from Axiom Forge and *permanently deleting* its folder; deleting is the second, guarded
+  choice, and requires typing the project's name.
+
+How the server holds several projects, and what the API addresses, is decided in
+[ADR-0023](0023-project-registry-and-active-project.md).
 
 ## Consequences
-- The Express backend must support loading, storing, and switching multiple project contexts, likely abandoning the strict single `--project` flag limitation.
-- The UI requires significant new components for the empty state and the project dropdown switcher.
-- Safe deletion logic is required to prevent accidental data loss of markdown files.
+
+- The backend loads, stores and switches project contexts. The `--project` flag remains, as a way
+  to open a project rather than the only way to choose one.
+- The UI gained a project list page and a project menu in the header.
+- Deleting from disk removes the whole folder, not only Markdown: images, `.obsidian/`, anything
+  else kept there. The confirmation says so.
+
+## Implementation
+
+Server: `ProjectRegistry` and `routes/projects.ts`. Client: `routes/Projects.tsx`,
+`routes/ProjectOpen.tsx`, `components/projects/`, `components/layout/ProjectMenu.tsx`.
+
+One deviation from the original decision: it said the config editor would edit `config.json`
+"directly". It edits the three fields the schema defines through a form, not the raw JSON.

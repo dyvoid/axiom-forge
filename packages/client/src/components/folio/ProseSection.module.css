@@ -5,11 +5,7 @@
 }
 
 .title {
-	font-family: var(--ff-display);
-	font-weight: 600;
-	font-size: var(--fs-subtitle);
-	line-height: var(--lh-subtitle);
-	color: var(--text-primary);
+	composes: sectionTitle from '../ui/page.module.css';
 }
 
 .content {

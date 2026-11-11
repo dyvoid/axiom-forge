@@ -24,26 +24,6 @@
 	display: none;
 }
 
-.left {
-	display: flex;
-	align-items: center;
-	gap: var(--sp-4);
-	text-decoration: none;
-	transition: opacity 0.2s;
-	min-width: 0;
-}
-
-.left:hover {
-	opacity: 0.7;
-}
-
-.projectTitle {
-	font-family: var(--ff-body);
-	font-style: italic;
-	font-size: var(--fs-subtitle);
-	color: var(--text-primary);
-}
-
 .right {
 	display: flex;
 	align-items: center;
@@ -170,15 +150,11 @@
 	}
 }
 
-/* Below the compact breakpoint, hide the project title because it
-   steals space from search. */
+/* Below the compact breakpoint the project menu shrinks to an icon (see
+   ProjectMenu.module.css), leaving the row to search. */
 @media (max-width: 600px) {
 	.header {
 		padding: 0 var(--sp-4);
-	}
-
-	.projectTitle {
-		display: none;
 	}
 
 	.searchBox {

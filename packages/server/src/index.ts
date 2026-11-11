@@ -1,38 +1,31 @@
-import express from 'express';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ProjectStore } from './projectStore.js';
-import { mountRoutes } from './routes/index.js';
-import { localOnly } from './localOnly.js';
+import { createApp } from './app.js';
+import { ProjectRegistry } from './projectRegistry.js';
 
 const PORT = 3000;
 const HOST = '127.0.0.1';
 
-function parseProjectArg(argv: readonly string[]): string {
+/** The `--project` path, if one was given. Opens that project, adding it to the list if new. */
+function parseProjectArg(argv: readonly string[]): string | undefined {
 	const idx = argv.indexOf('--project');
-	if (idx === -1 || idx === argv.length - 1) {
-		// Default to fall-of-troy at the repo root (two levels up from packages/server/src)
-		return resolve(fileURLToPath(import.meta.url), '../../../..', 'fall-of-troy');
-	}
-	const raw = argv[idx + 1]!;
-	return resolve(process.cwd(), raw);
+	if (idx === -1 || idx === argv.length - 1) return undefined;
+	return resolve(process.cwd(), argv[idx + 1]!);
 }
 
 async function main(): Promise<void> {
-	const projectPath = parseProjectArg(process.argv.slice(2));
-	console.log(`Axiom Forge — loading project: ${projectPath}`);
+	const registry = new ProjectRegistry();
+	await registry.init({
+		projectPath: parseProjectArg(process.argv.slice(2)),
+		// The sample at the repo root (two levels up from packages/server/src),
+		// offered on a first run so there is something to look at.
+		samplePath: resolve(fileURLToPath(import.meta.url), '../../../..', 'fall-of-troy'),
+	});
+	if (!registry.activeStore()) {
+		console.log('Axiom Forge — no project open; choose one in the browser.');
+	}
 
-	const store = new ProjectStore(projectPath);
-	await store.load();
-
-	const app = express();
-	app.use(localOnly);
-	// express.json() defaults to 100 kB, which a long prose folio passes; the
-	// save then fails with a 413. Match the cover-image upload limit instead.
-	app.use(express.json({ limit: '10mb' }));
-	mountRoutes(app, store);
-
-	app.listen(PORT, HOST, () => {
+	createApp(registry).listen(PORT, HOST, () => {
 		console.log(`Axiom Forge — http://${HOST}:${PORT}`);
 	});
 }

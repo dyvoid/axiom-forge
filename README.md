@@ -26,6 +26,7 @@ Most worldbuilding tools either (a) lock your content inside a proprietary datab
 - **Sidebar navigation** — types and entries are indexed automatically as files are added.
 - **Read & edit views** — click Edit on any entry to modify fields and prose; saves write back to disk.
 - **Cover images** — drag-and-drop a PNG, JPG, WebP, or GIF (up to 10 MB) onto a folio; it's stored in the project's `Images/` folder and linked from the entry.
+- **Several projects** — keep any number of worlds, switch between them from the header, and start a new one from an empty folder.
 - **Schema warnings** — unknown sections or fields, invalid option values, and missing cover images surface as warnings on load. Broken wikilinks are flagged in the editor and reported on save.
 
 ## Quick start
@@ -45,7 +46,7 @@ npm install
 
 ### Run
 
-The repo ships with a sample project — `fall-of-troy` — so you can try it immediately:
+The repo ships with a sample project — `fall-of-troy` — which opens on the first run, so you can try it immediately:
 
 ```bash
 npm run dev
@@ -72,8 +73,19 @@ Two wikilinks in the sample point at entries that do not exist — `Humans/Aenea
 to find on a fresh clone. Both are figures whose stories run past the fall of the city, so they read
 naturally as entries nobody has written yet. Please don't "fix" them.
 
-To run against your own project folder (a relative path resolves against the directory you run
-the command from):
+### Your own projects
+
+Open **All projects** from the project name in the header (or the corner of the landing page).
+Paste the full path of a folder: one that already holds a project is opened, and an empty one
+becomes a new project with a starter schema. The same page renames a project and removes it,
+either from the list alone or from disk.
+
+Axiom Forge remembers the list in `~/.axiom-forge/projects.json` (set `AXIOM_FORGE_HOME` to keep it
+elsewhere) and reopens the last project on the next start. Your projects themselves are untouched
+by that file; deleting it only forgets where they are.
+
+To open a folder straight from the command line (a relative path resolves against the directory
+you run the command from):
 
 ```bash
 npm run dev -- --project ./path/to/your/project
@@ -81,7 +93,8 @@ npm run dev -- --project ./path/to/your/project
 
 ## Project structure
 
-A project folder contains:
+A project is a folder. Starting one from the app writes the two JSON files for you; everything
+else is yours to add:
 
 ```
 my-world/

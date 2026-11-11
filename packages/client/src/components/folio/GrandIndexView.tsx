@@ -89,7 +89,15 @@ export function GrandIndexView(): JSX.Element {
 			</header>
 
 			<div className={styles.indexColumns}>
-				{filtered.length === 0 && (q || selectedTags.length > 0) ? (
+				{(folios ?? []).length === 0 ? (
+					<div className={styles.empty}>
+						<EmptyState
+							variant="inline"
+							icon="feather"
+							message="Nothing written yet. Choose a type in the sidebar, then add its first entry."
+						/>
+					</div>
+				) : filtered.length === 0 && (q || selectedTags.length > 0) ? (
 					<div className={styles.empty}>
 						<EmptyState
 							variant="inline"

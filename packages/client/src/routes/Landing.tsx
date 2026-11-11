@@ -5,7 +5,7 @@
  */
 
 import { Suspense, lazy, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useProject } from '../context/ProjectContext.js';
 import { useFolios, useTheme } from '../api/queries.js';
 import { Icon } from '../components/ui/Icon.js';
@@ -57,7 +57,7 @@ export function Landing(): JSX.Element {
 			<div className={contentHidden ? `${styles.landing} ${styles.contentHidden}` : styles.landing}>
 				{showHero && <WebGLHero variant="codex" params={heroParams} />}
 				<div className={styles.topCorners}>
-					<div className={styles.topLeft}>AXIOM · FORGE</div>
+					<Link to="/projects" className={styles.topLeft}>AXIOM · FORGE · ALL PROJECTS</Link>
 					<div className={styles.topRight}>
 						{config.version ? `ARCHIVE VOL. ${config.version.toUpperCase()} ` : ''}
 					</div>

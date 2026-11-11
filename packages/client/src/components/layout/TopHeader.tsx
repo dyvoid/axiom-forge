@@ -1,16 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { useProject } from '../../context/ProjectContext.js';
 import { useSearch } from '../../api/queries.js';
 import { useCombobox } from '../../hooks/useCombobox.js';
 import { Icon } from '../ui/Icon.js';
 import { EntryContent } from '../ui/EntryContent.js';
+import { ProjectMenu } from './ProjectMenu.js';
 import { reloadProject } from '../../api/client.js';
 import styles from './TopHeader.module.css';
 
 export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): JSX.Element {
-	const { config } = useProject();
 	const queryClient = useQueryClient();
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -111,11 +110,7 @@ export function TopHeader({ onToggleDrawer }: { onToggleDrawer: () => void }): J
 				>
 					<Icon name="menu" size={18} />
 				</button>
-				{/* The project name links to the landing page, which `architecture.md`
-				    defines as the project home. */}
-				<Link to="/" className={styles.left}>
-					<span className={styles.projectTitle}>{config.name}</span>
-				</Link>
+				<ProjectMenu />
 			</div>
 			<div className={styles.right}>
 				{syncError && (

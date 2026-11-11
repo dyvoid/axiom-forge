@@ -42,6 +42,8 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }): JSX.Elemen
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (
 				!routeFolder ||
+				// A menu or dialog that used this key has already said so.
+				e.defaultPrevented ||
 				e.ctrlKey || e.metaKey || e.altKey || e.shiftKey ||
 				document.activeElement?.tagName === 'INPUT' ||
 				document.activeElement?.tagName === 'TEXTAREA'

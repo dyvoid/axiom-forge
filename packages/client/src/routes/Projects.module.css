@@ -1,0 +1,70 @@
+.page {
+	position: relative;
+	min-height: 100vh;
+	min-height: 100dvh;
+	background: var(--bg-page);
+}
+
+/* The same corner line as the landing page: this is the level above it. */
+.corners {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--sp-5);
+	padding: var(--sp-6) var(--sp-7) 0;
+	font-family: var(--ff-body);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-sidebar-group);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.brand {
+	white-space: nowrap;
+}
+
+.back {
+	color: var(--text-muted);
+	text-align: right;
+	transition: color 0.2s;
+}
+
+.back:hover {
+	color: var(--text-primary);
+}
+
+.container {
+	width: 100%;
+	max-width: var(--content-max-width);
+	margin: 0 auto;
+	padding: var(--page-padding-y) var(--page-padding-x) var(--sp-8);
+}
+
+.header {
+	margin-bottom: var(--sp-6);
+}
+
+.title {
+	composes: title from '../components/ui/page.module.css';
+	margin-bottom: var(--sp-2);
+}
+
+.count {
+	composes: count from '../components/ui/page.module.css';
+}
+
+.empty {
+	padding: var(--sp-6) 0;
+	border-top: 1px solid var(--border);
+	border-bottom: 1px dotted var(--border-dotted);
+}
+
+.notice {
+	margin-bottom: var(--sp-5);
+}
+
+@media (max-width: 600px) {
+	.corners {
+		padding: var(--sp-4) var(--sp-4) 0;
+	}
+}

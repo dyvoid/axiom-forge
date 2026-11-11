@@ -24,6 +24,16 @@
 	background: color-mix(in srgb, var(--bg-input-highlight) 90%, transparent);
 }
 
+/* The small uppercase name beside or above a field. */
+.fieldLabel {
+	font-family: var(--ff-body);
+	font-size: var(--fs-eyebrow);
+	font-weight: 500;
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
 /* ── Menu surface ─────────────────────────────────────
    The floating panel a combobox, select or search box opens, and the
    rows inside it. Positioning and row density stay with each consumer

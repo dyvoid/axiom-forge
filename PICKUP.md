@@ -20,12 +20,11 @@ Nothing.
    must resolve a `target` folder to a type before it can check an `inverse` path.
    **This is the next build.** Its two Open Items (deletion, dangling targets) are decidable at
    build time, not user-blocked.
-2. **[ADR-0013] Project Scaffolding** — the only backlog item that changes who can adopt the
-   tool, and as of 2026-08-30 it also owns the onboarding surface for ADR-0002 and ADR-0005.
+2. **[ADR-0013] Schema setup** — narrowed: getting into a project is built (ADR-0023), so what
+   is left is the schema a new project starts with and editing a schema without writing JSON.
    Skeleton ADR: next step is a design brainstorm, not a build.
 
-**[ADR-0020]** is deferred until after ADR-0013 — it reorganizes the same `load`/`reload` surface
-scaffolding will reshape.
+**[ADR-0020]** stays deferred until after ADR-0013.
 
 ## Open Decisions
 
@@ -33,6 +32,14 @@ scaffolding will reshape.
    the first `##`) is preserved on save but shown in neither view. And an image embed inside prose
    renders as a broken wiki-link chip and is listed as an unresolved link — rendering it needs an
    endpoint that serves any vault image, not just a folio's cover.
+
+2. **Multi-project decisions made without you, in [ADR-0023](docs/adr/0023-project-registry-and-active-project.md).**
+   ADR-0013 was meant to lead on the entry surface and had not been designed, so three calls were
+   made to ship: one active project behind the existing endpoints (not a project id in every
+   path), the list kept in `~/.axiom-forge/projects.json`, and a fixed one-type starter schema.
+   Each is cheap to revisit now and less so later; say if any should go the other way.
+3. **`npm run typecheck` does not cover `packages/server`** (only its build does, and CI builds).
+   Adding it is a `package.json` change, so it was left for you.
 
 Two standing gaps worth not rediscovering as bugs. A schema-drifted file is readable in the app
 but cannot be saved from it, which follows from holding ADR-0012 at #9 —

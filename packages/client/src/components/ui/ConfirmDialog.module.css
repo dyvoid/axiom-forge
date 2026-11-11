@@ -20,12 +20,49 @@
 	color: var(--text-secondary);
 	margin-bottom: var(--sp-6);
 	line-height: 1.5;
+	/* A message may quote a folder path, which has nowhere to break. */
+	overflow-wrap: anywhere;
+}
+
+/* Type-to-confirm, for an action that cannot be undone. */
+.requireText {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-2);
+	margin-bottom: var(--sp-6);
+}
+
+.requireTextLabel {
+	composes: fieldLabel from './controls.module.css';
+}
+
+.requireTextInput {
+	composes: fieldBox from './controls.module.css';
+	min-height: var(--control-height);
+	width: 100%;
+	font-family: var(--ff-body);
+	font-size: var(--fs-body-sm);
+	color: var(--text-primary);
+	outline: none;
+}
+
+/* A third action needs the room: three tracked-uppercase labels do not fit
+   the two-button width, and a label must never break across lines. */
+.dialogWide {
+	composes: dialog;
+	max-width: 600px;
+	padding: var(--sp-7);
 }
 
 .actions {
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: flex-end;
 	gap: var(--sp-3);
+}
+
+.actions button {
+	white-space: nowrap;
 }
 
 .btnCancel {

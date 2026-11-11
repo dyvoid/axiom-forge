@@ -25,3 +25,14 @@
 	text-transform: uppercase;
 	color: var(--text-muted);
 }
+
+/* The heading of a section within a page: the roman display face at 600,
+   against the italic page title. Three folio section components each
+   restated it. */
+.sectionTitle {
+	font-family: var(--ff-display);
+	font-weight: 600;
+	font-size: var(--fs-subtitle);
+	line-height: var(--lh-subtitle);
+	color: var(--text-primary);
+}

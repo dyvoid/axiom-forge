@@ -81,3 +81,28 @@ export class LinkRewriteFailedError extends Error {
 		this.name = 'LinkRewriteFailedError';
 	}
 }
+
+// ── Project registry (ADR-0023) ─────────────────────────────
+
+/**
+ * A folder offered as a project has no `config.json` or no `schema.json`.
+ * `canCreate` says whether a new project could be started there: true when it
+ * has neither file, so nothing would be overwritten.
+ */
+export class NotAProjectError extends Error {
+	constructor(
+		public readonly path: string,
+		public readonly canCreate: boolean,
+	) {
+		super('not-a-project');
+		this.name = 'NotAProjectError';
+	}
+}
+
+/** A project's `config.json` or `schema.json` is present but cannot be loaded. */
+export class ProjectLoadError extends Error {
+	constructor(public readonly reason: string) {
+		super('invalid-project');
+		this.name = 'ProjectLoadError';
+	}
+}

@@ -1,0 +1,249 @@
+/* ── Project list ─────────────────────────────────────
+   One row per project, read like an entry in a catalogue: the name set in
+   the display italic, a line of description, and the folder it lives in.
+   Rows are separated by the same dotted rule as an index row.
+   ──────────────────────────────────────────────────── */
+
+.list {
+	display: flex;
+	flex-direction: column;
+	border-top: 1px solid var(--border);
+}
+
+.row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	column-gap: var(--sp-5);
+	row-gap: var(--sp-4);
+	align-items: start;
+	padding: var(--sp-5) 0;
+	border-bottom: 1px dotted var(--border-dotted);
+}
+
+.rowMain {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-1);
+	min-width: 0;
+}
+
+.heading {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	column-gap: var(--sp-3);
+}
+
+/* The name opens the project, so it is a button; it reads as a title. */
+.name {
+	font-family: var(--ff-display);
+	font-style: italic;
+	font-weight: 500;
+	font-size: var(--fs-subtitle-lg);
+	line-height: var(--lh-subtitle);
+	color: var(--text-primary);
+	text-align: left;
+	overflow-wrap: anywhere;
+	transition: color 0.2s;
+}
+
+.name:hover:not(:disabled) {
+	color: var(--accent-rust);
+}
+
+.name:disabled {
+	color: var(--text-muted);
+	cursor: default;
+}
+
+/* Marks the project that is open right now. Type only, in the accent. */
+.openMark {
+	font-family: var(--ff-body);
+	font-weight: 500;
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--accent-rust);
+	white-space: nowrap;
+}
+
+.description {
+	font-size: var(--fs-body);
+	line-height: 1.5;
+	color: var(--text-secondary);
+	max-width: 65ch;
+}
+
+/* A path is a raw value, which is what the mono face is for. */
+.path {
+	font-family: var(--ff-mono);
+	font-size: var(--fs-button);
+	line-height: 1.6;
+	color: var(--text-muted);
+	overflow-wrap: anywhere;
+}
+
+.problem {
+	font-size: var(--fs-meta);
+	font-style: italic;
+	color: var(--accent-rust);
+}
+
+.actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: var(--sp-2);
+	/* Sits on the name's baseline rather than the row's top edge. */
+	padding-top: var(--sp-1);
+}
+
+.btn {
+	composes: btn btnCompact btnSecondary from '../ui/controls.module.css';
+}
+
+.btnOpen {
+	composes: btn btnCompact btnPrimary from '../ui/controls.module.css';
+}
+
+/* ── Forms ────────────────────────────────────────────
+   The settings form under a row and the add form below the list share one
+   shape: a label column and a field column, like the folio editor's rows.
+   ──────────────────────────────────────────────────── */
+
+.form {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-3);
+	max-width: 640px;
+}
+
+.fieldRow {
+	display: grid;
+	grid-template-columns: 9rem minmax(0, 1fr);
+	column-gap: var(--sp-4);
+	align-items: center;
+}
+
+.fieldLabel {
+	composes: fieldLabel from '../ui/controls.module.css';
+}
+
+.input {
+	composes: fieldBox from '../ui/controls.module.css';
+	display: block;
+	width: 100%;
+	min-height: var(--control-height);
+	font-family: var(--ff-body);
+	font-size: var(--fs-body-sm);
+	color: var(--text-primary);
+	outline: none;
+}
+
+.input::placeholder {
+	color: var(--text-muted);
+	font-style: italic;
+}
+
+.inputPath {
+	composes: input;
+	font-family: var(--ff-mono);
+	font-size: var(--fs-label);
+}
+
+.formActions {
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--sp-2);
+}
+
+.btnSave {
+	composes: btn btnCompact btnPrimary from '../ui/controls.module.css';
+}
+
+/* ── Add a project ────────────────────────────────── */
+
+.add {
+	margin-top: var(--sp-8);
+	max-width: 640px;
+}
+
+.addTitle {
+	composes: sectionTitle from '../ui/page.module.css';
+	margin-bottom: var(--sp-2);
+}
+
+.addHelp {
+	font-size: var(--fs-body-sm);
+	line-height: 1.55;
+	color: var(--text-muted);
+	margin-bottom: var(--sp-4);
+}
+
+.addHelp code,
+.createNote code {
+	font-family: var(--ff-mono);
+	font-size: 0.88em;
+	color: var(--text-secondary);
+	overflow-wrap: anywhere;
+}
+
+.pathRow {
+	display: flex;
+	align-items: stretch;
+	gap: var(--sp-3);
+}
+
+.pathRow .inputPath {
+	flex: 1;
+	min-width: 0;
+}
+
+.btnAdd {
+	composes: btn btnRegular btnAccent from '../ui/controls.module.css';
+	white-space: nowrap;
+}
+
+.createNote {
+	font-size: var(--fs-body-sm);
+	line-height: 1.55;
+	color: var(--text-secondary);
+	margin-bottom: var(--sp-2);
+}
+
+.notice {
+	margin-top: var(--sp-4);
+}
+
+.addForm {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-3);
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+
+@media (max-width: 600px) {
+	.row {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.actions {
+		justify-content: flex-start;
+		padding-top: 0;
+	}
+
+	.fieldRow {
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: var(--sp-1);
+	}
+
+	.pathRow {
+		flex-direction: column;
+	}
+
+	.add {
+		margin-top: var(--sp-7);
+	}
+}

@@ -26,7 +26,15 @@
 	font-size: var(--fs-eyebrow);
 	letter-spacing: var(--ls-sidebar-group);
 	color: var(--text-muted);
-	pointer-events: none;
+}
+
+.topLeft {
+	color: var(--text-muted);
+	transition: color 0.2s;
+}
+
+.topLeft:hover {
+	color: var(--text-primary);
 }
 
 .hero {

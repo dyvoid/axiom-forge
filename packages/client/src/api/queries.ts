@@ -6,7 +6,91 @@ import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { ParsedFolio, FolioIndexRecord } from '@axiom-forge/shared';
-import { fetchFolios, fetchFolio, putFolio, postFolio, deleteFolio, fetchWarnings, fetchSearch, fetchBacklinks, fetchTheme } from './client.js';
+import {
+	fetchFolios, fetchFolio, putFolio, postFolio, deleteFolio, fetchWarnings, fetchSearch, fetchBacklinks, fetchTheme,
+	fetchProjects, addProject, activateProject, updateProject, removeProject,
+	getWindowProject, setWindowProject,
+	type ProjectLibrary, type ProjectSettings,
+} from './client.js';
+
+// ── Projects (ADR-0023) ─────────────────────────────────
+
+const PROJECTS_KEY = ['projects'] as const;
+
+/** Every known project, and which one is open. */
+export function useProjects() {
+	return useQuery({
+		queryKey: PROJECTS_KEY,
+		queryFn: fetchProjects,
+		// Another window can switch projects; a refocus picks that up, and
+		// `ProjectDrift` asks what this window should do about it.
+		staleTime: 5_000,
+	});
+}
+
+/**
+ * Drop everything cached from a project: config, schema, folios, the lot.
+ * Query keys carry no project id, so once a different project is open none
+ * of it may be shown again. Mounted queries refetch at once.
+ */
+function resetProjectData(qc: QueryClient): Promise<void> {
+	return qc.resetQueries({ predicate: (query) => query.queryKey[0] !== PROJECTS_KEY[0] });
+}
+
+/**
+ * Move this window to the project a list response says is open. If that is a
+ * different project than the one it was showing, everything cached from the
+ * old one is cleared before this resolves, so a caller can navigate into the
+ * new project straight afterwards.
+ */
+export async function adoptLibrary(qc: QueryClient, library: ProjectLibrary): Promise<ProjectLibrary> {
+	const previous = getWindowProject();
+	setWindowProject(library.activeId);
+	qc.setQueryData(PROJECTS_KEY, library);
+	if (previous !== library.activeId) await resetProjectData(qc);
+	return library;
+}
+
+/**
+ * Open a listed project. A plain function, not a mutation hook: its one
+ * caller fires it from an effect on mount, and a mutation observer drops its
+ * result when StrictMode unmounts and remounts the component in between.
+ */
+export async function openProject(qc: QueryClient, id: string): Promise<ProjectLibrary> {
+	return adoptLibrary(qc, await activateProject(id));
+}
+
+/** Add a folder as a project and open it; with `create`, start a new project there. */
+export function useAddProject() {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: async ({ path, create }: { path: string; create?: ProjectSettings }) =>
+			adoptLibrary(qc, await addProject(path, create)),
+	});
+}
+
+/** Edit a project's name, description and version. */
+export function useUpdateProject() {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: async ({ id, settings }: { id: string; settings: ProjectSettings }) => {
+			const library = await adoptLibrary(qc, await updateProject(id, settings));
+			// The open project's own name may be the one that changed.
+			if (library.activeId === id) void qc.invalidateQueries({ queryKey: ['config'] });
+			return library;
+		},
+	});
+}
+
+/** Take a project off the list, optionally deleting its folder. */
+export function useRemoveProject() {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: async ({ id, deleteFiles, confirmName }: { id: string; deleteFiles?: boolean; confirmName?: string }) =>
+			adoptLibrary(qc, await removeProject(id, { deleteFiles, confirmName })),
+	});
+}
+
 
 /**
  * The project's optional theme.json (ADR-0001) — `{}` when it has none. Not
