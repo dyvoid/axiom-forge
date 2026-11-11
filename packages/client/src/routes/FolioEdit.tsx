@@ -48,7 +48,12 @@ export function FolioEdit(): JSX.Element {
 		);
 	}
 
-	async function handleSave(draft: ParsedFolio, coverFile: File | null, onSaved: () => void): Promise<void> {
+	async function handleSave(
+		draft: ParsedFolio,
+		coverFile: File | null,
+		onSaved: () => void,
+		seededMtime: number | undefined,
+	): Promise<void> {
 		setSaveError(null);
 		setUploading(Boolean(coverFile));
 		let next = draft;
@@ -64,7 +69,7 @@ export function FolioEdit(): JSX.Element {
 		}
 		setUploading(false);
 		saveMutation.mutate(
-			{ folio: next, clientMtime: folio!.mtime },
+			{ folio: next, clientMtime: seededMtime ?? folio!.mtime },
 			{
 				onSuccess: (response) => {
 					onSaved();
@@ -81,7 +86,7 @@ export function FolioEdit(): JSX.Element {
 						);
 					} else if (err instanceof ConflictError) {
 						setSaveError(
-							'This file changed on disk since you opened it. Reload the folio to merge — your edits are still in the form.',
+							'This file changed on disk since you opened it, so nothing was saved. Copy out what you need, then reopen the folio to edit the current version.',
 						);
 					} else {
 						setSaveError(err instanceof Error ? err.message : String(err));

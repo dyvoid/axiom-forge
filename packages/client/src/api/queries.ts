@@ -3,7 +3,7 @@
  */
 
 import { useMemo } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { ParsedFolio, FolioIndexRecord } from '@axiom-forge/shared';
 import { fetchFolios, fetchFolio, putFolio, postFolio, deleteFolio, fetchWarnings, fetchSearch, fetchBacklinks, fetchTheme } from './client.js';
@@ -28,6 +28,17 @@ export function useWarnings() {
 		queryFn: fetchWarnings,
 		staleTime: Infinity,
 	});
+}
+
+/**
+ * Everything derived from the folio index: the list itself, the warnings, and
+ * the search and backlink results computed from it on the server. Any write
+ * can change all four, so they are invalidated together.
+ */
+function invalidateIndex(qc: QueryClient): void {
+	for (const key of ['folios', 'warnings', 'search', 'backlinks']) {
+		void qc.invalidateQueries({ queryKey: [key] });
+	}
 }
 
 /** All folio index records — drives the sidebar. */
@@ -90,8 +101,7 @@ export function useCreateFolio(options?: { navigateOnSuccess?: boolean }) {
 		mutationFn: ({ folder, folio }: { folder: string; folio: ParsedFolio }) =>
 			postFolio(folder, folio),
 		onSuccess: ({ name }, { folder }) => {
-			qc.invalidateQueries({ queryKey: ['folios'] });
-			qc.invalidateQueries({ queryKey: ['warnings'] });
+			invalidateIndex(qc);
 			if (navigateOnSuccess) {
 				navigate(`/folio/${encodeURIComponent(folder)}/${encodeURIComponent(name)}/edit`);
 			}
@@ -107,8 +117,7 @@ export function useDeleteFolio() {
 			deleteFolio(folder, name, deleteCoverImage),
 		onSuccess: (_, { folder, name }) => {
 			qc.removeQueries({ queryKey: ['folio', folder, name] });
-			qc.invalidateQueries({ queryKey: ['folios'] });
-			qc.invalidateQueries({ queryKey: ['warnings'] });
+			invalidateIndex(qc);
 		},
 	});
 }
@@ -122,9 +131,10 @@ export function useSaveFolio(folder: string, name: string) {
 		onSuccess: (response, { folio }) => {
 			const { mtime, warnings, renamedTo } = response;
 			if (renamedTo) {
-				// File was renamed on disk — drop the stale cache entry under the
-				// old name, seed the new key, then refresh the sidebar.
-				qc.removeQueries({ queryKey: ['folio', folder, name] });
+				// File was renamed on disk, and every folio linking to it was
+				// rewritten. Drop them all, not just the old name: an editor
+				// seeded from a cached copy would write the old link back.
+				qc.removeQueries({ queryKey: ['folio'] });
 				qc.setQueryData(['folio', folder, renamedTo], (prev: unknown) => {
 					const base = (prev as ParsedFolio & { id: number; mtime: number } | undefined) ?? null;
 					const next = { ...folio, name: renamedTo, mtime, warnings };
@@ -137,8 +147,7 @@ export function useSaveFolio(folder: string, name: string) {
 					return { ...base, ...folio, mtime, warnings };
 				});
 			}
-			qc.invalidateQueries({ queryKey: ['folios'] });
-			qc.invalidateQueries({ queryKey: ['warnings'] });
+			invalidateIndex(qc);
 		},
 	});
 }

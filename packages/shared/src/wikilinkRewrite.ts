@@ -9,6 +9,8 @@
  * (`@/parser.ts`).
  */
 
+import { fencedLineMask } from './fences.js';
+
 /**
  * Escape a string for use inside a RegExp literal — the folder and name parts
  * of a wiki-link can contain regex metacharacters in pathological cases.
@@ -28,10 +30,6 @@ export interface WikiLinkRewriteResult {
 	/** Number of `[[…]]` occurrences that were rewritten. */
 	rewrites: number;
 }
-
-// Matches a fenced code block (``` or ```` with optional language tag).
-// Used as a split boundary so wikilinks inside fences are never rewritten.
-const FENCE_PATTERN = /(`{3,}[^\n]*\n[\s\S]*?`{3,})/g;
 
 // Matches a leading YAML frontmatter block (`---` … `---`) at the very start
 // of the document. Our frontmatter holds no wikilinks today (only type, tags,
@@ -64,20 +62,23 @@ export function rewriteWikiLinks(
 	const frontmatter = fmMatch ? fmMatch[0] : '';
 	const body = fmMatch ? markdown.slice(frontmatter.length) : markdown;
 
-	// Split on fenced code blocks (capturing group keeps the fences in the array).
-	// Even-indexed segments are normal text; odd-indexed segments are fences.
-	const parts = body.split(FENCE_PATTERN);
+	// Line by line, skipping fenced code. The mask is the parser's own
+	// (`fences.ts`), so the rewriter and the section splitter agree on what is
+	// code: tilde fences and an unclosed fence included. A wiki-link never
+	// spans lines, so nothing is lost by not matching across them.
+	const lines = body.split('\n');
+	const fenced = fencedLineMask(lines);
 
 	let rewrites = 0;
-	const rewrittenBody = parts.map((part, i) => {
-		if (i % 2 === 1) return part; // inside a fence — leave untouched
-		return part.replace(pattern, (_full, _path, _pipeWithAlias, alias?: string) => {
+	const rewrittenBody = lines.map((line, i) => {
+		if (fenced[i]) return line;
+		return line.replace(pattern, (_full, _path, _pipeWithAlias, alias?: string) => {
 			rewrites++;
 			return alias
 				? `[[${from.folder}/${to.name}|${alias}]]`
 				: `[[${from.folder}/${to.name}]]`;
 		});
-	}).join('');
+	}).join('\n');
 
 	return { content: frontmatter + rewrittenBody, rewrites };
 }

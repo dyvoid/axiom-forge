@@ -34,7 +34,12 @@ interface Props {
 	saveError: string | null;
 	/** Editing a folio that does not exist on disk yet: nothing is written until Save. */
 	isNew?: boolean;
-	onSave: (next: ParsedFolio, coverFile: File | null, onSaved: () => void) => void;
+	/**
+	 * `seededMtime` is the mtime of the copy the draft was built from — not the
+	 * newest one the cache holds — so the server's stale-save check compares
+	 * against what the user was actually looking at.
+	 */
+	onSave: (next: ParsedFolio, coverFile: File | null, onSaved: () => void, seededMtime: number | undefined) => void;
 	onDelete: (deleteCoverImage: boolean, onDeleted: () => void) => void;
 }
 
@@ -49,6 +54,17 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, isN
 	const [createError, setCreateError] = useState<string | null>(null);
 	const [coverError, setCoverError] = useState<string | null>(null);
 	const [coverFile, setCoverFile] = useState<File | null>(null);
+	const [seededMtime, setSeededMtime] = useState(folio.mtime);
+
+	// The route hands over whatever the cache holds and refetches behind it. If
+	// a newer copy lands before the first edit, rebase the draft on it; once
+	// there are edits the draft stays put and `seededMtime` makes the save a
+	// conflict instead of silently overwriting the newer file.
+	useEffect(() => {
+		if (dirtyRef.current || folio.mtime === seededMtime) return;
+		setDraft(structuredClone(folio));
+		setSeededMtime(folio.mtime);
+	}, [folio, seededMtime]);
 
 	// Wrap setDraft so any mutation flips the dirty flag. Avoids the
 	// per-keystroke JSON.stringify(folio) that the previous diff used.
@@ -134,7 +150,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, isN
 	}
 
 	function handleSave(): void {
-		onSave(draft, coverFile, markClean);
+		onSave(draft, coverFile, markClean, seededMtime);
 	}
 
 	function handleDiscard(): void {

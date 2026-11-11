@@ -94,6 +94,8 @@ Defines all folio types, their sections, fields, and field types. The app reads 
 | `wikilink-list` | `- **Field:** [[F/A]], [[F/B]]` | Multiple links to other folios. |
 
 **Wiki-Link Resolution:**
+A type's `folder` is a single directory name directly under the project root: no `/`, `\`, `|` or `]`, and not `.` or `..`. A schema that declares anything else fails to load, since the folder is both joined onto the project path and written into every wiki-link.
+
 Wiki-links use the **folder name** of the target type, not the type key. For example, `[[Characters/Thalirin]]` resolves to `Characters/Thalirin.md`.
 
 ## Markdown Serialization Rules

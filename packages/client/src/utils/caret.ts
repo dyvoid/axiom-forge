@@ -79,8 +79,8 @@ export function getCaretCoordinates(element: HTMLTextAreaElement, position: numb
 	div.appendChild(span);
 
 	const coordinates = {
-		top: span.offsetTop + parseInt(computed.borderTopWidth),
-		left: span.offsetLeft + parseInt(computed.borderLeftWidth),
+		top: span.offsetTop + parseInt(computed.borderTopWidth) - element.scrollTop,
+		left: span.offsetLeft + parseInt(computed.borderLeftWidth) - element.scrollLeft,
 		height: parseInt(computed.lineHeight),
 	};
 

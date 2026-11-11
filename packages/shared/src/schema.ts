@@ -198,9 +198,20 @@ const SectionDefSchema = z.object({
 	}
 });
 
+/**
+ * A type's folder is a single directory name directly under the project root.
+ * The server joins it onto the project path, so anything with a separator or a
+ * `..` would read and write outside the project; and a wiki-link addresses a
+ * folio as `[[Folder/Name]]`, which a `/` in the folder cannot round-trip.
+ */
+const FolderNameSchema = z.string().refine(
+	(folder) => folder.trim() !== '' && folder !== '.' && folder !== '..' && !/[/\\|\]]/.test(folder),
+	{ message: 'A type\'s `folder` must be a single folder name: no "/", "\\", "|" or "]", and not "." or "..".' },
+);
+
 const TypeDefSchema = z.object({
 	icon: z.string(),
-	folder: z.string(),
+	folder: FolderNameSchema,
 	sections: z.record(z.string(), SectionDefSchema),
 });
 

@@ -49,7 +49,8 @@ export function GrandIndexView(): JSX.Element {
 	// Always group alphabetically — search just narrows what's shown
 	const grouped: Record<string, typeof allFolios> = {};
 	for (const folio of filtered) {
-		const firstLetter = folio.title.charAt(0).toUpperCase();
+		// NFD splits "É" into "E" plus a combining mark, so it files under E.
+		const firstLetter = folio.title.normalize('NFD').charAt(0).toUpperCase();
 		const groupKey = /[A-Z]/.test(firstLetter) ? firstLetter : '#';
 		if (!grouped[groupKey]) grouped[groupKey] = [];
 		grouped[groupKey]!.push(folio);

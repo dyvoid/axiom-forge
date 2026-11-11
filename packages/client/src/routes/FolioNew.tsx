@@ -74,7 +74,7 @@ export function FolioNew(): JSX.Element {
 		try {
 			const coverImage = await uploadCoverImage(folder!, created.name, coverFile);
 			await putFolio(folder!, created.name, { ...next, name: created.name, coverImage }, created.mtime);
-			queryClient.invalidateQueries({ queryKey: ['folios'] });
+			void queryClient.invalidateQueries({ queryKey: ['folios'] });
 			onSaved();
 			navigate(readView);
 		} catch (err) {

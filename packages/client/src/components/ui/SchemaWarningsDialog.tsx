@@ -36,10 +36,15 @@ export function SchemaWarningsDialog({ warnings, onClose }: Props): JSX.Element 
 	}
 
 	function handleCopy(): void {
-		navigator.clipboard.writeText(buildCopyText()).then(() => {
-			setCopied(true);
-			setTimeout(() => setCopied(false), 2000);
-		});
+		navigator.clipboard.writeText(buildCopyText()).then(
+			() => {
+				setCopied(true);
+				setTimeout(() => setCopied(false), 2000);
+			},
+			// Denied permission or an insecure context: the list is still on
+			// screen to select by hand, so there is nothing to recover.
+			() => undefined,
+		);
 	}
 
 	return (

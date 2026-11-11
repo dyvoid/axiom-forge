@@ -33,18 +33,24 @@ export class ConflictError extends Error {
 
 /**
  * Build the error for a non-2xx response. A save the schema rejects carries a
- * list of human-readable issues, which read better than the raw JSON body;
- * anything else keeps the status line and body for debugging.
+ * list of human-readable issues, and other failures usually carry a sentence
+ * in `error`; both read better than the raw JSON body. Anything else keeps the
+ * status line and body for debugging.
  */
 export async function apiError(res: Response): Promise<ApiError> {
 	const body = await res.text().catch(() => '');
 	try {
-		const data = JSON.parse(body) as { error?: unknown; issues?: unknown };
+		const data = JSON.parse(body) as { error?: unknown; issues?: unknown; reason?: unknown };
 		if (data.error === 'schema-violation' && Array.isArray(data.issues)) {
 			const messages = data.issues
 				.map((issue) => (issue as { message?: unknown }).message)
 				.filter((m): m is string => typeof m === 'string');
 			if (messages.length > 0) return new ApiError(res.status, messages.join(' '));
+		}
+		// A sentence the server wrote for a person ("Unknown folder: X") reads
+		// better bare. Machine codes ("invalid-shape") keep the raw body below.
+		if (typeof data.error === 'string' && /\s/.test(data.error)) {
+			return new ApiError(res.status, data.error);
 		}
 	} catch {
 		// Not JSON — fall through to the raw body.

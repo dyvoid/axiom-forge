@@ -15,7 +15,7 @@ packages/
 
 ## Backend Services (`packages/server`)
 
-The backend is a lightweight Node.js/Express server that runs on `127.0.0.1`. It accepts a `--project` CLI argument pointing to the target markdown directory.
+The backend is a lightweight Node.js/Express server that runs on `127.0.0.1`. Every request passes `localOnly` first, which refuses any `Host` that is not a loopback name and any non-loopback `Origin`, so a website open in the same browser cannot reach the API by DNS rebinding or a cross-site post. It accepts a `--project` CLI argument pointing to the target markdown directory.
 
 ### `projectStore` (In-Memory Index)
 Because the app does not watch the filesystem (no `chokidar`), it relies on a live in-memory index built on startup.

@@ -9,6 +9,7 @@ import { NewEntryButton } from '../ui/NewEntryButton.js';
 import { TagFilter } from '../ui/TagFilter.js';
 import { EmptyState } from '../ui/EmptyState.js';
 import { LoadingState } from '../ui/LoadingState.js';
+import { FolioEmptyState } from './FolioEmptyState.js';
 import bar from '../ui/FilterBar.module.css';
 import styles from './CategoryIndexView.module.css';
 
@@ -49,8 +50,11 @@ export function CategoryIndexView(): JSX.Element {
 
 	if (isLoading) return <div className={styles.container}><LoadingState message="Loading index" /></div>;
 
-	const typeName = (folder && schemaIndex.typeKeyForFolder(folder)) || folder;
+	const typeName = folder && schemaIndex.typeKeyForFolder(folder);
 	const typeDef = (folder && schemaIndex.typeDefForFolder(folder)) || null;
+	// A folder no type owns. Rendering it as an empty category would offer a
+	// "New entry" button that can only fail.
+	if (!folder || !typeName) return <FolioEmptyState />;
 
 	return (
 		<div className={styles.container}>
@@ -64,9 +68,7 @@ export function CategoryIndexView(): JSX.Element {
 							{typeName}
 						</span>
 					</nav>
-					{folder && (
-						<NewEntryButton folder={folder} typeName={typeName} variant="outlined" />
-					)}
+					<NewEntryButton folder={folder} typeName={typeName} variant="outlined" />
 				</div>
 				<h1 className={styles.title}>{typeName}</h1>
 				<div className={styles.meta}>

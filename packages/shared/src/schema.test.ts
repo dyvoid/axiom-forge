@@ -192,6 +192,25 @@ describe('SectionDefSchema constraints', () => {
 	});
 });
 
+describe('a type\'s folder is one directory name', () => {
+	const withFolder = (folder: string) => ({
+		version: '1',
+		types: { Thing: { icon: 'x', folder, sections: { S: { type: 'textarea' } } } },
+	});
+
+	it.each(['Things', 'My Things', 'Dramatis_Personae', 'Ætt'])('accepts %j', (folder) => {
+		expect(ProjectSchemaSchema.safeParse(withFolder(folder)).success).toBe(true);
+	});
+
+	// Each of these would either leave the project folder or break `[[Folder/Name]]`.
+	it.each(['', ' ', '.', '..', '../Elsewhere', 'World/Things', 'World\\Things', '/etc', 'A|B', 'A]B'])(
+		'rejects %j',
+		(folder) => {
+			expect(ProjectSchemaSchema.safeParse(withFolder(folder)).success).toBe(false);
+		},
+	);
+});
+
 describe('validateAgainstSchema wrong-shape detection', () => {
 	const schema: ProjectSchema = {
 		version: '1.0.0',

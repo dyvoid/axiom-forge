@@ -102,4 +102,18 @@ describe('rewriteWikiLinks — code fence awareness', () => {
 		expect(content).toContain('Example: [[Foo/Bar]]');
 		expect(content).toContain('After the fence: [[Foo/Baz]].');
 	});
+
+	it('leaves tilde fences and an unclosed fence alone, as the parser does', () => {
+		const tilde = 'Intro [[Humans/Old]]\n~~~\n[[Humans/Old]]\n~~~\nAfter [[Humans/Old]]';
+		expect(rewriteWikiLinks(tilde, { folder: 'Humans', name: 'Old' }, { name: 'New' })).toEqual({
+			content: 'Intro [[Humans/New]]\n~~~\n[[Humans/Old]]\n~~~\nAfter [[Humans/New]]',
+			rewrites: 2,
+		});
+
+		const unclosed = '[[Humans/Old]]\n```\n[[Humans/Old]]';
+		expect(rewriteWikiLinks(unclosed, { folder: 'Humans', name: 'Old' }, { name: 'New' })).toEqual({
+			content: '[[Humans/New]]\n```\n[[Humans/Old]]',
+			rewrites: 1,
+		});
+	});
 });

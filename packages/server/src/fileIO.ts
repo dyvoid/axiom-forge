@@ -27,8 +27,9 @@ export async function scanFolder(folderPath: string): Promise<FileInfo[]> {
 	for (const entry of entries) {
 		if (!entry.endsWith('.md')) continue;
 		const filePath = join(folderPath, entry);
-		const stats = await stat(filePath);
-		if (!stats.isFile()) continue;
+		// Deleted between the readdir and here: skip it rather than fail the scan.
+		const stats = await stat(filePath).catch(() => null);
+		if (!stats?.isFile()) continue;
 		results.push({
 			name: entry.slice(0, -3), // strip .md
 			filePath,
