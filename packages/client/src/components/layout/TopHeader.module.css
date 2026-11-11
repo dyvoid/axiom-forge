@@ -17,21 +17,11 @@
 	min-width: 0;
 }
 
+/* `display` stays here, not in the shared class: it is what the drawer
+   breakpoint toggles, and a composed class would win over the override. */
 .menuBtn {
+	composes: iconBtn from '../ui/controls.module.css';
 	display: none;
-	background: transparent;
-	border: none;
-	cursor: pointer;
-	color: var(--text-muted);
-	padding: var(--sp-2);
-	border-radius: 2px;
-	transition: color 0.15s, background 0.15s;
-	flex-shrink: 0;
-}
-
-.menuBtn:hover {
-	color: var(--text-primary);
-	background: var(--bg-hover);
 }
 
 .left {
@@ -61,30 +51,13 @@
 }
 
 .syncButton {
+	composes: iconBtn from '../ui/controls.module.css';
 	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: transparent;
-	border: none;
-	cursor: pointer;
-	color: var(--text-muted);
-	padding: var(--sp-2);
-	border-radius: 2px;
-	transition: color 0.15s, background 0.15s;
-}
-
-.syncButton:hover:not(:disabled) {
-	color: var(--text-primary);
-	background: var(--bg-hover);
-}
-
-.syncButton:disabled {
-	cursor: default;
 }
 
 /* A failed reload: the project on screen is the one from before the click. */
-.syncFailed,
-.syncFailed:hover:not(:disabled) {
+.syncButton.syncFailed,
+.syncButton.syncFailed:hover:not(:disabled) {
 	color: var(--color-danger);
 }
 
@@ -172,19 +145,7 @@
 }
 
 .clearBtn {
-	background: transparent;
-	border: none;
-	cursor: pointer;
-	color: var(--text-muted);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0;
-	margin-right: var(--sp-2);
-}
-
-.clearBtn:hover {
-	color: var(--text-primary);
+	composes: fieldClear from '../ui/controls.module.css';
 }
 
 /* ── Responsive ─────────────────────────────────────────── */
@@ -233,18 +194,7 @@
 
 /* ── Touch targets (coarse pointer) ─────────────────────── */
 @media (pointer: coarse) {
-	.syncButton {
-		min-width: var(--touch-target);
-		min-height: var(--touch-target);
-	}
-
-	.clearBtn {
-		min-width: var(--touch-target);
-		min-height: var(--touch-target);
-	}
-
 	.searchItem {
 		min-height: var(--touch-target);
 	}
 }
-

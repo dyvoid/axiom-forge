@@ -65,9 +65,4 @@ part of the active sequence.
 Agreed-upon cleanups that don't warrant an ADR. Remove an item once it lands — git log is the
 record of what was done.
 
-- [ ] Extract index filtering from `GrandIndexView.tsx` and `CategoryIndexView.tsx` into a pure
-  `filterFolios({ folios, query, tags, order })` helper plus a `useTagFilterParams()` hook for the
-  `?tags=` round-trip. The two views apply tag filtering and ranking in different orders, and
-  neither order is tested because the logic sits inside components. Extracting it moves the logic
-  into the tier `packages/client` already tests. Leave the duplicated filter-bar markup alone
-  until ADR-0016 makes it a third caller
+Nothing queued.

@@ -16,9 +16,14 @@ compose from there rather than restating the recipe.** Alongside it:
 [`eyebrow.module.css`](../packages/client/src/components/ui/eyebrow.module.css)
 (the uppercase strip above a page title, and its crumbs),
 [`separators.module.css`](../packages/client/src/components/ui/separators.module.css)
-(the `Alpha · Beta` middot run), and the
+(the `Alpha · Beta` middot run),
+[`dialog.module.css`](../packages/client/src/components/ui/dialog.module.css)
+(scrim, panel and title of a modal),
+[`page.module.css`](../packages/client/src/components/ui/page.module.css)
+(a top-level page's title and count line), and the
 [`LoadingState`](../packages/client/src/components/ui/LoadingState.tsx) /
-[`EmptyState`](../packages/client/src/components/ui/EmptyState.tsx)
+[`EmptyState`](../packages/client/src/components/ui/EmptyState.tsx) /
+[`Callout`](../packages/client/src/components/ui/Callout.tsx)
 components.
 
 - **Six hand-rolled combobox implementations** (`TextListField`,
@@ -82,6 +87,28 @@ components.
   gap (now a `--middot-gap` token).
 - **Accessibility, second pass**: neither index's search input had an
   accessible name.
+- **One dialog chrome.** `ConfirmDialog` and `SchemaWarningsDialog` shared the
+  focus trap but each restated the scrim, panel and title, and disagreed on
+  `z-index` (100 against 200), which put a confirmation level with an open
+  menu. Stacking order is now three tokens: `--z-drawer`, `--z-menu`,
+  `--z-dialog`. Both titles are `h2`s; one was a `div` and the other a `span`.
+- **One callout.** The read view's schema warnings and the edit view's save
+  errors and unresolved links were the same stripe-and-tint notice written
+  twice, a comment in one admitting it, and had drifted on text size. "Unknown
+  type" was a bare `<div>` in the read view and a repurposed footer-status
+  class in the two editors; all three render `UnknownTypeNotice`.
+- **One page title.** Only the category index's `h1` carried the line-height
+  and tracking; the Grand Index's did not, and the folio title tracked
+  differently in read mode than in the edit input it turns into.
+- **Icon buttons.** The header's menu and sync buttons were one recipe written
+  twice (`.iconBtn`); the three "clear this field" buttons disagreed on hover
+  colour and, in the indexes, had a `title` but no accessible name
+  (`.fieldClear`). `NewEntryButton` drew its confirm and cancel as `↵` and `✕`
+  text where every other control uses a Lucide icon.
+- **Index filtering** is one pure helper, `utils/filterFolios`, plus
+  `useTagFilterParams` for the `?tags=` round-trip. The filter-bar *markup* is
+  still written in both index views, deliberately: it waits for ADR-0016 to
+  make a third caller.
 - **Dev server moved to `:5273`.** On Windows a second process can bind an
   already-listening port, so sharing Vite's 5173 default with another local
   project silently served that app instead while Vite reported success.

@@ -67,18 +67,8 @@
 }
 
 .clearAll {
-	background: transparent;
-	border: 0;
-	color: var(--text-muted);
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	padding: 0 var(--sp-1);
+	composes: fieldClear from './controls.module.css';
 	margin-left: auto;
-}
-
-.clearAll:hover {
-	color: var(--accent-rust);
 }
 
 /* ── Dropdown ──────────────────────────────────────── */

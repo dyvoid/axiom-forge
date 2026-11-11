@@ -8,6 +8,8 @@ import { MetaSection } from './MetaSection.js';
 import { FieldSection } from './FieldSection.js';
 import { BacklinksPanel } from './BacklinksPanel.js';
 import { CoverImage } from './CoverImage.js';
+import { Callout } from '../ui/Callout.js';
+import { UnknownTypeNotice } from './UnknownTypeNotice.js';
 import styles from './FolioReadView.module.css';
 
 interface FolioReadViewProps {
@@ -37,7 +39,7 @@ export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
 	const typeDef = schema.types[folio.type];
 
 	if (!typeDef) {
-		return <div>Unknown type: {folio.type}</div>;
+		return <UnknownTypeNotice type={folio.type} />;
 	}
 
 	// 1. Find roles
@@ -57,12 +59,11 @@ export function FolioReadView({ folio }: FolioReadViewProps): JSX.Element {
 			<FolioHeader folio={folio} icon={typeDef.icon} />
 
 			{(folio.warnings?.length ?? 0) > 0 && (
-				<div className={styles.warnings}>
-					<span className={styles.warningsLabel}>Schema warnings</span>
+				<Callout label="Schema warnings" className={styles.warnings}>
 					<ul>
 						{folio.warnings!.map((w, i) => <li key={i}>{w}</li>)}
 					</ul>
-				</div>
+				</Callout>
 			)}
 
 			{/* Top Block Layout */}

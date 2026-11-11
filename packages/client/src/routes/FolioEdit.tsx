@@ -6,6 +6,7 @@ import { ConflictError, uploadCoverImage } from '../api/client.js';
 import { useProject } from '../context/ProjectContext.js';
 import { FolioEditView } from '../components/folio/FolioEditView.js';
 import { FolioEmptyState } from '../components/folio/FolioEmptyState.js';
+import { UnknownTypeNotice } from '../components/folio/UnknownTypeNotice.js';
 import { LoadingState } from '../components/ui/LoadingState.js';
 import editStyles from '../components/folio/FolioEditView.module.css';
 
@@ -41,11 +42,7 @@ export function FolioEdit(): JSX.Element {
 
 	const typeDef = schema.types[folio.type];
 	if (!typeDef) {
-		return (
-			<div className={editStyles.container}>
-				<p className={`${editStyles.footerStatus} ${editStyles.dirty}`}>Unknown type: {folio.type}</p>
-			</div>
-		);
+		return <UnknownTypeNotice type={folio.type} />;
 	}
 
 	async function handleSave(

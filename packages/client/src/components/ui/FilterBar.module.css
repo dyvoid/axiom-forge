@@ -43,18 +43,5 @@
 }
 
 .clearBtn {
-	background: transparent;
-	border: 0;
-	color: var(--text-muted);
-	cursor: pointer;
-	padding: 0 4px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-	transition: color 0.2s;
-}
-
-.clearBtn:hover {
-	color: var(--accent-rust);
+	composes: fieldClear from './controls.module.css';
 }

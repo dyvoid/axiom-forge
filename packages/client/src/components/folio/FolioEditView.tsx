@@ -12,6 +12,7 @@ import {
 } from '@axiom-forge/shared';
 import { Icon } from '../ui/Icon.js';
 import { ConfirmDialog } from '../ui/ConfirmDialog.js';
+import { Callout } from '../ui/Callout.js';
 import { FieldEditor } from './edit/FieldEditor.js';
 import { FieldTypeHint } from './edit/FieldTypeHint.js';
 import { TextListField } from './edit/TextListField.js';
@@ -219,31 +220,23 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, isN
 			</div>
 
 			{saveError && (
-				<div className={styles.warnings}>
-					<div className={styles.warningsLabel}>Save failed</div>
-					{saveError}
-				</div>
+				<Callout label="Save failed" role="alert" className={styles.notice}>{saveError}</Callout>
 			)}
 
 			{createError && (
-				<div className={styles.warnings}>
-					<div className={styles.warningsLabel}>Create failed</div>
-					{createError}
-				</div>
+				<Callout label="Create failed" role="alert" className={styles.notice}>{createError}</Callout>
 			)}
 
 			{coverError && (
-				<div className={styles.warnings}>
-					<div className={styles.warningsLabel}>Cover image</div>
-					{coverError}
-				</div>
+				<Callout label="Cover image" role="alert" className={styles.notice}>{coverError}</Callout>
 			)}
 
 			{unresolvedLinks.length > 0 && (
-				<div className={`${styles.warnings} ${styles.brokenLinks}`}>
-					<div className={styles.warningsLabel}>
-						Unresolved wiki-links · {unresolvedLinks.length}
-					</div>
+				<Callout
+					label={`Unresolved wiki-links · ${unresolvedLinks.length}`}
+					tone="caution"
+					className={styles.notice}
+				>
 					<ul className={styles.brokenLinksList}>
 						{unresolvedLinks.map((u, i) => (
 							<li key={i} className={styles.brokenLinkRow}>
@@ -274,7 +267,7 @@ export function FolioEditView({ folio, typeDef, saving, deleting, saveError, isN
 							</li>
 						))}
 					</ul>
-				</div>
+				</Callout>
 			)}
 
 			<ConfirmDialog

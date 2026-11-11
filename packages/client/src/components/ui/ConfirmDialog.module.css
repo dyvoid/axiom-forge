@@ -1,28 +1,16 @@
 .overlay {
-	position: fixed;
-	inset: 0;
-	background: var(--overlay-scrim);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 100;
+	composes: overlay from './dialog.module.css';
 }
 
 .dialog {
-	background: var(--bg-page);
-	border: 1px solid var(--border);
+	composes: panel from './dialog.module.css';
 	padding: var(--sp-7) var(--sp-8);
 	max-width: 420px;
 	width: 100%;
 }
 
 .title {
-	font-family: var(--ff-display);
-	font-size: var(--fs-h3);
-	font-style: italic;
-	font-weight: 500;
-	line-height: var(--lh-subtitle);
-	color: var(--accent-rust);
+	composes: title from './dialog.module.css';
 	margin-bottom: var(--sp-3);
 }
 
@@ -55,10 +43,6 @@
 
 /* ── Responsive: full-width dialog on narrow screens ─────── */
 @media (max-width: 600px) {
-	.overlay {
-		padding: var(--sp-4);
-	}
-
 	.dialog {
 		max-width: none;
 		width: 100%;

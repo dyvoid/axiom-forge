@@ -58,7 +58,7 @@ export function SchemaWarningsDialog({ warnings, onClose }: Props): JSX.Element 
 				onClick={(e) => e.stopPropagation()}
 			>
 				<div className={styles.header}>
-					<span className={styles.title} id={titleId}>Schema Warnings</span>
+					<h2 className={styles.title} id={titleId}>Schema Warnings</h2>
 					<span className={styles.count}>
 						{totalCount} {totalCount === 1 ? 'warning' : 'warnings'} across {warnings.length} {warnings.length === 1 ? 'file' : 'files'}
 					</span>

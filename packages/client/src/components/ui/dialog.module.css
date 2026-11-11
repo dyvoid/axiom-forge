@@ -1,0 +1,41 @@
+/* ── Dialog chrome ────────────────────────────────────
+   The scrim, the panel and the title every modal shares. ConfirmDialog and
+   SchemaWarningsDialog each carried their own copy, and the two had drifted
+   on stacking order (100 against 200), so a confirmation could open level
+   with a dropdown menu.
+
+   Treatment only, like the other shared primitives: a dialog keeps its own
+   width, padding and inner layout.
+   ──────────────────────────────────────────────────── */
+
+.overlay {
+	position: fixed;
+	inset: 0;
+	z-index: var(--z-dialog);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--overlay-scrim);
+}
+
+.panel {
+	background: var(--bg-page);
+	border: 1px solid var(--border);
+}
+
+/* Display italic at --fs-h3, in rust: sized up rather than bolded, since
+   Cormorant's heavier weights are unpleasant. */
+.title {
+	font-family: var(--ff-display);
+	font-size: var(--fs-h3);
+	font-style: italic;
+	font-weight: 500;
+	line-height: var(--lh-subtitle);
+	color: var(--accent-rust);
+}
+
+@media (max-width: 600px) {
+	.overlay {
+		padding: var(--sp-4);
+	}
+}

@@ -1,0 +1,27 @@
+/* ── Page header ──────────────────────────────────────
+   The title of a top-level page and the small count line under it. The two
+   index views each had a copy, and only one of them carried the title's
+   line-height and tracking, so "Grand Index" and a category name sat
+   differently on a two-line wrap.
+
+   Treatment only: margins and alignment stay with each page.
+   ──────────────────────────────────────────────────── */
+
+.title {
+	font-family: var(--ff-display);
+	font-weight: 500;
+	font-style: italic;
+	font-size: var(--fs-h1);
+	line-height: var(--lh-h1);
+	letter-spacing: -0.01em;
+	color: var(--text-primary);
+}
+
+/* "12 ENTRIES" */
+.count {
+	font-family: var(--ff-body);
+	font-size: var(--fs-eyebrow);
+	letter-spacing: var(--ls-eyebrow);
+	text-transform: uppercase;
+	color: var(--text-muted);
+}

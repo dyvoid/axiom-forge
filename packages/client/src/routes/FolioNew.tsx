@@ -7,7 +7,7 @@ import { putFolio, uploadCoverImage } from '../api/client.js';
 import { useProject } from '../context/ProjectContext.js';
 import { FolioEditView } from '../components/folio/FolioEditView.js';
 import { FolioEmptyState } from '../components/folio/FolioEmptyState.js';
-import editStyles from '../components/folio/FolioEditView.module.css';
+import { UnknownTypeNotice } from '../components/folio/UnknownTypeNotice.js';
 
 /**
  * Editor for a folio that does not exist on disk yet.
@@ -38,11 +38,7 @@ export function FolioNew(): JSX.Element {
 
 	const typeDef = schema.types[typeKey];
 	if (!typeDef) {
-		return (
-			<div className={editStyles.container}>
-				<p className={`${editStyles.footerStatus} ${editStyles.dirty}`}>Unknown type: {typeKey}</p>
-			</div>
-		);
+		return <UnknownTypeNotice type={typeKey} />;
 	}
 
 	async function handleSave(next: ParsedFolio, coverFile: File | null, onSaved: () => void): Promise<void> {

@@ -67,7 +67,7 @@
 		top: var(--header-height);
 		left: 0;
 		bottom: 0;
-		z-index: 50;
+		z-index: var(--z-drawer);
 		width: var(--sidebar-width);
 		max-width: 85vw;
 		transform: translateX(-100%);
@@ -87,6 +87,6 @@
 		right: 0;
 		bottom: 0;
 		background: var(--overlay-scrim);
-		z-index: 49;
+		z-index: calc(var(--z-drawer) - 1);
 	}
 }

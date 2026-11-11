@@ -66,6 +66,9 @@
 
 .confirm,
 .cancel {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	background: transparent;
 	border: 0;
 	font-family: var(--ff-body);

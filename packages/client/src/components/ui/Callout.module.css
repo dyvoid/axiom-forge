@@ -1,0 +1,46 @@
+/* ── Callout ──────────────────────────────────────────
+   A notice set into the page: a hairline stripe down the left edge over a
+   faint tint of the same colour. The read view's schema warnings and the
+   edit view's save errors and unresolved links each restated this, and had
+   drifted apart on text size and on how the label is spaced from the body.
+
+   The caller owns the outer margin, through `className`.
+   ──────────────────────────────────────────────────── */
+
+.callout {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-2);
+	padding: var(--sp-3) var(--sp-4);
+	border-left: 2px solid var(--accent-rust);
+	background: color-mix(in srgb, var(--accent-rust) 6%, var(--bg-page));
+	font-family: var(--ff-body);
+	font-size: var(--fs-meta);
+	color: var(--text-secondary);
+}
+
+/* Not an error, just something worth a look. */
+.caution {
+	border-left-color: var(--accent-gold);
+	background: color-mix(in srgb, var(--accent-gold) 6%, var(--bg-page));
+}
+
+.label {
+	font-size: var(--fs-eyebrow);
+	font-weight: 500;
+	letter-spacing: var(--ls-eyebrow);
+	line-height: var(--lh-eyebrow);
+	text-transform: uppercase;
+	color: var(--accent-rust);
+}
+
+/* Gold as text needs the darker shade to reach AA on the tinted ground. */
+.caution .label {
+	color: var(--accent-gold-text);
+}
+
+.body {
+	/* Long unbroken values (a path, a server message) wrap instead of
+	   pushing the callout wider than its column. */
+	overflow-wrap: anywhere;
+}

@@ -161,6 +161,13 @@
 	   below this. */
 	--bp-compact: 600px;
 
+	/* ── Stacking order ───────────────────────────────── */
+	/* The page's own layers, lowest first. A dialog must clear a menu, and a
+	   menu the drawer; as literals these had drifted until two of them tied. */
+	--z-drawer: 50;
+	--z-menu: 100;
+	--z-dialog: 200;
+
 	/* ── Touch target minimum ─────────────────────────────── */
 	--touch-target: 44px;
 }

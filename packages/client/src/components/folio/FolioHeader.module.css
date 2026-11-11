@@ -51,6 +51,9 @@
 	font-style: italic;
 	font-size: var(--fs-hero);
 	line-height: var(--lh-h1);
+	/* Same tracking as the edit view's title input, so the title does not
+	   shift when Edit swaps one for the other. */
+	letter-spacing: -0.01em;
 	color: var(--text-primary);
 	/* Spacing should scale with the element's visual mass. The hero title is
 	   up to 88px tall; 8px (sp-2) under it read as glued-on. 16px lets the

@@ -185,37 +185,10 @@
 	color: var(--accent-rust);
 }
 
-/* Same "warning callout" vocabulary as FolioReadView.module.css's
-   .warnings/.warningsLabel: a left rust stripe + tinted fill, not a full
-   border box. That view shows schema warnings, this one shows save/create
-   errors and broken links, but it's the same UI role and should look it. */
-.warnings {
-	border-left: 2px solid var(--accent-rust);
-	background: color-mix(in srgb, var(--accent-rust) 6%, var(--bg-page));
-	padding: var(--sp-3) var(--sp-4);
+/* Spacing for the shared Callout: save and create errors, and the
+   unresolved-links list. */
+.notice {
 	margin-bottom: var(--sp-5);
-	font-family: var(--ff-body);
-	font-size: var(--fs-label);
-	color: var(--text-secondary);
-}
-
-.warningsLabel {
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-eyebrow);
-	text-transform: uppercase;
-	color: var(--accent-rust);
-	font-weight: 500;
-	margin-bottom: var(--sp-2);
-}
-
-/* Gold-toned variant: not an error, just an integrity warning. */
-.brokenLinks {
-	border-left-color: var(--accent-gold);
-	background: color-mix(in srgb, var(--accent-gold) 6%, var(--bg-page));
-}
-
-.brokenLinks .warningsLabel {
-	color: var(--accent-gold);
 }
 
 .brokenLinksList {

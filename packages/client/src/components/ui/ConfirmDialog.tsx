@@ -44,7 +44,7 @@ function ConfirmDialogPanel({
 				aria-describedby={descId}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<div className={styles.title} id={titleId}>{title}</div>
+				<h2 className={styles.title} id={titleId}>{title}</h2>
 				<div className={styles.message} id={descId}>{message}</div>
 				<div className={styles.actions}>
 					<button type="button" className={styles.btnCancel} onClick={onCancel}>

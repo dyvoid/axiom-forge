@@ -46,6 +46,16 @@ The layout engine implements specific aesthetic rules based on content density:
 2. **List Layouts**: Full-width structured sections use a label/value ledger; list values wrap within their value column. In the narrower `MetaSection`, lists with more than one item stack below their label.
 3. **Wikilinks**: Selected wikilink chips show a type glyph in `--color-accent` and the display name. The literal `[ ]` markdown brackets around wikilinks are intentionally omitted from the UI for a cleaner visual layout. There is no strikethrough styling for dead links (they are identified by tooltips and warnings in edit mode).
 
+### Notices and dialogs
+
+A notice set into a page is a `Callout`: a 2px stripe down the left edge over a 6% tint of the same
+colour, with a small uppercase label. Rust is a failure or a schema warning; gold (`tone="caution"`)
+is something to check, such as unresolved wiki-links. Pass `role="alert"` when the notice is the
+result of something the user just did.
+
+A modal composes `dialog.module.css` for its scrim, panel and title, and keeps its own width and
+padding. Layers stack by token, lowest first: `--z-drawer`, `--z-menu`, `--z-dialog`.
+
 ### Entry Presentation: Two Idioms
 
 A folio appears as a compact "entry" on several surfaces. These use **two deliberate idioms**, both

@@ -37,7 +37,7 @@
 	border: 1px solid var(--text-muted);
 	box-shadow: var(--shadow-elevated);
 	overflow-y: auto;
-	z-index: 100;
+	z-index: var(--z-menu);
 }
 
 .menuOption {
@@ -152,8 +152,66 @@
 	background: color-mix(in srgb, var(--accent-rust) 8%, transparent);
 }
 
+/* ── Icon buttons ─────────────────────────────────────
+   A button that is only a glyph. `.iconBtn` stands alone in chrome (the
+   header's menu and sync buttons) and lights its own ground on hover.
+   `.fieldClear` sits inside a field box that already has a ground, so it
+   only changes colour: to rust, because it throws the field's contents away.
+   ──────────────────────────────────────────────────── */
+
+.iconBtn {
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	padding: var(--sp-2);
+	background: transparent;
+	border: none;
+	border-radius: 2px;
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: color 0.15s, background-color 0.15s;
+}
+
+.iconBtn:hover:not(:disabled) {
+	color: var(--text-primary);
+	background-color: var(--bg-hover);
+}
+
+.iconBtn:disabled {
+	cursor: default;
+}
+
+.fieldClear {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	padding: 0 var(--sp-1);
+	background: transparent;
+	border: 0;
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: color 0.15s;
+}
+
+.fieldClear:hover {
+	color: var(--accent-rust);
+}
+
 @media (pointer: coarse) {
 	.btnCompact {
 		padding: var(--btn-compact-padding-touch);
+	}
+
+	.iconBtn {
+		min-width: var(--touch-target);
+		min-height: var(--touch-target);
+	}
+
+	/* Width only: the field it sits in sets the height, and a 44px button
+	   would stretch a 38px control. */
+	.fieldClear {
+		min-width: var(--touch-target);
+		align-self: stretch;
 	}
 }

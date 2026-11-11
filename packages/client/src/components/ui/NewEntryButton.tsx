@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Icon } from './Icon.js';
 import styles from './NewEntryButton.module.css';
 
 interface Props {
@@ -91,7 +92,7 @@ export function NewEntryButton({ folder, typeName, variant = 'ghost' }: Props): 
 				disabled={!name.trim()}
 				aria-label="Create entry"
 			>
-				↵
+				<Icon name="corner-down-left" size={14} />
 			</button>
 			<button
 				type="button"
@@ -99,7 +100,7 @@ export function NewEntryButton({ folder, typeName, variant = 'ghost' }: Props): 
 				onClick={() => { setCreating(false); setName(''); }}
 				aria-label="Cancel"
 			>
-				✕
+				<Icon name="x" size={14} />
 			</button>
 		</div>
 	);

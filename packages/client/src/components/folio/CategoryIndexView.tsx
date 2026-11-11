@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { scoreFolio } from '@axiom-forge/shared';
+import { Link, useParams } from 'react-router-dom';
 import { useFolios } from '../../api/queries.js';
 import { useProject } from '../../context/ProjectContext.js';
 import { Icon } from '../ui/Icon.js';
@@ -9,6 +8,8 @@ import { NewEntryButton } from '../ui/NewEntryButton.js';
 import { TagFilter } from '../ui/TagFilter.js';
 import { EmptyState } from '../ui/EmptyState.js';
 import { LoadingState } from '../ui/LoadingState.js';
+import { useTagFilterParams } from '../../hooks/useTagFilterParams.js';
+import { collectTags, filterFolios } from '../../utils/filterFolios.js';
 import { FolioEmptyState } from './FolioEmptyState.js';
 import bar from '../ui/FilterBar.module.css';
 import styles from './CategoryIndexView.module.css';
@@ -17,36 +18,19 @@ export function CategoryIndexView(): JSX.Element {
 	const { folder } = useParams<{ folder: string }>();
 	const { schemaIndex } = useProject();
 	const { data: folios, isLoading } = useFolios();
-	const [searchParams, setSearchParams] = useSearchParams();
+	const [selectedTags, setSelectedTags] = useTagFilterParams();
 	const [query, setQuery] = useState('');
 
-	const categoryFolios = folios?.filter(f => f.folder === folder) ?? [];
-	
-	const allTags = Array.from(new Set(categoryFolios.flatMap(f => f.tags || []))).sort();
-	const selectedTags = searchParams.get('tags')?.split(',').filter(Boolean) || [];
+	const categoryFolios = useMemo(() => folios?.filter((f) => f.folder === folder) ?? [], [folios, folder]);
+	const allTags = useMemo(() => collectTags(categoryFolios), [categoryFolios]);
+	const q = query.trim();
 
-	const handleTagsChange = (tags: string[]) => {
-		const newParams = new URLSearchParams(searchParams);
-		if (tags.length > 0) {
-			newParams.set('tags', tags.join(','));
-		} else {
-			newParams.delete('tags');
-		}
-		setSearchParams(newParams);
-	};
-
-	const q = query.trim().toLowerCase();
-
-	// Ranking is shared with the server and the Grand Index (ADR-0011). This view
-	// keeps its own ordering: the index stays alphabetical, search only narrows it.
-	const queryFiltered = useMemo(
-		() => (q ? categoryFolios.filter((f) => scoreFolio(f, q) > 0) : categoryFolios),
-		[categoryFolios, q],
+	// This view keeps the index's own order: it stays alphabetical, and search
+	// only narrows it.
+	const filteredFolios = useMemo(
+		() => filterFolios({ folios: categoryFolios, query, tags: selectedTags, order: 'given' }),
+		[categoryFolios, query, selectedTags],
 	);
-
-	const filteredFolios = selectedTags.length > 0
-		? queryFiltered.filter(f => selectedTags.every(t => f.tags?.includes(t)))
-		: queryFiltered;
 
 	if (isLoading) return <div className={styles.container}><LoadingState message="Loading index" /></div>;
 
@@ -72,7 +56,7 @@ export function CategoryIndexView(): JSX.Element {
 				</div>
 				<h1 className={styles.title}>{typeName}</h1>
 				<div className={styles.meta}>
-					{filteredFolios.length} {filteredFolios.length === 1 ? 'ENTRY' : 'ENTRIES'}
+					{filteredFolios.length} {filteredFolios.length === 1 ? 'entry' : 'entries'}
 				</div>
 				<div className={styles.filterRow}>
 					{/* Search bar — uses the shared FilterBar classes */}
@@ -96,7 +80,7 @@ export function CategoryIndexView(): JSX.Element {
 									e.stopPropagation();
 									setQuery('');
 								}}
-								title="Clear search"
+								aria-label="Clear search"
 							>
 								<Icon name="x" size={16} />
 							</button>
@@ -106,7 +90,7 @@ export function CategoryIndexView(): JSX.Element {
 						<TagFilter 
 							availableTags={allTags}
 							selectedTags={selectedTags}
-							onChange={handleTagsChange}
+							onChange={setSelectedTags}
 						/>
 					</div>
 				</div>

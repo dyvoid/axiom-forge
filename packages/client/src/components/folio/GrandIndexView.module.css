@@ -14,19 +14,12 @@
 }
 
 .title {
-	font-family: var(--ff-display);
-	font-weight: 500;
-	font-style: italic;
-	font-size: var(--fs-h1);
-	color: var(--text-primary);
+	composes: title from '../ui/page.module.css';
 	margin: 0 0 var(--sp-2);
 }
 
 .meta {
-	font-family: var(--ff-body);
-	font-size: var(--fs-eyebrow);
-	letter-spacing: var(--ls-eyebrow);
-	color: var(--text-muted);
+	composes: count from '../ui/page.module.css';
 	margin-bottom: var(--sp-6);
 }
 
